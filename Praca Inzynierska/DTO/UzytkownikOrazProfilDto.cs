@@ -4,13 +4,13 @@ namespace Praca_Inzynierska.DTO;
 
 public record UzytkownikOrazProfilDto
 (
-    int id,
-    string login,
-    string pseudonim,
-    string haslo,
-    Region region,
-    string? numerTelefonu,
-    string? zaimki,
-    string? opis,
-    ICollection<JezykOrazStopienDto> jezyki
+    int Id,
+    string Login,
+    string Pseudonim,
+    string Haslo,
+    RegionDto? Region,
+    string? NumerTelefonu,
+    string? Zaimki,
+    string? Opis,
+    ICollection<JezykOrazStopienDto> Jezyki
 );

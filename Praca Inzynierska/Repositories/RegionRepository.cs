@@ -8,6 +8,7 @@ namespace Praca_Inzynierska.Repositories;
 public class RegionRepository : IRegionRepository
 {
     private readonly AppDbContext _context;
+    private readonly IKrajRepository _krajRepository;
 
     public RegionRepository(AppDbContext appDbContext)
     {
@@ -26,12 +27,18 @@ public class RegionRepository : IRegionRepository
 
         return regionyDoZwrocenia;
     }
+
+    public async Task<RegionDto?> GetRegion(int id)
+    {
+        Region? region = await _context.Region.FindAsync(id);
+        return region != null ? new RegionDto(region.Id, region.KrajId,region.Nazwa) : null;
+    }
     
     public async Task<ICollection<RegionDto>> GetRegionyKraju(int krajId)
     {
         ICollection<RegionDto> regionyDoZwrocenia = new List<RegionDto>();
-        ICollection<Region> regiony = await _context.Region.ToListAsync();
-        foreach (var region in regiony.Where(x => x.KrajId == krajId).ToList())
+        ICollection<Region> regiony = await _context.Region.Where(x => x.KrajId == krajId).ToListAsync();
+        foreach (var region in regiony)
         {
             regionyDoZwrocenia.Add(new RegionDto(region.Id, region.KrajId,region.Nazwa));
         }

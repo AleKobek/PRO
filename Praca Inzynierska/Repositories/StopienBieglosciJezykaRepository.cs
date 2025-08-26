@@ -25,4 +25,10 @@ public class StopienBieglosciJezykaRepository : IStopienBieglosciJezykaRepositor
 
         return stopnieBieglosciDoZwrocenia;
     }
+
+    public async Task<StopienBieglosciJezykaDto?> GetStopienBieglosciJezyka(int id)
+    {
+        StopienBieglosciJezyka? stopienBieglosci = await _context.StopienBieglosciJezyka.Where(x => x.Id == id).FirstOrDefaultAsync();
+        return stopienBieglosci != null ? new StopienBieglosciJezykaDto(stopienBieglosci.Id, stopienBieglosci.Nazwa, stopienBieglosci.Wartosc) : null;
+    }
 }

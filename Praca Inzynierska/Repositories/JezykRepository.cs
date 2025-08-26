@@ -26,6 +26,12 @@ public class JezykRepository : IJezykRepository
         
         return jezykiDoZwrocenia;
     }
+    
+    public async Task<JezykDto?> GetJezyk(int id)
+    {
+        Jezyk? jezyk = await _context.Jezyk.FindAsync(id);
+        return jezyk != null ? new JezykDto(jezyk.Id, jezyk.Nazwa) : null;
+    }
 
     public async Task<ICollection<JezykOrazStopienDto>> GetJezykiUzytkownika(int id)
     {
@@ -35,9 +41,8 @@ public class JezykRepository : IJezykRepository
         ICollection<StopienBieglosciJezykaDto> stopnieBieglosci = await _stopienBieglosciJezykaRepository.GetStopnieBieglosciJezyka();
         foreach (var var in jezykiUzytkownika)
         {
-            // bierzemy język który się zgadza z id
-            JezykDto jezyk = jezyki.FirstOrDefault(x => x.Id == var.JezykId);
-            StopienBieglosciJezykaDto stopienBieglosci = stopnieBieglosci.FirstOrDefault(x => x.Id == var.StopienBieglosciId);
+            JezykDto? jezyk = jezyki.FirstOrDefault(x => x.Id == var.JezykId);
+            StopienBieglosciJezykaDto? stopienBieglosci = stopnieBieglosci.FirstOrDefault(x => x.Id == var.StopienBieglosciId);
             if(jezyk != null &&  stopienBieglosci != null)
             {
                 jezykiDoZwrocenia.Add(new JezykOrazStopienDto(
