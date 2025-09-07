@@ -1,11 +1,11 @@
-﻿import {useState} from "react";
+﻿import {useEffect, useState} from "react";
 import JezykNaLiscieKomponent from "./JezykNaLiscieKomponent";
 
-export default function Tabelka({jezyk, typ}){
+export default function Tabelka({jezyk, typ, listaJezykowUzytkownika, ustawListeJezykowUzytkownika}){
 
     const [aktualnaStrona, ustawAktualnaStrone] = useState(0);
-    // {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
-    const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState([])
+    // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
+    
     // {id, nazwa}
     const [listaJezykowZBazy, ustawListeJezykowZBazy] = useState([])
     // {id, nazwa}
@@ -15,8 +15,44 @@ export default function Tabelka({jezyk, typ}){
     // to, co aktualnie jest wybrane w select stopień, w postaci {id, nazwa, wartosc}
     const [wybranyStopienDoDodania, ustawWybranyStopienDoDodania] = useState({})
     
-    // trzeba podać listę języków i dostępnych stopni z bazy
+    
+    useEffect(() => {
+        const podajJezykiIStopnieZBazy = () => {
+
+            const opcje = {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+            fetch("http://localhost:5014/api/jezyki", opcje)
+                .then(response => response.json())
+                .then(data => {
+                    ustawListeJezykowZBazy(data);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+
+            const opcje2 = {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+            fetch("http://localhost:5014/api/stopnie", opcje2)
+                .then(response => response.json())
+                .then(data => {
+                    ustawListeStopniZBazy(data);
+                })
+        }
+        
+        podajJezykiIStopnieZBazy();
+    },[])
+    
+    
     // do bazy wystarczy wysłać samo id każdego
+    // adres backendu to "http://localhost:5014"
     
     
     const przyKliknieciuUsun = (e) => {
@@ -53,7 +89,7 @@ export default function Tabelka({jezyk, typ}){
     </>
     
     // lista języków bez edycji
-    if (typ === "językiWProfilu") {
+    if (typ === "wyswietlanie") {
         if (listaJezykowUzytkownika.length === 0) {
             return (<>
                 <p style={{fontFamily: "Comic Sans MS"}}>
@@ -75,7 +111,7 @@ export default function Tabelka({jezyk, typ}){
         )
     }
     
-    if(typ === "językiEdycja"){
+    if(typ === "edycja"){
         // jest lista języków {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}. obok każdego elementu jest usuwanie, pod spodem jest pusty z przyciskiem dodaj
         return(<>
             <ul>
@@ -117,11 +153,7 @@ export default function Tabelka({jezyk, typ}){
                         <option key={index} value={element}>{element.nazwa}</option>
                     )).sort(
                         // sortujemy elementy listy względem pola wartosc
-                        (stopien1, stopien2) =>{
-                            if(stopien1.wartosc < stopien2.wartosc) return -1;
-                            if(stopien1.wartosc > stopien2.wartosc) return 1;
-                            return 0;
-                        }
+                        (stopien1, stopien2) => {return stopien1.wartosc - stopien2.wartosc}
                     )}
                 </select>
                 {/* przycisk obok selectów */}

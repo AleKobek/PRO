@@ -11,6 +11,7 @@ function App() {
         <Routes>
           <Route path = "/" element = {<TwojProfil/>}></Route>
           <Route path = "/edytujProfil" element = {<EdytujProfil/>}></Route>
+          <Route path = "/twojProfil" element = {<TwojProfil/>}></Route>
           <Route path = "*" element = {<Error404/>}></Route>
         </Routes>
       </BrowserRouter>

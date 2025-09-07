@@ -30,7 +30,8 @@ public class UzytkownikRepository(
                     uzytkownik.NumerTelefonu,
                     profil.Zaimki,
                     profil.Opis,
-                    jezykiUzytkownika
+                    jezykiUzytkownika,
+                    profil.Awatar
                     ));
             }
             else
@@ -44,7 +45,8 @@ public class UzytkownikRepository(
                     uzytkownik.NumerTelefonu,
                     null,
                     null,
-                    jezykiUzytkownika
+                    jezykiUzytkownika,
+                    null
                 ));
             }
             
@@ -70,7 +72,7 @@ public class UzytkownikRepository(
         var region = await regionRepository.GetRegion(uzytkownik.RegionId);
         var jezykiUzytkownika = await jezykRepository.GetJezykiUzytkownika(uzytkownik.Id);
        
-        return new UzytkownikOrazProfilDto(uzytkownik.Id, uzytkownik.Login, uzytkownik.Pseudonim, uzytkownik.Haslo, region, uzytkownik.NumerTelefonu, zaimki, opis, jezykiUzytkownika);
+        return new UzytkownikOrazProfilDto(uzytkownik.Id, uzytkownik.Login, uzytkownik.Pseudonim, uzytkownik.Haslo, region, uzytkownik.NumerTelefonu, zaimki, opis, jezykiUzytkownika, profil?.Awatar);
     }
 
     public async Task<Uzytkownik?> AddUzytkownik(Uzytkownik uzytkownik)
@@ -90,8 +92,5 @@ public class UzytkownikRepository(
         return uzytkownik;
         
     }
-    
-    
-    // robić front
     
 }

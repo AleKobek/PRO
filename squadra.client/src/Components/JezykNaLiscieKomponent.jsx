@@ -1,4 +1,7 @@
 ﻿export default function JezykNaLiscieKomponent({jezyk, jezykDoKomponentu, coPrzyKlikaniu, idZListy, czyEdytuj}){
+    
+    // język to język wyświetlania, a język do komponentu to język na liście
+    
     if(czyEdytuj) return(
         <>
             <li>

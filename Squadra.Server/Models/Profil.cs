@@ -15,6 +15,9 @@ public class Profil
     [MaxLength(100)]
     public string? Opis { get; set; }
     
+    public byte[]? Awatar { get; set; }
+    
     [ForeignKey(nameof(IdUzytkownika))]
     public virtual Uzytkownik Uzytkownik { get; set; } = null!;
+    
 }

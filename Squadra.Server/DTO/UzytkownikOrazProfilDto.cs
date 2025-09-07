@@ -11,5 +11,6 @@ public record UzytkownikOrazProfilDto
     string? NumerTelefonu,
     string? Zaimki,
     string? Opis,
-    ICollection<JezykOrazStopienDto> Jezyki
+    ICollection<JezykOrazStopienDto> Jezyki,
+    byte[]? Awatar
 );

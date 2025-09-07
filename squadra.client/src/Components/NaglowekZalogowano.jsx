@@ -2,8 +2,7 @@
 
 export default function NaglowekZalogowano({jezyk}){
     
-    
-    // to, co pobieramy
+    // to, co pobieramy, w prototypie nie zmieniamy
     const [nazwaAktualnegoStatusuZBazy, ustawNazweAktualnegoStatusuZBazy] = useState("Online");
     
     // to, co wyświetlamy
