@@ -11,8 +11,7 @@ public class Uzytkownik
 
     [MaxLength(20)] [Required] public string Login { get; set; } = null!;
     
-    [MaxLength(30)] [Required]
-    public string Pseudonim { get; set; } = null!;
+   
     
     [MaxLength(20)] [Required] [EmailAddress]
     public string Email { get; set; } = null!;
@@ -20,16 +19,20 @@ public class Uzytkownik
     [MaxLength(30)] [Required]
     public string Haslo { get; set; } = null!;
     
-    [Column("id_regionu")]
-    public int RegionId { get; set; } 
-    
-    [ForeignKey(nameof(RegionId))]
-    public virtual Region Region { get; set; } = null!;
-    
     [MaxLength(15)]
     public string? NumerTelefonu { get; set; }
+    
+    // te dwa nie są mi potrzebne do prototypu, ale Ola z przyszłości mi za to podziękuje!
+    
+    public DateOnly? DataUrodzenia { get; set; }
+    
+    [Column("id_statusu")]
+    public int StatusId { get; set; }
     
     public virtual ICollection<JezykUzytkownika> JezykUzytkownikaCollection { get; set; } = null!;
     
     public virtual Profil Profil { get; set; } = null!;
+    
+    [ForeignKey(nameof(StatusId))]
+    public virtual Status Status { get; set; } = null!;
 }

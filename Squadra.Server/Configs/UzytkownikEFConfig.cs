@@ -35,12 +35,6 @@ public class UzytkownikEFConfig : IEntityTypeConfiguration<Uzytkownik>
             .Property(x => x.NumerTelefonu)
             .HasMaxLength(15);
         
-        builder
-            .HasOne(x => x.Region)
-            .WithMany(x => x.UzytkownikCollection)
-            .HasForeignKey(x => x.RegionId)
-            .HasConstraintName("Uzytkownik_Region")
-            .OnDelete(DeleteBehavior.Restrict);
         
         builder
             .HasOne(x => x.Profil)

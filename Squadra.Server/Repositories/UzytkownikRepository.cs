@@ -2,79 +2,41 @@
 
 namespace Squadra;
 
+
+//TODO sprawdzić, czy w interfejsie się zgadzają funkcje
 public class UzytkownikRepository(
-    AppDbContext appDbContext,
-    IJezykRepository jezykRepository,
-    IRegionRepository regionRepository)
+    AppDbContext appDbContext)
     : IUzytkownikRepository
 {
-    public async Task<ICollection<UzytkownikOrazProfilDto>> GetUzytkownicy()
+    public async Task<ICollection<UzytkownikDto>> GetUzytkownicy()
     {
-        ICollection<UzytkownikOrazProfilDto> uzytkownicyDoZwrocenia = new List<UzytkownikOrazProfilDto>();
+        ICollection<UzytkownikDto> uzytkownicyDoZwrocenia = new List<UzytkownikDto>();
         ICollection<Uzytkownik> uzytkownicy = await appDbContext.Uzytkownik.ToListAsync();
-        ICollection<Profil> profile = await appDbContext.Profil.ToListAsync();
-
         foreach (var uzytkownik in uzytkownicy)
         {
-            Profil? profil = profile.FirstOrDefault(x => x.IdUzytkownika == uzytkownik.Id);
-            var jezykiUzytkownika = await jezykRepository.GetJezykiUzytkownika(uzytkownik.Id);
-            RegionDto? region = await regionRepository.GetRegion(uzytkownik.RegionId);
-            if (profil != null)
-            {
-                uzytkownicyDoZwrocenia.Add(new UzytkownikOrazProfilDto(
-                    uzytkownik.Id, 
-                    uzytkownik.Login, 
-                    uzytkownik.Pseudonim, 
-                    uzytkownik.Haslo, 
-                    region,
-                    uzytkownik.NumerTelefonu,
-                    profil.Zaimki,
-                    profil.Opis,
-                    jezykiUzytkownika,
-                    profil.Awatar
-                    ));
-            }
-            else
-            {
-                uzytkownicyDoZwrocenia.Add(new UzytkownikOrazProfilDto(
-                    uzytkownik.Id, 
-                    uzytkownik.Login, 
-                    uzytkownik.Pseudonim, 
-                    uzytkownik.Haslo, 
-                    region,
-                    uzytkownik.NumerTelefonu,
-                    null,
-                    null,
-                    jezykiUzytkownika,
-                    null
-                ));
-            }
-            
+            uzytkownicyDoZwrocenia.Add(new UzytkownikDto(
+                uzytkownik.Id, 
+                uzytkownik.Login, 
+                uzytkownik.Haslo,
+                uzytkownik.NumerTelefonu,
+                uzytkownik.DataUrodzenia,
+                uzytkownik.StatusId
+            ));
         }
         return uzytkownicyDoZwrocenia;
     }
 
-    public async Task<UzytkownikOrazProfilDto?> GetUzytkownik(int id)
+    public async Task<UzytkownikDto?> GetUzytkownik(int id)
     {
         var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
         
         if (uzytkownik == null) return null;
         
-        var profil = await appDbContext.Profil.Where(x => x.IdUzytkownika == id).FirstOrDefaultAsync();
-        string? zaimki = null;
-        string? opis = null;
-        if (profil != null)
-        {
-            zaimki = profil.Zaimki;
-            opis = profil.Opis;
-        }
-        
-        var region = await regionRepository.GetRegion(uzytkownik.RegionId);
-        var jezykiUzytkownika = await jezykRepository.GetJezykiUzytkownika(uzytkownik.Id);
-       
-        return new UzytkownikOrazProfilDto(uzytkownik.Id, uzytkownik.Login, uzytkownik.Pseudonim, uzytkownik.Haslo, region, uzytkownik.NumerTelefonu, zaimki, opis, jezykiUzytkownika, profil?.Awatar);
+        return new UzytkownikDto(uzytkownik.Id, uzytkownik.Login, uzytkownik.Haslo, uzytkownik.NumerTelefonu, uzytkownik.DataUrodzenia, uzytkownik.StatusId);
     }
 
+    // zmienić na użytkownik create dto w add i update, może scalić?
+    // to jednak put czy bez put? w przykładach mam z put, może jednak nie scalać
     public async Task<Uzytkownik?> AddUzytkownik(Uzytkownik uzytkownik)
     {
         appDbContext.Uzytkownik.Add(uzytkownik);
@@ -92,5 +54,6 @@ public class UzytkownikRepository(
         return uzytkownik;
         
     }
+    
     
 }

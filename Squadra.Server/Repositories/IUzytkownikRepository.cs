@@ -3,9 +3,9 @@ namespace Squadra;
 
 public interface IUzytkownikRepository
 {
-    public Task<ICollection<UzytkownikOrazProfilDto>> GetUzytkownicy();
+    public Task<ICollection<UzytkownikDto>> GetUzytkownicy();
     
-    public Task<UzytkownikOrazProfilDto?> GetUzytkownik(int id);
+    public Task<UzytkownikDto?> GetUzytkownik(int id);
 
     public Task<Uzytkownik?> AddUzytkownik(Uzytkownik uzytkownik);
 

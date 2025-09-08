@@ -20,7 +20,7 @@ export default function EdytujProfil({jezyk}) {
 
     useEffect(() => {
         // pobieramy dane użytkownika do automatycznego wypełnienia i sprawdzania czy coś się zmieniło
-        const podajDaneUzytkownika = () => {
+        const podajDaneProfilu = () => {
             const opcje = {
                 method: "GET",
                 headers: {
@@ -30,6 +30,7 @@ export default function EdytujProfil({jezyk}) {
 
             fetch("http://localhost:5014/api/uzytkownik/" + localStorage.getItem("idUzytkownika"), opcje)
                 .then(response => response.json())
+                // profil ma (chyba) podawany też awatar, ale nam do prototypu nie potrzebny
                 .then(data => {
                     ustawListeJezykowUzytkownika(data.jezyki);
                     ustawPseudonim(data.pseudonim);
@@ -39,7 +40,7 @@ export default function EdytujProfil({jezyk}) {
                     ustawOpis(data.opis);
                 })
         }
-        podajDaneUzytkownika();
+        podajDaneProfilu();
     }, []);
     
     return (<>

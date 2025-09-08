@@ -12,6 +12,8 @@ public class AppDbContext : DbContext
     public DbSet<Region> Region { get; set; } = null!;
     public DbSet<StopienBieglosciJezyka> StopienBieglosciJezyka { get; set; } = null!;
     
+    public DbSet<Status> Status { get; set; } = null!;
+    
     public AppDbContext(){}
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }

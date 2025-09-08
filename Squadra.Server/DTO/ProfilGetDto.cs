@@ -1,14 +1,10 @@
-﻿
-namespace Squadra;
+﻿namespace Squadra;
 
-public record UzytkownikOrazProfilDto
+public record ProfilGetDto
 (
-    int Id,
-    string Login,
+    int IdUzytkownika,
     string Pseudonim,
-    string Haslo,
     RegionDto? Region,
-    string? NumerTelefonu,
     string? Zaimki,
     string? Opis,
     ICollection<JezykOrazStopienDto> Jezyki,
