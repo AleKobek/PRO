@@ -5,8 +5,6 @@ namespace Squadra;
 
 public class RegionRepository(AppDbContext context, IKrajRepository krajRepository) : IRegionRepository
 {
-    private readonly IKrajRepository _krajRepository = krajRepository;
-
 
     public async Task<ICollection<RegionDto>> GetRegiony()
     {
@@ -36,5 +34,16 @@ public class RegionRepository(AppDbContext context, IKrajRepository krajReposito
         }
 
         return regionyDoZwrocenia;
+    }
+
+    public Region GetRegionDomyslny()
+    {
+        
+        return new Region
+        {
+            Id = 1,
+            KrajId = 1,
+            Nazwa = "Unknown"
+        };
     }
 }

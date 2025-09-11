@@ -4,14 +4,14 @@
 namespace Squadra;
 
 public class JezykRepository(
-    AppDbContext context,
+    AppDbContext appDbContext,
     IStopienBieglosciJezykaRepository stopienBieglosciJezykaRepository)
     : IJezykRepository
 {
     public async Task<ICollection<JezykDto>> GetJezyki()
     {
         ICollection<JezykDto> jezykiDoZwrocenia =  new List<JezykDto>();
-        ICollection<Jezyk> jezyki = await context.Jezyk.ToListAsync();
+        ICollection<Jezyk> jezyki = await appDbContext.Jezyk.ToListAsync();
         foreach (var jezyk in jezyki)
         {
             jezykiDoZwrocenia.Add(new JezykDto(jezyk.Id, jezyk.Nazwa));
@@ -22,14 +22,14 @@ public class JezykRepository(
     
     public async Task<JezykDto?> GetJezyk(int id)
     {
-        Jezyk? jezyk = await context.Jezyk.FindAsync(id);
+        Jezyk? jezyk = await appDbContext.Jezyk.FindAsync(id);
         return jezyk != null ? new JezykDto(jezyk.Id, jezyk.Nazwa) : null;
     }
 
     public async Task<ICollection<JezykOrazStopienDto>> GetJezykiUzytkownika(int id)
     {
         ICollection<JezykOrazStopienDto> jezykiDoZwrocenia = new List<JezykOrazStopienDto>();
-        ICollection<JezykUzytkownika> jezykiUzytkownika = await context.JezykUzytkownika.Where(x => x.UzytkownikId == id).ToListAsync();
+        ICollection<JezykProfilu> jezykiUzytkownika = await appDbContext.JezykProfilu.Where(x => x.UzytkownikId == id).ToListAsync();
         ICollection<JezykDto> jezyki = await GetJezyki();
         ICollection<StopienBieglosciJezykaDto> stopnieBieglosci = await stopienBieglosciJezykaRepository.GetStopnieBieglosciJezyka();
         foreach (var var in jezykiUzytkownika)
@@ -46,6 +46,32 @@ public class JezykRepository(
         }
 
         return jezykiDoZwrocenia;
+    }
+    
+    public async Task<ICollection<JezykOrazStopienDto>> ZmienJezykiProfilu(int profilId, ICollection<JezykOrazStopienDto> noweJezyki)
+    {
+        // sprawdzamy czy profil o id profilId istnieje
+        var profil = await appDbContext.Profil.FindAsync(profilId);
+        if(profil == null) throw new Exception("Profil o id " + profilId + " nie istnieje");
+        
+        // Usuwamy wszystkie istniejące powiązania języków dla tego profilu
+        var jezykiDoUsuniecia = appDbContext.JezykProfilu.Where(jp => jp.UzytkownikId == profilId);
+        appDbContext.JezykProfilu.RemoveRange(jezykiDoUsuniecia);
+
+        // Dodajemy nowe powiązania języków
+        foreach (var jezyk in noweJezyki)
+        {
+            appDbContext.JezykProfilu.Add(new JezykProfilu
+            {
+                UzytkownikId = profilId,
+                JezykId = jezyk.Jezyk.Id,
+                StopienBieglosciId = jezyk.Stopien.Id
+            });
+        }
+
+        await appDbContext.SaveChangesAsync();
+        
+        return await GetJezykiUzytkownika(profilId);
     }
     
 }

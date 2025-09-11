@@ -29,8 +29,6 @@ public class Uzytkownik
     [Column("id_statusu")]
     public int StatusId { get; set; }
     
-    public virtual ICollection<JezykUzytkownika> JezykUzytkownikaCollection { get; set; } = null!;
-    
     public virtual Profil Profil { get; set; } = null!;
     
     [ForeignKey(nameof(StatusId))]

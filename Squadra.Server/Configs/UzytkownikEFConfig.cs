@@ -42,6 +42,13 @@ public class UzytkownikEFConfig : IEntityTypeConfiguration<Uzytkownik>
             .HasForeignKey<Uzytkownik>(x => x.Id)
             .HasConstraintName("Uzytkownik_Profil")
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder
+            .HasOne(x => x.Status)
+            .WithMany(x => x.UzytkownikCollection)
+            .HasForeignKey(x => x.StatusId)
+            .HasConstraintName("Uzytkownik_Status")
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.ToTable(nameof(Uzytkownik));
     }

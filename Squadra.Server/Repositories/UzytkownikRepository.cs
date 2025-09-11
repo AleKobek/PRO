@@ -3,57 +3,115 @@
 namespace Squadra;
 
 
-//TODO sprawdzić, czy w interfejsie się zgadzają funkcje
+
 public class UzytkownikRepository(
-    AppDbContext appDbContext)
+    AppDbContext appDbContext,
+    IProfilRepository profilRepository,
+    IStatusRepository statusRepository)
     : IUzytkownikRepository
 {
-    public async Task<ICollection<UzytkownikDto>> GetUzytkownicy()
+    
+    public async Task<ICollection<UzytkownikResDto>> GetUzytkownicy()
     {
-        ICollection<UzytkownikDto> uzytkownicyDoZwrocenia = new List<UzytkownikDto>();
+        ICollection<UzytkownikResDto> uzytkownicyDoZwrocenia = new List<UzytkownikResDto>();
         ICollection<Uzytkownik> uzytkownicy = await appDbContext.Uzytkownik.ToListAsync();
+        
         foreach (var uzytkownik in uzytkownicy)
         {
-            uzytkownicyDoZwrocenia.Add(new UzytkownikDto(
+            // jak ktoś akurat zły status, ustawiamy domyślny, czyli offline. nie ma sensu rzucać błędu tylko po to
+            var status = await statusRepository.GetStatus(uzytkownik.StatusId) ?? statusRepository.GetStatusDomyslny();
+            
+            uzytkownicyDoZwrocenia.Add(new UzytkownikResDto(
                 uzytkownik.Id, 
                 uzytkownik.Login, 
                 uzytkownik.Haslo,
+                uzytkownik.Email,
                 uzytkownik.NumerTelefonu,
                 uzytkownik.DataUrodzenia,
-                uzytkownik.StatusId
+                status
             ));
         }
         return uzytkownicyDoZwrocenia;
     }
 
-    public async Task<UzytkownikDto?> GetUzytkownik(int id)
+    public async Task<UzytkownikResDto> GetUzytkownik(int id)
     {
         var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
         
-        if (uzytkownik == null) return null;
+        if (uzytkownik == null) throw new Exception("Uzytkownik o id " + id + " nie istnieje");
         
-        return new UzytkownikDto(uzytkownik.Id, uzytkownik.Login, uzytkownik.Haslo, uzytkownik.NumerTelefonu, uzytkownik.DataUrodzenia, uzytkownik.StatusId);
+        var status = await statusRepository.GetStatus(uzytkownik.StatusId);
+
+        
+        return new UzytkownikResDto(uzytkownik.Id, uzytkownik.Login, uzytkownik.Haslo, uzytkownik.Email, uzytkownik.NumerTelefonu, uzytkownik.DataUrodzenia, status);
     }
 
-    // zmienić na użytkownik create dto w add i update, może scalić?
-    // to jednak put czy bez put? w przykładach mam z put, może jednak nie scalać
-    public async Task<Uzytkownik?> AddUzytkownik(Uzytkownik uzytkownik)
+    public async Task<UzytkownikResDto> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
     {
-        appDbContext.Uzytkownik.Add(uzytkownik);
+        var idOnline = await statusRepository.GetIdStatusu("Online") ?? 1;
+        var uzytkownikDoDodania = new Uzytkownik { 
+            Id = uzytkownik.Id,
+            Login = uzytkownik.Login,
+            Haslo = uzytkownik.Haslo,
+            Email = uzytkownik.Email,
+            NumerTelefonu = uzytkownik.NumerTelefonu,
+            DataUrodzenia = uzytkownik.DataUrodzenia,
+            StatusId = idOnline
+        };
+        // zaczynamy transakcję
+        await using var transaction = await appDbContext.Database.BeginTransactionAsync();
+        await appDbContext.Uzytkownik.AddAsync(uzytkownikDoDodania);
+        await profilRepository.CreateProfil(new ProfilCreateDto(uzytkownik.Id, uzytkownik.Pseudonim));
         await appDbContext.SaveChangesAsync();
-        return uzytkownik;
+        // kończymy transakcję
+        await transaction.CommitAsync();
+        return new UzytkownikResDto(
+            uzytkownik.Id,
+            uzytkownik.Login,
+            uzytkownik.Haslo,
+            uzytkownik.Email,
+            uzytkownik.NumerTelefonu,
+            uzytkownik.DataUrodzenia,
+            new StatusDto( idOnline , "Online")
+        );
     }
 
-    public async Task<Uzytkownik?> UpdateUzytkownik(Uzytkownik uzytkownik)
+    public async Task<UzytkownikResDto> UpdateUzytkownik(UzytkownikUpdateDto uzytkownik)
     {
-        var uzytkownikDoEdycji = await appDbContext.Uzytkownik.FindAsync(uzytkownik.Id);
-        if(uzytkownikDoEdycji == null) return null;
         
-        appDbContext.Entry(uzytkownikDoEdycji).CurrentValues.SetValues(uzytkownik);
+        
+        var uzytkownikDoZmiany = await appDbContext.Uzytkownik.FindAsync(uzytkownik.Id);
+        if(uzytkownikDoZmiany == null) throw new Exception("Uzytkownik o id " + uzytkownik.Id+ " nie istnieje");
+        
+        uzytkownikDoZmiany.Login = uzytkownik.Login;
+        uzytkownikDoZmiany.Haslo = uzytkownik.Haslo;
+        uzytkownikDoZmiany.Email = uzytkownik.Email;
+        uzytkownikDoZmiany.NumerTelefonu = uzytkownik.NumerTelefonu;
+        uzytkownikDoZmiany.DataUrodzenia = uzytkownik.DataUrodzenia;
+        uzytkownikDoZmiany.StatusId = uzytkownik.Status.Id;
+        
         await appDbContext.SaveChangesAsync();
-        return uzytkownik;
+        
+        return await GetUzytkownik(uzytkownik.Id);
         
     }
     
-    
+    public async Task DeleteUzytkownik(int id)
+    {
+        var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
+        if(uzytkownik == null) throw new Exception("Uzytkownik o id " + id + " nie istnieje");
+        await profilRepository.DeleteProfil(id);
+        appDbContext.Uzytkownik.Remove(uzytkownik);
+        await appDbContext.SaveChangesAsync();
+    }
+
+
+    public async Task<UzytkownikResDto> UpdateStatus(int id, int idStatus)
+    {
+        var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
+        if(uzytkownik == null) throw new Exception("Uzytkownik o id " + id + " nie istnieje");
+        uzytkownik.StatusId = idStatus;
+        await appDbContext.SaveChangesAsync();
+        return await GetUzytkownik(id);
+    }
 }

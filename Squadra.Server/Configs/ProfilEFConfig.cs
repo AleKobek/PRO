@@ -18,7 +18,18 @@ public class ProfilEFConfig : IEntityTypeConfiguration<Profil>
         builder
             .Property(x => x.Opis)
             .HasMaxLength(100);
+
+        builder
+            .Property(x => x.Pseudonim)
+            .HasMaxLength(20)
+            .IsRequired();
         
+        builder
+            .HasOne(x => x.Region)
+            .WithMany(x => x.ProfilCollection)
+            .HasForeignKey(x => x.RegionId)
+            .HasConstraintName("Profil_Region")
+            .OnDelete(DeleteBehavior.Restrict);
         
         builder.ToTable(nameof(Profil));
     }

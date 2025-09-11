@@ -10,4 +10,6 @@ public interface IRegionRepository
 
     public Task<ICollection<RegionDto>> GetRegionyKraju(int krajId);
 
+    public Region GetRegionDomyslny();
+
 }

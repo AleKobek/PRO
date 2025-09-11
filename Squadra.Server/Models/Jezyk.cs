@@ -12,5 +12,5 @@ public class Jezyk
     [Required] [StringLength(20)]
     public string Nazwa { get; set; } = null!;
     
-    public virtual ICollection<JezykUzytkownika> JezykUzytkownikaCollection { get; set; } = null!;
+    public virtual ICollection<JezykProfilu> JezykProfiluCollection { get; set; } = null!;
 } 

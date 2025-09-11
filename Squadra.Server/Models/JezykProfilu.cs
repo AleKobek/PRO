@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Squadra;
 
-[Table(nameof(JezykUzytkownika))]
+[Table(nameof(JezykProfilu))]
 [PrimaryKey(nameof(UzytkownikId), nameof(JezykId))]
-public class JezykUzytkownika
+public class JezykProfilu
 {
  
     [Column("id_uzytkownika")]
@@ -19,7 +19,7 @@ public class JezykUzytkownika
     public int StopienBieglosciId { get; set; }
     
     [ForeignKey(nameof(UzytkownikId))]
-    public virtual Uzytkownik Uzytkownik { get; set; } = null!;
+    public virtual Profil Profil { get; set; } = null!;
     
     [ForeignKey(nameof(JezykId))]
     public virtual Jezyk Jezyk { get; set; } = null!;

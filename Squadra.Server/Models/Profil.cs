@@ -29,4 +29,6 @@ public class Profil
     [ForeignKey(nameof(RegionId))]
     public virtual Region Region { get; set; } = null!;
     
+    public virtual ICollection<JezykProfilu> JezykUzytkownikaCollection { get; set; } = null!;
+    
 }

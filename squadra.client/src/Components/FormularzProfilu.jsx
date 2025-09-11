@@ -65,7 +65,7 @@ export default function FormularzProfilu(jezyk, czyEdytuj, staraListaJezykowUzyt
         const uzytkownik = {listaJezykow: listaJezykowUzytkownika, pseudonim: pseudonim, zaimki: zaimki, kraj: kraj, region: region, opis: opis};
         
         const opcje = {
-            method: "POST",
+            method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
             },

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Squadra;
 
-public class JezykUzytkownikaEFConfig : IEntityTypeConfiguration<JezykUzytkownika>
+public class JezykUzytkownikaEFConfig : IEntityTypeConfiguration<JezykProfilu>
 {
-    public void Configure(EntityTypeBuilder<JezykUzytkownika> builder)
+    public void Configure(EntityTypeBuilder<JezykProfilu> builder)
     {
         
         builder
@@ -15,16 +15,16 @@ public class JezykUzytkownikaEFConfig : IEntityTypeConfiguration<JezykUzytkownik
         
         builder
             .HasOne(x => x.Jezyk)
-            .WithMany(x => x.JezykUzytkownikaCollection)
+            .WithMany(x => x.JezykProfiluCollection)
             .HasForeignKey(x => x.JezykId)
-            .HasConstraintName("JezykUzytkownika_Jezyk")
+            .HasConstraintName("JezykProfilu_Jezyk")
             .OnDelete(DeleteBehavior.Restrict);
         
         builder
-            .HasOne(x => x.Uzytkownik)
+            .HasOne(x => x.Profil)
             .WithMany(x => x.JezykUzytkownikaCollection)
             .HasForeignKey(x => x.UzytkownikId)
-            .HasConstraintName("JezykUzytkownika_Uzytkownik")
+            .HasConstraintName("JezykProfilu_Profil")
             .OnDelete(DeleteBehavior.Restrict);
         
         builder
@@ -34,6 +34,6 @@ public class JezykUzytkownikaEFConfig : IEntityTypeConfiguration<JezykUzytkownik
             .HasConstraintName("JezykUzytkownika_StopienBieglosci")
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.ToTable(nameof(JezykUzytkownika));
+        builder.ToTable(nameof(JezykProfilu));
     }
 }

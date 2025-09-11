@@ -13,6 +13,6 @@ public class StopienBieglosciJezyka
     
     public int Wartosc { get; set; }
     
-    public virtual ICollection<JezykUzytkownika> JezykUzytkownikaCollection { get; set; } = null!;
+    public virtual ICollection<JezykProfilu> JezykUzytkownikaCollection { get; set; } = null!;
  
 }
