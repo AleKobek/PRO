@@ -2,9 +2,10 @@
 
 public record ProfilUpdateDto(
     int IdUzytkownika,
-    int RegionId,
+    int? RegionId,
     string? Zaimki,
     string? Opis,
     ICollection<JezykOrazStopienDto> Jezyki,
+    string Pseudonim,
     byte[]? Awatar
 );

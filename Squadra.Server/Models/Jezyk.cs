@@ -7,7 +7,7 @@ namespace Squadra;
 public class Jezyk
 {
     [Key]
-    public int Id { get; set; }
+    public int JezykId { get; set; }
     
     [Required] [StringLength(20)]
     public string Nazwa { get; set; } = null!;

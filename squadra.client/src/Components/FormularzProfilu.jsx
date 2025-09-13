@@ -8,7 +8,7 @@ export default function FormularzProfilu(jezyk, czyEdytuj, staraListaJezykowUzyt
     
     // {id, nazwa}
     const [listaKrajowZBazy, ustawListeKrajowZBazy] = useState([])
-    // {id, nazwa, idKraju}
+    // {id, nazwa, ?idKraju}
     const [listaRegionowZBazy, ustawListeRegionowZBazy] = useState([])
     
     
@@ -39,7 +39,7 @@ export default function FormularzProfilu(jezyk, czyEdytuj, staraListaJezykowUzyt
                     'Content-Type': 'application/json',
                 },
             };
-            fetch("http://localhost:5014/api/kraje", opcje)
+            fetch("http://localhost:5014/api/kraj", opcje)
                 .then(response => response.json())
                 .then(data => {
                     ustawListeKrajowZBazy(data);
@@ -51,7 +51,7 @@ export default function FormularzProfilu(jezyk, czyEdytuj, staraListaJezykowUzyt
                     'Content-Type': 'application/json',
                 },
             };
-            fetch("http://localhost:5014/api/regiony", opcje2)
+            fetch("http://localhost:5014/api/region", opcje2)
                 .then(response => response.json())
                 .then(data => {
                 ustawListeRegionowZBazy(data);
@@ -62,17 +62,25 @@ export default function FormularzProfilu(jezyk, czyEdytuj, staraListaJezykowUzyt
     
     const przyWysylaniu = async() =>{
         
-        const uzytkownik = {listaJezykow: listaJezykowUzytkownika, pseudonim: pseudonim, zaimki: zaimki, kraj: kraj, region: region, opis: opis};
+        const profil = {
+            IdUzytkownika: localStorage.getItem("idUzytkownika"),
+            RegionId: region.id,
+            Zaimki: zaimki,
+            Opis: opis,
+            Jezyki: listaJezykowUzytkownika,
+            Pseudonim: pseudonim,
+            // ############# tylko do prototypu ################
+            Awatar: null};
         
         const opcje = {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(uzytkownik)
+            body: JSON.stringify(profil)
         }
         
-        const resPost = await fetch("http://localhost:5014/api/uzytkownik/" + localStorage.getItem("idUzytkownika"), opcje);
+        const resPost = await fetch("http://localhost:5014/api/profil/" + localStorage.getItem("idUzytkownika"), opcje);
         
         ustawBledy(resPost.bledy);
         
@@ -107,9 +115,10 @@ export default function FormularzProfilu(jezyk, czyEdytuj, staraListaJezykowUzyt
         {/* kraj */}
         <label> {jezyk.kraj} <br/>
             <select onChange={(e) =>{ustawKraj(e.target.value)}}>
+                <option value={null} key = {-1} selected={staryKraj == null}>{jezyk.brak}</option>
         {
             listaKrajowZBazy.map((kraj, index) => (
-                <option value={kraj} key = {index} selected = {kraj.id === staryKraj.id}>{kraj.nazwa}</option>
+                <option value={kraj} key = {index} selected = {staryKraj == null ? false : kraj.id === staryKraj.id}>{kraj.nazwa}</option>
             ))
         }
         </select>
@@ -118,12 +127,13 @@ export default function FormularzProfilu(jezyk, czyEdytuj, staraListaJezykowUzyt
         {/* region */}
         <label>{jezyk.region}<br/>
             <select onChange={(e) =>{ustawRegion(e.target.value)}}>
+                <option value={null} key = {-1} selected = {staryRegion == null}>{jezyk.brak}</option>
                 {
                     listaRegionowZBazy.filter((regionZListy) =>{
                         // na liście regionów mają być tylko te z aktualnego kraju
                         return regionZListy.idKraju !== kraj.id
                     }).map((regionZListy, index) =>(
-                        <option value={regionZListy} key={index} selected={regionZListy.id === staryRegion.id}>{regionZListy.nazwa}</option>
+                        <option value={regionZListy} key={index} selected={staryRegion == null ? false : regionZListy.id === staryRegion.id}>{regionZListy.nazwa}</option>
                     ))
                 }
             </select>

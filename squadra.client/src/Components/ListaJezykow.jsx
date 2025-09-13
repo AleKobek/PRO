@@ -25,7 +25,7 @@ export default function Tabelka({jezyk, typ, listaJezykowUzytkownika, ustawListe
                     'Content-Type': 'application/json',
                 },
             };
-            fetch("http://localhost:5014/api/jezyki", opcje)
+            fetch("http://localhost:5014/api/jezyk", opcje)
                 .then(response => response.json())
                 .then(data => {
                     ustawListeJezykowZBazy(data);
@@ -40,7 +40,7 @@ export default function Tabelka({jezyk, typ, listaJezykowUzytkownika, ustawListe
                     'Content-Type': 'application/json',
                 },
             };
-            fetch("http://localhost:5014/api/stopnie", opcje2)
+            fetch("http://localhost:5014/api/stopien", opcje2)
                 .then(response => response.json())
                 .then(data => {
                     ustawListeStopniZBazy(data);

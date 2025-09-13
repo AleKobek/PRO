@@ -20,7 +20,10 @@ public class KrajRepository(AppDbContext context) : IKrajRepository
 
     public async Task<KrajDto?> GetKraj(int id)
     {
-        Kraj? kraj = await context.Kraj.FindAsync(id);
+
+        if (id < 1) throw new Exception("Kraj o id " + id + " nie istnieje");       
+        
+        var kraj = await context.Kraj.FindAsync(id);
         
         if (kraj == null) return null;
         

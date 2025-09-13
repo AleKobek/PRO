@@ -8,8 +8,7 @@ public class UzytkownikEFConfig : IEntityTypeConfiguration<Uzytkownik>
     public void Configure(EntityTypeBuilder<Uzytkownik> builder)
     {
         builder
-            .HasKey(x =>x.Id)
-            .HasName("id");
+            .HasKey(x =>x.Id);
         
         builder
             .Property(x => x.Id)
@@ -42,6 +41,10 @@ public class UzytkownikEFConfig : IEntityTypeConfiguration<Uzytkownik>
             .HasForeignKey<Uzytkownik>(x => x.Id)
             .HasConstraintName("Uzytkownik_Profil")
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder
+            .Property(x => x.StatusId)
+            .HasDefaultValue(1);
         
         builder
             .HasOne(x => x.Status)

@@ -9,9 +9,7 @@ public class RegionEFConfig : IEntityTypeConfiguration<Region>
     {
 
         builder
-            .HasKey(x => x.Id)
-            .HasName("id");
-        
+            .HasKey(x => x.Id);
         builder
             .Property(x => x.Id)
             .ValueGeneratedOnAdd();

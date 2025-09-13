@@ -9,11 +9,10 @@ public class JezykEFConfig : IEntityTypeConfiguration<Jezyk>
     {
 
         builder
-            .HasKey(x => x.Id)
-            .HasName("id");
+            .HasKey(x => x.JezykId);
         
         builder
-            .Property(x => x.Id)
+            .Property(x => x.JezykId)
             .ValueGeneratedOnAdd();
         
         builder

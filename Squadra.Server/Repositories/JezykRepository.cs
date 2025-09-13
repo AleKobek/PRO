@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Squadra.Exceptions;
 
 
 namespace Squadra;
@@ -14,7 +15,7 @@ public class JezykRepository(
         ICollection<Jezyk> jezyki = await appDbContext.Jezyk.ToListAsync();
         foreach (var jezyk in jezyki)
         {
-            jezykiDoZwrocenia.Add(new JezykDto(jezyk.Id, jezyk.Nazwa));
+            jezykiDoZwrocenia.Add(new JezykDto(jezyk.JezykId, jezyk.Nazwa));
         }
         
         return jezykiDoZwrocenia;
@@ -23,10 +24,10 @@ public class JezykRepository(
     public async Task<JezykDto?> GetJezyk(int id)
     {
         Jezyk? jezyk = await appDbContext.Jezyk.FindAsync(id);
-        return jezyk != null ? new JezykDto(jezyk.Id, jezyk.Nazwa) : null;
+        return jezyk != null ? new JezykDto(jezyk.JezykId, jezyk.Nazwa) : null;
     }
 
-    public async Task<ICollection<JezykOrazStopienDto>> GetJezykiUzytkownika(int id)
+    public async Task<ICollection<JezykOrazStopienDto>> GetJezykiProfilu(int id)
     {
         ICollection<JezykOrazStopienDto> jezykiDoZwrocenia = new List<JezykOrazStopienDto>();
         ICollection<JezykProfilu> jezykiUzytkownika = await appDbContext.JezykProfilu.Where(x => x.UzytkownikId == id).ToListAsync();
@@ -52,7 +53,7 @@ public class JezykRepository(
     {
         // sprawdzamy czy profil o id profilId istnieje
         var profil = await appDbContext.Profil.FindAsync(profilId);
-        if(profil == null) throw new Exception("Profil o id " + profilId + " nie istnieje");
+        if(profil == null) throw new NieZnalezionoWBazieException("Profil o id " + profilId + " nie istnieje");
         
         // Usuwamy wszystkie istniejące powiązania języków dla tego profilu
         var jezykiDoUsuniecia = appDbContext.JezykProfilu.Where(jp => jp.UzytkownikId == profilId);
@@ -71,7 +72,7 @@ public class JezykRepository(
 
         await appDbContext.SaveChangesAsync();
         
-        return await GetJezykiUzytkownika(profilId);
+        return await GetJezykiProfilu(profilId);
     }
     
 }

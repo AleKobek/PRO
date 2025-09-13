@@ -8,42 +8,35 @@ public class RegionRepository(AppDbContext context, IKrajRepository krajReposito
 
     public async Task<ICollection<RegionDto>> GetRegiony()
     {
-        ICollection<RegionDto> regionyDoZwrocenia = new List<RegionDto>();
         ICollection<Region> regiony = await context.Region.ToListAsync();
-        foreach (var region in regiony)
-        {
-            regionyDoZwrocenia.Add(new RegionDto(region.Id, region.KrajId,region.Nazwa));
-        }
 
-        return regionyDoZwrocenia;
+        return regiony.Select(region => new RegionDto(region.Id, region.KrajId, region.Nazwa)).ToList();
+        
     }
 
-    public async Task<RegionDto?> GetRegion(int id)
+    public async Task<RegionDto?> GetRegion(int? id)
     {
-        Region? region = await context.Region.FindAsync(id);
+        if (id == null) return null;
+        var region = await context.Region.FindAsync(id);
         return region != null ? new RegionDto(region.Id, region.KrajId,region.Nazwa) : null;
+    }
+
+    public async Task<RegionKrajDto?> GetRegionIKraj(int? id)
+    {
+        if (id == null) return null;
+        var region = await context.Region.FindAsync(id);
+        if (region == null) return null;
+        var kraj = await krajRepository.GetKraj(region.KrajId ?? 1);
+        return kraj == null ? 
+            new RegionKrajDto(region.Id, region.Nazwa, null, null) 
+            : new RegionKrajDto(region.Id, region.Nazwa, kraj.Id, kraj.Nazwa);
     }
     
     public async Task<ICollection<RegionDto>> GetRegionyKraju(int krajId)
     {
-        ICollection<RegionDto> regionyDoZwrocenia = new List<RegionDto>();
         ICollection<Region> regiony = await context.Region.Where(x => x.KrajId == krajId).ToListAsync();
-        foreach (var region in regiony)
-        {
-            regionyDoZwrocenia.Add(new RegionDto(region.Id, region.KrajId,region.Nazwa));
-        }
 
-        return regionyDoZwrocenia;
+        return regiony.Select(region => new RegionDto(region.Id, region.KrajId, region.Nazwa)).ToList();
     }
-
-    public Region GetRegionDomyslny()
-    {
-        
-        return new Region
-        {
-            Id = 1,
-            KrajId = 1,
-            Nazwa = "Unknown"
-        };
-    }
+    
 }

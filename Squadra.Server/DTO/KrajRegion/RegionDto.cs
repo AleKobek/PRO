@@ -3,6 +3,6 @@
 public record RegionDto
 (
   int Id,
-  int KrajId,
+  int? KrajId,
   string Nazwa
 );

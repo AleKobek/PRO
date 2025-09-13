@@ -8,8 +8,7 @@ public class ProfilEFConfig : IEntityTypeConfiguration<Profil>
     public void Configure(EntityTypeBuilder<Profil> builder)
     {
         builder
-            .HasKey(x => x.IdUzytkownika)
-            .HasName("id_uzytkownika");
+            .HasKey(x => x.IdUzytkownika);
 
         builder
             .Property(x => x.Zaimki)

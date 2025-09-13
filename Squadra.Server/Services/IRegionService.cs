@@ -1,15 +1,12 @@
-﻿
+﻿namespace Squadra.Services;
 
-namespace Squadra;
-
-public interface IRegionRepository
+public interface IRegionService
 {
     public Task<ICollection<RegionDto>> GetRegiony();
 
     public Task<RegionDto?> GetRegion(int? id);
 
-    public Task<ICollection<RegionDto>> GetRegionyKraju(int krajId);
-
     public Task<RegionKrajDto?> GetRegionIKraj(int? id);
-    
+
+    public Task<ICollection<RegionDto>> GetRegionyKraju(int krajId);
 }

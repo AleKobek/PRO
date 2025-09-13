@@ -24,15 +24,28 @@ export default function DaneProfilu({jezyk}) {
                 },
             };
 
-            fetch("http://localhost:5014/api/uzytkownik/" + localStorage.getItem("idUzytkownika"), opcje)
+            // najpierw pobieramy dane porfilu bez języków
+            fetch("http://localhost:5014/api/profil/" + localStorage.getItem("idUzytkownika"), opcje)
                 .then(response => response.json())
                 .then(data => {
-                    ustawListeJezykowUzytkownika(data.jezyki);
                     ustawPseudonim(data.pseudonim);
                     ustawZaimki(data.zaimki);
                     ustawKraj(data.kraj);
                     ustawRegion(data.region);
                     ustawOpis(data.opis);
+                })
+            
+            // teraz pobieramy języki
+            const opcje2 = {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            };
+            fetch("http://localhost:5014/api/jezyk/profil/" + localStorage.getItem("idUzytkownika"), opcje2)
+                .then(response => response.json())
+                .then(data => {
+                    ustawListeJezykowUzytkownika(data.jezyki);
                 })
         }
         podajDaneUzytkownika();
@@ -41,8 +54,8 @@ export default function DaneProfilu({jezyk}) {
     return(<>
         <p>{jezyk.pseudonim}: {pseudonim}</p>
         <p>{jezyk.zaimki}: {zaimki}</p>
-        <p>{jezyk.kraj}: {kraj}</p>
-        <p>{jezyk.region}: {region}</p>
+        <p>{jezyk.kraj}: {kraj == null ? "" : kraj.nazwa}</p>
+        <p>{jezyk.region}: {region == null ? "" : region.nazwa}</p>
         <p>{jezyk.jezyki}</p>
         <ListaJezykow 
             jezyk = {jezyk} 

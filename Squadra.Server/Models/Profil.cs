@@ -19,7 +19,7 @@ public class Profil
     public string? Opis { get; set; }
     
     [Column("id_regionu")]
-    public int RegionId { get; set; } 
+    public int? RegionId { get; set; } 
     
     public byte[]? Awatar { get; set; }
     
@@ -27,7 +27,7 @@ public class Profil
     public virtual Uzytkownik Uzytkownik { get; set; } = null!;
     
     [ForeignKey(nameof(RegionId))]
-    public virtual Region Region { get; set; } = null!;
+    public virtual Region? Region { get; set; } = null!;
     
     public virtual ICollection<JezykProfilu> JezykUzytkownikaCollection { get; set; } = null!;
     

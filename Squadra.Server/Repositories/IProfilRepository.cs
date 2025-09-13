@@ -2,13 +2,13 @@
 
 public interface IProfilRepository
 {
-    public Task<ICollection<ProfilGetDto>> GetProfile();
+    public Task<ICollection<ProfilGetResDto>> GetProfile();
 
-    public Task<ProfilGetDto> GetProfilUzytkownika(int id);
+    public Task<ProfilGetResDto> GetProfilUzytkownika(int id);
 
-    public Task<ProfilGetDto> UpdateProfil(ProfilUpdateDto profil);
+    public Task<ProfilGetResDto> UpdateProfil(ProfilUpdateDto profil);
 
-    public Task<ProfilGetDto> CreateProfil(ProfilCreateDto profil);
+    public Task<ProfilGetResDto> CreateProfil(ProfilCreateReqDto profil);
     
     public Task DeleteProfil(int id);
 }

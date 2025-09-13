@@ -12,10 +12,10 @@ public class Region
     public string Nazwa { get; set; } = null!;
     
     [Column("id_kraju")]
-    public int KrajId { get; set; }
+    public int? KrajId { get; set; }
     
     [ForeignKey(nameof(KrajId))]
-    public virtual Kraj Kraj { get; set; } = null!;
+    public virtual Kraj? Kraj { get; set; } = null!;
     
     public virtual ICollection<Profil> ProfilCollection { get; set; } = null!;
 }

@@ -22,6 +22,15 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Status>().HasData(
+            new Status { Id = 1, Nazwa = "Online" },
+            new Status { Id = 2, Nazwa = "Away" },
+            new Status { Id = 3, Nazwa = "Do not disturb" },
+            new Status { Id = 4, Nazwa = "Invisible" }
+        );
+        
+        
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(UzytkownikEFConfig).Assembly);
     }
 }

@@ -6,17 +6,17 @@ public class ProfilRepository(AppDbContext appDbContext,
     IJezykRepository jezykRepository,
     IRegionRepository regionRepository) : IProfilRepository
 {
-    public async Task<ICollection<ProfilGetDto>> GetProfile()
+    public async Task<ICollection<ProfilGetResDto>> GetProfile()
     {
-        ICollection<ProfilGetDto> profileDoZwrocenia = new List<ProfilGetDto>();
+        ICollection<ProfilGetResDto> profileDoZwrocenia = new List<ProfilGetResDto>();
         ICollection<Profil> profile = await appDbContext.Profil.ToListAsync();
 
         foreach (var profil in profile)
         {
-            var jezykiUzytkownika = await jezykRepository.GetJezykiUzytkownika(profil.IdUzytkownika);
+            var jezykiUzytkownika = await jezykRepository.GetJezykiProfilu(profil.IdUzytkownika);
             
-            var region = await regionRepository.GetRegion(profil.RegionId);
-            profileDoZwrocenia.Add(new ProfilGetDto(
+            var region = await regionRepository.GetRegionIKraj(profil.RegionId);
+            profileDoZwrocenia.Add(new ProfilGetResDto(
                 profil.IdUzytkownika,
                 profil.Pseudonim,
                 region,
@@ -29,23 +29,26 @@ public class ProfilRepository(AppDbContext appDbContext,
         return profileDoZwrocenia;
     }
 
-    public async Task<ProfilGetDto> GetProfilUzytkownika(int id)
+    public async Task<ProfilGetResDto> GetProfilUzytkownika(int id)
     {
         var profil = await appDbContext.Profil.FindAsync(id);
         
         if(profil == null) throw new Exception("Profil o id " + id + " nie istnieje");
         
-        var jezykiUzytkownika = await jezykRepository.GetJezykiUzytkownika(profil.IdUzytkownika);
-        var region = await regionRepository.GetRegion(profil.RegionId);
+        // Dane mają zostać wysłane w formie: {pseudonim, zaimki, kraj {id, nazwa} , region {id, nazwa}, opis}
         
-        return new ProfilGetDto(profil.IdUzytkownika, profil.Pseudonim, region, profil.Zaimki, profil.Opis, jezykiUzytkownika, profil.Awatar);
+        var jezykiUzytkownika = await jezykRepository.GetJezykiProfilu(profil.IdUzytkownika);
+        var region = await regionRepository.GetRegionIKraj(profil.RegionId);
+        
+        return new ProfilGetResDto(profil.IdUzytkownika, profil.Pseudonim, region, profil.Zaimki, profil.Opis, jezykiUzytkownika, profil.Awatar);
     }
 
-    public async Task<ProfilGetDto> UpdateProfil(ProfilUpdateDto profil)
+    public async Task<ProfilGetResDto> UpdateProfil(ProfilUpdateDto profil)
     {
         var profilDoZmiany = await appDbContext.Profil.FindAsync(profil.IdUzytkownika);
         if(profilDoZmiany == null) throw new Exception("Profil uzytkownika o id " + profil.IdUzytkownika + " nie istnieje");
         
+        profilDoZmiany.Pseudonim = profil.Pseudonim;
         profilDoZmiany.RegionId = profil.RegionId;
         profilDoZmiany.Zaimki = profil.Zaimki;
         profilDoZmiany.Opis = profil.Opis;
@@ -54,9 +57,9 @@ public class ProfilRepository(AppDbContext appDbContext,
         await appDbContext.SaveChangesAsync();
 
         var jezykiUzytkownika = await jezykRepository.ZmienJezykiProfilu(profil.IdUzytkownika, profil.Jezyki);
-        var region = await regionRepository.GetRegion(profil.RegionId);
+        var region = profil.RegionId == null ? null : await regionRepository.GetRegionIKraj(profil.RegionId);
 
-        return new ProfilGetDto(
+        return new ProfilGetResDto(
             profilDoZmiany.IdUzytkownika,
             profilDoZmiany.Pseudonim,
             region,
@@ -67,22 +70,16 @@ public class ProfilRepository(AppDbContext appDbContext,
         );
     }
 
-    public async Task<ProfilGetDto> CreateProfil(ProfilCreateDto profil)
+    public async Task<ProfilGetResDto> CreateProfil(ProfilCreateReqDto profil)
     {
-        var region = regionRepository.GetRegionDomyslny();
-        var uzytkownik = await appDbContext.Uzytkownik.FindAsync(profil.IdUzytkownika);
-        if(uzytkownik == null) throw new Exception("Uzytkownik o id " + profil.IdUzytkownika + " nie istnieje");
         var profilDoDodania = new Profil
         {
             IdUzytkownika = profil.IdUzytkownika,
             Awatar = [],
-            JezykUzytkownikaCollection = new List<JezykProfilu>(),
             Opis = null,
             Pseudonim = profil.Pseudonim,
-            Region = region,
             Zaimki = null,
-            RegionId = region.Id,
-            Uzytkownik = uzytkownik
+            RegionId = null
         };
         await appDbContext.Profil.AddAsync(profilDoDodania);
         await appDbContext.SaveChangesAsync();

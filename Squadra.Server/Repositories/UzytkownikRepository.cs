@@ -40,7 +40,7 @@ public class UzytkownikRepository(
         
         if (uzytkownik == null) throw new Exception("Uzytkownik o id " + id + " nie istnieje");
         
-        var status = await statusRepository.GetStatus(uzytkownik.StatusId);
+        var status = await statusRepository.GetStatus(uzytkownik.StatusId) ?? statusRepository.GetStatusDomyslny();
 
         
         return new UzytkownikResDto(uzytkownik.Id, uzytkownik.Login, uzytkownik.Haslo, uzytkownik.Email, uzytkownik.NumerTelefonu, uzytkownik.DataUrodzenia, status);
@@ -48,7 +48,6 @@ public class UzytkownikRepository(
 
     public async Task<UzytkownikResDto> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
     {
-        var idOnline = await statusRepository.GetIdStatusu("Online") ?? 1;
         var uzytkownikDoDodania = new Uzytkownik { 
             Id = uzytkownik.Id,
             Login = uzytkownik.Login,
@@ -56,12 +55,11 @@ public class UzytkownikRepository(
             Email = uzytkownik.Email,
             NumerTelefonu = uzytkownik.NumerTelefonu,
             DataUrodzenia = uzytkownik.DataUrodzenia,
-            StatusId = idOnline
         };
         // zaczynamy transakcję
         await using var transaction = await appDbContext.Database.BeginTransactionAsync();
         await appDbContext.Uzytkownik.AddAsync(uzytkownikDoDodania);
-        await profilRepository.CreateProfil(new ProfilCreateDto(uzytkownik.Id, uzytkownik.Pseudonim));
+        await profilRepository.CreateProfil(new ProfilCreateReqDto(uzytkownik.Id, uzytkownik.Pseudonim));
         await appDbContext.SaveChangesAsync();
         // kończymy transakcję
         await transaction.CommitAsync();
@@ -72,7 +70,7 @@ public class UzytkownikRepository(
             uzytkownik.Email,
             uzytkownik.NumerTelefonu,
             uzytkownik.DataUrodzenia,
-            new StatusDto( idOnline , "Online")
+            new StatusDto(1, "Online")
         );
     }
 
@@ -81,7 +79,7 @@ public class UzytkownikRepository(
         
         
         var uzytkownikDoZmiany = await appDbContext.Uzytkownik.FindAsync(uzytkownik.Id);
-        if(uzytkownikDoZmiany == null) throw new Exception("Uzytkownik o id " + uzytkownik.Id+ " nie istnieje");
+        if(uzytkownikDoZmiany == null) throw new Exception("Uzytkownik o id " + uzytkownik.Id + " nie istnieje");
         
         uzytkownikDoZmiany.Login = uzytkownik.Login;
         uzytkownikDoZmiany.Haslo = uzytkownik.Haslo;

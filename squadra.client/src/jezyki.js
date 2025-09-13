@@ -28,5 +28,7 @@
         powrotDoProfilu: "Powrót do profilu",
         usun: "Usuń",
         dodaj: "Dodaj",
+        brak: "Brak",
+        
     }
 }

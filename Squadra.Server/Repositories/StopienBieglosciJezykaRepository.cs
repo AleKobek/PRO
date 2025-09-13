@@ -18,7 +18,7 @@ public class StopienBieglosciJezykaRepository(AppDbContext appDbContext) : IStop
 
     public async Task<StopienBieglosciJezykaDto?> GetStopienBieglosciJezyka(int id)
     {
-        StopienBieglosciJezyka? stopienBieglosci = await appDbContext.StopienBieglosciJezyka.Where(x => x.Id == id).FirstOrDefaultAsync();
+        var stopienBieglosci = await appDbContext.StopienBieglosciJezyka.FindAsync(id);
         return stopienBieglosci != null ? new StopienBieglosciJezykaDto(stopienBieglosci.Id, stopienBieglosci.Nazwa, stopienBieglosci.Wartosc) : null;
     }
 }
