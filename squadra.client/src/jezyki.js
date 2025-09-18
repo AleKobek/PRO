@@ -1,4 +1,4 @@
-﻿module.exports = global.jezyki= {
+﻿const jezyki = {
     pl:{
         pseudonim: "Pseudonim",
         zaimki: "Zaimki",
@@ -29,6 +29,7 @@
         usun: "Usuń",
         dodaj: "Dodaj",
         brak: "Brak",
-        
+        ladowanie: "Ładowanie...",
     }
-}
+};
+export default jezyki;

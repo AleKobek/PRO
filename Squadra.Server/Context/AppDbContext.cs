@@ -28,6 +28,64 @@ public class AppDbContext : DbContext
             new Status { Id = 3, Nazwa = "Do not disturb" },
             new Status { Id = 4, Nazwa = "Invisible" }
         );
+
+        modelBuilder.Entity<StopienBieglosciJezyka>().HasData(
+            new StopienBieglosciJezyka { Id = 1, Nazwa = "Basic", Wartosc = 1 },
+            new StopienBieglosciJezyka { Id = 2, Nazwa = "Intermediate", Wartosc = 2 },
+            new StopienBieglosciJezyka { Id = 3, Nazwa = "Advanced", Wartosc = 3 }
+        );
+
+        modelBuilder.Entity<Jezyk>().HasData(
+            new Jezyk {Id = 1, Nazwa = "polish"},
+            new Jezyk {Id = 2, Nazwa = "english"},
+            new Jezyk {Id = 3, Nazwa = "german"},
+            new Jezyk {Id = 4, Nazwa = "french"},
+            new Jezyk {Id = 5, Nazwa = "spanish"},
+            new Jezyk {Id = 6, Nazwa = "japanese"},
+            new Jezyk {Id = 7, Nazwa = "russian"}
+        );
+
+        modelBuilder.Entity<Kraj>().HasData(
+            new Kraj { Id = 1, Nazwa = "Poland" },
+            new Kraj { Id = 2, Nazwa = "England" }
+        );
+
+        modelBuilder.Entity<Region>().HasData(
+            // Polska
+            new Region { Id = 1, Nazwa = "Mazowieckie", KrajId = 1 },
+            new Region {Id = 2, Nazwa = "Wielkopolskie", KrajId = 1},
+            new Region {Id = 3, Nazwa = "Dolnoslaskie", KrajId = 1},
+            new Region {Id = 4, Nazwa = "Lubelskie", KrajId = 1},
+            new Region {Id = 5, Nazwa = "Lubuskie", KrajId = 1},
+            new Region {Id = 6, Nazwa = "Podkarpackie", KrajId = 1},
+            new Region {Id = 7, Nazwa = "Podlaskie", KrajId = 1},
+            new Region {Id = 8, Nazwa = "Zachodniopomorskie", KrajId = 1},
+            // Anglia
+            new Region {Id = 9, Nazwa = "East od England", KrajId = 2},
+            new Region {Id = 10, Nazwa = "East Midlands", KrajId = 2},
+            new Region {Id = 11, Nazwa = "West Midlands", KrajId = 2},
+            new Region {Id = 12, Nazwa = "South West England", KrajId = 2},
+            new Region {Id = 13, Nazwa = "South East England", KrajId = 2},
+            new Region {Id = 14, Nazwa = "North West England", KrajId = 2},
+            new Region {Id = 15, Nazwa = "North East England", KrajId = 2},
+            new Region {Id = 16, Nazwa = "Greater London", KrajId = 2}
+        );
+
+        modelBuilder.Entity<Profil>().HasData(
+            new Profil
+            {
+                IdUzytkownika = 1, Zaimki = "she/her", Opis = "Lubię placki!",
+                Awatar = [], Pseudonim = "Leczo", RegionId = 1
+            });
+
+        modelBuilder.Entity<JezykProfilu>().HasData(
+            new JezykProfilu {UzytkownikId = 1, JezykId = 1, StopienBieglosciId = 3},
+            new JezykProfilu {UzytkownikId = 1, JezykId = 2, StopienBieglosciId = 2},
+            new JezykProfilu {UzytkownikId = 1, JezykId = 3, StopienBieglosciId = 1}
+        );
+
+        modelBuilder.Entity<Uzytkownik>().HasData(
+            new Uzytkownik {Id = 1, Login = "Leczo", Haslo = "123456", StatusId = 1, Email = "eee@eeee.ee", DataUrodzenia = new DateOnly(2002, 10,5)});
         
         
 

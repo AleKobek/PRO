@@ -1,18 +1,21 @@
 import Naglowek from "./Naglowek";
 import NaglowekZalogowano from "./NaglowekZalogowano";
+import {useJezyk} from "../LanguageContext.";
 
-export default function Error404({jezyk, czyZalogowano}) {
- 
+export default function Error404({czyZalogowano}) {
+
+    const { jezyk } = useJezyk();
+
     if(czyZalogowano)
         return (<>
-            <NaglowekZalogowano jezyk ={jezyk}></NaglowekZalogowano>
+            <NaglowekZalogowano></NaglowekZalogowano>
             <h1>{jezyk.stronaNieIstnieje}</h1>
             <h2>404</h2>
         </>);
     
     
   return (<>
-      <Naglowek jezyk ={jezyk}></Naglowek>
+      <Naglowek></Naglowek>
       <h1>{jezyk.stronaNieIstnieje}</h1>
       <h2>404</h2>
   </>);

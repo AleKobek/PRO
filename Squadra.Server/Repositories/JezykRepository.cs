@@ -15,7 +15,7 @@ public class JezykRepository(
         ICollection<Jezyk> jezyki = await appDbContext.Jezyk.ToListAsync();
         foreach (var jezyk in jezyki)
         {
-            jezykiDoZwrocenia.Add(new JezykDto(jezyk.JezykId, jezyk.Nazwa));
+            jezykiDoZwrocenia.Add(new JezykDto(jezyk.Id, jezyk.Nazwa));
         }
         
         return jezykiDoZwrocenia;
@@ -24,7 +24,7 @@ public class JezykRepository(
     public async Task<JezykDto?> GetJezyk(int id)
     {
         Jezyk? jezyk = await appDbContext.Jezyk.FindAsync(id);
-        return jezyk != null ? new JezykDto(jezyk.JezykId, jezyk.Nazwa) : null;
+        return jezyk != null ? new JezykDto(jezyk.Id, jezyk.Nazwa) : null;
     }
 
     public async Task<ICollection<JezykOrazStopienDto>> GetJezykiProfilu(int id)

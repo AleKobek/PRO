@@ -1,11 +1,22 @@
 import React, {useEffect, useState} from "react";
 import ListaJezykow from "./ListaJezykow";
 import {useNavigate} from "react-router-dom";
+import {useJezyk} from "../LanguageContext.";
 
-export default function FormularzProfilu(jezyk, czyEdytuj, staraListaJezykowUzytkownika, staryPseudonim, stareZaimki, staryOpis, staryRegion, staryKraj) {
+export default function FormularzProfilu({
+                                             staraListaJezykowUzytkownika,
+                                             staryPseudonim,
+                                             stareZaimki,
+                                             staryOpis,
+                                             staryRegion,
+                                             staryKraj,
+                                         }) 
+{
     
     const navigate = useNavigate();
-    
+    const { jezyk } = useJezyk();
+
+
     // {id, nazwa}
     const [listaKrajowZBazy, ustawListeKrajowZBazy] = useState([])
     // {id, nazwa, ?idKraju}
@@ -23,23 +34,28 @@ export default function FormularzProfilu(jezyk, czyEdytuj, staraListaJezykowUzyt
     const [region, ustawRegion] = useState({});
     const [opis, ustawOpis] = useState("");
     
+    const [listaRegionowAktualnegoKraju, ustawListeRegionowAktualnegoKraju] = useState([]);
+    
     const [czyZablokowaneWyslij, ustawCzyZablokowaneWyslij] = useState(true);
-    
-    
+
+    // KLUCZOWE: zsynchronizuj lokalny stan z props, gdy props się zaktualizuje po fetchu
+    useEffect(() => {
+        const bezpiecznaLista = Array.isArray(staraListaJezykowUzytkownika) ? staraListaJezykowUzytkownika : [];
+        ustawListeJezykowUzytkownika(bezpiecznaLista);
+    }, [staraListaJezykowUzytkownika]);
+
+
+    // podajemy listę krajów i regionów z bazy, używanych do select
     useEffect(() =>{
         
-        // ######################################### tylko do prototypu! ###############################################
-        localStorage.setItem("idUzytkownika", "1");
-        
-        // podajemy listę krajów i regionów z bazy, używanych do select
-        const podajKrajeIRegionyZBazy = () => {
+        const podajKrajeIRegionyZBazy = async () => {
             const opcje = {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json',
                 },
             };
-            fetch("http://localhost:5014/api/kraj", opcje)
+            fetch("http://localhost:5014/api/Kraj", opcje)
                 .then(response => response.json())
                 .then(data => {
                     ustawListeKrajowZBazy(data);
@@ -51,17 +67,18 @@ export default function FormularzProfilu(jezyk, czyEdytuj, staraListaJezykowUzyt
                     'Content-Type': 'application/json',
                 },
             };
-            fetch("http://localhost:5014/api/region", opcje2)
+            fetch("http://localhost:5014/api/Region", opcje2)
                 .then(response => response.json())
                 .then(data => {
-                ustawListeRegionowZBazy(data);
+                ustawListeRegionowZBazy((poprzedniaLista) => [...poprzedniaLista, ...data]);
+                ustawListeRegionowAktualnegoKraju(data.filter((obiekt) => obiekt.idKraju === kraj.id));
             })
         }
-        podajKrajeIRegionyZBazy();
-    })
+        podajKrajeIRegionyZBazy().then();
+    },[])
     
     const przyWysylaniu = async() =>{
-        
+        // sprawdzić wszystkie pola!
         const profil = {
             IdUzytkownika: localStorage.getItem("idUzytkownika"),
             RegionId: region.id,
@@ -89,6 +106,9 @@ export default function FormularzProfilu(jezyk, czyEdytuj, staraListaJezykowUzyt
         }
     }
 
+    /**
+     * sprawdzamy, czy jest zablokowane wyślij
+     */
     useEffect(() => {
         ustawCzyZablokowaneWyslij(
             // jest to samo, co wcześniej
@@ -101,50 +121,58 @@ export default function FormularzProfilu(jezyk, czyEdytuj, staraListaJezykowUzyt
             pseudonim.trim().length === 0
         )
     }, [pseudonim, zaimki, kraj, region, opis,
-            staryPseudonim, stareZaimki, staryKraj, staryRegion, staryOpis]);
+            staryPseudonim, stareZaimki, staryKraj, staryRegion, staryOpis, czyListyJezykoweTakieSame]);
     
     return(<form id = "form" name= "formularz-profilu">
-        <label htmlFor="pseudonim">{jezyk.pseudonim}</label>
-        <input type="text" id = "pseudonim" name ="pseudonim" value={pseudonim} onChange={()=>ustawPseudonim(e.target.value)}></input><br/>
+        <label htmlFor="pseudonim">{jezyk.pseudonim}</label><br/>
+        <input type="text" id = "pseudonim" name ="pseudonim" value={pseudonim} onChange={(e)=>ustawPseudonim(e.target.value)}></input><br/>
         <span id = "error-pseudonim" className="error-wiadomosc">{bledy.pseudonim}</span><br/>
         
-        <label htmlFor="zaimki">{jezyk.zaimki}</label>
-        <input type="text" id = "zaimki" name ="zaimki" value={zaimki} onChange={()=>ustawZaimki(e.target.value)}></input><br/>
+        <label htmlFor="zaimki">{jezyk.zaimki}</label><br/>
+        <input type="text" id = "zaimki" name ="zaimki" value={zaimki} onChange={(e)=>ustawZaimki(e.target.value)}></input><br/>
         <span id = "error-zaimki" className="error-wiadomosc">{bledy.zaimki}</span><br/>
         
         {/* kraj */}
-        <label> {jezyk.kraj} <br/>
-            <select onChange={(e) =>{ustawKraj(e.target.value)}}>
-                <option value={null} key = {-1} selected={staryKraj == null}>{jezyk.brak}</option>
-        {
-            listaKrajowZBazy.map((kraj, index) => (
-                <option value={kraj} key = {index} selected = {staryKraj == null ? false : kraj.id === staryKraj.id}>{kraj.nazwa}</option>
-            ))
-        }
-        </select>
-        </label>
         
-        {/* region */}
-        <label>{jezyk.region}<br/>
-            <select onChange={(e) =>{ustawRegion(e.target.value)}}>
-                <option value={null} key = {-1} selected = {staryRegion == null}>{jezyk.brak}</option>
-                {
-                    listaRegionowZBazy.filter((regionZListy) =>{
-                        // na liście regionów mają być tylko te z aktualnego kraju
-                        return regionZListy.idKraju !== kraj.id
-                    }).map((regionZListy, index) =>(
-                        <option value={regionZListy} key={index} selected={staryRegion == null ? false : regionZListy.id === staryRegion.id}>{regionZListy.nazwa}</option>
-                    ))
-                }
-            </select>
-        </label>
+            <div id = "kraj">
+                <label> {jezyk.kraj} <br/>
+                <select onChange={(e) =>{
+                    let id = e.target.value;
+                    let tempKraj = listaKrajowZBazy.find((kraj) => kraj.id == id);
+                    ustawKraj(tempKraj);
+                    ustawListeRegionowAktualnegoKraju(listaRegionowZBazy.filter((obiekt) => obiekt.krajId == id));
+                }}>
+                    <option value={null} key = {-1} selected={staryKraj == null}>{jezyk.brak}</option>
+                    {
+                        // zamiast tego powinniśmy wkładać do środka id kraju i potem przy wysyłaniu szukać
+                        listaKrajowZBazy.map((kraj, index) => (
+                            <option value={kraj.id} key = {index} selected = {staryKraj == null ? false : kraj.id === staryKraj.id}>{kraj.nazwa}</option>
+                        ))
+                    }
+                </select>
+                </label>
+            </div>
+    
+            {/* region */}
+            <div id = "region">
+                <label>{jezyk.region}<br/>
+                    <select onChange={(e) =>{ustawRegion(e.target.value)}}>
+                        <option value={null} key = {-1} selected = {staryRegion == null}>{jezyk.brak}</option>
+                        {
+                            listaRegionowAktualnegoKraju.map((regionZListy, index) =>(
+                                <option value={regionZListy} key={index} selected={staryRegion == null ? false : regionZListy.id === staryRegion.id}>{regionZListy.nazwa}</option>
+                            ))
+                        }
+                    </select>
+                </label>
+            </div>
         
-        <label htmlFor="opis">{jezyk.opis}</label>
-        <input type="text" id = "opis" name ="opis" value={opis} onChange={()=>ustawOpis(e.target.value)}></input>
+        <label htmlFor="opis">{jezyk.opis}</label><br/>
+        <input type="text" id = "opis" name ="opis" value={opis} onChange={(e)=>ustawOpis(e.target.value)}></input>
         <span id = "error-opis" className="error-wiadomosc">{bledy.opis}</span><br/>
         
         {/* lista języków */}
-        <ListaJezykow jezyk={jezyk} typ= "edycja" listaJezykowUzytkownika={listaJezykowUzytkownika} ustawListeJezykowUzytkownika={ustawListeJezykowUzytkownika}/>
+        <ListaJezykow typ= "edycja" listaJezykowUzytkownika={listaJezykowUzytkownika} ustawListeJezykowUzytkownika={ustawListeJezykowUzytkownika}/>
         <br/>
 
         <input type = "button" value = {jezyk.zapisz} onClick={przyWysylaniu} disabled={czyZablokowaneWyslij}/>

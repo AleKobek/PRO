@@ -2,7 +2,7 @@
 
 namespace Squadra.Services;
 
-public class StopienBieglosciJezykaService(StopienBieglosciJezykaRepository stopienBieglosciJezykaRepository) : IStopienBieglosciJezykaService
+public class StopienBieglosciJezykaService(IStopienBieglosciJezykaRepository stopienBieglosciJezykaRepository) : IStopienBieglosciJezykaService
 {
     public async Task<ICollection<StopienBieglosciJezykaDto>> GetStopnieBieglosciJezyka()
     {

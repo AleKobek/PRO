@@ -7,15 +7,17 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IKrajService, KrajService>();
 builder.Services.AddScoped<IKrajRepository, KrajRepository>();
+builder.Services.AddScoped<IKrajService, KrajService>();
 
-builder.Services.AddScoped<IProfilService, ProfilService>();
 builder.Services.AddScoped<IProfilRepository, ProfilRepository>();
+builder.Services.AddScoped<IProfilService, ProfilService>();
 
 builder.Services.AddScoped<IStatusRepository, StatusRepository>();
 builder.Services.AddScoped<IStatusService, StatusService>();
@@ -35,13 +37,25 @@ builder.Services.AddScoped<IStopienBieglosciJezykaService, StopienBieglosciJezyk
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+// if (app.Environment.IsDevelopment())
+// {
+//     app.MapOpenApi();
+//     app.UseSwaggerUI(c =>
+//     {
+//         c.SwaggerEndpoint("/openapi/v1.json", "v1");
+//     });
+//
+// }
+
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    // jest pod adresem /swagger
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
+app.MapControllers();
 
 
 app.Run();

@@ -1,67 +1,57 @@
 ﻿import {useEffect, useState} from "react";
 import ListaJezykow from "./ListaJezykow";
+import {useJezyk} from "../LanguageContext.";
 
-export default function DaneProfilu({jezyk}) {
+export default function DaneProfilu() {
     
+    const { jezyk } = useJezyk();
+
     const [pseudonim, ustawPseudonim] = useState("");
     const [zaimki, ustawZaimki] = useState("");
-    // {id, nazwa}
-    const [kraj, ustawKraj] = useState("");
-    // {id, nazwa}
-    const [region, ustawRegion] = useState("");
+    // {idRegionu, nazwaRegionu, idKraju, nazwaKraju}
+    const [regionIKraj, ustawRegionIKraj] = useState({});
     const [opis, ustawOpis] = useState("");
 
-    // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
-    const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState([])
+    
+    
+    const [czyZaladowano, ustawCzyZaladowano] = useState(false);
     
 
     useEffect(() => {
-        const podajDaneUzytkownika = () => {
+        const podajDaneUzytkownika = async () => {
             const opcje = {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json',
                 },
             };
+            try {
+                const response = await fetch("http://localhost:5014/api/Profil/" + localStorage.getItem("idUzytkownika"), opcje);
+                const data = await response.json();
+                ustawPseudonim(data.pseudonim ?? "");
+                ustawZaimki(data.zaimki ?? "");
+                ustawRegionIKraj(data.region ?? null);
+                ustawOpis(data.opis ?? "");
+            } finally {
+                // ustawiamy dopiero po zakończeniu próby pobrania
+                ustawCzyZaladowano(true);
+            }
 
-            // najpierw pobieramy dane porfilu bez języków
-            fetch("http://localhost:5014/api/profil/" + localStorage.getItem("idUzytkownika"), opcje)
-                .then(response => response.json())
-                .then(data => {
-                    ustawPseudonim(data.pseudonim);
-                    ustawZaimki(data.zaimki);
-                    ustawKraj(data.kraj);
-                    ustawRegion(data.region);
-                    ustawOpis(data.opis);
-                })
-            
-            // teraz pobieramy języki
-            const opcje2 = {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-            fetch("http://localhost:5014/api/jezyk/profil/" + localStorage.getItem("idUzytkownika"), opcje2)
-                .then(response => response.json())
-                .then(data => {
-                    ustawListeJezykowUzytkownika(data.jezyki);
-                })
         }
-        podajDaneUzytkownika();
+        if(!pseudonim && !zaimki && (!regionIKraj || Object.keys(regionIKraj).length === 0) && !opis) {
+            podajDaneUzytkownika().then();
+        }
     }, []);
+    
+    //if(!czyZaladowano) return(<><p>{jezyk.ladowanie}</p></>);
     
     return(<>
         <p>{jezyk.pseudonim}: {pseudonim}</p>
         <p>{jezyk.zaimki}: {zaimki}</p>
-        <p>{jezyk.kraj}: {kraj == null ? "" : kraj.nazwa}</p>
-        <p>{jezyk.region}: {region == null ? "" : region.nazwa}</p>
+        <p>{jezyk.kraj}: {regionIKraj?.nazwaKraju || ""}</p>
+        <p>{jezyk.region}: {regionIKraj?.nazwaRegionu || ""}</p>
         <p>{jezyk.jezyki}</p>
-        <ListaJezykow 
-            jezyk = {jezyk} 
-            typ = "wyswietlanie" 
-            listaJezykowUzytkownika={listaJezykowUzytkownika} 
-            ustawListeJezykowUzytkownika={ustawListeJezykowUzytkownika}/>
+        <ListaJezykow typ = "wyswietlanie"/>
         <p>{jezyk.opis}: {opis}</p>
     </>)
 }
