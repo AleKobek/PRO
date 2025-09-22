@@ -1,4 +1,4 @@
-﻿import {useEffect, useState} from "react";
+﻿import {useEffect, useMemo, useState} from "react";
 import {NavLink} from "react-router-dom";
 import {useJezyk} from "../LanguageContext.";
 
@@ -8,32 +8,19 @@ export default function NaglowekZalogowano(){
 
     // to, co pobieramy, w prototypie nie zmieniamy
     const [nazwaAktualnegoStatusuZBazy, ustawNazweAktualnegoStatusuZBazy] = useState("Online");
-    
-    // to, co wyświetlamy
-    const [statusDoWyswietlenia, ustawStatusDoWyswietlenia] = useState("");
 
-    useEffect(() => {
-        switch(nazwaAktualnegoStatusuZBazy){
-            case "Online":{
-                ustawStatusDoWyswietlenia(jezyk.dostepny);
-                break;
-            }
-            case "Away":{
-                ustawStatusDoWyswietlenia(jezyk.zarazWracam);
-                break;
-            }
-            case "Do not disturb":{
-                ustawStatusDoWyswietlenia(jezyk.niePrzeszkadzac);
-                break;
-            }
-            case "Offline" | "Invisible":{
-                ustawStatusDoWyswietlenia(jezyk.niedostepny);
-            }
+    const statusDoWyswietlenia = useMemo(() => {
+        switch (nazwaAktualnegoStatusuZBazy) {
+            case "Online": return jezyk.dostepny;
+            case "Away": return jezyk.zarazWracam;
+            case "Do not disturb": return jezyk.niePrzeszkadzac;
+            default: return "Offline";
         }
-    }, [statusDoWyswietlenia]);
-    
-    
-    
+    }, [nazwaAktualnegoStatusuZBazy, jezyk]);
+
+
+
+
     // w przyszłości będzie tu na początku get status, na nagłówku select i zmiana statusu będzie oznaczała wysłanie update
     
     

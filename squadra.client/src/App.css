@@ -8,7 +8,7 @@
   border-bottom: solid blue 10px;
   background-color: lightgrey;
   position: sticky;
-  padding-bottom: 10px;
+  padding-bottom: 12px;
   /*Bahnschrift, Times, "Bodoni MT", "Felix Titling"*/
   #menu-na-pasku{
     list-style-type: none;
@@ -34,9 +34,9 @@
       text-decoration: none;
     }
     a:hover {
-      background-color: lightgrey;
+      background-color: lightblue;
       color: darkblue;
-      height: fit-content;
+      padding: 31px 16px 30px;
     }
     a.active {
       color: blue;

@@ -1,17 +1,24 @@
-﻿import {useEffect, useState} from "react";
+﻿import {useEffect, useMemo, useRef, useState} from "react";
 import JezykNaLiscieKomponent from "./JezykNaLiscieKomponent";
 import {useJezyk} from "../LanguageContext.";
 
-export default function ListaJezykow({typ}){
+export default function ListaJezykow({
+                                         typ,
+                                         listaJezykowUzytkownika = [],              // domyślnie pusta tablica zamiast undefined
+                                         ustawListeJezykowUzytkownika = () => {}     // domyślna pusta funkcja
+                                     }){
+
 
     const { jezyk } = useJezyk();
-    
+
+    const startedRef = useRef(false);
+
     // na razie nie chce mi się bawić z paginacją
     const liczbaJezykowNaStronie = 100;
 
     const [aktualnaStrona, ustawAktualnaStrone] = useState(0);
-    const [liczbaStron, ustawLiczbeStron] = useState(0);
-    
+    const liczbaStron = Math.max(1, Math.ceil((listaJezykowUzytkownika?.length ?? 0) / liczbaJezykowNaStronie));
+
     // {id, nazwa}
     const [listaJezykowZBazy, ustawListeJezykowZBazy] = useState([])
     // {id, nazwa}
@@ -20,90 +27,86 @@ export default function ListaJezykow({typ}){
     const [wybranyJezykDoDodania, ustawWybranyJezykDoDodania] = useState({})
     // to, co aktualnie jest wybrane w select stopień, w postaci {id, nazwa, wartosc}
     const [wybranyStopienDoDodania, ustawWybranyStopienDoDodania] = useState({})
-    
-    const [listaJezykowDostepnychDoDodania, ustawListeJezykowDostepnychDoDodania] = useState([])
+
+    // Pochodna – bez setState w efekcie
+    const listaJezykowDostepnychDoDodania = useMemo(() => {
+        const zajete = new Set((listaJezykowUzytkownika ?? []).map(x => x.idJezyka ?? x.id));
+        return (listaJezykowZBazy ?? []).filter(j => !zajete.has(j.id));
+    }, [listaJezykowZBazy, listaJezykowUzytkownika]);
     
     // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
-    const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState([])
-    
-    const [czyZaladowanoJezykiIStopnieZBazy, ustawCzyZaladowanoJezykiIStopnieZBazy] = useState(false);
-    const [czyZaladowanoJezykiIStopnieUzytkownika, ustawCzyZaladowanoJezykiIStopnieUzytkownika] = useState(false);
+
 
     useEffect(() => {
-        
-        const podajJezykiIStopnieZBazy = async () => {
+        if (startedRef.current) return; // tylko dla inicjalnego pobrania
+        startedRef.current = true;
+        let alive = true;
 
-            const opcje = {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-            fetch("http://localhost:5014/api/Jezyk", opcje)
-                .then(response => response.json())
-                .then(data => ustawListeJezykowZBazy(data))
-                .catch(error => {
-                    console.log(error);
-                });
+        (async () => {
+            try {
+                const [jezykiRes, stopnieRes] = await Promise.all([
+                    fetch("http://localhost:5014/api/Jezyk"),
+                    fetch("http://localhost:5014/api/StopienBieglosciJezyka"),
+                ]);
+                if (!jezykiRes.ok) throw new Error(`GET /api/Jezyk -> ${jezykiRes.status}`);
+                if (!stopnieRes.ok) throw new Error(`GET /api/StopienBieglosciJezyka -> ${stopnieRes.status}`);
 
-            const opcje2 = {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-            fetch("http://localhost:5014/api/StopienBieglosciJezyka", opcje2)
-                .then(response => response.json())
-                .then(data => ustawListeStopniZBazy(data))
-                .catch(console.error);
-        }
-        
-        //TODO jak to wyeksportować?
-        /**
-         * Ładujemy języki i stopnie użytkownika z bazy do listy
-         * @param id id użytkownika
-         * @returns {Promise<*>} lista języków użytkownika do ustawienia
-         */
-         const podajJezykiIStopnieUzytkownika = async (id) => {
-            const opcje2 = {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-            return fetch("http://localhost:5014/api/Jezyk/profil/" + id, opcje2)
-                .then(response => response.json())
-                .then(data => {
-                    ustawLiczbeStron(Math.ceil(data.length / liczbaJezykowNaStronie));
-                    let temp = data.map(item => ({
-                        idJezyka: item.jezyk.id,
-                        nazwaJezyka: item.jezyk.nazwa,
-                        idStopnia: item.stopien.id,
-                        nazwaStopnia: item.stopien.nazwa,
-                        wartosc: item.stopien.wartosc
-                    }));
-                    temp.sort((a, b) => {
-                        return b.wartosc - a.wartosc
-                    });
-                    return temp;
-                });
-        }
-        if(!czyZaladowanoJezykiIStopnieZBazy) {
-            podajJezykiIStopnieZBazy().then();
+                const [jezyki, stopnie] = await Promise.all([jezykiRes.json(), stopnieRes.json()]);
+                ustawListeJezykowZBazy(jezyki);
+                ustawListeStopniZBazy(stopnie);
+
+            } catch (e) {
+                console.error(e);
+            }
+        })();
+
+        return () => { alive = false; };
+    }, []);
+
+    // 2) Gdy słowniki gotowe -> ustaw domyślne wybory i zaktualizuj dostępne języki
+    useEffect(() => {
+        if (listaStopniZBazy.length > 0) {
             ustawWybranyStopienDoDodania(listaStopniZBazy[0]);
-            zaktualizujDostepneJezykiDoDodania();
+        }
+    }, [listaStopniZBazy]);
+
+
+    useEffect(() => {
+        if (listaJezykowDostepnychDoDodania.length > 0) {
             ustawWybranyJezykDoDodania(listaJezykowDostepnychDoDodania[0]);
-            ustawCzyZaladowanoJezykiIStopnieZBazy(true);
         }
-        if(!czyZaladowanoJezykiIStopnieUzytkownika && listaJezykowUzytkownika.length === 0 && listaJezykowZBazy.length > 0 && listaStopniZBazy.length > 0) {
-            podajJezykiIStopnieUzytkownika(localStorage.getItem("idUzytkownika")).then(r => ustawListeJezykowUzytkownika(r));
-            ustawCzyZaladowanoJezykiIStopnieUzytkownika(true);
-        }
-    },[listaStopniZBazy.length, listaJezykowZBazy.length, listaJezykowUzytkownika.length]);
+    }, [listaJezykowDostepnychDoDodania]);
+
+    // // 3) Gdy słowniki gotowe -> pobierz języki użytkownika (bez strażnika!)
+    // useEffect(() => {
+    //     const gotoweSlowniki = listaJezykowZBazy.length > 0 && listaStopniZBazy.length > 0;
+    //     if (!gotoweSlowniki || listaJezykowUzytkownika.length > 0) return;
+    //
+    //     (async () => {
+    //         try {
+    //             const r = await fetch(`http://localhost:5014/api/Jezyk/profil/${localStorage.getItem("idUzytkownika")}`, {
+    //                 headers: { "Content-Type": "application/json" },
+    //             });
+    //             const data = await r.json();
+    //             const temp = data
+    //                 .map(item => ({
+    //                     idJezyka: item.jezyk.id,
+    //                     nazwaJezyka: item.jezyk.nazwa,
+    //                     idStopnia: item.stopien.id,
+    //                     nazwaStopnia: item.stopien.nazwa,
+    //                     wartosc: item.stopien.wartosc,
+    //                 }))
+    //                 .sort((a, b) => b.wartosc - a.wartosc);
+    //             ustawListeJezykowUzytkownika(temp);
+    //         } catch (e) {
+    //             console.error(e);
+    //         }
+    //     })();
+    // }, [listaJezykowZBazy.length, listaStopniZBazy.length]);
+
+    
 
 
-
-    // do bazy wystarczy wysłać samo id każdego
     // adres backendu to "http://localhost:5014"
 
 
@@ -112,47 +115,41 @@ export default function ListaJezykow({typ}){
         if (Number.isNaN(index)) return;
         // używamy filter zwracając nową tablicę:
         ustawListeJezykowUzytkownika((prev) => prev.filter((_, i) => i !== index));
-        zaktualizujDostepneJezykiDoDodania();
+        //zaktualizujDostepneJezykiDoDodania();
     }
 
     const przyKliknieciuDodaj = (e) => {
         e.preventDefault();
-        console.log("wybrany język do dodania: ");
-        console.log(wybranyJezykDoDodania);
-        console.log("wybrany stopień do dodania: ");
-        console.log(wybranyStopienDoDodania);
-        if (!wybranyJezykDoDodania?.id || !wybranyStopienDoDodania?.id) return;
+
+        // Nie ustawiaj domyślnej wartości przez setState i od razu z niej korzystaj (setState jest async).
+        // Zrób lokalny fallback:
+        const jezyk = wybranyJezykDoDodania?.id
+            ? wybranyJezykDoDodania
+            : listaJezykowDostepnychDoDodania[0];
+
+        const stopien = wybranyStopienDoDodania?.id
+            ? wybranyStopienDoDodania
+            : listaStopniZBazy[0];
+
+        if (!jezyk?.id || !stopien?.id) return;
+
         ustawListeJezykowUzytkownika((prev) => ([
             ...prev,
             {
-                idJezyka: wybranyJezykDoDodania.id,
-                nazwaJezyka: wybranyJezykDoDodania.nazwa,
-                idStopnia: wybranyStopienDoDodania.id,
-                nazwaStopnia: wybranyStopienDoDodania.nazwa,
-                wartosc: wybranyStopienDoDodania.wartosc
+                idJezyka: jezyk.id,
+                nazwaJezyka: jezyk.nazwa,
+                idStopnia: stopien.id,
+                nazwaStopnia: stopien.nazwa,
+                wartosc: stopien.wartosc
             }
         ]));
-        zaktualizujDostepneJezykiDoDodania();
-    }
-    
-    const zaktualizujDostepneJezykiDoDodania = () => {
-        //TODO z jakiegoś powodu to się kurczy bardzo szybko i nie ma wszystkich języków. gdzieś musi być ucinane, tylko gdzie?
-        //TODO w dodatku filtrowanie nie działa. przefiltrowało dopiero na początku i potem już nie filtruje
-        let temp = listaJezykowZBazy;
-        console.log("lista języków z bazy: ", temp)
-        for (let i = 0; i < temp.length; i++) {
-            let czyJest = listaJezykowUzytkownika.some(jezyk => {
-                return jezyk.idJezyka == temp[i].id
-            });
-            if (czyJest) {
-                temp.splice(i, 1);
-                i--;
-            }
-        }
-        console.log("lista dostępnych języków do ustawienia: ", temp)
-        ustawListeJezykowDostepnychDoDodania(temp);
-    }
 
+        // Opcjonalnie: zresetuj wybór, żeby select pokazał następną dostępną opcję
+        ustawWybranyJezykDoDodania(undefined);
+        ustawWybranyStopienDoDodania(undefined);
+
+        // NIE wywołujemy ręcznie "zaktualizujDostepneJezykiDoDodania"
+    };
 
     // przyciski do paginacji stron listy
     let przyciski = <>
@@ -170,12 +167,6 @@ export default function ListaJezykow({typ}){
         >{jezyk.nastepnaStrona}</button>
     </>
     
-    if(!(czyZaladowanoJezykiIStopnieZBazy && czyZaladowanoJezykiIStopnieUzytkownika)) return(
-        <>
-            <p>{jezyk.ladowanie}</p>
-        </>
-    )
-    else {
 
         // lista języków bez edycji
         if (typ === "wyswietlanie") {
@@ -189,12 +180,6 @@ export default function ListaJezykow({typ}){
             return (
                 <>
                     <ul>
-                        {/*{listaJezykowUzytkownika.map((element, index) => {*/}
-                        {/*    if (index >= aktualnaStrona * liczbaJezykowNaStronie && index < (aktualnaStrona + 1) * liczbaJezykowNaStronie) {*/}
-                        {/*        return <JezykNaLiscieKomponent key={element.idJezyka - element.idStopnia} jezykDoKomponentu={element}*/}
-                        {/*                                       idZListy={index} czyEdytuj={false}/>*/}
-                        {/*    } else return <></>*/}
-                        {/*})}*/}
                         {(listaJezykowUzytkownika ?? [])
                             .slice(aktualnaStrona * liczbaJezykowNaStronie, (aktualnaStrona + 1) * liczbaJezykowNaStronie)
                             .map((pozycja, index) => (
@@ -226,7 +211,6 @@ export default function ListaJezykow({typ}){
                     <select onChange={(e) => {
                         let id = e.target.value;
                         let tempJezyk = listaJezykowZBazy.find(jezyk => jezyk.id == id);
-                        // console.log("język do dodania: ",tempJezyk);
                         ustawWybranyJezykDoDodania(tempJezyk);
                     }}>
                         {listaJezykowDostepnychDoDodania.map((element, index) => (
@@ -257,7 +241,6 @@ export default function ListaJezykow({typ}){
                 {przyciski}
             </>)
         }
-    }
     
     return(
         <>

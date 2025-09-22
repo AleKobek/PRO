@@ -15,11 +15,11 @@ public class ProfilRepository(AppDbContext appDbContext,
         {
             var jezykiUzytkownika = await jezykRepository.GetJezykiProfilu(profil.IdUzytkownika);
             
-            var region = await regionRepository.GetRegionIKraj(profil.RegionId);
+            var regionIKraj = await regionRepository.GetRegionIKraj(profil.RegionId);
             profileDoZwrocenia.Add(new ProfilGetResDto(
                 profil.IdUzytkownika,
                 profil.Pseudonim,
-                region,
+                regionIKraj,
                 profil.Zaimki,
                 profil.Opis,
                 jezykiUzytkownika,

@@ -12,55 +12,65 @@ import {useJezyk} from "../LanguageContext.";
 
     const [pseudonim, ustawPseudonim] = useState("");
     const [zaimki, ustawZaimki] = useState("");
-    const [kraj, ustawKraj] = useState("");
-    const [region, ustawRegion] = useState("");
+    const [kraj, ustawKraj] = useState({});
+    const [region, ustawRegion] = useState({});
     const [opis, ustawOpis] = useState("");
 
     // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
     const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState([])
+        
 
+        useEffect(() => {
+            const ac = new AbortController();
+            let alive = true; // nie aktualizuj stanu po unmount
 
-    useEffect(() => {
-        // pobieramy dane użytkownika do automatycznego wypełnienia i sprawdzania czy coś się zmieniło
-        const podajDaneProfilu = async () => {
-            const opcje = {
-                method: "GET",
-                headers: { 'Content-Type': 'application/json' },
+            const fetchJson = async (url) => {
+                try {
+                    const res = await fetch(url, { method: 'GET', signal: ac.signal });
+                    if (!res.ok) return null;
+                    return await res.json();
+                } catch (err) {
+                    // To zdarza się przy czyszczeniu efektu / Hot Reload / StrictMode – ignorujemy
+                    if (err && err.name === 'AbortError') return null;
+                    // Inne błędy warto zalogować
+                    console.error('Błąd pobierania:', err);
+                    return null;
+                }
             };
 
-            const res = await fetch("http://localhost:5014/api/Profil/" + localStorage.getItem("idUzytkownika"), opcje);
-            const data = await res.json();
+            (async () => {
+                const id = localStorage.getItem('idUzytkownika');
 
-            // defensywnie upewnij się, że to tablica
-            ustawListeJezykowUzytkownika(Array.isArray(data.jezyki) ? data.jezyki : []);
-            ustawPseudonim(data.pseudonim ?? "");
-            ustawZaimki(data.zaimki ?? "");
-            ustawKraj(data.kraj ?? "");
-            ustawRegion(data.region ?? "");
-            ustawOpis(data.opis ?? "");
-        };
+                const profil = await fetchJson(`http://localhost:5014/api/Profil/${id}`);
+                if (alive && profil) {
+                    ustawListeJezykowUzytkownika(Array.isArray(profil.jezyki) ? profil.jezyki : []);
+                    ustawPseudonim(profil.pseudonim ?? '');
+                    ustawZaimki(profil.zaimki ?? '');
+                    ustawKraj(profil.kraj ?? null);
+                    ustawRegion(profil.region ?? null);
+                    ustawOpis(profil.opis ?? '');
+                }
 
-        const podajJezykiIStopnieUzytkownika = async (id) => {
-            const opcje2 = {
-                method: "GET",
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-            const res = await fetch("http://localhost:5014/api/Jezyk/profil/" + id, opcje2);
-            const data = await res.json();
-            ustawListeJezykowUzytkownika(data.map(item => ({
+                const jezyki = await fetchJson(`http://localhost:5014/api/Jezyk/profil/${id}`);
+                if (alive && Array.isArray(jezyki)) {
+                    ustawListeJezykowUzytkownika(jezyki.map(item => ({
                         idJezyka: item.jezyk.id,
                         nazwaJezyka: item.jezyk.nazwa,
                         idStopnia: item.stopien.id,
                         nazwaStopnia: item.stopien.nazwa
-            })));
-        }
-        if(listaJezykowUzytkownika.length === 0) podajJezykiIStopnieUzytkownika(localStorage.getItem("idUzytkownika")).then();
-        if(pseudonim === "" && zaimki === "" && kraj === "" && region === "" && opis === "") podajDaneProfilu().then();
-    }, []);
-    
-    return (<>
+                    })));
+                }
+            })();
+
+            return () => {
+                alive = false;
+                ac.abort(); // przerwij trwające żądania
+            };
+        }, []);
+
+
+
+        return (<>
         <NaglowekZalogowano></NaglowekZalogowano>
         <div id = "glowna">
             <h1>{jezyk.edytujProfil}</h1>

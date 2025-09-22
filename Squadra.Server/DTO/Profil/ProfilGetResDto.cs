@@ -4,7 +4,7 @@ public record ProfilGetResDto
 (
     int IdUzytkownika,
     string Pseudonim,
-    RegionKrajDto? Region,
+    RegionKrajDto? RegionIKraj,
     string? Zaimki,
     string? Opis,
     ICollection<JezykOrazStopienDto> Jezyki,
