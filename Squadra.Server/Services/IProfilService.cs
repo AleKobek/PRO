@@ -4,6 +4,6 @@ public interface IProfilService
 {
     public Task<ProfilGetResDto> GetProfil(int id);
 
-    public Task<ProfilUpdateResDto> UpdateProfil(ProfilUpdateDto profil);
+    public Task<ProfilUpdateResDto> UpdateProfil(int id, ProfilUpdateDto profil);
 
 }

@@ -17,7 +17,7 @@ export default function TwojProfil() {
         <div id = "glowna">
             <h1>{jezyk.twojProfil}</h1>
             <DaneProfilu jezyk={jezyk}></DaneProfilu>
-            <button onClick={() => navigate('/edytujProfil')}>{jezyk.edytujProfil}</button>
+            <button className={"przycisk-nawigacji"} onClick={() => navigate('/edytujProfil')}>{jezyk.edytujProfil}</button>
         </div>
     </>);
 }

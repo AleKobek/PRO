@@ -11,7 +11,7 @@ public class ProfilService(
         return await profilRepository.GetProfilUzytkownika(id);
     }
     
-    public async Task<ProfilUpdateResDto> UpdateProfil(ProfilUpdateDto profil)
+    public async Task<ProfilUpdateResDto> UpdateProfil(int id, ProfilUpdateDto profil)
     {
         /*
             dane przyjdą w formie:
@@ -29,7 +29,7 @@ public class ProfilService(
         var bladZaimkow = "";
         var bladOpisu = "";
         
-        if(profil.IdUzytkownika < 1) throw new Exception("Profil o id " + profil.IdUzytkownika + " nie istnieje");
+        if(id < 1) throw new Exception("Profil o id " + id + " nie istnieje");
         if(profil.RegionId < 1) throw new Exception("Region o id " + profil.RegionId + " nie istnieje");
         
         if(profil.Zaimki is { Length: > 10 })
@@ -51,7 +51,7 @@ public class ProfilService(
             bladPseudonimu = "Maksymalna długość pseudonimu wynosi 20 znaków";
         }
 
-        var profilDoZwrocenia = czyPoprawne ? await profilRepository.UpdateProfil(profil) : null;
+        var profilDoZwrocenia = czyPoprawne ? await profilRepository.UpdateProfil(id, profil) : null;
 
         return new ProfilUpdateResDto(
             profilDoZwrocenia,

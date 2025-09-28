@@ -77,33 +77,6 @@ export default function ListaJezykow({
         }
     }, [listaJezykowDostepnychDoDodania]);
 
-    // // 3) Gdy słowniki gotowe -> pobierz języki użytkownika (bez strażnika!)
-    // useEffect(() => {
-    //     const gotoweSlowniki = listaJezykowZBazy.length > 0 && listaStopniZBazy.length > 0;
-    //     if (!gotoweSlowniki || listaJezykowUzytkownika.length > 0) return;
-    //
-    //     (async () => {
-    //         try {
-    //             const r = await fetch(`http://localhost:5014/api/Jezyk/profil/${localStorage.getItem("idUzytkownika")}`, {
-    //                 headers: { "Content-Type": "application/json" },
-    //             });
-    //             const data = await r.json();
-    //             const temp = data
-    //                 .map(item => ({
-    //                     idJezyka: item.jezyk.id,
-    //                     nazwaJezyka: item.jezyk.nazwa,
-    //                     idStopnia: item.stopien.id,
-    //                     nazwaStopnia: item.stopien.nazwa,
-    //                     wartosc: item.stopien.wartosc,
-    //                 }))
-    //                 .sort((a, b) => b.wartosc - a.wartosc);
-    //             ustawListeJezykowUzytkownika(temp);
-    //         } catch (e) {
-    //             console.error(e);
-    //         }
-    //     })();
-    // }, [listaJezykowZBazy.length, listaStopniZBazy.length]);
-
     
 
 
@@ -182,6 +155,7 @@ export default function ListaJezykow({
                     <ul>
                         {(listaJezykowUzytkownika ?? [])
                             .slice(aktualnaStrona * liczbaJezykowNaStronie, (aktualnaStrona + 1) * liczbaJezykowNaStronie)
+                            .sort((a, b) => b.wartosc - a.wartosc)
                             .map((pozycja, index) => (
                                 <JezykNaLiscieKomponent
                                     key={`${pozycja.idJezyka}-${pozycja.idStopnia}`} // użyj stabilnego, unikalnego klucza
@@ -199,7 +173,9 @@ export default function ListaJezykow({
             return (<>
                 <ul>
                     {/*lista języków nad selectem z dodaniem nowego*/}
-                    {listaJezykowUzytkownika.map((element, index) => {
+                    {listaJezykowUzytkownika
+                        .sort((a, b) => b.wartosc - a.wartosc)
+                        .map((element, index) => {
                         if (index >= aktualnaStrona * 5 && index < (aktualnaStrona + 1) * 5) {
                             return (<>
                                 <JezykNaLiscieKomponent jezyk={jezyk} jezykDoKomponentu={element} key={index} idZListy={index}

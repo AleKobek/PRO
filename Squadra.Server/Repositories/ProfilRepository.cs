@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Squadra.Exceptions;
 
 namespace Squadra;
 
@@ -33,20 +34,21 @@ public class ProfilRepository(AppDbContext appDbContext,
     {
         var profil = await appDbContext.Profil.FindAsync(id);
         
-        if(profil == null) throw new Exception("Profil o id " + id + " nie istnieje");
+        if(profil == null) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
         
         // Dane mają zostać wysłane w formie: {pseudonim, zaimki, kraj {id, nazwa} , region {id, nazwa}, opis}
         
         var jezykiUzytkownika = await jezykRepository.GetJezykiProfilu(profil.IdUzytkownika);
-        var region = await regionRepository.GetRegionIKraj(profil.RegionId);
+        
+        var region = profil.RegionId == null ? null : await regionRepository.GetRegionIKraj(profil.RegionId);
         
         return new ProfilGetResDto(profil.IdUzytkownika, profil.Pseudonim, region, profil.Zaimki, profil.Opis, jezykiUzytkownika, profil.Awatar);
     }
 
-    public async Task<ProfilGetResDto> UpdateProfil(ProfilUpdateDto profil)
+    public async Task<ProfilGetResDto> UpdateProfil(int id, ProfilUpdateDto profil)
     {
-        var profilDoZmiany = await appDbContext.Profil.FindAsync(profil.IdUzytkownika);
-        if(profilDoZmiany == null) throw new Exception("Profil uzytkownika o id " + profil.IdUzytkownika + " nie istnieje");
+        var profilDoZmiany = await appDbContext.Profil.FindAsync(id);
+        if(profilDoZmiany == null) throw new NieZnalezionoWBazieException("Profil uzytkownika o id " + id + " nie istnieje");
         
         profilDoZmiany.Pseudonim = profil.Pseudonim;
         profilDoZmiany.RegionId = profil.RegionId;
@@ -56,7 +58,7 @@ public class ProfilRepository(AppDbContext appDbContext,
 
         await appDbContext.SaveChangesAsync();
 
-        var jezykiUzytkownika = await jezykRepository.ZmienJezykiProfilu(profil.IdUzytkownika, profil.Jezyki);
+        var jezykiUzytkownika = await jezykRepository.ZmienJezykiProfilu(id, profil.Jezyki);
         var region = profil.RegionId == null ? null : await regionRepository.GetRegionIKraj(profil.RegionId);
 
         return new ProfilGetResDto(
@@ -89,7 +91,7 @@ public class ProfilRepository(AppDbContext appDbContext,
     public async Task DeleteProfil(int id)
     {
         var profil = await appDbContext.Profil.FindAsync(id);
-        if(profil == null) throw new Exception("Profil o id " + id + " nie istnieje");
+        if(profil == null) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
         // usuwamy wszystkie języki, podajemy pustą listę
         await jezykRepository.ZmienJezykiProfilu(id, new List<JezykOrazStopienDto>());
         appDbContext.Profil.Remove(profil);

@@ -8,17 +8,19 @@ export default function DaneProfilu() {
 
     const [pseudonim, ustawPseudonim] = useState("");
     const [zaimki, ustawZaimki] = useState("");
-    // {idRegionu, nazwaRegionu, idKraju, nazwaKraju}
-    const [regionIKraj, ustawRegionIKraj] = useState({});
+    // {id, nazwa}
+    const [region, ustawRegion] = useState({});
+    // {id, nazwa}
+    const [kraj, ustawKraj] = useState({});
     const [opis, ustawOpis] = useState("");
 
     // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
     const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState([])
 
-    
-    
+
+
     const [czyZaladowano, ustawCzyZaladowano] = useState(false);
-    
+
 
     useEffect(() => {
         const podajDaneProfilu = async () => {
@@ -33,9 +35,22 @@ export default function DaneProfilu() {
                 const data = await response.json();
                 ustawPseudonim(data.pseudonim ?? "");
                 ustawZaimki(data.zaimki ?? "");
-                ustawRegionIKraj(data.regionIKraj ?? null);
+                // {idRegionu, nazwaRegionu, idKraju, nazwaKraju}
+                const regionIKraj = data.regionIKraj;
+                if(!regionIKraj){
+                    ustawRegion(null);
+                    ustawKraj(null);
+                }else{
+                    ustawRegion({id: regionIKraj.idRegionu, nazwa: regionIKraj.nazwaRegionu})
+                    ustawKraj(regionIKraj.idKraju ? {id: regionIKraj.idKraju, nazwa: regionIKraj.nazwaKraju} : null);
+                }
+                
                 ustawOpis(data.opis ?? "");
-            } finally {
+            } 
+            catch (e) {
+                console.error(e);
+            }
+            finally {
                 // ustawiamy dopiero po zakończeniu próby pobrania
                 ustawCzyZaladowano(true);
             }
@@ -61,7 +76,7 @@ export default function DaneProfilu() {
                 console.error(e);
             }
         }
-        if(!pseudonim && !zaimki && (!regionIKraj || Object.keys(regionIKraj).length === 0) && !opis) {
+        if(!pseudonim && !zaimki && !opis) {
             podajDaneProfilu().then();
         }
         if(listaJezykowUzytkownika.length === 0) podajJezykiIStopnieUzytkownika(localStorage.getItem("idUzytkownika")).then();
@@ -72,8 +87,8 @@ export default function DaneProfilu() {
     return(<>
         <p>{jezyk.pseudonim}: {pseudonim}</p>
         <p>{jezyk.zaimki}: {zaimki}</p>
-        <p>{jezyk.kraj}: {regionIKraj?.nazwaKraju || "Unknown"}</p>
-        <p>{jezyk.region}: {regionIKraj?.nazwaRegionu || "Unknown"}</p>
+        <p>{jezyk.kraj}: {kraj ? kraj.nazwa : "Unknown"}</p>
+        <p>{jezyk.region}: {region ? region.nazwa : "Unknown"}</p>
         <p>{jezyk.jezyki}</p>
         <ListaJezykow typ = "wyswietlanie" listaJezykowUzytkownika = {listaJezykowUzytkownika} ustawListeJezykowUzytkownika={ustawListeJezykowUzytkownika}/>
         <p>{jezyk.opis}: {opis}</p>

@@ -23,7 +23,7 @@ export default function FormularzProfilu({
     const [listaRegionowZBazy, ustawListeRegionowZBazy] = useState([])
     
     
-    const [bledy, ustawBledy] = useState({pseudonim: "", zaimki: "", opis: ""});
+    const [bledy, ustawBledy] = useState({pseudonim: "", zaimki: "", opis: "", zapisz: ""});
 
     // to, co jest aktualnie w formularzu
     // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
@@ -38,6 +38,7 @@ export default function FormularzProfilu({
     const [zaimki, ustawZaimki] = useState("");
     const [kraj, ustawKraj] = useState({});
     const [region, ustawRegion] = useState({});
+    // przychodzi w postaci {idRegionu, nazwaRegionu, idKraju, nazwaKraju}
     const [opis, ustawOpis] = useState("");
 
     // Uwaga: SYNC tylko gdy props się zmienia – bez lokalnych stanów w depsach
@@ -86,31 +87,63 @@ export default function FormularzProfilu({
 
     const przyWysylaniu = async() =>{
         // sprawdzić wszystkie pola!
-        const profil = {
-            IdUzytkownika: localStorage.getItem("idUzytkownika"),
-            RegionId: region.id,
+        const profilDoWyslania = {
+            RegionId: region.id ?? null,
             Zaimki: zaimki,
             Opis: opis,
-            Jezyki: listaJezykowUzytkownika,
+            Jezyki: (listaJezykowUzytkownika ?? []).map(j => ({
+                Jezyk: {Id: j.idJezyka, Nazwa: j.nazwaJezyka},
+                Stopien: {Id: j.idStopnia, Nazwa: j.nazwaStopnia, Wartosc: j.wartoscStopnia}
+            })),
             Pseudonim: pseudonim,
             // ############# tylko do prototypu ################
-            Awatar: null};
+            Awatar: ""};
+        
+        console.log("Co wysyłamy do bazy:", profilDoWyslania);
         
         const opcje = {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(profil)
+            body: JSON.stringify(profilDoWyslania)
         }
         
-        const resPost = await fetch("http://localhost:5014/api/profil/" + localStorage.getItem("idUzytkownika"), opcje);
-        
-        ustawBledy(resPost.bledy);
-        
-        if(resPost.czyPoprawny === true){
-            navigate('/twojProfil');
+        const res = (await fetch("http://localhost:5014/api/Profil/" + localStorage.getItem("idUzytkownika"), opcje));
+
+        // Odczyt body różni się zależnie od typu odpowiedzi
+        // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
+        const ct = res.headers.get("content-type") || "";
+        const body = ct.includes("application/json")
+            ? await res.json().catch(() => null)
+            : await res.text().catch(() => "");
+
+        if (!res.ok) {
+            // Np. 404 z tekstem
+            console.error("Błąd PUT:", res.status, body);
+            ustawBledy(prev => ({
+                ...prev,
+                // jest najniżej
+                opis: typeof body === "string" && body ? body : "Nie udało się zapisać profilu.",
+            }));
+            return;
         }
+
+        // Sukces 200 OK — body to ProfilUpdateResDto w camelCase
+        // przyjdzie w formie: { profil: {...} | null, bledy: { pseudonim, zaimki, opis }, czyPoprawne: boolean }
+        const { czyPoprawne, bledy, profil } = body ?? {};
+
+        if (!czyPoprawne) {
+            ustawBledy({
+                pseudonim: bledy?.pseudonim ?? "",
+                zaimki: bledy?.zaimki ?? "",
+                opis: bledy?.opis ?? "",
+            });
+            return;
+        }
+
+        // jak tutaj dojrziemy, wszystko jest git
+        navigate("/twojProfil");
     }
 
     // ustawiamy nową listę dostępnych regionów, jeśli kraj się zmieni
@@ -133,11 +166,8 @@ export default function FormularzProfilu({
         if(listaJezykowUzytkownika.length === 0 && staraListaJezykowUzytkownika.length === 0) return false;
         let posortowanaListaJezykowUzytkownika = [...listaJezykowUzytkownika].sort((a, b) => a.idJezyka - b.idJezyka);
         let posortowanaStaraListaJezykowUzytkownika = [...staraListaJezykowUzytkownika].sort((a, b) => a.idJezyka - b.idJezyka);
-        //console.log("Posortowana lista języków użytkownika z formularza:", posortowanaListaJezykowUzytkownika);
-        //console.log("Stara lista języków użytkownika:", staraListaJezykowUzytkownika);
         if(listaJezykowUzytkownika.length !== staraListaJezykowUzytkownika.length) return false;
         for(let i = 0; i < listaJezykowUzytkownika.length; i++){
-            //console.log("Teraz porównujemy języki:", posortowanaListaJezykowUzytkownika[i], "z", staraListaJezykowUzytkownika[i])
             if(posortowanaListaJezykowUzytkownika[i].idJezyka !== posortowanaStaraListaJezykowUzytkownika[i].idJezyka || posortowanaListaJezykowUzytkownika[i].idStopnia !== posortowanaStaraListaJezykowUzytkownika[i].idStopnia){
                 return false;
             }
@@ -151,10 +181,10 @@ export default function FormularzProfilu({
      * sprawdzamy, czy jest zablokowane wyślij
      */
     const czyZablokowaneWyslij = useMemo(() => {
+        //console.log("Stary region id:", staryRegion.id, ", nowy region id:", region ? region.id : null);
             return (
                 (pseudonim === staryPseudonim &&
                 zaimki === stareZaimki &&
-                kraj?.id === staryKraj?.id &&
                 region?.id === staryRegion?.id &&
                 opis === staryOpis && czyListyJezykoweTakieSame) 
                 ||
@@ -178,15 +208,18 @@ export default function FormularzProfilu({
         
             <div id = "kraj">
                 <label> {jezyk.kraj} <br/>
-                <select onChange={(e) =>{
-                    let id = e.target.value;
-                    let tempKraj = listaKrajowZBazy.find((kraj) => kraj.id == id);
-                    ustawKraj(tempKraj);
-                }}>
-                    <option value={null} key = {-1} selected={staryKraj == null}>{jezyk.brak}</option>
+                <select
+                    value={kraj?.id ?? ""}
+                    onChange={(e) =>{
+                        let id = e.target.value;
+                        let tempKraj = listaKrajowZBazy.find((kraj) => kraj.id == id);
+                        ustawKraj(tempKraj);
+                    }}
+                >
+                    <option value = "" key = {-1}>{jezyk.brak}</option>
                     {
-                        listaKrajowZBazy.map((kraj, index) => (
-                            <option value={kraj.id} key = {index} selected = {staryKraj == null ? false : kraj.id === staryKraj.id}>{kraj.nazwa}</option>
+                        listaKrajowZBazy.map((kraj) => (
+                            <option value={kraj.id} key = {kraj.id}>{kraj.nazwa}</option>
                         ))
                     }
                 </select>
@@ -196,11 +229,18 @@ export default function FormularzProfilu({
             {/* region */}
             <div id = "region">
                 <label>{jezyk.region}<br/>
-                    <select onChange={(e) =>{ustawRegion(e.target.value)}}>
-                        <option value={null} key = {-1} selected = {staryRegion == null}>{jezyk.brak}</option>
+                    <select
+                        value={region?.id ?? ""}
+                        onChange={(e) =>{
+                            let id = e.target.value;
+                            let tempRegion = listaRegionowZBazy.find((region) => region.id == id);
+                            ustawRegion(tempRegion)
+                        }}
+                    >
+                        <option value = "" key = {-1}>{jezyk.brak}</option>
                         {
-                            regionyDoWyboru.map((regionZListy, index) =>(
-                                <option value={regionZListy} key={index} selected={staryRegion == null ? false : regionZListy.id === staryRegion.id}>{regionZListy.nazwa}</option>
+                            regionyDoWyboru.map((region) =>(
+                                <option value={region.id} key={region.id}>{region.nazwa}</option>
                             ))
                         }
                     </select>
@@ -212,10 +252,13 @@ export default function FormularzProfilu({
         <span id = "error-opis" className="error-wiadomosc">{bledy.opis}</span><br/>
         
         {/* lista języków */}
+        <div id = "lista-jezykow">
         <ListaJezykow typ= "edycja" listaJezykowUzytkownika={listaJezykowUzytkownika} ustawListeJezykowUzytkownika={ustawListeJezykowUzytkownika}/>
+        </div>
         <br/>
 
         <input type = "button" value = {jezyk.zapisz} onClick={przyWysylaniu} disabled={czyZablokowaneWyslij}/>
+        <span id = "error-zapisz" className="error-wiadomosc">{bledy.zapisz}</span><br/>
     </form>)
 
     

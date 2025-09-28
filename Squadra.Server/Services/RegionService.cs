@@ -1,4 +1,6 @@
-﻿namespace Squadra.Services;
+﻿using Squadra.Exceptions;
+
+namespace Squadra.Services;
 
 public class RegionService(IRegionRepository regionRepository) : IRegionService
 {
@@ -7,14 +9,19 @@ public class RegionService(IRegionRepository regionRepository) : IRegionService
         return await regionRepository.GetRegiony();
     }
 
-    public async Task<RegionDto?> GetRegion(int? id)
+    // tu już nie uwzględniamy nulla w int, bo null jest potrzebny tylko dla profil repository
+    public async Task<RegionDto> GetRegion(int id)
     {
-        return await regionRepository.GetRegion(id);
+        var region = await regionRepository.GetRegion(id);
+        if(region == null) throw new NieZnalezionoWBazieException("Region o id " + id + " nie istnieje");
+        return region;
     }
 
-    public async Task<RegionKrajDto?> GetRegionIKraj(int? id)
+    public async Task<RegionKrajDto> GetRegionIKraj(int id)
     {
-        return await regionRepository.GetRegionIKraj(id);
+        var region = await regionRepository.GetRegionIKraj(id);
+        if(region == null) throw new NieZnalezionoWBazieException("Region o id " + id + " nie istnieje");
+        return region;
     }
 
     public async Task<ICollection<RegionDto>> GetRegionyKraju(int krajId)

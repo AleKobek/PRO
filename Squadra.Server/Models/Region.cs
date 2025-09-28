@@ -11,11 +11,12 @@ public class Region
     [Required] [StringLength(20)]
     public string Nazwa { get; set; } = null!;
     
+    // region musi mieć kraj! nie będzie regionu "brak"
     [Column("id_kraju")]
-    public int? KrajId { get; set; }
+    public int KrajId { get; set; }
     
     [ForeignKey(nameof(KrajId))]
-    public virtual Kraj? Kraj { get; set; } = null!;
+    public virtual Kraj Kraj { get; set; } = null!;
     
     public virtual ICollection<Profil> ProfilCollection { get; set; } = null!;
 }

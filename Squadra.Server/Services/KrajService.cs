@@ -7,7 +7,7 @@ public class KrajService (IKrajRepository krajRepository) : IKrajService
         return await krajRepository.GetKraje();
     }
 
-    public async Task<KrajDto?> GetKraj(int id)
+    public async Task<KrajDto> GetKraj(int id)
     {
         if (id < 1) throw new Exception("Kraj o id " + id + " nie istnieje");
         

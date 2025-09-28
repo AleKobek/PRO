@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Squadra.Exceptions;
 using Squadra.Services;
 
 namespace Squadra;
@@ -8,15 +9,30 @@ namespace Squadra;
 public class ProfilController(IProfilService profilService) : ControllerBase
 {
     [HttpGet("{id}")]
-    public async Task<ProfilGetResDto> GetProfil(int id)
+    public async Task<ActionResult<ProfilGetResDto>> GetProfil(int id)
     {
-        return await profilService.GetProfil(id);
+        try
+        {
+            return Ok(await profilService.GetProfil(id));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return NotFound(e.Message);
+        }
+        
     }
     
-    [HttpPut]
-    public async Task<ProfilUpdateResDto> UpdateProfil([FromBody] ProfilUpdateDto profil)
+    [HttpPut("{id}")]
+    public async Task<ActionResult<ProfilUpdateResDto>> UpdateProfil(int id, [FromBody] ProfilUpdateDto profil)
     {
-        return await profilService.UpdateProfil(profil);
+        try
+        {
+            return Ok(await profilService.UpdateProfil(id, profil));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return NotFound(e.Message);
+        }
     }
     
     

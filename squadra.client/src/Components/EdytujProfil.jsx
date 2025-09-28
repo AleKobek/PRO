@@ -43,11 +43,17 @@ import {useJezyk} from "../LanguageContext.";
 
                 const profil = await fetchJson(`http://localhost:5014/api/Profil/${id}`);
                 if (alive && profil) {
+                    console.log("Pobrano profil:", profil);
                     ustawListeJezykowUzytkownika(Array.isArray(profil.jezyki) ? profil.jezyki : []);
                     ustawPseudonim(profil.pseudonim ?? '');
                     ustawZaimki(profil.zaimki ?? '');
-                    ustawKraj(profil.kraj ?? null);
-                    ustawRegion(profil.region ?? null);
+                    if(profil.regionIKraj){
+                        ustawKraj({id: profil.regionIKraj.idKraju, nazwa: profil.regionIKraj.nazwaKraju});
+                        ustawRegion({id: profil.regionIKraj.idRegionu, nazwa: profil.regionIKraj.nazwaRegionu});
+                    }else {
+                        ustawKraj({id: null, nazwa: null});
+                        ustawRegion({id: null, nazwa: null});   
+                    }
                     ustawOpis(profil.opis ?? '');
                 }
 
@@ -57,7 +63,8 @@ import {useJezyk} from "../LanguageContext.";
                         idJezyka: item.jezyk.id,
                         nazwaJezyka: item.jezyk.nazwa,
                         idStopnia: item.stopien.id,
-                        nazwaStopnia: item.stopien.nazwa
+                        nazwaStopnia: item.stopien.nazwa,
+                        wartoscStopnia: item.stopien.wartosc
                     })));
                 }
             })();
@@ -74,7 +81,7 @@ import {useJezyk} from "../LanguageContext.";
         <NaglowekZalogowano></NaglowekZalogowano>
         <div id = "glowna">
             <h1>{jezyk.edytujProfil}</h1>
-            <button onClick={() => {navigate('/')}}>{jezyk.powrotDoProfilu}</button>
+            <button className={"przycisk-nawigacji"} onClick={() => {navigate('/')}}>{jezyk.powrotDoProfilu}</button>
             <FormularzProfilu czyEdytuj = {true} staraListaJezykowUzytkownika = {listaJezykowUzytkownika} staryPseudonim = {pseudonim} 
                               stareZaimki = {zaimki} staryOpis = {opis} staryRegion = {region} staryKraj = {kraj}/>
             <br></br>

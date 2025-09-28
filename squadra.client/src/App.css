@@ -60,6 +60,7 @@
   /*"Cooper Black", */
   h1, h2{
     font-family: Cambria serif;
+    text-align: center;
   }
 
   button{
@@ -69,7 +70,16 @@
     padding: 5px;
     margin: 5px 0 5px 10px;
     border-radius: 10px;
+    
   }
+  /* tak sobie nadpisujemy dla danej klasy*/
+  button.przycisk-nawigacji{
+     background: darkblue;
+   /* jak najeżdżamy myszką, zmienia kolor*/
+    &:hover{
+     background: blue;
+    }
+   }
 
   button:disabled{
     font-size: 20px;
@@ -94,6 +104,7 @@
       border: solid 2px black;
       padding: 5px;
     }
+    /* to jeszcze pozostałość z psiotelu, może się przyda*/
     .tabela-oferta{
       border-right: solid 5px black;
       font-weight: bold;
@@ -121,6 +132,7 @@
     }
     label{
       font-size: 20px;
+      font-weight: bold;
     }
   }
 

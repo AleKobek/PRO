@@ -1,8 +1,8 @@
 ﻿namespace Squadra;
 
 public record ProfilUpdateDto(
-    int IdUzytkownika,
     int? RegionId,
+    int? KrajId,
     string? Zaimki,
     string? Opis,
     ICollection<JezykOrazStopienDto> Jezyki,
