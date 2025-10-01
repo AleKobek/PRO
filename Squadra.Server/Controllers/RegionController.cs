@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Squadra.Exceptions;
-using Squadra.Services;
+using Squadra.Server.DTO.KrajRegion;
+using Squadra.Server.Exceptions;
+using Squadra.Server.Services;
 
-namespace Squadra;
+namespace Squadra.Server.Controllers;
 
 
 [Route("api/[controller]")]

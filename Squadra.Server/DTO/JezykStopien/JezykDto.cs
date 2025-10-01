@@ -1,4 +1,4 @@
-﻿namespace Squadra;
+﻿namespace Squadra.Server.DTO.JezykStopien;
 
 public record JezykDto(
     int Id,

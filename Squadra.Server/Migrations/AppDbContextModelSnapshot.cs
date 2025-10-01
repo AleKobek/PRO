@@ -3,9 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Squadra;
 using Squadra.Server.Context;
 
 #nullable disable
@@ -13,11 +11,9 @@ using Squadra.Server.Context;
 namespace Squadra.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250916115107_Jezyk_id_nie_dziala_moze_teraz_zadziala")]
-    partial class Jezyk_id_nie_dziala_moze_teraz_zadziala
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,7 +22,7 @@ namespace Squadra.Server.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Squadra.Jezyk", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Jezyk", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,10 +54,30 @@ namespace Squadra.Server.Migrations
                         {
                             Id = 3,
                             Nazwa = "niemiecki"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Nazwa = "francuski"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Nazwa = "hiszpański"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Nazwa = "japoński"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Nazwa = "rosyjski"
                         });
                 });
 
-            modelBuilder.Entity("Squadra.JezykProfilu", b =>
+            modelBuilder.Entity("Squadra.Server.Models.JezykProfilu", b =>
                 {
                     b.Property<int>("JezykId")
                         .HasColumnType("int")
@@ -96,10 +112,16 @@ namespace Squadra.Server.Migrations
                             JezykId = 2,
                             UzytkownikId = 1,
                             StopienBieglosciId = 2
+                        },
+                        new
+                        {
+                            JezykId = 3,
+                            UzytkownikId = 1,
+                            StopienBieglosciId = 1
                         });
                 });
 
-            modelBuilder.Entity("Squadra.Kraj", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Kraj", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -130,7 +152,7 @@ namespace Squadra.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Squadra.Profil", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Profil", b =>
                 {
                     b.Property<int>("IdUzytkownika")
                         .ValueGeneratedOnAdd()
@@ -171,12 +193,12 @@ namespace Squadra.Server.Migrations
                             Awatar = new byte[0],
                             Opis = "Lubię placki!",
                             Pseudonim = "Leczo",
-                            RegionId = 1,
+                            RegionId = 2,
                             Zaimki = "she/her"
                         });
                 });
 
-            modelBuilder.Entity("Squadra.Region", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Region", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -184,7 +206,7 @@ namespace Squadra.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("KrajId")
+                    b.Property<int>("KrajId")
                         .HasColumnType("int")
                         .HasColumnName("id_kraju");
 
@@ -204,13 +226,13 @@ namespace Squadra.Server.Migrations
                         {
                             Id = 1,
                             KrajId = 1,
-                            Nazwa = "Mazowieckie"
+                            Nazwa = "Nie określono"
                         },
                         new
                         {
                             Id = 2,
                             KrajId = 1,
-                            Nazwa = "Wielkopolskie"
+                            Nazwa = "Mazowieckie"
                         },
                         new
                         {
@@ -251,14 +273,14 @@ namespace Squadra.Server.Migrations
                         new
                         {
                             Id = 9,
-                            KrajId = 2,
-                            Nazwa = "East od England"
+                            KrajId = 1,
+                            Nazwa = "Wielkopolskie"
                         },
                         new
                         {
                             Id = 10,
                             KrajId = 2,
-                            Nazwa = "East Midlands"
+                            Nazwa = "Nie określono"
                         },
                         new
                         {
@@ -295,10 +317,22 @@ namespace Squadra.Server.Migrations
                             Id = 16,
                             KrajId = 2,
                             Nazwa = "Greater London"
+                        },
+                        new
+                        {
+                            Id = 17,
+                            KrajId = 2,
+                            Nazwa = "East od England"
+                        },
+                        new
+                        {
+                            Id = 18,
+                            KrajId = 2,
+                            Nazwa = "East Midlands"
                         });
                 });
 
-            modelBuilder.Entity("Squadra.Status", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Status", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -319,26 +353,26 @@ namespace Squadra.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Nazwa = "Online"
+                            Nazwa = "Dostępny"
                         },
                         new
                         {
                             Id = 2,
-                            Nazwa = "Away"
+                            Nazwa = "Zaraz wracam"
                         },
                         new
                         {
                             Id = 3,
-                            Nazwa = "Do not disturb"
+                            Nazwa = "Nie przeszkadzać"
                         },
                         new
                         {
                             Id = 4,
-                            Nazwa = "Invisible"
+                            Nazwa = "Niewidoczny"
                         });
                 });
 
-            modelBuilder.Entity("Squadra.StopienBieglosciJezyka", b =>
+            modelBuilder.Entity("Squadra.Server.Models.StopienBieglosciJezyka", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -363,23 +397,23 @@ namespace Squadra.Server.Migrations
                         {
                             Id = 1,
                             Nazwa = "Podstawowy",
-                            Wartosc = 0
+                            Wartosc = 1
                         },
                         new
                         {
                             Id = 2,
-                            Nazwa = "Srednio-Zaawansowany",
-                            Wartosc = 0
+                            Nazwa = "Średnio-zaawansowany",
+                            Wartosc = 2
                         },
                         new
                         {
                             Id = 3,
                             Nazwa = "Zaawansowany",
-                            Wartosc = 0
+                            Wartosc = 3
                         });
                 });
 
-            modelBuilder.Entity("Squadra.Uzytkownik", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Uzytkownik", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -431,23 +465,23 @@ namespace Squadra.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Squadra.JezykProfilu", b =>
+            modelBuilder.Entity("Squadra.Server.Models.JezykProfilu", b =>
                 {
-                    b.HasOne("Squadra.Jezyk", "Jezyk")
+                    b.HasOne("Squadra.Server.Models.Jezyk", "Jezyk")
                         .WithMany("JezykProfiluCollection")
                         .HasForeignKey("JezykId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("JezykProfilu_Jezyk");
 
-                    b.HasOne("Squadra.StopienBieglosciJezyka", "StopienBieglosciJezyka")
+                    b.HasOne("Squadra.Server.Models.StopienBieglosciJezyka", "StopienBieglosciJezyka")
                         .WithMany("JezykUzytkownikaCollection")
                         .HasForeignKey("StopienBieglosciId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("JezykUzytkownika_StopienBieglosci");
 
-                    b.HasOne("Squadra.Profil", "Profil")
+                    b.HasOne("Squadra.Server.Models.Profil", "Profil")
                         .WithMany("JezykUzytkownikaCollection")
                         .HasForeignKey("UzytkownikId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -461,9 +495,9 @@ namespace Squadra.Server.Migrations
                     b.Navigation("StopienBieglosciJezyka");
                 });
 
-            modelBuilder.Entity("Squadra.Profil", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Profil", b =>
                 {
-                    b.HasOne("Squadra.Region", "Region")
+                    b.HasOne("Squadra.Server.Models.Region", "Region")
                         .WithMany("ProfilCollection")
                         .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -472,27 +506,28 @@ namespace Squadra.Server.Migrations
                     b.Navigation("Region");
                 });
 
-            modelBuilder.Entity("Squadra.Region", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Region", b =>
                 {
-                    b.HasOne("Squadra.Kraj", "Kraj")
+                    b.HasOne("Squadra.Server.Models.Kraj", "Kraj")
                         .WithMany("RegionCollection")
                         .HasForeignKey("KrajId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
                         .HasConstraintName("Region_Kraj");
 
                     b.Navigation("Kraj");
                 });
 
-            modelBuilder.Entity("Squadra.Uzytkownik", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Uzytkownik", b =>
                 {
-                    b.HasOne("Squadra.Profil", "Profil")
+                    b.HasOne("Squadra.Server.Models.Profil", "Profil")
                         .WithOne("Uzytkownik")
-                        .HasForeignKey("Squadra.Uzytkownik", "Id")
+                        .HasForeignKey("Squadra.Server.Models.Uzytkownik", "Id")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("Uzytkownik_Profil");
 
-                    b.HasOne("Squadra.Status", "Status")
+                    b.HasOne("Squadra.Server.Models.Status", "Status")
                         .WithMany("UzytkownikCollection")
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -504,17 +539,17 @@ namespace Squadra.Server.Migrations
                     b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("Squadra.Jezyk", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Jezyk", b =>
                 {
                     b.Navigation("JezykProfiluCollection");
                 });
 
-            modelBuilder.Entity("Squadra.Kraj", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Kraj", b =>
                 {
                     b.Navigation("RegionCollection");
                 });
 
-            modelBuilder.Entity("Squadra.Profil", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Profil", b =>
                 {
                     b.Navigation("JezykUzytkownikaCollection");
 
@@ -522,17 +557,17 @@ namespace Squadra.Server.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Squadra.Region", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Region", b =>
                 {
                     b.Navigation("ProfilCollection");
                 });
 
-            modelBuilder.Entity("Squadra.Status", b =>
+            modelBuilder.Entity("Squadra.Server.Models.Status", b =>
                 {
                     b.Navigation("UzytkownikCollection");
                 });
 
-            modelBuilder.Entity("Squadra.StopienBieglosciJezyka", b =>
+            modelBuilder.Entity("Squadra.Server.Models.StopienBieglosciJezyka", b =>
                 {
                     b.Navigation("JezykUzytkownikaCollection");
                 });

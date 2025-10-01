@@ -1,4 +1,6 @@
-﻿namespace Squadra.Services;
+﻿using Squadra.Server.DTO.JezykStopien;
+
+namespace Squadra.Server.Services;
 
 public interface IStopienBieglosciJezykaService
 {

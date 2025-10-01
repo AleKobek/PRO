@@ -1,6 +1,6 @@
 ﻿
 
-namespace Squadra;
+namespace Squadra.Server.DTO.KrajRegion;
 
 public record KrajDto( 
     int Id,

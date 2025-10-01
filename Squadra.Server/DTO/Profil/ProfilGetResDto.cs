@@ -1,4 +1,7 @@
-﻿namespace Squadra;
+﻿using Squadra.Server.DTO.JezykStopien;
+using Squadra.Server.DTO.KrajRegion;
+
+namespace Squadra.Server.DTO.Profil;
 
 public record ProfilGetResDto
 (

@@ -1,4 +1,4 @@
-﻿namespace Squadra;
+﻿namespace Squadra.Server.DTO.Uzytkownik;
 
 public record UzytkownikCreateDto(
     int Id,

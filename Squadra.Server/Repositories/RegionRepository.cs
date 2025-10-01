@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Squadra.Exceptions;
+using Squadra.Server.Context;
+using Squadra.Server.DTO.KrajRegion;
+using Squadra.Server.Exceptions;
+using Squadra.Server.Models;
 
-
-namespace Squadra;
+namespace Squadra.Server.Repositories;
 
 public class RegionRepository(AppDbContext context, IKrajRepository krajRepository) : IRegionRepository
 {

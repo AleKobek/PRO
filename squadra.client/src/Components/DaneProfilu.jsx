@@ -1,10 +1,8 @@
 ﻿import {useEffect, useState} from "react";
 import ListaJezykow from "./ListaJezykow";
-import {useJezyk} from "../LanguageContext.";
 
 export default function DaneProfilu() {
     
-    const { jezyk } = useJezyk();
 
     const [pseudonim, ustawPseudonim] = useState("");
     const [zaimki, ustawZaimki] = useState("");
@@ -51,7 +49,6 @@ export default function DaneProfilu() {
                 console.error(e);
             }
             finally {
-                // ustawiamy dopiero po zakończeniu próby pobrania
                 ustawCzyZaladowano(true);
             }
 
@@ -82,15 +79,22 @@ export default function DaneProfilu() {
         if(listaJezykowUzytkownika.length === 0) podajJezykiIStopnieUzytkownika(localStorage.getItem("idUzytkownika")).then();
     }, []);
     
-    //if(!czyZaladowano) return(<><p>{jezyk.ladowanie}</p></>);
+    if(!czyZaladowano) return(<><p>Ładowanie...</p></>);
     
-    return(<>
-        <p>{jezyk.pseudonim}: {pseudonim}</p>
-        <p>{jezyk.zaimki}: {zaimki}</p>
-        <p>{jezyk.kraj}: {kraj ? kraj.nazwa : "Unknown"}</p>
-        <p>{jezyk.region}: {region ? region.nazwa : "Unknown"}</p>
-        <p>{jezyk.jezyki}</p>
-        <ListaJezykow typ = "wyswietlanie" listaJezykowUzytkownika = {listaJezykowUzytkownika} ustawListeJezykowUzytkownika={ustawListeJezykowUzytkownika}/>
-        <p>{jezyk.opis}: {opis}</p>
-    </>)
+    return(<div className = "dane-profilu">
+        <label htmlFor = "pseudonim">Pseudonim:</label>
+        <p id = "pseudonim" className= "pole-w-danych-profilu">{pseudonim}</p>
+        <label htmlFor = "zaimki">Zaimki:</label>
+        <p id= "zaimki" className= "pole-w-danych-profilu">{zaimki}</p>
+        <label htmlFor = "kraj">Kraj:</label>
+        <p id = "kraj" className= "pole-w-danych-profilu">{kraj ? kraj.nazwa : "Nie określono"}</p>
+        <label htmlFor = "region">Region:</label>
+        <p className= "pole-w-danych-profilu">{region ? region.nazwa : "Nie określono"}</p>
+        <div id = "lista-jezykow-dane-profilu" className = "lista-jezykow-dane-profilu">
+            <p style={{fontWeight: "bold"}}>Języki</p>
+            <ListaJezykow typ = "wyswietlanie" listaJezykowUzytkownika = {listaJezykowUzytkownika} ustawListeJezykowUzytkownika={ustawListeJezykowUzytkownika}/>
+        </div><br/>
+        <label htmlFor = "opis">Opis:</label>
+        <p id = "opis" className= "pole-w-danych-profilu">{opis}</p>
+    </div>)
 }

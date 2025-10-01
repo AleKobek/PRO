@@ -1,4 +1,4 @@
-﻿namespace Squadra;
+﻿namespace Squadra.Server.DTO.Profil;
 
 public record ProfilUpdateResDto(
     ProfilGetResDto? Profil,

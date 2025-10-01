@@ -1,6 +1,8 @@
-﻿using Squadra.Exceptions;
+﻿using Squadra.Server.DTO.JezykStopien;
+using Squadra.Server.Exceptions;
+using Squadra.Server.Repositories;
 
-namespace Squadra.Services;
+namespace Squadra.Server.Services;
 
 public class StopienBieglosciJezykaService(IStopienBieglosciJezykaRepository stopienBieglosciJezykaRepository) : IStopienBieglosciJezykaService
 {

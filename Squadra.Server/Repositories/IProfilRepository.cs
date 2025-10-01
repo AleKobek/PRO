@@ -1,4 +1,6 @@
-﻿namespace Squadra;
+﻿using Squadra.Server.DTO.Profil;
+
+namespace Squadra.Server.Repositories;
 
 public interface IProfilRepository
 {

@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Squadra.Server.Context;
+using Squadra.Server.DTO.Status;
+using Squadra.Server.Models;
 
-namespace Squadra;
+namespace Squadra.Server.Repositories;
 
 public class StatusRepository(AppDbContext context) : IStatusRepository
 {

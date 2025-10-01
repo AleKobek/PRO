@@ -1,4 +1,7 @@
-﻿namespace Squadra.Services;
+﻿using Squadra.Server.DTO.Status;
+using Squadra.Server.Repositories;
+
+namespace Squadra.Server.Services;
 
 public class StatusService(IStatusRepository statusRepository) : IStatusService
 {

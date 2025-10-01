@@ -1,4 +1,6 @@
-﻿namespace Squadra;
+﻿using Squadra.Server.DTO.Status;
+
+namespace Squadra.Server.DTO.Uzytkownik;
 
 public record UzytkownikUpdateDto(
     int Id,

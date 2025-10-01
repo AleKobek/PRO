@@ -59,7 +59,8 @@
   padding: 30px;
   /*"Cooper Black", */
   h1, h2{
-    font-family: Cambria serif;
+    font: 60px/1.5 Georgia, serif;
+    
     text-align: center;
   }
 
@@ -70,16 +71,16 @@
     padding: 5px;
     margin: 5px 0 5px 10px;
     border-radius: 10px;
-    
+
   }
   /* tak sobie nadpisujemy dla danej klasy*/
   button.przycisk-nawigacji{
-     background: darkblue;
-   /* jak najeżdżamy myszką, zmienia kolor*/
+    background: darkblue;
+    /* jak najeżdżamy myszką, zmienia kolor*/
     &:hover{
-     background: blue;
+      background: blue;
     }
-   }
+  }
 
   button:disabled{
     font-size: 20px;
@@ -89,7 +90,7 @@
     margin: 5px 0 5px 10px;
     border-radius: 10px;
   }
-  
+
   table{
     border: ridge 8px black;
     border-collapse: collapse;
@@ -133,6 +134,67 @@
     label{
       font-size: 20px;
       font-weight: bold;
+    }
+  }
+  
+  .dane-profilu{
+    vertical-align: center;
+    width: fit-content;
+    font-size: 20px;
+    padding: 10px 30px;
+    align-self: center;
+    horiz-align: center;
+    /*border: outset 20px #eadaa0;*/
+    text-align: center;
+    align-content: center;
+    /*margin-top: 20px;*/
+    margin: 40px auto;
+    input{
+      font-size: 20px;
+    }
+    label{
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .lista-jezykow-dane-profilu{
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      border: groove 2px black;
+      border-radius: 10px;
+      background-color: #f1f1f1;
+    }
+    
+    .pole-w-danych-profilu{
+      margin: 10px 0;
+      padding: 10px;
+      border: solid 2px black;
+      border-radius: 10px;
+      background-color: #f1f1f1;
+    }
+  }
+
+  .lista-jezykow{
+    li{
+      text-align: left;
+      .jezyk-na-liscie{
+        .nazwa-jezyka{
+          font-weight: bold;
+        }
+        list-style-type: none;
+        margin: 0;
+        border: solid 2px black;
+        border-radius: 10px;
+        background-color: #f1f1f1;
+        padding: 10px;
+      }
+      padding: 7px;
+      &:last-child{
+        border-right: none;
+      }
+      a{
+        display: block;
+      }
     }
   }
 

@@ -1,4 +1,7 @@
-﻿namespace Squadra.Services;
+﻿using Squadra.Server.DTO.Profil;
+using Squadra.Server.Repositories;
+
+namespace Squadra.Server.Services;
 
 public class ProfilService(
     IProfilRepository profilRepository) : IProfilService

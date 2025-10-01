@@ -1,4 +1,6 @@
-﻿namespace Squadra;
+﻿using Squadra.Server.DTO.JezykStopien;
+
+namespace Squadra.Server.Repositories;
 
 public interface IJezykRepository
 {

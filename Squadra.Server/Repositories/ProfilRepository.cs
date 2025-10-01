@@ -1,7 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Squadra.Exceptions;
+using Squadra.Server.Context;
+using Squadra.Server.DTO.JezykStopien;
+using Squadra.Server.DTO.Profil;
+using Squadra.Server.Exceptions;
+using Squadra.Server.Models;
 
-namespace Squadra;
+namespace Squadra.Server.Repositories;
 
 public class ProfilRepository(AppDbContext appDbContext,
     IJezykRepository jezykRepository,

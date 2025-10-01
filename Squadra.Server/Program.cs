@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Squadra;
-using Squadra.Services;
+using Squadra.Server.Context;
+using Squadra.Server.Repositories;
+using Squadra.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

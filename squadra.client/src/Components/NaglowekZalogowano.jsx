@@ -1,22 +1,12 @@
 ﻿import {useEffect, useMemo, useState} from "react";
 import {NavLink} from "react-router-dom";
-import {useJezyk} from "../LanguageContext.";
 
 export default function NaglowekZalogowano(){
 
-    const { jezyk } = useJezyk();
 
     // to, co pobieramy, w prototypie nie zmieniamy
-    const [nazwaAktualnegoStatusuZBazy, ustawNazweAktualnegoStatusuZBazy] = useState("Online");
-
-    const statusDoWyswietlenia = useMemo(() => {
-        switch (nazwaAktualnegoStatusuZBazy) {
-            case "Online": return jezyk.dostepny;
-            case "Away": return jezyk.zarazWracam;
-            case "Do not disturb": return jezyk.niePrzeszkadzac;
-            default: return "Offline";
-        }
-    }, [nazwaAktualnegoStatusuZBazy, jezyk]);
+    const [nazwaAktualnegoStatusuZBazy, ustawNazweAktualnegoStatusuZBazy] = useState("Dostępny");
+    
 
 
 
@@ -28,12 +18,12 @@ export default function NaglowekZalogowano(){
         <span style={{fontSize: 90}}>Squadra</span>
         <ul id = "menu-na-pasku">
             {/* na razie wszystkie prowadzą do profilu, bo nie ma reszty */}
-            <NavLink to = '/' className = "nawigacja">{jezyk.druzyny}</NavLink>
-            <NavLink to = '/' className = "nawigacja">{jezyk.gildie}</NavLink>
-            <NavLink to = '/' className = "nawigacja">{jezyk.znajomi}</NavLink>
-            <NavLink to = '/' className = "nawigacja">{jezyk.twojProfil}</NavLink>
-            <NavLink to = '/' className = "nawigacja">{jezyk.status}: {statusDoWyswietlenia}</NavLink>
-            <NavLink to = '/' className = "nawigacja">{jezyk.wyloguj}</NavLink>
+            <NavLink to = '/' className = "nawigacja">Drużyny</NavLink>
+            <NavLink to = '/' className = "nawigacja">Gildie</NavLink>
+            <NavLink to = '/' className = "nawigacja">Znajomi</NavLink>
+            <NavLink to = '/' className = "nawigacja">Twój profil</NavLink>
+            <NavLink to = '/' className = "nawigacja">Status: {nazwaAktualnegoStatusuZBazy}</NavLink>
+            <NavLink to = '/' className = "nawigacja">Wyloguj</NavLink>
         </ul>
     </div>)
     

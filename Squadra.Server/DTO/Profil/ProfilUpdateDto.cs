@@ -1,8 +1,9 @@
-﻿namespace Squadra;
+﻿using Squadra.Server.DTO.JezykStopien;
+
+namespace Squadra.Server.DTO.Profil;
 
 public record ProfilUpdateDto(
     int? RegionId,
-    int? KrajId,
     string? Zaimki,
     string? Opis,
     ICollection<JezykOrazStopienDto> Jezyki,

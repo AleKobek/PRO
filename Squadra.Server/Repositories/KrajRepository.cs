@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Squadra.Server.Context;
+using Squadra.Server.DTO.KrajRegion;
+using Squadra.Server.Models;
 
-
-namespace Squadra;
+namespace Squadra.Server.Repositories;
 
 public class KrajRepository(AppDbContext context) : IKrajRepository
 {

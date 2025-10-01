@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Squadra.Migrations
+namespace Squadra.Server.Migrations
 {
     /// <inheritdoc />
     public partial class DodatkowyJezykProfiluDlaTestow : Migration

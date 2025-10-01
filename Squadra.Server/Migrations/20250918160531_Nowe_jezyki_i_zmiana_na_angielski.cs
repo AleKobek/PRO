@@ -4,7 +4,7 @@
 
 #pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
 
-namespace Squadra.Migrations
+namespace Squadra.Server.Migrations
 {
     /// <inheritdoc />
     public partial class Nowe_jezyki_i_zmiana_na_angielski : Migration

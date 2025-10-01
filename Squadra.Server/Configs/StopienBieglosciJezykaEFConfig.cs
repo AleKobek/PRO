@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Squadra.Server.Models;
 
-namespace Squadra;
+namespace Squadra.Server.Configs;
 
 public class StopienBieglosciJezykaEFConfig : IEntityTypeConfiguration<StopienBieglosciJezyka>
 {

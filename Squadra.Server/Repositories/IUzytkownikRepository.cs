@@ -1,5 +1,7 @@
 ﻿
-namespace Squadra;
+using Squadra.Server.DTO.Uzytkownik;
+
+namespace Squadra.Server.Repositories;
 
 public interface IUzytkownikRepository
 {

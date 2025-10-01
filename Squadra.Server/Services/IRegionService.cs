@@ -1,4 +1,6 @@
-﻿namespace Squadra.Services;
+﻿using Squadra.Server.DTO.KrajRegion;
+
+namespace Squadra.Server.Services;
 
 public interface IRegionService
 {

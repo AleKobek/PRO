@@ -4,11 +4,9 @@ import React, {useEffect, useState} from 'react';
 import NaglowekZalogowano from './NaglowekZalogowano';
 import FormularzProfilu from './FormularzProfilu';
 import {useNavigate} from "react-router-dom";
-import {useJezyk} from "../LanguageContext.";
     export default function EdytujProfil() {
 
     const navigate = useNavigate();
-    const {jezyk} = useJezyk();
 
     const [pseudonim, ustawPseudonim] = useState("");
     const [zaimki, ustawZaimki] = useState("");
@@ -43,7 +41,7 @@ import {useJezyk} from "../LanguageContext.";
 
                 const profil = await fetchJson(`http://localhost:5014/api/Profil/${id}`);
                 if (alive && profil) {
-                    console.log("Pobrano profil:", profil);
+                    // console.log("Pobrano profil:", profil);
                     ustawListeJezykowUzytkownika(Array.isArray(profil.jezyki) ? profil.jezyki : []);
                     ustawPseudonim(profil.pseudonim ?? '');
                     ustawZaimki(profil.zaimki ?? '');
@@ -71,7 +69,7 @@ import {useJezyk} from "../LanguageContext.";
 
             return () => {
                 alive = false;
-                ac.abort(); // przerwij trwające żądania
+                ac.abort(); // przerywamy
             };
         }, []);
 
@@ -80,8 +78,9 @@ import {useJezyk} from "../LanguageContext.";
         return (<>
         <NaglowekZalogowano></NaglowekZalogowano>
         <div id = "glowna">
-            <h1>{jezyk.edytujProfil}</h1>
-            <button className={"przycisk-nawigacji"} onClick={() => {navigate('/')}}>{jezyk.powrotDoProfilu}</button>
+            <h1>Edytuj profil</h1>
+            <button className={"przycisk-nawigacji"} onClick={() => {navigate('/')}}>Powrót do profilu</button>
+            <br/><br/>
             <FormularzProfilu czyEdytuj = {true} staraListaJezykowUzytkownika = {listaJezykowUzytkownika} staryPseudonim = {pseudonim} 
                               stareZaimki = {zaimki} staryOpis = {opis} staryRegion = {region} staryKraj = {kraj}/>
             <br></br>

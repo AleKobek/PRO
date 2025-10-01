@@ -1,20 +1,17 @@
 ﻿import {useEffect, useMemo, useRef, useState} from "react";
 import JezykNaLiscieKomponent from "./JezykNaLiscieKomponent";
-import {useJezyk} from "../LanguageContext.";
 
 export default function ListaJezykow({
                                          typ,
-                                         listaJezykowUzytkownika = [],              // domyślnie pusta tablica zamiast undefined
-                                         ustawListeJezykowUzytkownika = () => {}     // domyślna pusta funkcja
+                                         listaJezykowUzytkownika = [],          
+                                         ustawListeJezykowUzytkownika = () => {}
                                      }){
 
 
-    const { jezyk } = useJezyk();
 
     const startedRef = useRef(false);
 
-    // na razie nie chce mi się bawić z paginacją
-    const liczbaJezykowNaStronie = 100;
+    const liczbaJezykowNaStronie = 3;
 
     const [aktualnaStrona, ustawAktualnaStrone] = useState(0);
     const liczbaStron = Math.max(1, Math.ceil((listaJezykowUzytkownika?.length ?? 0) / liczbaJezykowNaStronie));
@@ -63,7 +60,7 @@ export default function ListaJezykow({
         return () => { alive = false; };
     }, []);
 
-    // 2) Gdy słowniki gotowe -> ustaw domyślne wybory i zaktualizuj dostępne języki
+    // gdy dane są pobrane, ustawiamy domyślne wybory i aktualizujemy dostępne języki
     useEffect(() => {
         if (listaStopniZBazy.length > 0) {
             ustawWybranyStopienDoDodania(listaStopniZBazy[0]);
@@ -88,14 +85,11 @@ export default function ListaJezykow({
         if (Number.isNaN(index)) return;
         // używamy filter zwracając nową tablicę:
         ustawListeJezykowUzytkownika((prev) => prev.filter((_, i) => i !== index));
-        //zaktualizujDostepneJezykiDoDodania();
     }
 
     const przyKliknieciuDodaj = (e) => {
         e.preventDefault();
-
-        // Nie ustawiaj domyślnej wartości przez setState i od razu z niej korzystaj (setState jest async).
-        // Zrób lokalny fallback:
+        
         const jezyk = wybranyJezykDoDodania?.id
             ? wybranyJezykDoDodania
             : listaJezykowDostepnychDoDodania[0];
@@ -117,27 +111,25 @@ export default function ListaJezykow({
             }
         ]));
 
-        // Opcjonalnie: zresetuj wybór, żeby select pokazał następną dostępną opcję
         ustawWybranyJezykDoDodania(undefined);
         ustawWybranyStopienDoDodania(undefined);
 
-        // NIE wywołujemy ręcznie "zaktualizujDostepneJezykiDoDodania"
     };
 
     // przyciski do paginacji stron listy
     let przyciski = <>
         {/* strona 1 z 5 itp */}
-        <p>{jezyk.ktoraStrona1}{aktualnaStrona + 1}{jezyk.ktoraStrona2}{liczbaStron}</p>
+        <p>Strona {aktualnaStrona + 1} z {liczbaStron}</p>
 
         {/* przycisk poprzedniej strony */}
         <button disabled={aktualnaStrona === 0}
                 onClick={ () => { ustawAktualnaStrone(aktualnaStrona - 1) } }
-        >{jezyk.poprzedniaStrona}</button>
+        >Poprzednia strona</button>
 
         {/* przycisk następnej strony*/}
         <button disabled= {liczbaStron === 0 || aktualnaStrona === liczbaStron - 1}
                 onClick={ () => { ustawAktualnaStrone(aktualnaStrona + 1) } }
-        >{jezyk.nastepnaStrona}</button>
+        >Następna strona</button>
     </>
     
 
@@ -146,12 +138,11 @@ export default function ListaJezykow({
             if (listaJezykowUzytkownika.length === 0) {
                 return (<>
                     <p style={{fontFamily: "Comic Sans MS"}}>
-                        {jezyk.pustaTabelka}
+                        Lista jest pusta.
                     </p>
                 </>);
             }
-            return (
-                <>
+            return (<div className="lista-jezykow">
                     <ul>
                         {(listaJezykowUzytkownika ?? [])
                             .slice(aktualnaStrona * liczbaJezykowNaStronie, (aktualnaStrona + 1) * liczbaJezykowNaStronie)
@@ -164,21 +155,21 @@ export default function ListaJezykow({
                             ))}
                     </ul>
                     {przyciski}
-                </>
+                </div>
             )
         }
 
         if (typ === "edycja") {
-            // jest lista języków {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}. obok każdego elementu jest usuwanie, pod spodem jest pusty z przyciskiem dodaj
-            return (<>
+            // lista języków {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
+            return (<div className={"lista-jezykow"}>
                 <ul>
                     {/*lista języków nad selectem z dodaniem nowego*/}
                     {listaJezykowUzytkownika
                         .sort((a, b) => b.wartosc - a.wartosc)
                         .map((element, index) => {
-                        if (index >= aktualnaStrona * 5 && index < (aktualnaStrona + 1) * 5) {
+                        if (index >= aktualnaStrona * liczbaJezykowNaStronie && index < (aktualnaStrona + 1) * liczbaJezykowNaStronie) {
                             return (<>
-                                <JezykNaLiscieKomponent jezyk={jezyk} jezykDoKomponentu={element} key={index} idZListy={index}
+                                <JezykNaLiscieKomponent jezykDoKomponentu={element} key={`${element.idJezyka}-${element.idStopnia}`} idZListy={index}
                                                         coPrzyKlikaniu={przyKliknieciuUsun} czyEdytuj={true}/>
                             </>)
                         }
@@ -198,7 +189,6 @@ export default function ListaJezykow({
                     <select onChange={(e) => {
                         let id = e.target.value;
                         let tempStopien = listaStopniZBazy.find(stopien => stopien.id == id);
-                        console.log("stopień do dodania: ",tempStopien);
                         ustawWybranyStopienDoDodania(tempStopien);
                     }}>
                         {listaStopniZBazy.map((element, index) => (
@@ -212,15 +202,16 @@ export default function ListaJezykow({
                         )}
                     </select>
                     {/* przycisk obok selectów */}
-                    <button onClick={przyKliknieciuDodaj}>{jezyk.dodaj}</button>
+                    <button onClick={przyKliknieciuDodaj}>Dodaj</button>
                 </ul>
                 {przyciski}
-            </>)
+            </div>)
         }
     
+    // jeżeli tu doszliśmy, to nie pasuje do żadnego typu
     return(
         <>
-            {jezyk.typTabelkiNieIstnieje}
+            Coś poszło nie tak, typ tabelki {typ} nie istnieje.
         </>
     )
 }

@@ -1,7 +1,6 @@
 import React, {useEffect, useMemo, useState} from "react";
 import ListaJezykow from "./ListaJezykow";
 import {useNavigate} from "react-router-dom";
-import {useJezyk} from "../LanguageContext.";
 
 export default function FormularzProfilu({
                                              staraListaJezykowUzytkownika,
@@ -14,7 +13,6 @@ export default function FormularzProfilu({
 {
     
     const navigate = useNavigate();
-    const { jezyk } = useJezyk();
 
 
     // {id, nazwa}
@@ -27,7 +25,8 @@ export default function FormularzProfilu({
 
     // to, co jest aktualnie w formularzu
     // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
-    // Uwaga: inicjalizacja lokalnego stanu z propsa:
+
+    // inicjalizacja lokalnego stanu z propsa:
     const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState(() =>
         Array.isArray(staraListaJezykowUzytkownika)
             ? staraListaJezykowUzytkownika
@@ -41,7 +40,7 @@ export default function FormularzProfilu({
     // przychodzi w postaci {idRegionu, nazwaRegionu, idKraju, nazwaKraju}
     const [opis, ustawOpis] = useState("");
 
-    // Uwaga: SYNC tylko gdy props się zmienia – bez lokalnych stanów w depsach
+    // SYNC tylko gdy props się zmienia
     useEffect(() => {
         ustawListeJezykowUzytkownika(staraListaJezykowUzytkownika ?? []);
         ustawPseudonim(staryPseudonim ?? "");
@@ -54,7 +53,7 @@ export default function FormularzProfilu({
 
 
 
-    // Pobranie list krajów/regionów (z cleanup)
+    // Pobranie list krajów/regionów
     useEffect(() => {
         const ac = new AbortController();
 
@@ -69,7 +68,7 @@ export default function FormularzProfilu({
                 if (!regionyRes.ok) throw new Error(`GET /api/Region -> ${regionyRes.status}`);
 
                 const [kraje, regiony] = await Promise.all([krajeRes.json(), regionyRes.json()]);
-
+                
                 ustawListeKrajowZBazy(kraje);
                 ustawListeRegionowZBazy(regiony);
             } catch (err) {
@@ -99,7 +98,7 @@ export default function FormularzProfilu({
             // ############# tylko do prototypu ################
             Awatar: ""};
         
-        console.log("Co wysyłamy do bazy:", profilDoWyslania);
+        //console.log("Co wysyłamy do bazy:", profilDoWyslania);
         
         const opcje = {
             method: "PUT",
@@ -129,7 +128,7 @@ export default function FormularzProfilu({
             return;
         }
 
-        // Sukces 200 OK — body to ProfilUpdateResDto w camelCase
+        // tutaj dochodzimy, gdy dostaniemy 200
         // przyjdzie w formie: { profil: {...} | null, bledy: { pseudonim, zaimki, opis }, czyPoprawne: boolean }
         const { czyPoprawne, bledy, profil } = body ?? {};
 
@@ -196,18 +195,18 @@ export default function FormularzProfilu({
     
     
     return(<form id = "form" name= "formularz-profilu">
-        <label htmlFor="pseudonim">{jezyk.pseudonim}</label><br/>
-        <input type="text" id = "pseudonim" name ="pseudonim" value={pseudonim} onChange={(e)=>ustawPseudonim(e.target.value)}></input><br/>
+        <label htmlFor="pseudonim">Pseudonim</label><br/>
+        <input type="text" id = "pseudonim" name ="pseudonim" maxLength={20} value={pseudonim} onChange={(e)=>ustawPseudonim(e.target.value)}></input><br/>
         <span id = "error-pseudonim" className="error-wiadomosc">{bledy.pseudonim}</span><br/>
         
-        <label htmlFor="zaimki">{jezyk.zaimki}</label><br/>
-        <input type="text" id = "zaimki" name ="zaimki" value={zaimki} onChange={(e)=>ustawZaimki(e.target.value)}></input><br/>
+        <label htmlFor="zaimki">Zaimki</label><br/>
+        <input type="text" id = "zaimki" name ="zaimki" maxLength={10} value={zaimki} onChange={(e)=>ustawZaimki(e.target.value)}></input><br/>
         <span id = "error-zaimki" className="error-wiadomosc">{bledy.zaimki}</span><br/>
         
         {/* kraj */}
         
             <div id = "kraj">
-                <label> {jezyk.kraj} <br/>
+                <label> Kraj <br/>
                 <select
                     value={kraj?.id ?? ""}
                     onChange={(e) =>{
@@ -216,7 +215,7 @@ export default function FormularzProfilu({
                         ustawKraj(tempKraj);
                     }}
                 >
-                    <option value = "" key = {-1}>{jezyk.brak}</option>
+                    <option value = "" key = {-1}>Brak</option>
                     {
                         listaKrajowZBazy.map((kraj) => (
                             <option value={kraj.id} key = {kraj.id}>{kraj.nazwa}</option>
@@ -228,36 +227,46 @@ export default function FormularzProfilu({
     
             {/* region */}
             <div id = "region">
-                <label>{jezyk.region}<br/>
+                <label>Region<br/>
                     <select
                         value={region?.id ?? ""}
+                        disabled={!kraj?.id}
                         onChange={(e) =>{
                             let id = e.target.value;
                             let tempRegion = listaRegionowZBazy.find((region) => region.id == id);
                             ustawRegion(tempRegion)
                         }}
                     >
-                        <option value = "" key = {-1}>{jezyk.brak}</option>
-                        {
-                            regionyDoWyboru.map((region) =>(
-                                <option value={region.id} key={region.id}>{region.nazwa}</option>
-                            ))
-                        }
+                        {!kraj?.id ? (
+                            // placeholder, gdy nic nie jest wybrane
+                            <option value="">Brak</option>
+                        ) : (
+                            // gdy kraj wybrany - lista regionów dla kraju
+                            <>
+                                {regionyDoWyboru.map((region) =>(
+                                    <option value={region.id} key={region.id}>{region.nazwa}</option>
+                                ))}
+                            </>
+                        )}
+
                     </select>
                 </label>
             </div>
-        
-        <label htmlFor="opis">{jezyk.opis}</label><br/>
+        <br/>
+        <label htmlFor="opis">Opis</label><br/>
         <textarea id = "opis" name ="opis" maxLength={100} value={opis} onChange={(e)=>ustawOpis(e.target.value)}></textarea>
         <span id = "error-opis" className="error-wiadomosc">{bledy.opis}</span><br/>
         
+        <br/>
+        
         {/* lista języków */}
-        <div id = "lista-jezykow">
+        <label htmlFor="lista-jezykow">Lista języków</label>
+        <div id = "lista-jezykow" className="lista-jezykow">
         <ListaJezykow typ= "edycja" listaJezykowUzytkownika={listaJezykowUzytkownika} ustawListeJezykowUzytkownika={ustawListeJezykowUzytkownika}/>
         </div>
         <br/>
 
-        <input type = "button" value = {jezyk.zapisz} onClick={przyWysylaniu} disabled={czyZablokowaneWyslij}/>
+        <input type = "button" value = "Zapisz" onClick={przyWysylaniu} disabled={czyZablokowaneWyslij}/>
         <span id = "error-zapisz" className="error-wiadomosc">{bledy.zapisz}</span><br/>
     </form>)
 

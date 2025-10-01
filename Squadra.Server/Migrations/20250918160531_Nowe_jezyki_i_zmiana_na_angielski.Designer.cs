@@ -13,8 +13,8 @@ using Squadra.Server.Context;
 namespace Squadra.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250916115107_Jezyk_id_nie_dziala_moze_teraz_zadziala")]
-    partial class Jezyk_id_nie_dziala_moze_teraz_zadziala
+    [Migration("20250918160531_Nowe_jezyki_i_zmiana_na_angielski")]
+    partial class Nowe_jezyki_i_zmiana_na_angielski
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -47,17 +47,37 @@ namespace Squadra.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Nazwa = "polski"
+                            Nazwa = "polish"
                         },
                         new
                         {
                             Id = 2,
-                            Nazwa = "angielski"
+                            Nazwa = "english"
                         },
                         new
                         {
                             Id = 3,
-                            Nazwa = "niemiecki"
+                            Nazwa = "german"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Nazwa = "french"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Nazwa = "spanish"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Nazwa = "japanese"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Nazwa = "russian"
                         });
                 });
 
@@ -96,6 +116,12 @@ namespace Squadra.Server.Migrations
                             JezykId = 2,
                             UzytkownikId = 1,
                             StopienBieglosciId = 2
+                        },
+                        new
+                        {
+                            JezykId = 3,
+                            UzytkownikId = 1,
+                            StopienBieglosciId = 1
                         });
                 });
 
@@ -121,12 +147,12 @@ namespace Squadra.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Nazwa = "Polska"
+                            Nazwa = "Poland"
                         },
                         new
                         {
                             Id = 2,
-                            Nazwa = "Anglia"
+                            Nazwa = "England"
                         });
                 });
 
@@ -362,20 +388,20 @@ namespace Squadra.Server.Migrations
                         new
                         {
                             Id = 1,
-                            Nazwa = "Podstawowy",
-                            Wartosc = 0
+                            Nazwa = "Basic",
+                            Wartosc = 1
                         },
                         new
                         {
                             Id = 2,
-                            Nazwa = "Srednio-Zaawansowany",
-                            Wartosc = 0
+                            Nazwa = "Intermediate",
+                            Wartosc = 2
                         },
                         new
                         {
                             Id = 3,
-                            Nazwa = "Zaawansowany",
-                            Wartosc = 0
+                            Nazwa = "Advanced",
+                            Wartosc = 3
                         });
                 });
 

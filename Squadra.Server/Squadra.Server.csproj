@@ -4,7 +4,8 @@
         <TargetFramework>net9.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <RootNamespace>Squadra-Server</RootNamespace>
+        <AssemblyName>Squadra.Server</AssemblyName>
+        <RootNamespace>Squadra.Server</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

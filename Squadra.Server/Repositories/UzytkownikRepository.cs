@@ -1,6 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Squadra.Server.Context;
+using Squadra.Server.DTO.Profil;
+using Squadra.Server.DTO.Status;
+using Squadra.Server.DTO.Uzytkownik;
+using Squadra.Server.Models;
 
-namespace Squadra;
+namespace Squadra.Server.Repositories;
 
 
 

@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Squadra;
+using Squadra.Server.Models;
 
+namespace Squadra.Server.Configs;
 
 public class KrajEFConfig :  IEntityTypeConfiguration<Kraj>
 {

@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Squadra.Server.Configs;
+using Squadra.Server.Models;
 
-namespace Squadra;
+namespace Squadra.Server.Context;
 
 public class AppDbContext : DbContext 
 {
@@ -23,59 +25,61 @@ public class AppDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<Status>().HasData(
-            new Status { Id = 1, Nazwa = "Online" },
-            new Status { Id = 2, Nazwa = "Away" },
-            new Status { Id = 3, Nazwa = "Do not disturb" },
-            new Status { Id = 4, Nazwa = "Invisible" }
+            new Status { Id = 1, Nazwa = "Dostępny" },
+            new Status { Id = 2, Nazwa = "Zaraz wracam" },
+            new Status { Id = 3, Nazwa = "Nie przeszkadzać" },
+            new Status { Id = 4, Nazwa = "Niewidoczny" }
         );
 
         modelBuilder.Entity<StopienBieglosciJezyka>().HasData(
-            new StopienBieglosciJezyka { Id = 1, Nazwa = "Basic", Wartosc = 1 },
-            new StopienBieglosciJezyka { Id = 2, Nazwa = "Intermediate", Wartosc = 2 },
-            new StopienBieglosciJezyka { Id = 3, Nazwa = "Advanced", Wartosc = 3 }
+            new StopienBieglosciJezyka { Id = 1, Nazwa = "Podstawowy", Wartosc = 1 },
+            new StopienBieglosciJezyka { Id = 2, Nazwa = "Średnio-zaawansowany", Wartosc = 2 },
+            new StopienBieglosciJezyka { Id = 3, Nazwa = "Zaawansowany", Wartosc = 3 }
         );
 
         modelBuilder.Entity<Jezyk>().HasData(
-            new Jezyk {Id = 1, Nazwa = "polish"},
-            new Jezyk {Id = 2, Nazwa = "english"},
-            new Jezyk {Id = 3, Nazwa = "german"},
-            new Jezyk {Id = 4, Nazwa = "french"},
-            new Jezyk {Id = 5, Nazwa = "spanish"},
-            new Jezyk {Id = 6, Nazwa = "japanese"},
-            new Jezyk {Id = 7, Nazwa = "russian"}
+            new Jezyk {Id = 1, Nazwa = "polski"},
+            new Jezyk {Id = 2, Nazwa = "angielski"},
+            new Jezyk {Id = 3, Nazwa = "niemiecki"},
+            new Jezyk {Id = 4, Nazwa = "francuski"},
+            new Jezyk {Id = 5, Nazwa = "hiszpański"},
+            new Jezyk {Id = 6, Nazwa = "japoński"},
+            new Jezyk {Id = 7, Nazwa = "rosyjski"}
         );
 
         modelBuilder.Entity<Kraj>().HasData(
-            new Kraj { Id = 1, Nazwa = "Poland" },
-            new Kraj { Id = 2, Nazwa = "England" }
+            new Kraj { Id = 1, Nazwa = "Polska" },
+            new Kraj { Id = 2, Nazwa = "Anglia" }
         );
+
 
         modelBuilder.Entity<Region>().HasData(
             // Polska
-            new Region { Id = 1, Nazwa = "Mazowieckie", KrajId = 1 },
-            new Region {Id = 2, Nazwa = "Wielkopolskie", KrajId = 1},
+            new Region { Id = 1, Nazwa = "Nie określono", KrajId = 1 },
+            new Region { Id = 2, Nazwa = "Mazowieckie", KrajId = 1 },
             new Region {Id = 3, Nazwa = "Dolnoslaskie", KrajId = 1},
             new Region {Id = 4, Nazwa = "Lubelskie", KrajId = 1},
             new Region {Id = 5, Nazwa = "Lubuskie", KrajId = 1},
             new Region {Id = 6, Nazwa = "Podkarpackie", KrajId = 1},
             new Region {Id = 7, Nazwa = "Podlaskie", KrajId = 1},
             new Region {Id = 8, Nazwa = "Zachodniopomorskie", KrajId = 1},
+            new Region {Id = 9, Nazwa = "Wielkopolskie", KrajId = 1},
             // Anglia
-            new Region {Id = 9, Nazwa = "East od England", KrajId = 2},
-            new Region {Id = 10, Nazwa = "East Midlands", KrajId = 2},
+            new Region {Id = 10, Nazwa = "Nie określono", KrajId = 2},
             new Region {Id = 11, Nazwa = "West Midlands", KrajId = 2},
             new Region {Id = 12, Nazwa = "South West England", KrajId = 2},
             new Region {Id = 13, Nazwa = "South East England", KrajId = 2},
             new Region {Id = 14, Nazwa = "North West England", KrajId = 2},
             new Region {Id = 15, Nazwa = "North East England", KrajId = 2},
-            new Region {Id = 16, Nazwa = "Greater London", KrajId = 2}
+            new Region {Id = 16, Nazwa = "Greater London", KrajId = 2},
+            new Region {Id = 17, Nazwa = "East od England", KrajId = 2},
+            new Region {Id = 18, Nazwa = "East Midlands", KrajId = 2}
         );
-
         modelBuilder.Entity<Profil>().HasData(
             new Profil
             {
                 IdUzytkownika = 1, Zaimki = "she/her", Opis = "Lubię placki!",
-                Awatar = [], Pseudonim = "Leczo", RegionId = 1
+                Awatar = [], Pseudonim = "Leczo", RegionId = 2
             });
 
         modelBuilder.Entity<JezykProfilu>().HasData(

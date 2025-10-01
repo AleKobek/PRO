@@ -6,10 +6,11 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Squadra;
+using Squadra.Server.Context;
 
 #nullable disable
 
-namespace Squadra.Migrations
+namespace Squadra.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("20250912173012_InitialCreate")]

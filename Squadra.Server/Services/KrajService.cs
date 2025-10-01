@@ -1,4 +1,7 @@
-﻿namespace Squadra.Services;
+﻿using Squadra.Server.DTO.KrajRegion;
+using Squadra.Server.Repositories;
+
+namespace Squadra.Server.Services;
 
 public class KrajService (IKrajRepository krajRepository) : IKrajService
 {

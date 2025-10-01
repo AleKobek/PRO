@@ -1,4 +1,6 @@
-﻿namespace Squadra;
+﻿using Squadra.Server.DTO.Status;
+
+namespace Squadra.Server.Repositories;
 
 public interface IStatusRepository
 {

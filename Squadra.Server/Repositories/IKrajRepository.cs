@@ -1,5 +1,7 @@
 ﻿
-namespace Squadra;
+using Squadra.Server.DTO.KrajRegion;
+
+namespace Squadra.Server.Repositories;
 
 public interface IKrajRepository
 {

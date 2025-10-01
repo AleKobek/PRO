@@ -1,4 +1,6 @@
-﻿namespace Squadra.Services;
+﻿using Squadra.Server.DTO.Profil;
+
+namespace Squadra.Server.Services;
 
 public interface IProfilService
 {

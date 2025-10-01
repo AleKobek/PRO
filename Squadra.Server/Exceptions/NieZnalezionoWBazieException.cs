@@ -1,4 +1,4 @@
-﻿namespace Squadra.Exceptions;
+﻿namespace Squadra.Server.Exceptions;
 
 public class NieZnalezionoWBazieException : Exception
 {
