@@ -28,7 +28,8 @@ public class AppDbContext : DbContext
             new Status { Id = 1, Nazwa = "Dostępny" },
             new Status { Id = 2, Nazwa = "Zaraz wracam" },
             new Status { Id = 3, Nazwa = "Nie przeszkadzać" },
-            new Status { Id = 4, Nazwa = "Niewidoczny" }
+            new Status { Id = 4, Nazwa = "Niewidoczny" },
+            new Status { Id = 5, Nazwa = "Offline" }
         );
 
         modelBuilder.Entity<StopienBieglosciJezyka>().HasData(
@@ -79,7 +80,7 @@ public class AppDbContext : DbContext
             new Profil
             {
                 IdUzytkownika = 1, Zaimki = "she/her", Opis = "Lubię placki!",
-                Awatar = [], Pseudonim = "Leczo", RegionId = 2
+                Awatar = [], Pseudonim = "Leczo", RegionId = 2, StatusId = 1
             });
 
         modelBuilder.Entity<JezykProfilu>().HasData(
@@ -89,7 +90,7 @@ public class AppDbContext : DbContext
         );
 
         modelBuilder.Entity<Uzytkownik>().HasData(
-            new Uzytkownik {Id = 1, Login = "Leczo", Haslo = "123456", StatusId = 1, Email = "eee@eeee.ee", DataUrodzenia = new DateOnly(2002, 10,5)});
+            new Uzytkownik {Id = 1, Login = "Leczo", Haslo = "123456", Email = "eee@eeee.ee", DataUrodzenia = new DateOnly(2002, 10,5)});
         
         
 

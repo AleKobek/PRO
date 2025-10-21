@@ -253,17 +253,19 @@ export default function FormularzProfilu({
                 </label>
             </div>
         <br/>
-        <label htmlFor="opis">Opis</label><br/>
-        <textarea id = "opis" name ="opis" maxLength={100} value={opis} onChange={(e)=>ustawOpis(e.target.value)}></textarea>
+        <label htmlFor="opis">Opis<br/>
+        <textarea id = "opis" name ="opis" maxLength={100} value={opis} onChange={(e)=>ustawOpis(e.target.value)}></textarea></label>
         <span id = "error-opis" className="error-wiadomosc">{bledy.opis}</span><br/>
         
         <br/>
         
         {/* lista języków */}
-        <label htmlFor="lista-jezykow">Lista języków</label>
-        <div id = "lista-jezykow" className="lista-jezykow">
-        <ListaJezykow typ= "edycja" listaJezykowUzytkownika={listaJezykowUzytkownika} ustawListeJezykowUzytkownika={ustawListeJezykowUzytkownika}/>
-        </div>
+        <label htmlFor="lista-jezykow">
+            Lista języków
+            <div id = "lista-jezykow" className="lista-jezykow">
+            <ListaJezykow typ= "edycja" listaJezykowUzytkownika={listaJezykowUzytkownika} ustawListeJezykowUzytkownika={ustawListeJezykowUzytkownika}/>
+            </div>
+        </label>
         <br/>
 
         <input type = "button" value = "Zapisz" onClick={przyWysylaniu} disabled={czyZablokowaneWyslij}/>

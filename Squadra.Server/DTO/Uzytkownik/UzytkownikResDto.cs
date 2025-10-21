@@ -11,6 +11,5 @@ public record UzytkownikResDto
     string Haslo,
     string Email,
     string? NumerTelefonu,
-    DateOnly? DataUrodzenia,
-    StatusDto Status
+    DateOnly? DataUrodzenia
 );

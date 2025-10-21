@@ -31,6 +31,13 @@ public class ProfilEFConfig : IEntityTypeConfiguration<Profil>
             .HasConstraintName("Profil_Region")
             .OnDelete(DeleteBehavior.Restrict);
         
+        builder
+            .HasOne(x => x.Status)
+            .WithMany(x => x.ProfilCollection)
+            .HasForeignKey(x => x.StatusId)
+            .HasConstraintName("Profil_Status")
+            .OnDelete(DeleteBehavior.Restrict);
+        
         builder.ToTable(nameof(Profil));
     }
 }

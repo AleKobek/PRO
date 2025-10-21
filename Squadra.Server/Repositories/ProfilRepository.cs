@@ -2,6 +2,8 @@
 using Squadra.Server.Context;
 using Squadra.Server.DTO.JezykStopien;
 using Squadra.Server.DTO.Profil;
+using Squadra.Server.DTO.Status;
+using Squadra.Server.DTO.Uzytkownik;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Models;
 
@@ -9,7 +11,8 @@ namespace Squadra.Server.Repositories;
 
 public class ProfilRepository(AppDbContext appDbContext,
     IJezykRepository jezykRepository,
-    IRegionRepository regionRepository) : IProfilRepository
+    IRegionRepository regionRepository,
+    IStatusRepository statusRepository) : IProfilRepository
 {
     public async Task<ICollection<ProfilGetResDto>> GetProfile()
     {
@@ -21,6 +24,7 @@ public class ProfilRepository(AppDbContext appDbContext,
             var jezykiUzytkownika = await jezykRepository.GetJezykiProfilu(profil.IdUzytkownika);
             
             var regionIKraj = await regionRepository.GetRegionIKraj(profil.RegionId);
+            var status = await statusRepository.GetStatus(profil.StatusId) ?? statusRepository.GetStatusDomyslny();
             profileDoZwrocenia.Add(new ProfilGetResDto(
                 profil.IdUzytkownika,
                 profil.Pseudonim,
@@ -28,7 +32,8 @@ public class ProfilRepository(AppDbContext appDbContext,
                 profil.Zaimki,
                 profil.Opis,
                 jezykiUzytkownika,
-                profil.Awatar
+                profil.Awatar,
+                status
             ));
         }
         return profileDoZwrocenia;
@@ -45,8 +50,9 @@ public class ProfilRepository(AppDbContext appDbContext,
         var jezykiUzytkownika = await jezykRepository.GetJezykiProfilu(profil.IdUzytkownika);
         
         var region = profil.RegionId == null ? null : await regionRepository.GetRegionIKraj(profil.RegionId);
+        var status = await statusRepository.GetStatus(profil.StatusId) ?? statusRepository.GetStatusDomyslny();
         
-        return new ProfilGetResDto(profil.IdUzytkownika, profil.Pseudonim, region, profil.Zaimki, profil.Opis, jezykiUzytkownika, profil.Awatar);
+        return new ProfilGetResDto(profil.IdUzytkownika, profil.Pseudonim, region, profil.Zaimki, profil.Opis, jezykiUzytkownika, profil.Awatar, status);
     }
 
     public async Task<ProfilGetResDto> UpdateProfil(int id, ProfilUpdateDto profil)
@@ -64,6 +70,7 @@ public class ProfilRepository(AppDbContext appDbContext,
 
         var jezykiUzytkownika = await jezykRepository.ZmienJezykiProfilu(id, profil.Jezyki);
         var region = profil.RegionId == null ? null : await regionRepository.GetRegionIKraj(profil.RegionId);
+        var status = await statusRepository.GetStatus(profilDoZmiany.StatusId) ?? statusRepository.GetStatusDomyslny();
 
         return new ProfilGetResDto(
             profilDoZmiany.IdUzytkownika,
@@ -72,7 +79,8 @@ public class ProfilRepository(AppDbContext appDbContext,
             profilDoZmiany.Zaimki,
             profilDoZmiany.Opis,
             jezykiUzytkownika,
-            profilDoZmiany.Awatar
+            profilDoZmiany.Awatar,
+            status
         );
     }
 
@@ -100,6 +108,25 @@ public class ProfilRepository(AppDbContext appDbContext,
         await jezykRepository.ZmienJezykiProfilu(id, new List<JezykOrazStopienDto>());
         appDbContext.Profil.Remove(profil);
         await appDbContext.SaveChangesAsync();
+    }
+    
+    public async Task<StatusDto> GetStatusProfilu(int id)
+    {
+        var profil = await appDbContext.Profil.FindAsync(id);
+        if(profil == null) throw new Exception("Profil o id uzytkownika " + id + " nie istnieje");
+        
+        var status = await statusRepository.GetStatus(profil.StatusId) ?? statusRepository.GetStatusDomyslny();
+        return status;
+    }
+    
+    
+    public async Task<ProfilGetResDto> UpdateStatus(int id, int idStatus)
+    {
+        var profil = await appDbContext.Profil.FindAsync(id);
+        if(profil == null) throw new Exception("Profil o id uzytkownika " + id + " nie istnieje");
+        profil.StatusId = idStatus;
+        await appDbContext.SaveChangesAsync();
+        return await GetProfilUzytkownika(id);
     }
     
 }

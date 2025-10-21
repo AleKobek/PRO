@@ -23,6 +23,9 @@ public class Profil
     
     public byte[]? Awatar { get; set; }
     
+    [Column("id_statusu")]
+    public int StatusId { get; set; }
+    
     [ForeignKey(nameof(IdUzytkownika))]
     public virtual Uzytkownik Uzytkownik { get; set; } = null!;
     
@@ -31,4 +34,6 @@ public class Profil
     
     public virtual ICollection<JezykProfilu> JezykUzytkownikaCollection { get; set; } = null!;
     
+    [ForeignKey(nameof(StatusId))]
+    public virtual Status Status { get; set; } = null!;
 }

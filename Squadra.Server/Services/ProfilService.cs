@@ -1,4 +1,6 @@
 ﻿using Squadra.Server.DTO.Profil;
+using Squadra.Server.DTO.Status;
+using Squadra.Server.Exceptions;
 using Squadra.Server.Repositories;
 
 namespace Squadra.Server.Services;
@@ -9,7 +11,7 @@ public class ProfilService(
 
     public async Task<ProfilGetResDto> GetProfil(int id)
     {
-        if(id < 1) throw new Exception("Profil o id " + id + " nie istnieje");
+        if(id < 1) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
 
         return await profilRepository.GetProfilUzytkownika(id);
     }
@@ -60,5 +62,32 @@ public class ProfilService(
             profilDoZwrocenia,
             new ProfilUpdateBledyDto(bladPseudonimu, bladZaimkow, bladOpisu),
             czyPoprawne);
+    }
+
+    public async Task<StatusDto> GetStatusZBazyProfilu(int id)
+    {
+        if(id < 1) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
+        
+        return await profilRepository.GetStatusProfilu(id);
+    }
+
+    public async Task<StatusDto> GetStatusDoWyswietleniaProfilu(int id)
+    {
+        if(id < 1) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
+        
+        var status = await profilRepository.GetStatusProfilu(id);
+
+        // jeżeli jest offline, zawsze wyświetlamy offline (nie mamy jeszcze jak tego sprawdzić)
+        // zakładamy na razie, że cały czas jest online
+        return status.Nazwa == "Niewidoczny" ? new StatusDto(5, "Offline") : status;
+    }
+    
+    public async Task<ProfilGetResDto> UpdateStatus(int id, int idStatus)
+    {
+        if(id < 1) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
+
+        if(idStatus < 1) throw new NieZnalezionoWBazieException("Status o id " + id + " nie istnieje");
+
+        return await profilRepository.UpdateStatus(id, idStatus);
     }
 }

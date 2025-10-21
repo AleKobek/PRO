@@ -176,6 +176,10 @@ namespace Squadra.Server.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id_regionu");
 
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int")
+                        .HasColumnName("id_statusu");
+
                     b.Property<string>("Zaimki")
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
@@ -183,6 +187,8 @@ namespace Squadra.Server.Migrations
                     b.HasKey("IdUzytkownika");
 
                     b.HasIndex("RegionId");
+
+                    b.HasIndex("StatusId");
 
                     b.ToTable("Profil", (string)null);
 
@@ -194,6 +200,7 @@ namespace Squadra.Server.Migrations
                             Opis = "Lubię placki!",
                             Pseudonim = "Leczo",
                             RegionId = 2,
+                            StatusId = 1,
                             Zaimki = "she/her"
                         });
                 });
@@ -369,6 +376,11 @@ namespace Squadra.Server.Migrations
                         {
                             Id = 4,
                             Nazwa = "Niewidoczny"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Nazwa = "Offline"
                         });
                 });
 
@@ -416,7 +428,6 @@ namespace Squadra.Server.Migrations
             modelBuilder.Entity("Squadra.Server.Models.Uzytkownik", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
                     b.Property<DateOnly?>("DataUrodzenia")
@@ -429,27 +440,25 @@ namespace Squadra.Server.Migrations
 
                     b.Property<string>("Haslo")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("Login")
                         .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("NumerTelefonu")
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
-                    b.Property<int>("StatusId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1)
-                        .HasColumnName("id_statusu");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("StatusId");
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("Login")
+                        .IsUnique();
 
                     b.ToTable("Uzytkownik", (string)null);
 
@@ -460,8 +469,7 @@ namespace Squadra.Server.Migrations
                             DataUrodzenia = new DateOnly(2002, 10, 5),
                             Email = "eee@eeee.ee",
                             Haslo = "123456",
-                            Login = "Leczo",
-                            StatusId = 1
+                            Login = "Leczo"
                         });
                 });
 
@@ -503,7 +511,16 @@ namespace Squadra.Server.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("Profil_Region");
 
+                    b.HasOne("Squadra.Server.Models.Status", "Status")
+                        .WithMany("ProfilCollection")
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("Profil_Status");
+
                     b.Navigation("Region");
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("Squadra.Server.Models.Region", b =>
@@ -527,16 +544,7 @@ namespace Squadra.Server.Migrations
                         .IsRequired()
                         .HasConstraintName("Uzytkownik_Profil");
 
-                    b.HasOne("Squadra.Server.Models.Status", "Status")
-                        .WithMany("UzytkownikCollection")
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("Uzytkownik_Status");
-
                     b.Navigation("Profil");
-
-                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("Squadra.Server.Models.Jezyk", b =>
@@ -564,7 +572,7 @@ namespace Squadra.Server.Migrations
 
             modelBuilder.Entity("Squadra.Server.Models.Status", b =>
                 {
-                    b.Navigation("UzytkownikCollection");
+                    b.Navigation("ProfilCollection");
                 });
 
             modelBuilder.Entity("Squadra.Server.Models.StopienBieglosciJezyka", b =>

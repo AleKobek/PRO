@@ -12,19 +12,18 @@ public class UzytkownikEFConfig : IEntityTypeConfiguration<Uzytkownik>
             .HasKey(x =>x.Id);
         
         builder
-            .Property(x => x.Id)
-            .ValueGeneratedOnAdd();
-        
-        builder
             .Property(x => x.Login)
-            .HasMaxLength(20)
+            .HasMaxLength(64)
             .IsRequired();
+        
+        builder.HasIndex(x => x.Login).IsUnique();
         
         builder
             .Property(x => x.Email)
-            .HasMaxLength(20)
+            .HasMaxLength(256)
             .IsRequired();
             
+        builder.HasIndex(x => x.Email).IsUnique();
         
         builder
             .Property(x => x.Email)
@@ -41,17 +40,6 @@ public class UzytkownikEFConfig : IEntityTypeConfiguration<Uzytkownik>
             .WithOne(x => x.Uzytkownik)
             .HasForeignKey<Uzytkownik>(x => x.Id)
             .HasConstraintName("Uzytkownik_Profil")
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder
-            .Property(x => x.StatusId)
-            .HasDefaultValue(1);
-        
-        builder
-            .HasOne(x => x.Status)
-            .WithMany(x => x.UzytkownikCollection)
-            .HasForeignKey(x => x.StatusId)
-            .HasConstraintName("Uzytkownik_Status")
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.ToTable(nameof(Uzytkownik));

@@ -12,5 +12,5 @@ public class Status
     [Required] [StringLength(20)]
     public string Nazwa { get; set; } = null!;
     
-    public virtual ICollection<Uzytkownik> UzytkownikCollection { get; set; } = null!;
+    public virtual ICollection<Profil> ProfilCollection { get; set; } = null!;
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
 using Squadra.Server.DTO.Profil;
-using Squadra.Server.DTO.Status;
 using Squadra.Server.DTO.Uzytkownik;
 using Squadra.Server.Models;
 
@@ -11,8 +10,7 @@ namespace Squadra.Server.Repositories;
 
 public class UzytkownikRepository(
     AppDbContext appDbContext,
-    IProfilRepository profilRepository,
-    IStatusRepository statusRepository)
+    IProfilRepository profilRepository)
     : IUzytkownikRepository
 {
     
@@ -23,17 +21,13 @@ public class UzytkownikRepository(
         
         foreach (var uzytkownik in uzytkownicy)
         {
-            // jak ktoś akurat zły status, ustawiamy domyślny, czyli offline. nie ma sensu rzucać błędu tylko po to
-            var status = await statusRepository.GetStatus(uzytkownik.StatusId) ?? statusRepository.GetStatusDomyslny();
-            
             uzytkownicyDoZwrocenia.Add(new UzytkownikResDto(
                 uzytkownik.Id, 
                 uzytkownik.Login, 
                 uzytkownik.Haslo,
                 uzytkownik.Email,
                 uzytkownik.NumerTelefonu,
-                uzytkownik.DataUrodzenia,
-                status
+                uzytkownik.DataUrodzenia
             ));
         }
         return uzytkownicyDoZwrocenia;
@@ -45,18 +39,17 @@ public class UzytkownikRepository(
         
         if (uzytkownik == null) throw new Exception("Uzytkownik o id " + id + " nie istnieje");
         
-        var status = await statusRepository.GetStatus(uzytkownik.StatusId) ?? statusRepository.GetStatusDomyslny();
-
         
-        return new UzytkownikResDto(uzytkownik.Id, uzytkownik.Login, uzytkownik.Haslo, uzytkownik.Email, uzytkownik.NumerTelefonu, uzytkownik.DataUrodzenia, status);
+        return new UzytkownikResDto(uzytkownik.Id, uzytkownik.Login, uzytkownik.Haslo, uzytkownik.Email, uzytkownik.NumerTelefonu, uzytkownik.DataUrodzenia);
     }
 
     public async Task<UzytkownikResDto> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
     {
-        var uzytkownikDoDodania = new Uzytkownik { 
-            Id = uzytkownik.Id,
+        var id = await GetNastepneId();
+        var uzytkownikDoDodania = new Uzytkownik {
+            Id = id,
             Login = uzytkownik.Login,
-            Haslo = uzytkownik.Haslo,
+            Haslo = uzytkownik.HasloHashed,
             Email = uzytkownik.Email,
             NumerTelefonu = uzytkownik.NumerTelefonu,
             DataUrodzenia = uzytkownik.DataUrodzenia,
@@ -64,18 +57,17 @@ public class UzytkownikRepository(
         // zaczynamy transakcję
         await using var transaction = await appDbContext.Database.BeginTransactionAsync();
         await appDbContext.Uzytkownik.AddAsync(uzytkownikDoDodania);
-        await profilRepository.CreateProfil(new ProfilCreateReqDto(uzytkownik.Id, uzytkownik.Pseudonim));
+        await profilRepository.CreateProfil(new ProfilCreateReqDto(id, uzytkownik.Pseudonim));
         await appDbContext.SaveChangesAsync();
         // kończymy transakcję
         await transaction.CommitAsync();
         return new UzytkownikResDto(
-            uzytkownik.Id,
+            id,
             uzytkownik.Login,
-            uzytkownik.Haslo,
+            uzytkownik.HasloHashed,
             uzytkownik.Email,
             uzytkownik.NumerTelefonu,
-            uzytkownik.DataUrodzenia,
-            new StatusDto(1, "Online")
+            uzytkownik.DataUrodzenia
         );
     }
 
@@ -91,7 +83,6 @@ public class UzytkownikRepository(
         uzytkownikDoZmiany.Email = uzytkownik.Email;
         uzytkownikDoZmiany.NumerTelefonu = uzytkownik.NumerTelefonu;
         uzytkownikDoZmiany.DataUrodzenia = uzytkownik.DataUrodzenia;
-        uzytkownikDoZmiany.StatusId = uzytkownik.Status.Id;
         
         await appDbContext.SaveChangesAsync();
         
@@ -108,13 +99,22 @@ public class UzytkownikRepository(
         await appDbContext.SaveChangesAsync();
     }
 
-
-    public async Task<UzytkownikResDto> UpdateStatus(int id, int idStatus)
+    private async Task<int> GetNastepneId()
     {
-        var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
-        if(uzytkownik == null) throw new Exception("Uzytkownik o id " + id + " nie istnieje");
-        uzytkownik.StatusId = idStatus;
-        await appDbContext.SaveChangesAsync();
-        return await GetUzytkownik(id);
+        var najwyzszeId = await appDbContext.Uzytkownik.MaxAsync(x => x.Id);
+        return najwyzszeId + 1;
+    }
+    
+    // na przyszłość do rejestracji
+    public async Task<bool> CzyLoginIstnieje(string login)
+    {
+        var q = login.Trim();
+        return await appDbContext.Uzytkownik.AnyAsync(u => u.Login == q);
+    }
+
+    public async Task<bool> CzyEmailIstnieje(string email)
+    {
+        var q = email.Trim().ToLower();
+        return await appDbContext.Uzytkownik.AnyAsync(u => u.Email == q);
     }
 }

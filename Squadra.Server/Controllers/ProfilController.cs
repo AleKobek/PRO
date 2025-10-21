@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Squadra.Server.DTO.Profil;
+using Squadra.Server.DTO.Status;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Services;
 
@@ -36,5 +37,41 @@ public class ProfilController(IProfilService profilService) : ControllerBase
         }
     }
     
-    
+    public async Task<ActionResult<StatusDto>> GetStatusZBazyProfilu(int id)
+    {
+        try
+        {
+            return Ok(await profilService.GetStatusZBazyProfilu(id));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+
+    [HttpGet("{id}/status/wyswietlenie")]
+    public async Task<ActionResult<StatusDto>> GetStatusDoWyswietleniaProfilu(int id)
+    {
+        try
+        {
+            return Ok(await profilService.GetStatusDoWyswietleniaProfilu(id));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
+
+    [HttpPut("{id}/status")]
+    private async Task<ActionResult<ProfilGetResDto>> UpdateStatus(int id, [FromBody] int idStatus)
+    {
+        try
+        {
+            return Ok(await profilService.UpdateStatus(id, idStatus));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return NotFound(e.Message);
+        }
+    }
 }
