@@ -17,10 +17,143 @@ namespace Squadra.Server.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.6")
+                .HasAnnotation("ProductVersion", "9.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("NormalizedName")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NormalizedName")
+                        .IsUnique()
+                        .HasDatabaseName("RoleNameIndex")
+                        .HasFilter("[NormalizedName] IS NOT NULL");
+
+                    b.ToTable("Roles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("RoleClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserClaims", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LoginProvider", "ProviderKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserLogins", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "RoleId");
+
+                    b.HasIndex("RoleId");
+
+                    b.ToTable("UserRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Value")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId", "LoginProvider", "Name");
+
+                    b.ToTable("UserTokens", (string)null);
+                });
 
             modelBuilder.Entity("Squadra.Server.Models.Jezyk", b =>
                 {
@@ -155,10 +288,7 @@ namespace Squadra.Server.Migrations
             modelBuilder.Entity("Squadra.Server.Models.Profil", b =>
                 {
                     b.Property<int>("IdUzytkownika")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdUzytkownika"));
 
                     b.Property<byte[]>("Awatar")
                         .HasColumnType("varbinary(max)");
@@ -428,49 +558,146 @@ namespace Squadra.Server.Migrations
             modelBuilder.Entity("Squadra.Server.Models.Uzytkownik", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly?>("DataUrodzenia")
                         .HasColumnType("date");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
-                    b.Property<string>("Haslo")
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("NormalizedEmail")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
 
-                    b.Property<string>("Login")
+                    b.Property<string>("NormalizedUserName")
                         .IsRequired()
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
-                    b.Property<string>("NumerTelefonu")
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PhoneNumber")
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
 
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
+                    b.HasIndex("NormalizedEmail")
+                        .IsUnique()
+                        .HasDatabaseName("EmailIndex");
 
-                    b.HasIndex("Login")
-                        .IsUnique();
+                    b.HasIndex("NormalizedUserName")
+                        .IsUnique()
+                        .HasDatabaseName("UserNameIndex");
 
-                    b.ToTable("Uzytkownik", (string)null);
+                    b.ToTable("AspNetUsers", (string)null);
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            DataUrodzenia = new DateOnly(2002, 10, 5),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "00000000-0000-0000-0000-000000000002",
                             Email = "eee@eeee.ee",
-                            Haslo = "123456",
-                            Login = "Leczo"
+                            EmailConfirmed = true,
+                            LockoutEnabled = false,
+                            NormalizedEmail = "EEE@EEEE.EE",
+                            NormalizedUserName = "LECZO",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBLb0gdqt+Nfir8uQHvp0c5ZiQ46E8STEWS8/21xKW9uA+U9Y4IWg3qgo7Tw0zB6pQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "00000000-0000-0000-0000-000000000001",
+                            TwoFactorEnabled = false,
+                            UserName = "Leczo"
                         });
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
+                {
+                    b.HasOne("Squadra.Server.Models.Uzytkownik", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
+                {
+                    b.HasOne("Squadra.Server.Models.Uzytkownik", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Squadra.Server.Models.Uzytkownik", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
+                {
+                    b.HasOne("Squadra.Server.Models.Uzytkownik", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Squadra.Server.Models.JezykProfilu", b =>
@@ -505,6 +732,11 @@ namespace Squadra.Server.Migrations
 
             modelBuilder.Entity("Squadra.Server.Models.Profil", b =>
                 {
+                    b.HasOne("Squadra.Server.Models.Uzytkownik", "Uzytkownik")
+                        .WithOne("Profil")
+                        .HasForeignKey("Squadra.Server.Models.Profil", "IdUzytkownika")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("Squadra.Server.Models.Region", "Region")
                         .WithMany("ProfilCollection")
                         .HasForeignKey("RegionId")
@@ -521,6 +753,8 @@ namespace Squadra.Server.Migrations
                     b.Navigation("Region");
 
                     b.Navigation("Status");
+
+                    b.Navigation("Uzytkownik");
                 });
 
             modelBuilder.Entity("Squadra.Server.Models.Region", b =>
@@ -533,18 +767,6 @@ namespace Squadra.Server.Migrations
                         .HasConstraintName("Region_Kraj");
 
                     b.Navigation("Kraj");
-                });
-
-            modelBuilder.Entity("Squadra.Server.Models.Uzytkownik", b =>
-                {
-                    b.HasOne("Squadra.Server.Models.Profil", "Profil")
-                        .WithOne("Uzytkownik")
-                        .HasForeignKey("Squadra.Server.Models.Uzytkownik", "Id")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("Uzytkownik_Profil");
-
-                    b.Navigation("Profil");
                 });
 
             modelBuilder.Entity("Squadra.Server.Models.Jezyk", b =>
@@ -560,9 +782,6 @@ namespace Squadra.Server.Migrations
             modelBuilder.Entity("Squadra.Server.Models.Profil", b =>
                 {
                     b.Navigation("JezykUzytkownikaCollection");
-
-                    b.Navigation("Uzytkownik")
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Squadra.Server.Models.Region", b =>
@@ -578,6 +797,11 @@ namespace Squadra.Server.Migrations
             modelBuilder.Entity("Squadra.Server.Models.StopienBieglosciJezyka", b =>
                 {
                     b.Navigation("JezykUzytkownikaCollection");
+                });
+
+            modelBuilder.Entity("Squadra.Server.Models.Uzytkownik", b =>
+                {
+                    b.Navigation("Profil");
                 });
 #pragma warning restore 612, 618
         }

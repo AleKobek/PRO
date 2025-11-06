@@ -42,9 +42,9 @@ public class RegionRepository(AppDbContext context, IKrajRepository krajReposito
     public async Task<ICollection<RegionDto>> GetRegionyKraju(int krajId)
     {
         ICollection<Region> regiony = await context.Region.Where(x => x.KrajId == krajId).ToListAsync();
-        
-        // nie rzucam wyjątkiem jeśli pusta, może będzie kraj bez regionów, bo np. taki mały
 
+        if (regiony.Count == 0) throw new NieZnalezionoWBazieException("Kraj o id " + krajId + " nie istnieje, bo nie ma regionów!");
+        
         return regiony.Select(region => new RegionDto(region.Id, region.KrajId, region.Nazwa)).ToList();
     }
     

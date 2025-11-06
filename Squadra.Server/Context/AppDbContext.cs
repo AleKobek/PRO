@@ -1,10 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Configs;
 using Squadra.Server.Models;
 
 namespace Squadra.Server.Context;
 
-public class AppDbContext : DbContext 
+public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int>
+ 
 {
     public DbSet<Uzytkownik> Uzytkownik { get; set; } = null!;
     public DbSet<Kraj> Kraj { get; set; } = null!;
@@ -76,12 +79,6 @@ public class AppDbContext : DbContext
             new Region {Id = 17, Nazwa = "East od England", KrajId = 2},
             new Region {Id = 18, Nazwa = "East Midlands", KrajId = 2}
         );
-        modelBuilder.Entity<Profil>().HasData(
-            new Profil
-            {
-                IdUzytkownika = 1, Zaimki = "she/her", Opis = "Lubię placki!",
-                Awatar = [], Pseudonim = "Leczo", RegionId = 2, StatusId = 1
-            });
 
         modelBuilder.Entity<JezykProfilu>().HasData(
             new JezykProfilu {UzytkownikId = 1, JezykId = 1, StopienBieglosciId = 3},
@@ -90,9 +87,36 @@ public class AppDbContext : DbContext
         );
 
         modelBuilder.Entity<Uzytkownik>().HasData(
-            new Uzytkownik {Id = 1, Login = "Leczo", Haslo = "123456", Email = "eee@eeee.ee", DataUrodzenia = new DateOnly(2002, 10,5)});
+            new Uzytkownik
+        {
+            Id = 1,
+            UserName = "Leczo",
+            NormalizedUserName = "LECZO",
+            Email = "eee@eeee.ee",
+            NormalizedEmail = "EEE@EEEE.EE",
+            PhoneNumber = "123456789",
+            DataUrodzenia = new DateOnly(2002, 10, 05),
+            EmailConfirmed = true,
+            SecurityStamp = "00000000-0000-0000-0000-000000000001",
+            ConcurrencyStamp = "00000000-0000-0000-0000-000000000002",
+            // aA1!12345 (podobno, chyba, mam nadzieję)
+            PasswordHash = "AQAAAAIAAYagAAAAEP/9zHapujLFF7cdZeFgdRHL2ueNgRrIRoFWCoyV9eycnY+o/q5y7krDeXOf/7FWkA=="
+        });
         
-        
+        modelBuilder.Entity<Profil>().HasData(
+            new Profil
+            {
+                IdUzytkownika = 1, Zaimki = "she/her", Opis = "Lubię placki!",
+                Awatar = [], Pseudonim = "Leczo", RegionId = 2, StatusId = 1
+            });
+
+        // Zmiany nazw tabel Identity, aby było spójnie
+        modelBuilder.Entity<IdentityRole<int>>().ToTable("Roles");
+        modelBuilder.Entity<IdentityUserRole<int>>().ToTable("UserRoles");
+        modelBuilder.Entity<IdentityUserClaim<int>>().ToTable("UserClaims");
+        modelBuilder.Entity<IdentityRoleClaim<int>>().ToTable("RoleClaims");
+        modelBuilder.Entity<IdentityUserToken<int>>().ToTable("UserTokens");
+        modelBuilder.Entity<IdentityUserLogin<int>>().ToTable("UserLogins");
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(UzytkownikEFConfig).Assembly);
     }

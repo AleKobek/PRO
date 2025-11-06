@@ -3,21 +3,27 @@ import {BrowserRouter, Routes, Route} from "react-router-dom";
 import TwojProfil from "./Components/TwojProfil";
 import EdytujProfil from "./Components/EdytujProfil";
 import Error404 from "./Components/Error404";
+import Logowanie from "./Components/Logowanie";
+import Rejestracja from "./Components/Rejestracja";
+import {AuthProvider} from "./Context/AuthContext";
+import StronaGlowna from "./Components/StronaGlowna";
 
 function App() {
 
-    // ######################################### tylko do prototypu! ###############################################
-    localStorage.setItem("idUzytkownika", "1");
-  
+    // jesteśmy na porcie 3000
     return (
-      <BrowserRouter>
-        <Routes>
-          <Route path = "/" element = {<TwojProfil/>}></Route>
-          <Route path = "/edytujProfil" element = {<EdytujProfil/>}></Route>
-          <Route path = "/twojProfil" element = {<TwojProfil/>}></Route>
-          <Route path = "*" element = {<Error404/>}></Route>
-        </Routes>
-      </BrowserRouter>
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path = "/" element = {<StronaGlowna/>}></Route>
+              <Route path = "/edytujProfil" element = {<EdytujProfil/>}></Route>
+              <Route path = "/twojProfil" element = {<TwojProfil/>}></Route>
+              <Route path = "/login" element = {<Logowanie/>}></Route>
+              <Route path = "/rejestracja" element = {<Rejestracja/>}></Route>
+              <Route path = "*" element = {<Error404/>}></Route>
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
     );
 }
 

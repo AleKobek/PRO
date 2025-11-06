@@ -9,14 +9,19 @@ public class ProfilService(
     IProfilRepository profilRepository) : IProfilService
 {
 
-    public async Task<ProfilGetResDto> GetProfil(int id)
+    public async Task<ServiceResult<ProfilGetResDto>> GetProfil(int id)
     {
-        if(id < 1) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
-
-        return await profilRepository.GetProfilUzytkownika(id);
+        try{
+            return id < 1
+                ? ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem("Profil o id " + id + " nie istnieje"))
+                : ServiceResult<ProfilGetResDto>.Ok(await profilRepository.GetProfilUzytkownika(id));
+        }catch(NieZnalezionoWBazieException e){
+            return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem(e.Message));
+        }
     }
     
-    public async Task<ProfilUpdateResDto> UpdateProfil(int id, ProfilUpdateDto profil)
+    
+    public async Task<ServiceResult<ProfilGetResDto>> UpdateProfil(int id, ProfilUpdateDto profil)
     {
         /*
             dane przyjdą w formie:
@@ -29,65 +34,80 @@ public class ProfilService(
             byte[]? Awatar
         */
         
-        var czyPoprawne = true;
-        var bladPseudonimu = "";
-        var bladZaimkow = "";
-        var bladOpisu = "";
+        var bledy = new List<ErrorItem>();
         
-        if(id < 1) throw new Exception("Profil o id " + id + " nie istnieje");
-        if(profil.RegionId < 1) throw new Exception("Region o id " + profil.RegionId + " nie istnieje");
+        if(id < 1) return ServiceResult<ProfilGetResDto>.BadRequest(new ErrorItem("Profil o id " + id + " nie istnieje"));
+        if(profil.RegionId < 1) return ServiceResult<ProfilGetResDto>.BadRequest(new ErrorItem("Region o id " + profil.RegionId + " nie istnieje"));
         
         if(profil.Zaimki is { Length: > 10 })
         {
-            czyPoprawne = false;
-            bladZaimkow = "Maksymalna długość zaimków wynosi 10 znaków";
-
+            bledy.Add(new ErrorItem("Maksymalna długość zaimków wynosi 10 znaków", nameof(profil.Zaimki)));
         }
 
         if (profil.Opis is { Length: > 100 })
         {
-            czyPoprawne = false;
-            bladOpisu = "Maksymalna długość opisu wynosi 100 znaków";
+            bledy.Add(new ErrorItem("Maksymalna długość opisu wynosi 100 znaków", nameof(profil.Opis)));
         }
 
         if (profil.Pseudonim.Length > 20)
         {
-            czyPoprawne = false;
-            bladPseudonimu = "Maksymalna długość pseudonimu wynosi 20 znaków";
+            bledy.Add(new ErrorItem("Maksymalna długość pseudonimu wynosi 20 znaków", nameof(profil.Pseudonim)));
         }
 
-        var profilDoZwrocenia = czyPoprawne ? await profilRepository.UpdateProfil(id, profil) : null;
-
-        return new ProfilUpdateResDto(
-            profilDoZwrocenia,
-            new ProfilUpdateBledyDto(bladPseudonimu, bladZaimkow, bladOpisu),
-            czyPoprawne);
-    }
-
-    public async Task<StatusDto> GetStatusZBazyProfilu(int id)
-    {
-        if(id < 1) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
-        
-        return await profilRepository.GetStatusProfilu(id);
-    }
-
-    public async Task<StatusDto> GetStatusDoWyswietleniaProfilu(int id)
-    {
-        if(id < 1) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
-        
-        var status = await profilRepository.GetStatusProfilu(id);
-
-        // jeżeli jest offline, zawsze wyświetlamy offline (nie mamy jeszcze jak tego sprawdzić)
-        // zakładamy na razie, że cały czas jest online
-        return status.Nazwa == "Niewidoczny" ? new StatusDto(5, "Offline") : status;
+        try
+        {
+            return bledy.Count > 0
+                ? ServiceResult<ProfilGetResDto>.BadRequest(bledy.ToArray())
+                : ServiceResult<ProfilGetResDto>.Ok(await profilRepository.UpdateProfil(id, profil));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem(e.Message));
+        }
     }
     
-    public async Task<ProfilGetResDto> UpdateStatus(int id, int idStatus)
+    public async Task<ServiceResult<StatusDto>> GetStatusZBazyProfilu(int id)
     {
-        if(id < 1) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
+        try{
+            return id < 1
+                ? ServiceResult<StatusDto>.BadRequest(new ErrorItem("Profil o id " + id + " nie istnieje"))
+                : ServiceResult<StatusDto>.Ok(await profilRepository.GetStatusProfilu(id));
+        }catch(NieZnalezionoWBazieException e){
+            return ServiceResult<StatusDto>.NotFound(new ErrorItem(e.Message));
+        }
+    }
 
-        if(idStatus < 1) throw new NieZnalezionoWBazieException("Status o id " + id + " nie istnieje");
+    public async Task<ServiceResult<StatusDto>> GetStatusDoWyswietleniaProfilu(int id)
+    {
+        if(id < 1) return ServiceResult<StatusDto>.NotFound(new ErrorItem("Profil o id " + id + " nie istnieje"));
 
-        return await profilRepository.UpdateStatus(id, idStatus);
+        try
+        {
+            var status = await profilRepository.GetStatusProfilu(id);
+            
+            // jeżeli jest offline, zawsze wyświetlamy offline (nie mamy jeszcze jak tego sprawdzić)
+            // zakładamy na razie, że cały czas jest online
+            return ServiceResult<StatusDto>.Ok(status.Nazwa == "Niewidoczny"? new StatusDto(5, "Offline") : status);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<StatusDto>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
+    public async Task<ServiceResult<ProfilGetResDto>> UpdateStatus(int id, int idStatus)
+    {
+        try{
+            if (id < 1)
+                return ServiceResult<ProfilGetResDto>.BadRequest(new ErrorItem("Profil o id " + id + " nie istnieje"));
+
+            if (idStatus < 1)
+                return ServiceResult<ProfilGetResDto>.BadRequest(new ErrorItem("Status o id " + id + " nie istnieje"));
+
+            return ServiceResult<ProfilGetResDto>.Ok(await profilRepository.UpdateStatus(id, idStatus));
+            
+        }catch(NieZnalezionoWBazieException e){
+            return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem(e.Message));
+        }
     }
 }

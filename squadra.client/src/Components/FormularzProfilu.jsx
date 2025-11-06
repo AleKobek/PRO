@@ -9,6 +9,7 @@ export default function FormularzProfilu({
                                              staryOpis,
                                              staryRegion,
                                              staryKraj,
+                                             uzytkownik
                                          }) 
 {
     
@@ -60,8 +61,8 @@ export default function FormularzProfilu({
         const podajKrajeIRegionyZBazy = async () => {
             try {
                 const [krajeRes, regionyRes] = await Promise.all([
-                    fetch("http://localhost:5014/api/Kraj", { signal: ac.signal }),
-                    fetch("http://localhost:5014/api/Region", { signal: ac.signal }),
+                    fetch("http://localhost:5014/api/Kraj", { signal: ac.signal, credentials: "include"}),
+                    fetch("http://localhost:5014/api/Region", { signal: ac.signal, credentials: "include"}),
                 ]);
 
                 if (!krajeRes.ok) throw new Error(`GET /api/Kraj -> ${krajeRes.status}`);
@@ -87,28 +88,28 @@ export default function FormularzProfilu({
     const przyWysylaniu = async() =>{
         // sprawdzić wszystkie pola!
         const profilDoWyslania = {
-            RegionId: region.id ?? null,
-            Zaimki: zaimki,
-            Opis: opis,
-            Jezyki: (listaJezykowUzytkownika ?? []).map(j => ({
+            regionId: region.id ?? null,
+            zaimki: zaimki,
+            opis: opis,
+            jezyki: (listaJezykowUzytkownika ?? []).map(j => ({
                 Jezyk: {Id: j.idJezyka, Nazwa: j.nazwaJezyka},
                 Stopien: {Id: j.idStopnia, Nazwa: j.nazwaStopnia, Wartosc: j.wartoscStopnia}
             })),
-            Pseudonim: pseudonim,
-            // ############# tylko do prototypu ################
-            Awatar: ""};
-        
-        //console.log("Co wysyłamy do bazy:", profilDoWyslania);
+            pseudonim: pseudonim,
+            awatar: null
+            
+        };
         
         const opcje = {
             method: "PUT",
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: "include",
             body: JSON.stringify(profilDoWyslania)
         }
         
-        const res = (await fetch("http://localhost:5014/api/Profil/" + localStorage.getItem("idUzytkownika"), opcje));
+        const res = (await fetch("http://localhost:5014/api/Profil/" + uzytkownik.id, opcje));
 
         // Odczyt body różni się zależnie od typu odpowiedzi
         // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
@@ -119,29 +120,34 @@ export default function FormularzProfilu({
 
         if (!res.ok) {
             // Np. 404 z tekstem
-            console.error("Błąd PUT:", res.status, body);
-            ustawBledy(prev => ({
-                ...prev,
-                // jest najniżej
-                opis: typeof body === "string" && body ? body : "Nie udało się zapisać profilu.",
-            }));
+            console.error("Błąd zapisywania:", res.status, body);
+            if(res.status === 400){
+                let bladPseudonimu = "";
+                let bladZaimkow = "";
+                let bladOpisu = "";
+                console.log("body: ",body);
+                // zrobić tu tak jak w rejestracji! najpierw sprawdzić czy działa
+                for(let i = 0; i < body.length; i++){
+                    let blad = body[i];
+                    if (blad.length <= 1) continue;
+                    console.log("błąd: ", blad);
+                    switch(blad.field){
+                        case "Pseudonim": bladPseudonimu = blad.message; break;
+                        case "Zaimki": bladZaimkow = blad.message; break;
+                        case "Opis": bladOpisu = blad.message; break;
+                    }
+                }
+                ustawBledy({
+                    pseudonim: bladPseudonimu,
+                    zaimki: bladZaimkow,
+                    opis: bladOpisu,
+                    zapisz: body.message,
+                });
+            }
             return;
         }
 
-        // tutaj dochodzimy, gdy dostaniemy 200
-        // przyjdzie w formie: { profil: {...} | null, bledy: { pseudonim, zaimki, opis }, czyPoprawne: boolean }
-        const { czyPoprawne, bledy, profil } = body ?? {};
-
-        if (!czyPoprawne) {
-            ustawBledy({
-                pseudonim: bledy?.pseudonim ?? "",
-                zaimki: bledy?.zaimki ?? "",
-                opis: bledy?.opis ?? "",
-            });
-            return;
-        }
-
-        // jak tutaj dojrziemy, wszystko jest git
+        // jak tutaj dojdziemy, wszystko jest git
         navigate("/twojProfil");
     }
 
@@ -195,12 +201,24 @@ export default function FormularzProfilu({
     
     
     return(<form id = "form" name= "formularz-profilu">
-        <label htmlFor="pseudonim">Pseudonim</label><br/>
-        <input type="text" id = "pseudonim" name ="pseudonim" maxLength={20} value={pseudonim} onChange={(e)=>ustawPseudonim(e.target.value)}></input><br/>
+        <label>Pseudonim<br/>
+        <input 
+            type="text" 
+            id = "pseudonim" name ="pseudonim"
+            value={pseudonim}
+            maxLength={20}
+            onChange={(e)=>ustawPseudonim(e.target.value)}>
+        </input></label><br/>
         <span id = "error-pseudonim" className="error-wiadomosc">{bledy.pseudonim}</span><br/>
         
-        <label htmlFor="zaimki">Zaimki</label><br/>
-        <input type="text" id = "zaimki" name ="zaimki" maxLength={10} value={zaimki} onChange={(e)=>ustawZaimki(e.target.value)}></input><br/>
+        <label>Zaimki<br/>
+        <input 
+            type="text" 
+            id = "zaimki" name ="zaimki" 
+            maxLength={10} 
+            value={zaimki} 
+            onChange={(e)=>ustawZaimki(e.target.value)}>
+        </input></label><br/>
         <span id = "error-zaimki" className="error-wiadomosc">{bledy.zaimki}</span><br/>
         
         {/* kraj */}

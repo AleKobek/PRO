@@ -4,6 +4,10 @@ namespace Squadra.Server.Services;
 
 public interface IUzytkownikService
 {
-    public Task<ICollection<UzytkownikResDto>> GetUzytkownicy();
-    public Task<UzytkownikResDto> GetUzytkownik(int id);
+    public Task<ServiceResult<ICollection<UzytkownikResDto>>> GetUzytkownicy();
+    public Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(int id);
+
+    Task<ServiceResult<UzytkownikResDto>> CreateUzytkownik(UzytkownikCreateDto uzytkownik);
+
+    
 }

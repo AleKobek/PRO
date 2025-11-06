@@ -24,16 +24,13 @@ public class ProfilRepository(AppDbContext appDbContext,
             var jezykiUzytkownika = await jezykRepository.GetJezykiProfilu(profil.IdUzytkownika);
             
             var regionIKraj = await regionRepository.GetRegionIKraj(profil.RegionId);
-            var status = await statusRepository.GetStatus(profil.StatusId) ?? statusRepository.GetStatusDomyslny();
             profileDoZwrocenia.Add(new ProfilGetResDto(
-                profil.IdUzytkownika,
                 profil.Pseudonim,
                 regionIKraj,
                 profil.Zaimki,
                 profil.Opis,
                 jezykiUzytkownika,
-                profil.Awatar,
-                status
+                profil.Awatar
             ));
         }
         return profileDoZwrocenia;
@@ -50,9 +47,8 @@ public class ProfilRepository(AppDbContext appDbContext,
         var jezykiUzytkownika = await jezykRepository.GetJezykiProfilu(profil.IdUzytkownika);
         
         var region = profil.RegionId == null ? null : await regionRepository.GetRegionIKraj(profil.RegionId);
-        var status = await statusRepository.GetStatus(profil.StatusId) ?? statusRepository.GetStatusDomyslny();
         
-        return new ProfilGetResDto(profil.IdUzytkownika, profil.Pseudonim, region, profil.Zaimki, profil.Opis, jezykiUzytkownika, profil.Awatar, status);
+        return new ProfilGetResDto(profil.Pseudonim, region, profil.Zaimki, profil.Opis, jezykiUzytkownika, profil.Awatar);
     }
 
     public async Task<ProfilGetResDto> UpdateProfil(int id, ProfilUpdateDto profil)
@@ -70,20 +66,19 @@ public class ProfilRepository(AppDbContext appDbContext,
 
         var jezykiUzytkownika = await jezykRepository.ZmienJezykiProfilu(id, profil.Jezyki);
         var region = profil.RegionId == null ? null : await regionRepository.GetRegionIKraj(profil.RegionId);
-        var status = await statusRepository.GetStatus(profilDoZmiany.StatusId) ?? statusRepository.GetStatusDomyslny();
 
         return new ProfilGetResDto(
-            profilDoZmiany.IdUzytkownika,
             profilDoZmiany.Pseudonim,
             region,
             profilDoZmiany.Zaimki,
             profilDoZmiany.Opis,
             jezykiUzytkownika,
-            profilDoZmiany.Awatar,
-            status
+            profilDoZmiany.Awatar
         );
     }
 
+    // coś się dzieje w linijce 99
+    
     public async Task<ProfilGetResDto> CreateProfil(ProfilCreateReqDto profil)
     {
         var profilDoDodania = new Profil
@@ -93,7 +88,8 @@ public class ProfilRepository(AppDbContext appDbContext,
             Opis = null,
             Pseudonim = profil.Pseudonim,
             Zaimki = null,
-            RegionId = null
+            RegionId = null,
+            StatusId = 1
         };
         await appDbContext.Profil.AddAsync(profilDoDodania);
         await appDbContext.SaveChangesAsync();

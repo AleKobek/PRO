@@ -3,7 +3,7 @@ import JezykNaLiscieKomponent from "./JezykNaLiscieKomponent";
 
 export default function ListaJezykow({
                                          typ,
-                                         listaJezykowUzytkownika = [],          
+                                         listaJezykowUzytkownika = [],
                                          ustawListeJezykowUzytkownika = () => {}
                                      }){
 
@@ -30,7 +30,7 @@ export default function ListaJezykow({
         const zajete = new Set((listaJezykowUzytkownika ?? []).map(x => x.idJezyka ?? x.id));
         return (listaJezykowZBazy ?? []).filter(j => !zajete.has(j.id));
     }, [listaJezykowZBazy, listaJezykowUzytkownika]);
-    
+
     // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
 
 
@@ -42,8 +42,8 @@ export default function ListaJezykow({
         (async () => {
             try {
                 const [jezykiRes, stopnieRes] = await Promise.all([
-                    fetch("http://localhost:5014/api/Jezyk"),
-                    fetch("http://localhost:5014/api/StopienBieglosciJezyka"),
+                    fetch("http://localhost:5014/api/Jezyk", {credentials: "include"}),
+                    fetch("http://localhost:5014/api/StopienBieglosciJezyka", {credentials: "include"}),
                 ]);
                 if (!jezykiRes.ok) throw new Error(`GET /api/Jezyk -> ${jezykiRes.status}`);
                 if (!stopnieRes.ok) throw new Error(`GET /api/StopienBieglosciJezyka -> ${stopnieRes.status}`);
@@ -62,19 +62,19 @@ export default function ListaJezykow({
 
     // gdy dane są pobrane, ustawiamy domyślne wybory i aktualizujemy dostępne języki
     useEffect(() => {
-        if (listaStopniZBazy.length > 0) {
+        if (listaStopniZBazy.length > 0 && !wybranyStopienDoDodania) {
             ustawWybranyStopienDoDodania(listaStopniZBazy[0]);
         }
     }, [listaStopniZBazy]);
 
 
     useEffect(() => {
-        if (listaJezykowDostepnychDoDodania.length > 0) {
+        if (listaJezykowDostepnychDoDodania.length > 0 && !wybranyJezykDoDodania) {
             ustawWybranyJezykDoDodania(listaJezykowDostepnychDoDodania[0]);
         }
     }, [listaJezykowDostepnychDoDodania]);
 
-    
+
 
 
     // adres backendu to "http://localhost:5014"
@@ -89,7 +89,7 @@ export default function ListaJezykow({
 
     const przyKliknieciuDodaj = (e) => {
         e.preventDefault();
-        
+
         const jezyk = wybranyJezykDoDodania?.id
             ? wybranyJezykDoDodania
             : listaJezykowDostepnychDoDodania[0];
@@ -131,42 +131,42 @@ export default function ListaJezykow({
                 onClick={ () => { ustawAktualnaStrone(aktualnaStrona + 1) } }
         >Następna strona</button>
     </>
-    
 
-        // lista języków bez edycji
-        if (typ === "wyswietlanie") {
-            if (listaJezykowUzytkownika.length === 0) {
-                return (<>
-                    <p style={{fontFamily: "Comic Sans MS"}}>
-                        Lista jest pusta.
-                    </p>
-                </>);
-            }
-            return (<div className="lista-jezykow">
-                    <ul>
-                        {(listaJezykowUzytkownika ?? [])
-                            .slice(aktualnaStrona * liczbaJezykowNaStronie, (aktualnaStrona + 1) * liczbaJezykowNaStronie)
-                            .sort((a, b) => b.wartosc - a.wartosc)
-                            .map((pozycja, index) => (
-                                <JezykNaLiscieKomponent
-                                    key={`${pozycja.idJezyka}-${pozycja.idStopnia}`} // użyj stabilnego, unikalnego klucza
-                                    jezykDoKomponentu={pozycja} idZListy={index} czyEdytuj={false}
-                                />
-                            ))}
-                    </ul>
-                    {przyciski}
-                </div>
-            )
+
+    // lista języków bez edycji
+    if (typ === "wyswietlanie") {
+        if (listaJezykowUzytkownika.length === 0) {
+            return (<>
+                <p style={{fontFamily: "Comic Sans MS"}}>
+                    Lista jest pusta.
+                </p>
+            </>);
         }
-
-        if (typ === "edycja") {
-            // lista języków {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
-            return (<div className={"lista-jezykow"}>
+        return (<div className="lista-jezykow">
                 <ul>
-                    {/*lista języków nad selectem z dodaniem nowego*/}
-                    {listaJezykowUzytkownika
+                    {(listaJezykowUzytkownika ?? [])
+                        .slice(aktualnaStrona * liczbaJezykowNaStronie, (aktualnaStrona + 1) * liczbaJezykowNaStronie)
                         .sort((a, b) => b.wartosc - a.wartosc)
-                        .map((element, index) => {
+                        .map((pozycja, index) => (
+                            <JezykNaLiscieKomponent
+                                key={`${pozycja.idJezyka}-${pozycja.idStopnia}`} // użyj stabilnego, unikalnego klucza
+                                jezykDoKomponentu={pozycja} idZListy={index} czyEdytuj={false}
+                            />
+                        ))}
+                </ul>
+                {przyciski}
+            </div>
+        )
+    }
+
+    if (typ === "edycja") {
+        // lista języków {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
+        return (<div className={"lista-jezykow"}>
+            <ul>
+                {/*lista języków nad selectem z dodaniem nowego*/}
+                {listaJezykowUzytkownika
+                    .sort((a, b) => b.wartosc - a.wartosc)
+                    .map((element, index) => {
                         if (index >= aktualnaStrona * liczbaJezykowNaStronie && index < (aktualnaStrona + 1) * liczbaJezykowNaStronie) {
                             return (<>
                                 <JezykNaLiscieKomponent jezykDoKomponentu={element} key={`${element.idJezyka}-${element.idStopnia}`} idZListy={index}
@@ -174,40 +174,40 @@ export default function ListaJezykow({
                             </>)
                         }
                     })}
-                    {/* select języka */}
-                    <select onChange={(e) => {
-                        let id = e.target.value;
-                        let tempJezyk = listaJezykowZBazy.find(jezyk => jezyk.id == id);
-                        ustawWybranyJezykDoDodania(tempJezyk);
-                    }}>
-                        {listaJezykowDostepnychDoDodania.map((element, index) => (
-                            // na każdy język {id, nazwa}
-                            <option key={index} value={element.id}>{element.nazwa}</option>
-                        ))}
-                    </select>
-                    {/* select stopnia */}
-                    <select onChange={(e) => {
-                        let id = e.target.value;
-                        let tempStopien = listaStopniZBazy.find(stopien => stopien.id == id);
-                        ustawWybranyStopienDoDodania(tempStopien);
-                    }}>
-                        {listaStopniZBazy.map((element, index) => (
-                            // elementem jest stopnień {id, nazwa}
-                            <option key={index} value={element.id}>{element.nazwa}</option>
-                        )).sort(
-                            // sortujemy elementy listy względem pola wartosc
-                            (stopien1, stopien2) => {
-                                return stopien1.wartosc - stopien2.wartosc
-                            }
-                        )}
-                    </select>
-                    {/* przycisk obok selectów */}
-                    <button onClick={przyKliknieciuDodaj}>Dodaj</button>
-                </ul>
-                {przyciski}
-            </div>)
-        }
-    
+                {/* select języka */}
+                <select onChange={(e) => {
+                    let id = e.target.value;
+                    let tempJezyk = listaJezykowZBazy.find(jezyk => jezyk.id == id);
+                    ustawWybranyJezykDoDodania(tempJezyk);
+                }}>
+                    {listaJezykowDostepnychDoDodania.map((element, index) => (
+                        // na każdy język {id, nazwa}
+                        <option key={index} value={element.id}>{element.nazwa}</option>
+                    ))}
+                </select>
+                {/* select stopnia */}
+                <select onChange={(e) => {
+                    let id = e.target.value;
+                    let tempStopien = listaStopniZBazy.find(stopien => stopien.id == id);
+                    ustawWybranyStopienDoDodania(tempStopien);
+                }}>
+                    {listaStopniZBazy.map((element, index) => (
+                        // elementem jest stopnień {id, nazwa}
+                        <option key={index} value={element.id}>{element.nazwa}</option>
+                    )).sort(
+                        // sortujemy elementy listy względem pola wartosc
+                        (stopien1, stopien2) => {
+                            return stopien1.wartosc - stopien2.wartosc
+                        }
+                    )}
+                </select>
+                {/* przycisk obok selectów */}
+                <button onClick={przyKliknieciuDodaj}>Dodaj</button>
+            </ul>
+            {przyciski}
+        </div>)
+    }
+
     // jeżeli tu doszliśmy, to nie pasuje do żadnego typu
     return(
         <>

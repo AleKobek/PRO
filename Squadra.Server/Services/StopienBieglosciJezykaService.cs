@@ -6,15 +6,15 @@ namespace Squadra.Server.Services;
 
 public class StopienBieglosciJezykaService(IStopienBieglosciJezykaRepository stopienBieglosciJezykaRepository) : IStopienBieglosciJezykaService
 {
-    public async Task<ICollection<StopienBieglosciJezykaDto>> GetStopnieBieglosciJezyka()
+    public async Task<ServiceResult<ICollection<StopienBieglosciJezykaDto>>> GetStopnieBieglosciJezyka()
     {
-        return await stopienBieglosciJezykaRepository.GetStopnieBieglosciJezyka();
+        return ServiceResult<ICollection<StopienBieglosciJezykaDto>>.Ok(await stopienBieglosciJezykaRepository.GetStopnieBieglosciJezyka());
     }
 
-    public async Task<StopienBieglosciJezykaDto?> GetStopienBieglosciJezyka(int id)
+    public async Task<ServiceResult<StopienBieglosciJezykaDto?>> GetStopienBieglosciJezyka(int id)
     {
-        if (id < 1) throw new NieZnalezionoWBazieException("Stopien biegłości języka o id " + id + " nie istnieje");
-        return await stopienBieglosciJezykaRepository.GetStopienBieglosciJezyka(id);
+        if (id < 1) return ServiceResult<StopienBieglosciJezykaDto?>.NotFound(new ErrorItem("Stopien biegłości języka o id " + id + " nie istnieje"));
+        return ServiceResult<StopienBieglosciJezykaDto?>.Ok(await stopienBieglosciJezykaRepository.GetStopienBieglosciJezyka(id));
     }
 
 }

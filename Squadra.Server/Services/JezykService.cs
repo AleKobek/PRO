@@ -6,28 +6,52 @@ namespace Squadra.Server.Services;
 
 public class JezykService(IJezykRepository jezykRepository) : IJezykService
 {
-    public async Task<ICollection<JezykDto>> GetJezyki()
+    public async Task<ServiceResult<ICollection<JezykDto>>> GetJezyki()
     {
-        return await jezykRepository.GetJezyki();
+        return ServiceResult<ICollection<JezykDto>>.Ok(await jezykRepository.GetJezyki());
     }
 
-    public async Task<JezykDto?> GetJezyk(int id)
+    public async Task<ServiceResult<JezykDto?>> GetJezyk(int id)
     {
-        if (id < 1) throw new NieZnalezionoWBazieException("Jezyk o id " + id + " nie istnieje");
-        return await jezykRepository.GetJezyk(id);
+        try
+        {
+            return id < 1
+                ? ServiceResult<JezykDto?>.NotFound(new ErrorItem("Jezyk o id " + id + " nie istnieje"))
+                : ServiceResult<JezykDto?>.Ok(await jezykRepository.GetJezyk(id));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<JezykDto?>.NotFound(new ErrorItem(e.Message));
+        }
     }
 
-    public async Task<ICollection<JezykOrazStopienDto>> GetJezykiProfilu(int id)
+    public async Task<ServiceResult<ICollection<JezykOrazStopienDto>>> GetJezykiProfilu(int id)
     {
-        if(id < 1) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
-        return await jezykRepository.GetJezykiProfilu(id);
+        try{
+            return id < 1
+                ? ServiceResult<ICollection<JezykOrazStopienDto>>.NotFound(
+                    new ErrorItem("Jezyk o id " + id + " nie istnieje"))
+                : ServiceResult<ICollection<JezykOrazStopienDto>>.Ok(await jezykRepository.GetJezykiProfilu(id));
+        }catch(NieZnalezionoWBazieException e){
+            return ServiceResult<ICollection<JezykOrazStopienDto>>.NotFound(new ErrorItem(e.Message));
+        }
     }
 
-    public async Task<ICollection<JezykOrazStopienDto>> ZmienJezykiProfilu(int profilId,
+    public async Task<ServiceResult<ICollection<JezykOrazStopienDto>>> ZmienJezykiProfilu(int profilId,
         ICollection<JezykOrazStopienDto> noweJezyki)
     {
-        if(profilId < 1) throw new NieZnalezionoWBazieException("Profil o id " + profilId + " nie istnieje");
-        return await jezykRepository.ZmienJezykiProfilu(profilId, noweJezyki);
+        try
+        {
+            return profilId < 1
+                ? ServiceResult<ICollection<JezykOrazStopienDto>>.NotFound(
+                    new ErrorItem("Jezyk o id " + profilId + " nie istnieje"))
+                : ServiceResult<ICollection<JezykOrazStopienDto>>.Ok(
+                    await jezykRepository.ZmienJezykiProfilu(profilId, noweJezyki));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<ICollection<JezykOrazStopienDto>>.NotFound(new ErrorItem(e.Message));
+        }
     }
 
 }

@@ -6,29 +6,50 @@ namespace Squadra.Server.Services;
 
 public class RegionService(IRegionRepository regionRepository) : IRegionService
 {
-    public async Task<ICollection<RegionDto>> GetRegiony()
+    public async Task<ServiceResult<ICollection<RegionDto>>> GetRegiony()
     {
-        return await regionRepository.GetRegiony();
+        return ServiceResult<ICollection<RegionDto>>.Ok(await regionRepository.GetRegiony());
     }
 
-    // tu już nie uwzględniamy nulla w int, bo null jest potrzebny tylko dla profil repository
-    public async Task<RegionDto> GetRegion(int id)
+    public async Task<ServiceResult<RegionDto>> GetRegion(int id)
     {
-        var region = await regionRepository.GetRegion(id);
-        if(region == null) throw new NieZnalezionoWBazieException("Region o id " + id + " nie istnieje");
-        return region;
+        try
+        {
+            return id < 1
+                ? ServiceResult<RegionDto>.NotFound(new ErrorItem("Region o id " + id + " nie istnieje")) 
+                : ServiceResult<RegionDto>.Ok(await regionRepository.GetRegion(id));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<RegionDto>.NotFound(new ErrorItem(e.Message));
+        }
     }
 
-    public async Task<RegionKrajDto> GetRegionIKraj(int id)
+    public async Task<ServiceResult<RegionKrajDto>> GetRegionIKraj(int id)
     {
-        var region = await regionRepository.GetRegionIKraj(id);
-        if(region == null) throw new NieZnalezionoWBazieException("Region o id " + id + " nie istnieje");
-        return region;
+        try
+        {
+            return id < 1
+                ? ServiceResult<RegionKrajDto>.NotFound(new ErrorItem("Region o id " + id + " nie istnieje")) 
+                // w Ok() value nie może być nullem, dlatego robimy sami
+                : new ServiceResult<RegionKrajDto> {Succeeded = true, StatusCode = 200, Value = await regionRepository.GetRegionIKraj(id)};
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<RegionKrajDto>.NotFound(new ErrorItem(e.Message));
+        }
     }
 
-    public async Task<ICollection<RegionDto>> GetRegionyKraju(int krajId)
+    public async Task<ServiceResult<ICollection<RegionDto>>> GetRegionyKraju(int krajId)
     {
-        return await regionRepository.GetRegionyKraju(krajId);
+        try{
+            
+            return ServiceResult<ICollection<RegionDto>>.Ok(await regionRepository.GetRegionyKraju(krajId));
+            
+        }catch(NieZnalezionoWBazieException e){
+            
+            return ServiceResult<ICollection<RegionDto>>.NotFound(new ErrorItem(e.Message));
+            
+        }
     }
-
 }

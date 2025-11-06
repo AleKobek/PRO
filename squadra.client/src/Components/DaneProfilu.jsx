@@ -1,9 +1,9 @@
 ﻿import {useEffect, useState} from "react";
 import ListaJezykow from "./ListaJezykow";
 
-export default function DaneProfilu() {
+// pamiętać o tym, aby to było w nawiasach klamrowych!
+export default function DaneProfilu({uzytkownik}) {
     
-
     const [pseudonim, ustawPseudonim] = useState("");
     const [zaimki, ustawZaimki] = useState("");
     // {id, nazwa}
@@ -11,23 +11,27 @@ export default function DaneProfilu() {
     // {id, nazwa}
     const [kraj, ustawKraj] = useState({});
     const [opis, ustawOpis] = useState("");
-
+    
     // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
     const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState([])
 
 
 
-    const [czyZaladowano, ustawCzyZaladowano] = useState(false);
+    const [czyZaladowanoDane, ustawCzyZaladowanoDane] = useState(false);
 
     
     useEffect(() => {
+
+        // czekamy aż się załaduje id użytkownika
+        if(!uzytkownik) return;
+        if(!uzytkownik.id) return;
+        
         const ac = new AbortController();
         let alive = true;
 
         const fetchJson = async (url) => {
             try {
-                const res = await fetch(url, { method: 'GET', signal: ac.signal });
-                console.log("odpowiedź na fetch "+url, res);
+                const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
                 if (!res.ok) return null;
                 return await res.json();
             } catch (err) {
@@ -38,8 +42,10 @@ export default function DaneProfilu() {
         };
 
         const podajDaneProfilu = async () => {
-            const idUzytkownika = localStorage.getItem("idUzytkownika");
-            const data = await fetchJson(`http://localhost:5014/api/Profil/${idUzytkownika}`);
+            console.log(uzytkownik.id)
+            // z jakiegoś powodu jest to jeszcze opakowane w użytkownika
+            const idUzytkownika = uzytkownik.id;
+            const data = await fetchJson(`http://localhost:5014/api/Profil/${idUzytkownika}`, {credentials: "include"});
 
             if (!alive) return;
 
@@ -58,8 +64,8 @@ export default function DaneProfilu() {
         };
 
         const podajJezykiIStopnieUzytkownika = async () => {
-            const idUzytkownika = localStorage.getItem("idUzytkownika");
-            const data = await fetchJson(`http://localhost:5014/api/Jezyk/profil/${idUzytkownika}`);
+            const idUzytkownika = uzytkownik.id;
+            const data = await fetchJson(`http://localhost:5014/api/Jezyk/profil/${idUzytkownika}`, {credentials: "include"});
 
             if (!alive) return;
 
@@ -88,7 +94,7 @@ export default function DaneProfilu() {
                 }
                 if(listaJezykowUzytkownika.length === 0) await podajJezykiIStopnieUzytkownika();
             } finally {
-                if (alive) ustawCzyZaladowano(true);
+                if (alive) ustawCzyZaladowanoDane(true);
             }
         })();
         return () => {
@@ -98,7 +104,7 @@ export default function DaneProfilu() {
     }, []);
 
 
-    if(!czyZaladowano) return(<><p>Ładowanie...</p></>);
+    if(!czyZaladowanoDane || !uzytkownik.id) return(<><p>Ładowanie...</p></>);
     
     return(<div className = "dane-profilu">
         <label>

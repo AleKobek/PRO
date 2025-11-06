@@ -4,9 +4,9 @@ namespace Squadra.Server.Services;
 
 public interface IStatusService
 {
-    public Task<ICollection<StatusDto>> GetStatusy();
+    public Task<ServiceResult<ICollection<StatusDto>>> GetStatusy();
 
-    public Task<StatusDto?> GetStatus(int id);
+    public Task<ServiceResult<StatusDto?>> GetStatus(int id);
     
     public StatusDto GetStatusDomyslny();
 }

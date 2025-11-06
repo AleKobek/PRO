@@ -4,11 +4,11 @@ namespace Squadra.Server.Services;
 
 public interface IRegionService
 {
-    public Task<ICollection<RegionDto>> GetRegiony();
+    public Task<ServiceResult<ICollection<RegionDto>>> GetRegiony();
 
-    public Task<RegionDto> GetRegion(int id);
+    public Task<ServiceResult<RegionDto>> GetRegion(int id);
 
-    public Task<RegionKrajDto> GetRegionIKraj(int id);
+    public Task<ServiceResult<RegionKrajDto>> GetRegionIKraj(int id);
 
-    public Task<ICollection<RegionDto>> GetRegionyKraju(int krajId);
+    public Task<ServiceResult<ICollection<RegionDto>>> GetRegionyKraju(int krajId);
 }

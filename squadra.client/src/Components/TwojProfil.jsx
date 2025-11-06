@@ -1,20 +1,36 @@
 ﻿import '../App.css';
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import NaglowekZalogowano from './NaglowekZalogowano';
 import DaneProfilu from './DaneProfilu';
 import {useNavigate} from "react-router-dom";
+import {useAuth} from "../Context/AuthContext";
+import Naglowek from "./Naglowek";
 export default function TwojProfil() {
     
     const navigate = useNavigate();
-    
+    const { uzytkownik, ladowanie } = useAuth();
 
+
+    useEffect(() => {
+        if (!ladowanie && !uzytkownik) {
+            navigate("/login"); // jeśli jest niezalogowany
+        }
+    }, [ladowanie, uzytkownik, navigate]);
+
+    if(ladowanie) return (<>
+            <Naglowek/>
+            <div id = "glowna">
+                <h1>Ładowanie...</h1>
+            </div>
+        </>
+    )
 
     return (<>
         <NaglowekZalogowano></NaglowekZalogowano>
         <div id = "glowna">
             <h1>Twój profil</h1>
-            <DaneProfilu></DaneProfilu>
+            <DaneProfilu uzytkownik = {uzytkownik}></DaneProfilu>
             <button className={"przycisk-nawigacji"} onClick={() => navigate('/edytujProfil')} style={{textAlign: "center", alignSelf: "center"}}>Edytuj profil</button>
         </div>
     </>);

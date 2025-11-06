@@ -7,6 +7,7 @@ namespace Squadra.Server.Models;
 public class Profil
 {
     [Key]
+    [ForeignKey(nameof(Uzytkownik))]
     public int IdUzytkownika { get; set; }
     
     [MaxLength(10)]
@@ -26,7 +27,6 @@ public class Profil
     [Column("id_statusu")]
     public int StatusId { get; set; }
     
-    [ForeignKey(nameof(IdUzytkownika))]
     public virtual Uzytkownik Uzytkownik { get; set; } = null!;
     
     [ForeignKey(nameof(RegionId))]

@@ -1,6 +1,6 @@
 #menu{
   top: 0;
-  height: 100px;
+  height: 60px;
   width: 100%;
   color: black;
   font-size: 40px;
@@ -10,6 +10,17 @@
   position: sticky;
   padding-bottom: 12px;
   /*Bahnschrift, Times, "Bodoni MT", "Felix Titling"*/
+  .logo{
+    float: left;
+    font-size: 50px;
+    font-weight: 600;
+    padding-left: 10px;
+    display: block;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    font-family: Bahnschrift, serif;
+  }
   #menu-na-pasku{
     list-style-type: none;
     /*font-family: Felix Titling, serif;*/
@@ -24,19 +35,21 @@
     justify-content: space-between;
     align-items: center;
     float: right;
-    .nawigacja{
+    .nawigacja, span, select{
       float: right;
       font-size: 35px;
       display: block;
       color: black;
       text-align: center;
-      padding: 35px 16px 34px;
+      padding: 10px 10px 20px;
       text-decoration: none;
+      border-left: solid 2px blue;
     }
     a:hover {
       background-color: lightblue;
       color: darkblue;
-      padding: 31px 16px 30px;
+      padding: 10px 10px 10px;
+      
     }
     a.active {
       color: blue;
@@ -46,6 +59,14 @@
       margin: 0;
       padding: 0 10px;
       overflow: hidden;
+    }
+    button{
+      font-size: 20px;
+      color: white;
+      background-color: darkred;
+      padding: 5px;
+      margin: 5px 10px 5px 10px;
+      border-radius: 10px;
     }
   }
 

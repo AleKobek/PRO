@@ -8,8 +8,8 @@ public record UzytkownikResDto
 (
     int Id,
     string Login,
-    string Haslo,
     string Email,
     string? NumerTelefonu,
-    DateOnly? DataUrodzenia
+    DateOnly? DataUrodzenia,
+    string[] Role
 );

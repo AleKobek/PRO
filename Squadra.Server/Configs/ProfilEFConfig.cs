@@ -10,6 +10,10 @@ public class ProfilEFConfig : IEntityTypeConfiguration<Profil>
     {
         builder
             .HasKey(x => x.IdUzytkownika);
+        
+        builder
+            .Property(x => x.IdUzytkownika)
+            .ValueGeneratedNever();
 
         builder
             .Property(x => x.Zaimki)
@@ -30,6 +34,14 @@ public class ProfilEFConfig : IEntityTypeConfiguration<Profil>
             .HasForeignKey(x => x.RegionId)
             .HasConstraintName("Profil_Region")
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder
+            .HasOne(p => p.Uzytkownik)
+            .WithOne(u => u.Profil)
+            .HasForeignKey<Profil>(p => p.IdUzytkownika)
+            .IsRequired(false) // pozwala tworzyć Uzytkownik bez Profilu od razu, dodajemy od razu ręcznie
+            .OnDelete(DeleteBehavior.Cascade);
+
         
         builder
             .HasOne(x => x.Status)

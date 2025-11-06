@@ -4,7 +4,7 @@ namespace Squadra.Server.Services;
 
 public interface IKrajService
 {
-    public Task<ICollection<KrajDto>> GetKraje();
+    public Task<ServiceResult<ICollection<KrajDto>>> GetKraje();
 
-    public Task<KrajDto> GetKraj(int id);
+    public Task<ServiceResult<KrajDto>> GetKraj(int id);
 }

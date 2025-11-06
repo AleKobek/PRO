@@ -4,7 +4,7 @@ namespace Squadra.Server.Services;
 
 public interface IStopienBieglosciJezykaService
 {
-    public Task<ICollection<StopienBieglosciJezykaDto>> GetStopnieBieglosciJezyka();
+    public Task<ServiceResult<ICollection<StopienBieglosciJezykaDto>>> GetStopnieBieglosciJezyka();
 
-    public Task<StopienBieglosciJezykaDto?> GetStopienBieglosciJezyka(int id);
+    public Task<ServiceResult<StopienBieglosciJezykaDto?>> GetStopienBieglosciJezyka(int id);
 }

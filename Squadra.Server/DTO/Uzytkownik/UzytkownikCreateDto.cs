@@ -2,7 +2,7 @@
 
 public record UzytkownikCreateDto(
     string Login,
-    string HasloHashed,
+    string Haslo,
     string Email,
     string? NumerTelefonu,
     DateOnly DataUrodzenia,
