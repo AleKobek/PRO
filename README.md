@@ -4,6 +4,11 @@ Temat pracy: **"System Pozwalający Graczom Zrzeszać Się i Dzielić Pasją"**
 
 Nazwa aplikacji: **"Squadra"**
 
+Technologie:
+- frontend - JavaScript wraz z React
+- backend - C# wraz z ASP.NET i Entity Framework
+- baza danych - MS SQL
+
 
 W swojej końcowej formie, aplikacja będzie pozwalała użytkownikom:
 - założyć konto
@@ -19,6 +24,11 @@ W swojej końcowej formie, aplikacja będzie pozwalała użytkownikom:
 Engineering thesis title: **"A System Allowing Gamers to Gather and Share Their Passion"**
 
 Application Name: **"Squadra"**
+
+Technologies:
+- frontend - JavaScript with React
+- backend - C# with ASP.NET and Entity Framework
+- database - MS SQL
 
 In its final form, the application will allow users to:
 - create an account
