@@ -10,6 +10,6 @@ public interface IJezykRepository
 
     public Task<ICollection<JezykOrazStopienDto>> GetJezykiProfilu(int id);
 
-    public Task<ICollection<JezykOrazStopienDto>> ZmienJezykiProfilu(int profilId, ICollection<JezykOrazStopienDto> noweJezyki);
+    public Task<ICollection<JezykOrazStopienDto>> ZmienJezykiProfilu(int profilId, ICollection<JezykProfiluCreateDto> noweJezyki);
 
 }

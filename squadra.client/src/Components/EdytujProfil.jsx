@@ -17,8 +17,8 @@ import Naglowek from "./Naglowek";
     const [region, ustawRegion] = useState({});
     const [opis, ustawOpis] = useState("");
 
-    // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
-    const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState([])
+    // lista języków użytkownika przed zmianami, jej postać to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
+    const [staraListaJezykowUzytkownika, ustawStaraListeJezykowUzytkownika] = useState([])
 
     useEffect(() => {
         if (!ladowanie && !uzytkownik) {
@@ -52,7 +52,7 @@ import Naglowek from "./Naglowek";
             const profil = await fetchJson(`http://localhost:5014/api/Profil/${id}`, {credentials: "include"});
             if (alive && profil) {
                 // console.log("Pobrano profil:", profil);
-                ustawListeJezykowUzytkownika(Array.isArray(profil.jezyki) ? profil.jezyki : []);
+                ustawStaraListeJezykowUzytkownika(Array.isArray(profil.jezyki) ? profil.jezyki : []);
                 ustawPseudonim(profil.pseudonim ?? '');
                 ustawZaimki(profil.zaimki ?? '');
                 if(profil.regionIKraj){
@@ -67,7 +67,7 @@ import Naglowek from "./Naglowek";
 
             const jezyki = await fetchJson(`http://localhost:5014/api/Jezyk/profil/${id}`);
             if (alive && Array.isArray(jezyki)) {
-                ustawListeJezykowUzytkownika(jezyki.map(item => ({
+                ustawStaraListeJezykowUzytkownika(jezyki.map(item => ({
                     idJezyka: item.jezyk.id,
                     nazwaJezyka: item.jezyk.nazwa,
                     idStopnia: item.stopien.id,
@@ -97,7 +97,7 @@ import Naglowek from "./Naglowek";
             <h1>Edytuj profil</h1>
             <button className={"przycisk-nawigacji"} onClick={() => {navigate('/')}}>Powrót do profilu</button>
             <br/><br/>
-            <FormularzProfilu czyEdytuj = {true} staraListaJezykowUzytkownika = {listaJezykowUzytkownika} staryPseudonim = {pseudonim} 
+            <FormularzProfilu czyEdytuj = {true} staraListaJezykowUzytkownika = {staraListaJezykowUzytkownika} staryPseudonim = {pseudonim} 
                               stareZaimki = {zaimki} staryOpis = {opis} staryRegion = {region} staryKraj = {kraj} uzytkownik={uzytkownik}/>
             <br></br>
         </div>

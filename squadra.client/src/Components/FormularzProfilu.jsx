@@ -25,9 +25,8 @@ export default function FormularzProfilu({
     const [bledy, ustawBledy] = useState({pseudonim: "", zaimki: "", opis: "", zapisz: ""});
 
     // to, co jest aktualnie w formularzu
-    // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
-
-    // inicjalizacja lokalnego stanu z propsa:
+    // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia, wartoscStopnia}
+    // inicjalizacja lokalnego stanu ze starej listy, też ubezpieczamy się jakby nie istniała
     const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState(() =>
         Array.isArray(staraListaJezykowUzytkownika)
             ? staraListaJezykowUzytkownika
@@ -92,8 +91,8 @@ export default function FormularzProfilu({
             zaimki: zaimki,
             opis: opis,
             jezyki: (listaJezykowUzytkownika ?? []).map(j => ({
-                Jezyk: {Id: j.idJezyka, Nazwa: j.nazwaJezyka},
-                Stopien: {Id: j.idStopnia, Nazwa: j.nazwaStopnia, Wartosc: j.wartoscStopnia}
+                jezykId: j.idJezyka,
+                stopienId: j.idStopnia
             })),
             pseudonim: pseudonim,
             awatar: null

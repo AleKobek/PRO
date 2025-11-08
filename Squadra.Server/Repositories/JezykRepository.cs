@@ -51,7 +51,7 @@ public class JezykRepository(
         return jezykiDoZwrocenia;
     }
     
-    public async Task<ICollection<JezykOrazStopienDto>> ZmienJezykiProfilu(int profilId, ICollection<JezykOrazStopienDto> noweJezyki)
+    public async Task<ICollection<JezykOrazStopienDto>> ZmienJezykiProfilu(int profilId, ICollection<JezykProfiluCreateDto> noweJezyki)
     {
         // sprawdzamy czy profil o id profilId istnieje
         var profil = await appDbContext.Profil.FindAsync(profilId);
@@ -67,8 +67,8 @@ public class JezykRepository(
             appDbContext.JezykProfilu.Add(new JezykProfilu
             {
                 UzytkownikId = profilId,
-                JezykId = jezyk.Jezyk.Id,
-                StopienBieglosciId = jezyk.Stopien.Id
+                JezykId = jezyk.JezykId,
+                StopienBieglosciId = jezyk.StopienId
             });
         }
 

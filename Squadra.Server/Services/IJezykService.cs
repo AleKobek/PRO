@@ -11,5 +11,5 @@ public interface IJezykService
     public Task<ServiceResult<ICollection<JezykOrazStopienDto>>> GetJezykiProfilu(int id);
 
     public Task<ServiceResult<ICollection<JezykOrazStopienDto>>> ZmienJezykiProfilu(int profilId,
-        ICollection<JezykOrazStopienDto> noweJezyki);
+        ICollection<JezykProfiluCreateDto> noweJezyki);
 }

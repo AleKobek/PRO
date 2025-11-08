@@ -6,7 +6,7 @@ public record ProfilUpdateDto(
     int? RegionId,
     string? Zaimki,
     string? Opis,
-    ICollection<JezykOrazStopienDto> Jezyki,
+    ICollection<JezykProfiluCreateDto> Jezyki,
     string Pseudonim,
     byte[]? Awatar
 );

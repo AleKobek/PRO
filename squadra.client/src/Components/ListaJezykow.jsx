@@ -3,6 +3,7 @@ import JezykNaLiscieKomponent from "./JezykNaLiscieKomponent";
 
 export default function ListaJezykow({
                                          typ,
+                                         // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia, wartoscStopnia}
                                          listaJezykowUzytkownika = [],
                                          ustawListeJezykowUzytkownika = () => {}
                                      }){
@@ -31,11 +32,9 @@ export default function ListaJezykow({
         return (listaJezykowZBazy ?? []).filter(j => !zajete.has(j.id));
     }, [listaJezykowZBazy, listaJezykowUzytkownika]);
 
-    // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
-
 
     useEffect(() => {
-        if (startedRef.current) return; // tylko dla inicjalnego pobrania
+        if (startedRef.current) return; // dzięki temu pobieramy tylko raz, bo za drugim jest już zmienione na true
         startedRef.current = true;
         let alive = true;
 
@@ -90,10 +89,12 @@ export default function ListaJezykow({
     const przyKliknieciuDodaj = (e) => {
         e.preventDefault();
 
+        // język który dodajemy. jeżeli jest nic nie wybrane, to bierzemy pierwszy, bo tak jest w UI
         const jezyk = wybranyJezykDoDodania?.id
             ? wybranyJezykDoDodania
             : listaJezykowDostepnychDoDodania[0];
 
+        // to samo co wyżej
         const stopien = wybranyStopienDoDodania?.id
             ? wybranyStopienDoDodania
             : listaStopniZBazy[0];
@@ -110,10 +111,7 @@ export default function ListaJezykow({
                 wartosc: stopien.wartosc
             }
         ]));
-
         ustawWybranyJezykDoDodania(undefined);
-        ustawWybranyStopienDoDodania(undefined);
-
     };
 
     // przyciski do paginacji stron listy
@@ -180,9 +178,9 @@ export default function ListaJezykow({
                     let tempJezyk = listaJezykowZBazy.find(jezyk => jezyk.id == id);
                     ustawWybranyJezykDoDodania(tempJezyk);
                 }}>
-                    {listaJezykowDostepnychDoDodania.map((element, index) => (
+                    {listaJezykowDostepnychDoDodania.map((element) => (
                         // na każdy język {id, nazwa}
-                        <option key={index} value={element.id}>{element.nazwa}</option>
+                        <option key={element.id} value={element.id}>{element.nazwa}</option>
                     ))}
                 </select>
                 {/* select stopnia */}
@@ -191,9 +189,9 @@ export default function ListaJezykow({
                     let tempStopien = listaStopniZBazy.find(stopien => stopien.id == id);
                     ustawWybranyStopienDoDodania(tempStopien);
                 }}>
-                    {listaStopniZBazy.map((element, index) => (
+                    {listaStopniZBazy.map((element) => (
                         // elementem jest stopnień {id, nazwa}
-                        <option key={index} value={element.id}>{element.nazwa}</option>
+                        <option key={element.id} value={element.id}>{element.nazwa}</option>
                     )).sort(
                         // sortujemy elementy listy względem pola wartosc
                         (stopien1, stopien2) => {
@@ -202,7 +200,7 @@ export default function ListaJezykow({
                     )}
                 </select>
                 {/* przycisk obok selectów */}
-                <button onClick={przyKliknieciuDodaj}>Dodaj</button>
+                <button onClick={przyKliknieciuDodaj} disabled={listaJezykowDostepnychDoDodania.length === 0}>Dodaj</button>
             </ul>
             {przyciski}
         </div>)

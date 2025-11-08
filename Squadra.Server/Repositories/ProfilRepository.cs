@@ -101,7 +101,7 @@ public class ProfilRepository(AppDbContext appDbContext,
         var profil = await appDbContext.Profil.FindAsync(id);
         if(profil == null) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
         // usuwamy wszystkie języki, podajemy pustą listę
-        await jezykRepository.ZmienJezykiProfilu(id, new List<JezykOrazStopienDto>());
+        await jezykRepository.ZmienJezykiProfilu(id, new List<JezykProfiluCreateDto>());
         appDbContext.Profil.Remove(profil);
         await appDbContext.SaveChangesAsync();
     }

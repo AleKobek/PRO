@@ -33,7 +33,6 @@ public class ProfilController(IProfilService profilService,
             return Unauthorized("Nie jesteś zalogowany.");
 
         // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
-        Console.WriteLine("Id uzytkownika: " + uzytkownik.Id + ", id profilu: " + id);
         if (uzytkownik.Id != id)
             return Forbid("Nie możesz edytować profilu innego użytkownika.");
         

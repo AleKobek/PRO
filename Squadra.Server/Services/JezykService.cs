@@ -38,7 +38,7 @@ public class JezykService(IJezykRepository jezykRepository) : IJezykService
     }
 
     public async Task<ServiceResult<ICollection<JezykOrazStopienDto>>> ZmienJezykiProfilu(int profilId,
-        ICollection<JezykOrazStopienDto> noweJezyki)
+        ICollection<JezykProfiluCreateDto> noweJezyki)
     {
         try
         {

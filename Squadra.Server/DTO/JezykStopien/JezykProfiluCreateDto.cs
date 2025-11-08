@@ -1,8 +1,7 @@
 ﻿namespace Squadra.Server.DTO.JezykStopien;
 
-public record JezykUzytkownikaCreateDto
+public record JezykProfiluCreateDto
 (
-    int UzytkownikId,
     int JezykId,
     int StopienId
 );

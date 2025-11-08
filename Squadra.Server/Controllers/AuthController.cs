@@ -87,6 +87,11 @@ public class AuthController(IUzytkownikService uzytkownikService,
     [Authorize]
     public async Task<IActionResult> Me()
     {
+        // User To obiekt typu ClaimsPrincipal, automatycznie wypełniany przez ASP.NET Core na podstawie cookie.
+        // Zawiera informacje (claims) o zalogowanym użytkowniku, np. jego UserId, UserName, role itp.
+        
+        // ASP.NET Identity używa tego, żeby znaleźć w bazie obiekt Uzytkownik odpowiadający zalogowanej osobie
+        // (na podstawie claimu NameIdentifier w cookie).
         var user = await userManager.GetUserAsync(User);
         if (user is null) return Unauthorized();
 
