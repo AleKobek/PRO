@@ -7,6 +7,7 @@ import Logowanie from "./Components/Logowanie";
 import Rejestracja from "./Components/Rejestracja";
 import {AuthProvider} from "./Context/AuthContext";
 import StronaGlowna from "./Components/StronaGlowna";
+import NaglowekZalogowano from "./Components/NaglowekZalogowano";
 
 function App() {
 
@@ -16,8 +17,14 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path = "/" element = {<StronaGlowna/>}></Route>
-              <Route path = "/edytujProfil" element = {<EdytujProfil/>}></Route>
-              <Route path = "/twojProfil" element = {<TwojProfil/>}></Route>
+              <Route path = "/edytujProfil" element = {<>
+                  <NaglowekZalogowano/>
+                  <EdytujProfil/>
+              </>}></Route>
+              <Route path = "/twojProfil" element = {<>
+                  <NaglowekZalogowano/>
+                  <TwojProfil/>
+              </>}></Route>
               <Route path = "/login" element = {<Logowanie/>}></Route>
               <Route path = "/rejestracja" element = {<Rejestracja/>}></Route>
               <Route path = "*" element = {<Error404/>}></Route>

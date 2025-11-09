@@ -93,6 +93,18 @@ export default function Rejestracja() {
         }
     }
 
+    const czyZablokowaneWyslij = useMemo(() =>{
+        return(
+            !pseudonim ||
+            !login ||
+            !email ||
+            !haslo1||
+            !haslo2 ||
+            !dataUrodzenia ||
+            czySieWysyla
+        )
+    },[pseudonim, email, dataUrodzenia, haslo1, haslo2, czySieWysyla]);
+
     if(ladowanie) return (<>
             <Naglowek/>
             <div id = "glowna">
@@ -106,31 +118,57 @@ export default function Rejestracja() {
             <Naglowek />
             <div id = "glowna">
                 <h1>Rejestracja</h1>
-                <FormularzKonta
-                    pseudonim = {pseudonim}
-                    ustawPseudonim = {ustawPseudonim}
-                    login = {login}
-                    ustawLogin = {ustawLogin}
-                    email = {email}
-                    ustawEmail = {ustawEmail}
-                    dataUrodzenia = {dataUrodzenia}
-                    ustawDateUrodzenia = {ustawDateUrodzenia}
-                    numerTelefonu = {numerTelefonu}
-                    ustawNumerTelefonu = {ustawNumerTelefonu}
-                    haslo1 = {haslo1}
-                    ustawHaslo1 = {ustawHaslo1}
-                    haslo2 = {haslo2}
-                    ustawHaslo2 = {ustawHaslo2}
-                    czySieWysyla = {czySieWysyla}
-                    bladPseudonimu = {bladPseudonimu}
-                    bladLoginu = {bladLoginu}
-                    bladEmaila = {bladEmaila}
-                    bladDatyUrodzenia = {bladDatyUrodzenia}
-                    przyWysylaniu = {przyWysylaniu}
-                    bladNumeruTelefonu = {bladNumeruTelefonu}
-                    bladHasla = {bladHasla}
-                    bladOgolny = {bladOgolny}
-                ></FormularzKonta>
+                <form id = "form" name="formularz-rejestracji">
+                    <FormularzKonta
+                        pseudonim = {pseudonim}
+                        ustawPseudonim = {ustawPseudonim}
+                        login = {login}
+                        ustawLogin = {ustawLogin}
+                        email = {email}
+                        ustawEmail = {ustawEmail}
+                        dataUrodzenia = {dataUrodzenia}
+                        ustawDateUrodzenia = {ustawDateUrodzenia}
+                        numerTelefonu = {numerTelefonu}
+                        ustawNumerTelefonu = {ustawNumerTelefonu}
+                        czySieWysyla = {czySieWysyla}
+                        bladPseudonimu = {bladPseudonimu}
+                        bladLoginu = {bladLoginu}
+                        bladEmaila = {bladEmaila}
+                        bladDatyUrodzenia = {bladDatyUrodzenia}
+                        przyWysylaniu = {przyWysylaniu}
+                        bladNumeruTelefonu = {bladNumeruTelefonu}
+                        bladHasla = {bladHasla}
+                        bladOgolny = {bladOgolny}
+                    ></FormularzKonta>
+                    <br/><label>
+                    Hasło (Musi mieć dużą literę, małą literę, cyfrę, znak specjalny i minimum 8 znaków) <br/>
+                    <input
+                        type="password"
+                        value={haslo1}
+                        onChange={(e) => ustawHaslo1(e.target.value)}
+                        placeholder="••••••••"
+                        autoComplete="new-password"
+                    />
+                    </label><br/>
+                    
+                    <label>
+                        Powtórz hasło <br/>
+                        <input
+                            type="password"
+                            value={haslo2}
+                            onChange={(e) => ustawHaslo2(e.target.value)}
+                            placeholder="••••••••"
+                            autoComplete="new-password"
+                        />
+                    </label><br/>
+                    <span id = "error-haslo" className="error-wiadomosc">{bladHasla}</span><br/>
+                    <button
+                        type="button"
+                        disabled={czyZablokowaneWyslij}
+                        onClick={przyWysylaniu}
+                    >Zarejestruj się</button>
+                    <span id = "error-ogolny" className="error-wiadomosc">{bladOgolny}</span><br/>
+                </form>
             </div>
         </>
     );

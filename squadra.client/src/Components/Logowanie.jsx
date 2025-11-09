@@ -1,10 +1,11 @@
 ﻿import React, {useEffect, useMemo, useState} from 'react';
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import Naglowek from "./Naglowek";
 import {useAuth} from "../Context/AuthContext";
 
 export default function Logowanie() {
     const navigate = useNavigate();
+    const location = useLocation();
     const { uzytkownik, ustawUzytkownika, ladowanie } = useAuth();
     const [loginLubEmail, ustawLoginLubEmail] = useState(""); // e-mail lub nazwa użytkownika
     const [haslo, ustawHaslo] = useState("");
@@ -78,6 +79,7 @@ export default function Logowanie() {
             <Naglowek />
             <div id = "glowna">
                 <h1>Logowanie</h1>
+                <h3 style={{color: "green"}}>{location.state?.message}</h3>
                 <form id = "form" name="formularz-logowania">
                     <label>
                         <div>E-mail lub nazwa użytkownika</div>

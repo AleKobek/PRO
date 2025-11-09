@@ -92,7 +92,6 @@ import Naglowek from "./Naglowek";
     )
 
     return (<>
-        <NaglowekZalogowano></NaglowekZalogowano>
         <div id = "glowna">
             <h1>Edytuj profil</h1>
             <button className={"przycisk-nawigacji"} onClick={() => {navigate('/')}}>Powrót do profilu</button>

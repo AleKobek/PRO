@@ -1,9 +1,11 @@
 ﻿import {useEffect, useMemo, useState} from "react";
 import {NavLink, useNavigate} from "react-router-dom";
+import {useAuth} from "../Context/AuthContext";
 
 export default function NaglowekZalogowano(){
 
-
+    const {ustawUzytkownika} = useAuth()
+    
     // to, co pobieramy, w prototypie nie zmieniamy
     const [nazwaAktualnegoStatusuZBazy, ustawNazweAktualnegoStatusuZBazy] = useState("Dostępny");
     const navigate = useNavigate();
@@ -16,6 +18,7 @@ export default function NaglowekZalogowano(){
             console.error("Nie udało się wylogować")
             return;
         }
+        ustawUzytkownika(null);
         navigate('/login')
     }
 

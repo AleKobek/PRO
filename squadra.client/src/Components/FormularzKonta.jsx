@@ -1,4 +1,4 @@
-﻿import React, {useMemo} from "react";
+﻿import React from "react";
 export default function FormularzKonta({ // pamiętać, aby dać nawias klamrowy!
         // trochę dużo tego >_<
         pseudonim,
@@ -11,37 +11,13 @@ export default function FormularzKonta({ // pamiętać, aby dać nawias klamrowy
         ustawDateUrodzenia,
         numerTelefonu,
         ustawNumerTelefonu,
-        haslo1,
-        ustawHaslo1,
-        haslo2,
-        ustawHaslo2,
-        czySieWysyla,
         bladPseudonimu,
         bladLoginu,
         bladEmaila,
-        bladHasla,
         bladNumeruTelefonu,
         bladDatyUrodzenia,
-        bladOgolny,
-        przyWysylaniu
     }) {
-    
-    const czyZablokowaneWyslij = useMemo(() =>{
-        return(
-            !pseudonim ||
-            !login ||
-            !email ||
-            !haslo1||
-            !haslo2 ||
-            !dataUrodzenia ||
-            czySieWysyla    
-        )
-    },[pseudonim, email, dataUrodzenia, haslo1, haslo2, czySieWysyla]);
-
-
     return(<>
-        <form id = "form" name= "formularz-rejestracji">
-
             <label>
                 Login <br/>
                 <input
@@ -101,39 +77,5 @@ export default function FormularzKonta({ // pamiętać, aby dać nawias klamrowy
                 />
             </label><br/>
             <span id = "error-numer-telefonu" className="error-wiadomosc">{bladNumeruTelefonu}</span><br/>
-
-
-            <br/><label>
-                Hasło (Musi mieć dużą literę, małą literę, cyfrę, znak specjalny i minimum 8 znaków) <br/>
-                <input
-                    type="password"
-                    value={haslo1}
-                    onChange={(e) => ustawHaslo1(e.target.value)}
-                    placeholder="••••••••"
-                    autoComplete="new-password"
-                />
-            </label><br/>
-
-            
-            <label>
-                Powtórz hasło <br/>
-                <input
-                    type="password"
-                    value={haslo2}
-                    onChange={(e) => ustawHaslo2(e.target.value)}
-                    placeholder="••••••••"
-                    autoComplete="new-password"
-                    />
-            </label><br/>
-            <span id = "error-haslo" className="error-wiadomosc">{bladHasla}</span><br/>
-
-            
-            <button
-                type="button"
-                disabled={czyZablokowaneWyslij}
-                onClick={przyWysylaniu}
-            >Zarejestruj się</button>
-            <span id = "error-ogolny" className="error-wiadomosc">{bladOgolny}</span><br/>
-        </form>
     </>)
 }

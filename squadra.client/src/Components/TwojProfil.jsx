@@ -27,7 +27,6 @@ export default function TwojProfil() {
     )
 
     return (<>
-        <NaglowekZalogowano></NaglowekZalogowano>
         <div id = "glowna">
             <h1>Twój profil</h1>
             <DaneProfilu uzytkownik = {uzytkownik}></DaneProfilu>

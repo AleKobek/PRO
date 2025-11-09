@@ -42,7 +42,6 @@ export default function DaneProfilu({uzytkownik}) {
         };
 
         const podajDaneProfilu = async () => {
-            console.log(uzytkownik.id)
             // z jakiegoś powodu jest to jeszcze opakowane w użytkownika
             const idUzytkownika = uzytkownik.id;
             const data = await fetchJson(`http://localhost:5014/api/Profil/${idUzytkownika}`, {credentials: "include"});
@@ -104,7 +103,7 @@ export default function DaneProfilu({uzytkownik}) {
     }, []);
 
 
-    if(!czyZaladowanoDane || !uzytkownik.id) return(<><p>Ładowanie...</p></>);
+    if(!czyZaladowanoDane || !uzytkownik || !uzytkownik.id) return(<><p>Ładowanie...</p></>);
     
     return(<div className = "dane-profilu">
         <label>
