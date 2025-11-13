@@ -43,12 +43,21 @@ public class UzytkownikRepository(
     {
         var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
         
-        if (uzytkownik == null) throw new Exception("Uzytkownik o id " + id + " nie istnieje");
+        if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + id + " nie istnieje");
         
         var role = (await userManager.GetRolesAsync(uzytkownik)).ToArray();
 
         
         return new UzytkownikResDto(uzytkownik.Id, uzytkownik.UserName ?? string.Empty, uzytkownik.Email ?? string.Empty, uzytkownik.PhoneNumber, uzytkownik.DataUrodzenia, role);
+    }
+
+    public async Task<DateTime?> GetOstatniaAktywnoscUzytkownika(int id)
+    {
+        var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
+        
+        if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + id + " nie istnieje");
+
+        return uzytkownik.OstatniaAktywnosc;
     }
 
     public async Task<UzytkownikResDto> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
@@ -94,11 +103,11 @@ public class UzytkownikRepository(
     }
 
     // do zmiany hasła będzie oddzielne
-    public async Task<UzytkownikResDto> UpdateUzytkownik(UzytkownikUpdateDto uzytkownik)
+    public async Task<bool> UpdateUzytkownik(int id, UzytkownikUpdateDto uzytkownik)
     {
         
-        var uzytkownikDoZmiany = await appDbContext.Uzytkownik.FindAsync(uzytkownik.Id);
-        if(uzytkownikDoZmiany == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + uzytkownik.Id + " nie istnieje");
+        var uzytkownikDoZmiany = await appDbContext.Uzytkownik.FindAsync(id);
+        if(uzytkownikDoZmiany == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + id + " nie istnieje");
         
         uzytkownikDoZmiany.UserName = uzytkownik.Login;
         uzytkownikDoZmiany.NormalizedUserName = uzytkownik.Login.ToUpper();
@@ -108,25 +117,44 @@ public class UzytkownikRepository(
         uzytkownikDoZmiany.DataUrodzenia = uzytkownik.DataUrodzenia;
         
         await appDbContext.SaveChangesAsync();
-        
-        var role = (await userManager.GetRolesAsync(uzytkownikDoZmiany)).ToArray();
+        return true;
+    }
 
+    // lista stringów jest potrzebna do błędów w zmianie hasła, jak jest git zwracamy pustą
+    public async Task<List<string>> UpdateHaslo(int idUzytkownika, string stareHaslo, string noweHaslo)
+    {
+        var bledy = new List<string>();
+        // zakładamy, że service już sprawdziło, czy to właściwy użytkownik
+        var user = await appDbContext.Uzytkownik.FindAsync(idUzytkownika);
+        if(user == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + idUzytkownika + " nie istnieje");
         
-        return new UzytkownikResDto(
-            uzytkownik.Id,
-            uzytkownik.Login,
-            uzytkownik.Email,
-            uzytkownik.NumerTelefonu,
-            uzytkownik.DataUrodzenia,
-            role
-        );
+        // musimy sprawdzić, czy hasła są takie same. Nie chodzi o argument, bo ktoś mógł sobie zmienić stare hasło
+        var passwordHasher = new PasswordHasher<Uzytkownik>();
+        // tu chyba możemy zignorować nulla, bo u nas każdy będzie to miał
+        var verificationResult = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, noweHaslo);
+        // jeżeli hasła stare i nowe są takie same
+        if (verificationResult == PasswordVerificationResult.Success)
+        {
+            bledy.Add("Nowe hasło jest takie samo, jak stare hasło");
+            return bledy;
+        }
         
+        // nie są takie same, zmieniamy
+        
+        var result = await userManager.ChangePasswordAsync(user, stareHaslo, noweHaslo);
+        if (!result.Succeeded)
+        {
+            bledy.AddRange(result.Errors.Select(e => e.Description));
+            // będziemy to zwracać poniżej
+        }
+        // albo puste, albo z błędami z wyżej
+        return bledy;
     }
     
     public async Task DeleteUzytkownik(int id)
     {
         var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
-        if(uzytkownik == null) throw new Exception("Uzytkownik o id " + id + " nie istnieje");
+        if(uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + id + " nie istnieje");
         // zaczynamy transakcję
         await using var transaction = await appDbContext.Database.BeginTransactionAsync();
         await profilRepository.DeleteProfil(id);

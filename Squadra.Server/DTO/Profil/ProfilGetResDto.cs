@@ -11,5 +11,6 @@ public record ProfilGetResDto
     string? Zaimki,
     string? Opis,
     ICollection<JezykOrazStopienDto> Jezyki,
-    byte[]? Awatar
+    byte[]? Awatar,
+    string NazwaStatusu
 );

@@ -116,7 +116,7 @@ export default function Logowanie() {
                         disabled={czySieWysyla || czyZablokowaneWyslij}
                         onClick={przyWysylaniu}
                         value="Zaloguj się"
-                    />
+                    /><br/>
                     <span id="error-ogolny" className="error-wiadomosc">{bladOgolny}</span><br/>
             </form>
         </div>

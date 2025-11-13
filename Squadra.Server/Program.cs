@@ -40,23 +40,26 @@ builder.Services.AddScoped<IStopienBieglosciJezykaService, StopienBieglosciJezyk
 
 // ustawiamy Identity
 builder.Services
-    .AddIdentityCore<Uzytkownik>()
-    .AddRoles<IdentityRole<int>>()
+    .AddIdentity<Uzytkownik, IdentityRole<int>>()
+    // mówi Identity, żeby używać EF Core jako magazynu użytkowników/rol.
     .AddEntityFrameworkStores<AppDbContext>()
-    .AddSignInManager()
-    .AddDefaultTokenProviders();
+    .AddDefaultTokenProviders(); 
 
-// Dodajemy autentykację za pomocą cookies i autoryzację
-builder.Services.AddAuthentication(IdentityConstants.ApplicationScheme)
-    // musi się zgadzać schemat IdentityConstants.ApplicationScheme w obu, aby SignInManager i [Authorize] korzystały z tych samych cookies
-    .AddCookie(IdentityConstants.ApplicationScheme, options =>
+// konfigurujemy cookie
+builder.Services.ConfigureApplicationCookie(options =>
     {
         options.LoginPath = "/api/auth/login";
         options.Cookie.HttpOnly = true;
-        // Jeśli front działa pod tym samym originem: Lax zwykle wystarczy
+        // kontroluje, kiedy przeglądarka wysyła cookie do serwera w kontekście cross-site requests
+        // (czyli np. jeśli front i back są na różnych domenach/subdomenach).
+        
+        // my mamy lax, co się ustawia jak jest na tym samym originie
         options.Cookie.SameSite = SameSiteMode.Lax;
+        
+        // jak dostajemy https, odsyłamy https, http też http
         options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
 
+        // te dwa następne: pierwsze mówi że traci ważność, drugie - po jakim czasie
         options.SlidingExpiration = true;
         options.ExpireTimeSpan = TimeSpan.FromDays(7);
 

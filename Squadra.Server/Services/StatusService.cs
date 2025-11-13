@@ -18,6 +18,6 @@ public class StatusService(IStatusRepository statusRepository) : IStatusService
     
     public StatusDto GetStatusDomyslny()
     {
-        return statusRepository.GetStatusDomyslny();
+        return statusRepository.GetStatusOffline();
     }
 }

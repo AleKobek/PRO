@@ -9,9 +9,7 @@ export default function ListaJezykow({
                                      }){
 
 
-
-    const startedRef = useRef(false);
-
+    
     const liczbaJezykowNaStronie = 3;
 
     const [aktualnaStrona, ustawAktualnaStrone] = useState(0);
@@ -34,29 +32,40 @@ export default function ListaJezykow({
 
 
     useEffect(() => {
-        if (startedRef.current) return; // dzięki temu pobieramy tylko raz, bo za drugim jest już zmienione na true
-        startedRef.current = true;
+
+        const ac = new AbortController();
         let alive = true;
 
-        (async () => {
+        // taka pomocnicza funkcja dla abort controller
+        const fetchJsonAbort = async (url) => {
             try {
-                const [jezykiRes, stopnieRes] = await Promise.all([
-                    fetch("http://localhost:5014/api/Jezyk", {credentials: "include"}),
-                    fetch("http://localhost:5014/api/StopienBieglosciJezyka", {credentials: "include"}),
-                ]);
-                if (!jezykiRes.ok) throw new Error(`GET /api/Jezyk -> ${jezykiRes.status}`);
-                if (!stopnieRes.ok) throw new Error(`GET /api/StopienBieglosciJezyka -> ${stopnieRes.status}`);
-
-                const [jezyki, stopnie] = await Promise.all([jezykiRes.json(), stopnieRes.json()]);
-                ustawListeJezykowZBazy(jezyki);
-                ustawListeStopniZBazy(stopnie);
-
-            } catch (e) {
-                console.error(e);
+                const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
+                if (!res.ok) return null;
+                return await res.json();
+            } catch (err) {
+                if (err && err.name === 'AbortError') return null;
+                console.error('Błąd pobierania:', err);
+                return null;
             }
-        })();
+        };
+        
+        const pobierzJezykiIStopnie = async () => {
+            const jezyki = await fetchJsonAbort("http://localhost:5014/api/Jezyk");
+            if (!alive || !jezyki) return;
+            ustawListeJezykowZBazy(jezyki);
+            
+            const stopnie = await fetchJsonAbort("http://localhost:5014/api/StopienBieglosciJezyka");
+            if (!alive || !stopnie) return;
+            ustawListeStopniZBazy(stopnie);
+        };
+        
+        pobierzJezykiIStopnie();
 
-        return () => { alive = false; };
+        // funkcja czyszcząca
+        return () => {
+            alive = false;
+            ac.abort(); // przerywamy
+        };
     }, []);
 
     // gdy dane są pobrane, ustawiamy domyślne wybory i aktualizujemy dostępne języki

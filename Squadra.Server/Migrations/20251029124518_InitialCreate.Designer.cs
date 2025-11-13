@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Squadra.Server.Context;
 
@@ -11,9 +12,11 @@ using Squadra.Server.Context;
 namespace Squadra.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251029124518_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -597,9 +600,6 @@ namespace Squadra.Server.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("nvarchar(64)");
 
-                    b.Property<DateTime?>("OstatniaAktywnosc")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
@@ -639,14 +639,12 @@ namespace Squadra.Server.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             ConcurrencyStamp = "00000000-0000-0000-0000-000000000002",
-                            DataUrodzenia = new DateOnly(2002, 10, 5),
                             Email = "eee@eeee.ee",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "EEE@EEEE.EE",
                             NormalizedUserName = "LECZO",
-                            PasswordHash = "AQAAAAIAAYagAAAAEP/9zHapujLFF7cdZeFgdRHL2ueNgRrIRoFWCoyV9eycnY+o/q5y7krDeXOf/7FWkA==",
-                            PhoneNumber = "123456789",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBLb0gdqt+Nfir8uQHvp0c5ZiQ46E8STEWS8/21xKW9uA+U9Y4IWg3qgo7Tw0zB6pQ==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "00000000-0000-0000-0000-000000000001",
                             TwoFactorEnabled = false,

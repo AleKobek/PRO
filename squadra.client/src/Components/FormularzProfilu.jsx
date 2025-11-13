@@ -56,36 +56,48 @@ export default function FormularzProfilu({
     // Pobranie list krajów/regionów
     useEffect(() => {
         const ac = new AbortController();
+        let alive = true;
 
-        const podajKrajeIRegionyZBazy = async () => {
+        // taka pomocnicza funkcja dla abort controller
+        const fetchJsonAbort = async (url) => {
             try {
-                const [krajeRes, regionyRes] = await Promise.all([
-                    fetch("http://localhost:5014/api/Kraj", { signal: ac.signal, credentials: "include"}),
-                    fetch("http://localhost:5014/api/Region", { signal: ac.signal, credentials: "include"}),
-                ]);
-
-                if (!krajeRes.ok) throw new Error(`GET /api/Kraj -> ${krajeRes.status}`);
-                if (!regionyRes.ok) throw new Error(`GET /api/Region -> ${regionyRes.status}`);
-
-                const [kraje, regiony] = await Promise.all([krajeRes.json(), regionyRes.json()]);
-                
-                ustawListeKrajowZBazy(kraje);
-                ustawListeRegionowZBazy(regiony);
+                const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
+                if (!res.ok) return null;
+                return await res.json();
             } catch (err) {
-                if (err.name !== "AbortError") {
-                    console.error("Błąd podczas pobierania krajów/regionów:", err);
-                }
+                if (err && err.name === 'AbortError') return null;
+                console.error('Błąd pobierania:', err);
+                return null;
             }
         };
 
+        const podajKrajeIRegionyZBazy = async () => {
+            
+            // podajemy kraje
+            const kraje = await fetchJsonAbort("http://localhost:5014/api/Kraj");
+            if (!alive || !kraje || !Array.isArray(kraje)) return;
+            ustawListeKrajowZBazy(kraje);
+            
+            // podajemy regiony
+            const regiony = await fetchJsonAbort("http://localhost:5014/api/Region");
+            if(!alive || !regiony || !Array.isArray(regiony)) return;
+            ustawListeRegionowZBazy(regiony);
+            
+        };
+
         podajKrajeIRegionyZBazy();
-        return () => ac.abort();
+
+        // to funkcja sprzątająca. Odpali się od razu, gdy ten element zniknie, np. użytkownik zmieni stronę
+        // albo pod koniec całej funkcji
+        return () => {
+            ac.abort();
+            alive = false; // przerywamy fetch
+        }
     }, []);
 
 
 
     const przyWysylaniu = async() =>{
-        // sprawdzić wszystkie pola!
         const profilDoWyslania = {
             regionId: region.id ?? null,
             zaimki: zaimki,
@@ -108,38 +120,21 @@ export default function FormularzProfilu({
             body: JSON.stringify(profilDoWyslania)
         }
         
-        const res = (await fetch("http://localhost:5014/api/Profil/" + uzytkownik.id, opcje));
-
+        const res = await fetch("http://localhost:5014/api/Profil/" + uzytkownik.id, opcje);
         // Odczyt body różni się zależnie od typu odpowiedzi
         // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
-        const ct = res.headers.get("content-type") || "";
-        const body = ct.includes("application/json")
+        const ct = res.headers.get("content-type") || "";       
+        const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
             ? await res.json().catch(() => null)
             : await res.text().catch(() => "");
 
         if (!res.ok) {
-            // Np. 404 z tekstem
-            console.error("Błąd zapisywania:", res.status, body);
             if(res.status === 400){
-                let bladPseudonimu = "";
-                let bladZaimkow = "";
-                let bladOpisu = "";
-                console.log("body: ",body);
-                // zrobić tu tak jak w rejestracji! najpierw sprawdzić czy działa
-                for(let i = 0; i < body.length; i++){
-                    let blad = body[i];
-                    if (blad.length <= 1) continue;
-                    console.log("błąd: ", blad);
-                    switch(blad.field){
-                        case "Pseudonim": bladPseudonimu = blad.message; break;
-                        case "Zaimki": bladZaimkow = blad.message; break;
-                        case "Opis": bladOpisu = blad.message; break;
-                    }
-                }
+                let bledy = body.errors;
                 ustawBledy({
-                    pseudonim: bladPseudonimu,
-                    zaimki: bladZaimkow,
-                    opis: bladOpisu,
+                    pseudonim: bledy.Pseudonim ? bledy.Pseudonim[0] : "",
+                    zaimki: bledy.Zaimki ? bledy.Zaimki[0] : "",
+                    opis: bledy.Opis ? bledy.Opis[0] : "",
                     zapisz: body.message,
                 });
             }
@@ -205,7 +200,7 @@ export default function FormularzProfilu({
             type="text" 
             id = "pseudonim" name ="pseudonim"
             value={pseudonim}
-            maxLength={20}
+            // maxLength={20}
             onChange={(e)=>ustawPseudonim(e.target.value)}>
         </input></label><br/>
         <span id = "error-pseudonim" className="error-wiadomosc">{bledy.pseudonim}</span><br/>

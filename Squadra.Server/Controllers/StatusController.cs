@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Squadra.Server.DTO.Status;
 using Squadra.Server.Exceptions;
@@ -12,13 +13,16 @@ namespace Squadra.Server.Controllers;
 public class StatusController(IStatusService statusService) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<ICollection<StatusDto>>> GetStatusy()
+    [ProducesResponseType(typeof(IEnumerable<StatusDto>), (int)HttpStatusCode.OK)]
+    public async Task<ActionResult<IEnumerable<StatusDto>>> GetStatusy()
     {
         var result = await statusService.GetStatusy();
         return Ok(result.Value);
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(StatusDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<StatusDto?>> GetStatus(int id)
     {
         

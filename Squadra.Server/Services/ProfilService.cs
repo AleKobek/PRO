@@ -6,8 +6,15 @@ using Squadra.Server.Repositories;
 namespace Squadra.Server.Services;
 
 public class ProfilService(
-    IProfilRepository profilRepository) : IProfilService
+    IProfilRepository profilRepository, 
+    IUzytkownikRepository uzytkownikRepository,
+    IStatusRepository statusRepository) : IProfilService
 {
+    
+    public async Task<ServiceResult<ICollection<ProfilGetResDto>>> GetProfile()
+    {
+        return ServiceResult<ICollection<ProfilGetResDto>>.Ok(await profilRepository.GetProfile());
+    }
 
     public async Task<ServiceResult<ProfilGetResDto>> GetProfil(int id)
     {
@@ -21,7 +28,7 @@ public class ProfilService(
     }
     
     
-    public async Task<ServiceResult<ProfilGetResDto>> UpdateProfil(int id, ProfilUpdateDto profil)
+    public async Task<ServiceResult<bool>> UpdateProfil(int id, ProfilUpdateDto profil)
     {
         /*
             dane przyjdą w formie:
@@ -36,8 +43,8 @@ public class ProfilService(
         
         var bledy = new List<ErrorItem>();
         
-        if(id < 1) return ServiceResult<ProfilGetResDto>.BadRequest(new ErrorItem("Profil o id " + id + " nie istnieje"));
-        if(profil.RegionId < 1) return ServiceResult<ProfilGetResDto>.BadRequest(new ErrorItem("Region o id " + profil.RegionId + " nie istnieje"));
+        if(id < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Profil o id " + id + " nie istnieje"));
+        if(profil.RegionId < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Region o id " + profil.RegionId + " nie istnieje"));
         
         if(profil.Zaimki is { Length: > 10 })
         {
@@ -57,12 +64,12 @@ public class ProfilService(
         try
         {
             return bledy.Count > 0
-                ? ServiceResult<ProfilGetResDto>.BadRequest(bledy.ToArray())
-                : ServiceResult<ProfilGetResDto>.Ok(await profilRepository.UpdateProfil(id, profil));
+                ? ServiceResult<bool>.BadRequest(bledy.ToArray())
+                : ServiceResult<bool>.Ok(await profilRepository.UpdateProfil(id, profil), 204);
         }
         catch (NieZnalezionoWBazieException e)
         {
-            return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
     
@@ -84,10 +91,13 @@ public class ProfilService(
         try
         {
             var status = await profilRepository.GetStatusProfilu(id);
+
+            var aktywnosc = await uzytkownikRepository.GetOstatniaAktywnoscUzytkownika(id);
             
-            // jeżeli jest offline, zawsze wyświetlamy offline (nie mamy jeszcze jak tego sprawdzić)
-            // zakładamy na razie, że cały czas jest online
-            return ServiceResult<StatusDto>.Ok(status.Nazwa == "Niewidoczny"? new StatusDto(5, "Offline") : status);
+            // uznajemy, że jest offline, jeżeli nie miał otwartego okna / połączenia przez 5 minut
+            return ServiceResult<StatusDto>.Ok(DateTime.Now - aktywnosc > TimeSpan.FromMinutes(5) || status.Nazwa == "Niewidoczny" 
+                ? statusRepository.GetStatusOffline()
+                : status);
         }
         catch (NieZnalezionoWBazieException e)
         {
@@ -95,19 +105,19 @@ public class ProfilService(
         }
     }
     
-    public async Task<ServiceResult<ProfilGetResDto>> UpdateStatus(int id, int idStatus)
+    public async Task<ServiceResult<StatusDto>> UpdateStatus(int id, int idStatus)
     {
         try{
             if (id < 1)
-                return ServiceResult<ProfilGetResDto>.BadRequest(new ErrorItem("Profil o id " + id + " nie istnieje"));
+                return ServiceResult<StatusDto>.NotFound(new ErrorItem("Profil o id " + id + " nie istnieje"));
 
             if (idStatus < 1)
-                return ServiceResult<ProfilGetResDto>.BadRequest(new ErrorItem("Status o id " + id + " nie istnieje"));
+                return ServiceResult<StatusDto>.NotFound(new ErrorItem("Status o id " + id + " nie istnieje"));
 
-            return ServiceResult<ProfilGetResDto>.Ok(await profilRepository.UpdateStatus(id, idStatus));
+            return ServiceResult<StatusDto>.Ok(await profilRepository.UpdateStatus(id, idStatus));
             
         }catch(NieZnalezionoWBazieException e){
-            return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<StatusDto>.NotFound(new ErrorItem(e.Message));
         }
     }
 }

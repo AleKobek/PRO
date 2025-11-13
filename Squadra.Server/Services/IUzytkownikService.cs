@@ -9,5 +9,11 @@ public interface IUzytkownikService
 
     Task<ServiceResult<UzytkownikResDto>> CreateUzytkownik(UzytkownikCreateDto uzytkownik);
 
-    
+    public Task<ServiceResult<bool>> UpdateUzytkownik(int id, UzytkownikUpdateDto dto);
+
+    public Task<ServiceResult<ICollection<string>>> UpdateHaslo(int idUzytkownika, string stareHaslo, string noweHaslo);
+
+
+    public Task<ServiceResult<bool>> DeleteUzytkownik(int id);
+
 }

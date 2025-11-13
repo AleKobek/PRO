@@ -30,9 +30,10 @@ import Naglowek from "./Naglowek";
     useEffect(() => {
         if(!uzytkownik) return;
         const ac = new AbortController();
-        let alive = true; // nie aktualizuj stanu po unmount
+        let alive = true; // nie aktualizujemy stanu po unmount
 
-        const fetchJson = async (url) => {
+        // taka pomocnicza funkcja dla abort controller
+        const fetchJsonAbort = async (url) => {
             try {
                 const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include"});
                 if (!res.ok) return null;
@@ -45,41 +46,46 @@ import Naglowek from "./Naglowek";
                 return null;
             }
         };
-
-        (async () => {
+        
+        const podajProfil = async () => {
             const id = uzytkownik.id;
 
-            const profil = await fetchJson(`http://localhost:5014/api/Profil/${id}`, {credentials: "include"});
-            if (alive && profil) {
-                // console.log("Pobrano profil:", profil);
-                ustawStaraListeJezykowUzytkownika(Array.isArray(profil.jezyki) ? profil.jezyki : []);
-                ustawPseudonim(profil.pseudonim ?? '');
-                ustawZaimki(profil.zaimki ?? '');
-                if(profil.regionIKraj){
-                    ustawKraj({id: profil.regionIKraj.idKraju, nazwa: profil.regionIKraj.nazwaKraju});
-                    ustawRegion({id: profil.regionIKraj.idRegionu, nazwa: profil.regionIKraj.nazwaRegionu});
-                }else {
-                    ustawKraj({id: null, nazwa: null});
-                    ustawRegion({id: null, nazwa: null});   
-                }
-                ustawOpis(profil.opis ?? '');
+            // podajemy języki profilu
+            const profil = await fetchJsonAbort(`http://localhost:5014/api/Profil/${id}`);
+            if(!alive || !profil) return
+            
+            ustawStaraListeJezykowUzytkownika(Array.isArray(profil.jezyki) ? profil.jezyki : []);
+            ustawPseudonim(profil.pseudonim ?? '');
+            ustawZaimki(profil.zaimki ?? '');
+            if(profil.regionIKraj){
+                ustawKraj({id: profil.regionIKraj.idKraju, nazwa: profil.regionIKraj.nazwaKraju});
+                ustawRegion({id: profil.regionIKraj.idRegionu, nazwa: profil.regionIKraj.nazwaRegionu});
+            }else {
+                ustawKraj({id: null, nazwa: null});
+                ustawRegion({id: null, nazwa: null});   
             }
+            ustawOpis(profil.opis ?? '');
+            
 
-            const jezyki = await fetchJson(`http://localhost:5014/api/Jezyk/profil/${id}`);
-            if (alive && Array.isArray(jezyki)) {
-                ustawStaraListeJezykowUzytkownika(jezyki.map(item => ({
-                    idJezyka: item.jezyk.id,
-                    nazwaJezyka: item.jezyk.nazwa,
-                    idStopnia: item.stopien.id,
-                    nazwaStopnia: item.stopien.nazwa,
-                    wartoscStopnia: item.stopien.wartosc
-                })));
-            }
-        })();
+            const jezyki = await fetchJsonAbort(`http://localhost:5014/api/Jezyk/profil/${id}`);
+            if(!alive || !jezyki || !Array.isArray(jezyki)) return;
+            
+            ustawStaraListeJezykowUzytkownika(jezyki.map(item => ({
+                idJezyka: item.jezyk.id,
+                nazwaJezyka: item.jezyk.nazwa,
+                idStopnia: item.stopien.id,
+                nazwaStopnia: item.stopien.nazwa,
+                wartoscStopnia: item.stopien.wartosc
+            })));
+        };
+        
+        podajProfil();
 
+        // to funkcja sprzątająca. Odpali się od razu, gdy ten element zniknie, np. użytkownik zmieni stronę
+        // albo pod koniec całej funkcji
         return () => {
             alive = false;
-            ac.abort(); // przerywamy
+            ac.abort(); // przerywamy fetch
         };
     }, [uzytkownik]);
 

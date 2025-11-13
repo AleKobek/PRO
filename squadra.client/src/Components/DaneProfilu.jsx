@@ -11,14 +11,11 @@ export default function DaneProfilu({uzytkownik}) {
     // {id, nazwa}
     const [kraj, ustawKraj] = useState({});
     const [opis, ustawOpis] = useState("");
+    const [nazwaStatusu, ustawNazweStatusu] = useState("");
     
     // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
     const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState([])
-
-
-
-    const [czyZaladowanoDane, ustawCzyZaladowanoDane] = useState(false);
-
+    
     
     useEffect(() => {
 
@@ -29,7 +26,8 @@ export default function DaneProfilu({uzytkownik}) {
         const ac = new AbortController();
         let alive = true;
 
-        const fetchJson = async (url) => {
+        // taka pomocnicza funkcja dla abort controller
+        const fetchJsonAbort = async (url) => {
             try {
                 const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
                 if (!res.ok) return null;
@@ -44,8 +42,10 @@ export default function DaneProfilu({uzytkownik}) {
         const podajDaneProfilu = async () => {
             // z jakiegoś powodu jest to jeszcze opakowane w użytkownika
             const idUzytkownika = uzytkownik.id;
-            const data = await fetchJson(`http://localhost:5014/api/Profil/${idUzytkownika}`, {credentials: "include"});
+            const data = await fetchJsonAbort(`http://localhost:5014/api/Profil/${idUzytkownika}`);
+            console.log("profil:", data);
 
+            // przerywamy działanie funkcji
             if (!alive) return;
 
             ustawPseudonim(data.pseudonim ?? "");
@@ -60,11 +60,12 @@ export default function DaneProfilu({uzytkownik}) {
                 ustawKraj(regionIKraj.idKraju ? {id: regionIKraj.idKraju, nazwa: regionIKraj.nazwaKraju} : null);
             }
             ustawOpis(data.opis ?? "");
+            ustawNazweStatusu(data.nazwaStatusu ?? "");
         };
 
         const podajJezykiIStopnieUzytkownika = async () => {
             const idUzytkownika = uzytkownik.id;
-            const data = await fetchJson(`http://localhost:5014/api/Jezyk/profil/${idUzytkownika}`, {credentials: "include"});
+            const data = await fetchJsonAbort(`http://localhost:5014/api/Jezyk/profil/${idUzytkownika}`);
 
             if (!alive) return;
 
@@ -86,24 +87,21 @@ export default function DaneProfilu({uzytkownik}) {
             ustawListeJezykowUzytkownika(temp);
         };
 
-        (async () => {
-            try {
-                if(!pseudonim && !zaimki && !opis) {
-                    await podajDaneProfilu();
-                }
-                if(listaJezykowUzytkownika.length === 0) await podajJezykiIStopnieUzytkownika();
-            } finally {
-                if (alive) ustawCzyZaladowanoDane(true);
-            }
-        })();
+        if(!pseudonim && !zaimki && !opis) {
+            podajDaneProfilu();
+        }
+        if(listaJezykowUzytkownika.length === 0) podajJezykiIStopnieUzytkownika();
+        
+        // to funkcja sprzątająca. Odpali się od razu, gdy ten element zniknie, np. użytkownik zmieni stronę
+        // albo pod koniec całej funkcji
         return () => {
             alive = false;
-            ac.abort(); // przerywamy
+            ac.abort(); // przerywamy fetch
         };
     }, []);
 
 
-    if(!czyZaladowanoDane || !uzytkownik || !uzytkownik.id) return(<><p>Ładowanie...</p></>);
+    if(!uzytkownik || !uzytkownik.id) return(<><p>Ładowanie...</p></>);
     
     return(<div className = "dane-profilu">
         <label>
@@ -130,5 +128,9 @@ export default function DaneProfilu({uzytkownik}) {
             Opis:
             <p id = "opis" className= "pole-w-danych-profilu">{opis}</p>
         </label>
+        <label>
+            Status:
+        <p id = "status" className= "pole-w-danych-profilu">{nazwaStatusu}</p>
+    </label>
     </div>)
 }

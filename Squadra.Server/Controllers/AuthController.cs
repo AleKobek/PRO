@@ -21,7 +21,7 @@ public class AuthController(IUzytkownikService uzytkownikService,
     [HttpPost("register")]
     [AllowAnonymous]
     [ProducesResponseType(typeof(UzytkownikResDto), (int)HttpStatusCode.Created)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails),(int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
     public async Task<ActionResult<UzytkownikResDto>> Zarejestruj([FromBody] UzytkownikCreateDto dto)
     {
@@ -33,7 +33,7 @@ public class AuthController(IUzytkownikService uzytkownikService,
         // jeżeli coś jest źle
         switch (result.StatusCode)
         {
-            // Dla 400 zwracamy standardową odpowiedź walidacyjną
+            // Dla 400 u nas zwracamy ValidationProblem, ponieważ błędy dotyczą konkretnych pól
             case 400:
             {
                 foreach (var e in result.Errors)
@@ -70,6 +70,10 @@ public class AuthController(IUzytkownikService uzytkownikService,
             return Unauthorized(new { message = "Nieprawidłowe dane logowania." });
 
         await signInManager.SignInAsync(uzytkownik, isPersistent: req.ZapamietajMnie);
+        
+        // od razu zaznaczamy mu, że jest aktywny
+        uzytkownik.OstatniaAktywnosc = DateTime.Now;
+        await userManager.UpdateAsync(uzytkownik);
 
         var roles = (await userManager.GetRolesAsync(uzytkownik)).ToArray();
         return Ok(new AuthUserDto(uzytkownik.Id, uzytkownik.UserName!, uzytkownik.Email!, roles));

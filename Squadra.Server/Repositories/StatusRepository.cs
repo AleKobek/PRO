@@ -32,8 +32,9 @@ public class StatusRepository(AppDbContext context) : IStatusRepository
         return status?.Id;
     }
 
-    public StatusDto GetStatusDomyslny()
+    public StatusDto GetStatusOffline()
     {
-        return new StatusDto(5, "Offline");
+        // offline nigdy nie ma w bazie, bo to status zastępczy, i zawsze jest na końcu
+        return new StatusDto(context.Status.Max(x => x.Id) + 1, "Offline");
     }
 }

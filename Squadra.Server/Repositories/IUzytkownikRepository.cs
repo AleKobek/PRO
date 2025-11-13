@@ -11,7 +11,12 @@ public interface IUzytkownikRepository
 
     public Task<UzytkownikResDto> CreateUzytkownik(UzytkownikCreateDto uzytkownik);
 
-    public Task<UzytkownikResDto> UpdateUzytkownik(UzytkownikUpdateDto uzytkownik);
+    public Task<bool> UpdateUzytkownik(int id, UzytkownikUpdateDto uzytkownik);
+
+    public Task<DateTime?> GetOstatniaAktywnoscUzytkownika(int id);
+
+    public Task<List<string>> UpdateHaslo(int idUzytkownika, string stareHaslo, string noweHaslo);
+
 
     public Task DeleteUzytkownik(int id);
     

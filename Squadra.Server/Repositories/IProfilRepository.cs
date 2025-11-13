@@ -9,7 +9,7 @@ public interface IProfilRepository
 
     public Task<ProfilGetResDto> GetProfilUzytkownika(int id);
 
-    public Task<ProfilGetResDto> UpdateProfil(int id, ProfilUpdateDto profil);
+    public Task<bool> UpdateProfil(int id, ProfilUpdateDto profil);
 
     public Task<ProfilGetResDto> CreateProfil(ProfilCreateReqDto profil);
     
@@ -17,5 +17,5 @@ public interface IProfilRepository
 
     public Task<StatusDto> GetStatusProfilu(int id);
     
-    public Task<ProfilGetResDto> UpdateStatus(int id, int idStatus);
+    public Task<StatusDto> UpdateStatus(int id, int idStatus);
 }

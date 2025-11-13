@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using Squadra.Server.DTO.Uzytkownik;
+using Squadra.Server.Exceptions;
 using Squadra.Server.Repositories;
 
 namespace Squadra.Server.Services;
@@ -13,9 +14,9 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
 
     public async Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(int id)
     {
-        if(id < 1) return ServiceResult<UzytkownikResDto>.NotFound(new ErrorItem("Uzytkownik o id " + id + " nie istnieje"));
-        
-        return ServiceResult<UzytkownikResDto>.Ok(await uzytkownikRepository.GetUzytkownik(id));
+        return id < 1 
+            ? ServiceResult<UzytkownikResDto>.NotFound(new ErrorItem("Uzytkownik o id " + id + " nie istnieje")) 
+            : ServiceResult<UzytkownikResDto>.Ok(await uzytkownikRepository.GetUzytkownik(id));
     }
     
     public async Task<ServiceResult<UzytkownikResDto>> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
@@ -30,13 +31,16 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
          */
         
         // sprawdzamy wszystkie dane, pseudonim niżej
-        var bledy = await SprawdzPoprawnoscDanych(
+        var bledy = await SprawdzPoprawnoscDanychPozaHaslem(
             uzytkownik.Login,
-            uzytkownik.Haslo,
             uzytkownik.Email,
             uzytkownik.NumerTelefonu,
             uzytkownik.DataUrodzenia
         );
+        
+        var bladHasla = SprawdzPoprawnoscHasla(uzytkownik.Haslo);
+        if (bladHasla != null)
+            bledy.Add(bladHasla);
 
         // sprawdzamy jeszcze pseudonim
         if (string.IsNullOrWhiteSpace(uzytkownik.Pseudonim) || uzytkownik.Pseudonim.Length > 20)
@@ -59,16 +63,79 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
         return ServiceResult<UzytkownikResDto>.Ok(stworzonyUzytkownik, 201);
 
     }
-    public Task<UzytkownikResDto> Update(UzytkownikUpdateDto dto)
+    public async Task<ServiceResult<bool>> UpdateUzytkownik(int id, UzytkownikUpdateDto dto)
     {
-        return uzytkownikRepository.UpdateUzytkownik(dto);
+        try
+        {
+            /*
+             int Id,
+             string Login,
+             string Email,
+             string? NumerTelefonu,
+             DateOnly DataUrodzenia 
+             */
+            
+            
+            
+            var bledy = await SprawdzPoprawnoscDanychPozaHaslem(
+                dto.Login,
+                dto.Email,
+                dto.NumerTelefonu,
+                dto.DataUrodzenia
+            );
+            
+            if (bledy.Count > 0)
+            {
+                return ServiceResult<bool>.BadRequest(bledy.ToArray());
+            }
+            
+            // jak tu doszliśmy, jedyne co może nie być git, jest to, że nie znajdzie. ale to już łapiemy
+            var result = await uzytkownikRepository.UpdateUzytkownik(id, dto);
+            return ServiceResult<bool>.Ok(result, 204);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
     }
-    public Task Delete(int id) => uzytkownikRepository.DeleteUzytkownik(id);
-    private Task<bool> CzyLoginIstnieje(string login) => uzytkownikRepository.CzyLoginIstnieje(login);
-    private Task<bool> CzyEmailIstnieje(string email) => uzytkownikRepository.CzyEmailIstnieje(email);
+
+    public async Task<ServiceResult<ICollection<string>>> UpdateHaslo(int idUzytkownika, string stareHaslo, string noweHaslo)
+    {
+        if(idUzytkownika < 1) return ServiceResult<ICollection<string>>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika + " nie istnieje"));
+        if (stareHaslo == noweHaslo)
+            return ServiceResult<ICollection<string>>.BadRequest(new ErrorItem("Stare hasło nie może być takie samo jak nowe hasło"));
+
+        var bladHasla = SprawdzPoprawnoscHasla(noweHaslo);
+        if (bladHasla != null) ServiceResult<ICollection<string>>.BadRequest(bladHasla);
+        try
+        {
+            var wynikZBledami = await uzytkownikRepository.UpdateHaslo(idUzytkownika, stareHaslo, noweHaslo);
+            // jeżeli jest git
+            if (wynikZBledami.Count == 0) return ServiceResult<ICollection<string>>.Ok(wynikZBledami);
+            // jeżeli nie jest git
+            var bledy = wynikZBledami.Select(e => new ErrorItem(e, nameof(noweHaslo)));
+            return ServiceResult<ICollection<string>>.BadRequest(bledy.ToArray());
+        }catch(NieZnalezionoWBazieException e){
+            return ServiceResult<ICollection<string>>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
+    public async Task<ServiceResult<bool>> DeleteUzytkownik(int id)
+    {
+        if(id < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + id + " nie istnieje"));
+        try
+        {
+            await uzytkownikRepository.DeleteUzytkownik(id);
+        }catch(NieZnalezionoWBazieException e){
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+        return ServiceResult<bool>.Ok(true, 204);
+    }
+    private async Task<bool> CzyLoginIstnieje(string login) => await uzytkownikRepository.CzyLoginIstnieje(login);
+    private async Task<bool> CzyEmailIstnieje(string email) => await uzytkownikRepository.CzyEmailIstnieje(email);
 
     // tutaj wyciągamy aby użyć też w update
-    private async Task<List<ErrorItem>> SprawdzPoprawnoscDanych(string Login, string Haslo, string Email, string? NumerTelefonu, DateOnly DataUrodzenia)
+    private async Task<List<ErrorItem>> SprawdzPoprawnoscDanychPozaHaslem(string Login,string Email, string? NumerTelefonu, DateOnly DataUrodzenia)
     {
         var bledy = new List<ErrorItem>();
         
@@ -78,11 +145,7 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
         if (await CzyEmailIstnieje(Email))
             bledy.Add(new ErrorItem("Taki email już istnieje.", nameof(Email), "EmailIstnieje"));
         
-        var re = new Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,128})");
-        if (!re.IsMatch(Haslo))
-            bledy.Add(new ErrorItem("Niepoprawne hasło.", nameof(Haslo), "NiepoprawneHaslo"));
-        
-        re = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
+        var re = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
         if (!re.IsMatch(Email))
         {
             bledy.Add(new ErrorItem("Niepoprawny email.", nameof(Email), "NiepoprawnyEmail"));       
@@ -99,5 +162,12 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
             bledy.Add(new ErrorItem("Niepoprawna data urodzenia.", nameof(DataUrodzenia), "NiepoprawnaDataUrodzenia"));
         }
         return bledy;
+    }
+    private ErrorItem? SprawdzPoprawnoscHasla(string haslo)
+    {
+        var re = new Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,128})");
+        if (!re.IsMatch(haslo))
+            return new ErrorItem("Niepoprawne hasło.", nameof(haslo), "NiepoprawneHaslo");
+        return null;
     }
 }

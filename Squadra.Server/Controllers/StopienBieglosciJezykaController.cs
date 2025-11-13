@@ -1,8 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Squadra.Server.DTO.JezykStopien;
-using Squadra.Server.Exceptions;
-using Squadra.Server.Repositories;
 using Squadra.Server.Services;
 
 namespace Squadra.Server.Controllers;
@@ -13,6 +12,7 @@ namespace Squadra.Server.Controllers;
 public class StopienBieglosciJezykaController(IStopienBieglosciJezykaService stopienBieglosciJezykaService) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<StopienBieglosciJezykaDto>), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<IEnumerable<StopienBieglosciJezykaDto>>> GetStopienBieglosciJezyka()
     {
         var result = await stopienBieglosciJezykaService.GetStopnieBieglosciJezyka();
@@ -20,6 +20,8 @@ public class StopienBieglosciJezykaController(IStopienBieglosciJezykaService sto
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(StopienBieglosciJezykaDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<StopienBieglosciJezykaDto?>> GetStopienBieglosciJezyka(int id)
     {
         var result = await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(id);
@@ -27,6 +29,4 @@ public class StopienBieglosciJezykaController(IStopienBieglosciJezykaService sto
             return NotFound(result.Errors[0].Message);
         return Ok(result.Value);
     }
-    
-    // pozmieniać też w reszcie!
 }

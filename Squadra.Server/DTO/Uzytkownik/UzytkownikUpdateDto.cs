@@ -3,7 +3,6 @@
 namespace Squadra.Server.DTO.Uzytkownik;
 
 public record UzytkownikUpdateDto(
-    int Id,
     string Login,
     string Email,
     string? NumerTelefonu,

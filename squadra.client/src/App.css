@@ -12,7 +12,7 @@
   /*Bahnschrift, Times, "Bodoni MT", "Felix Titling"*/
   .logo{
     float: left;
-    font-size: 50px;
+    font-size: 60px;
     font-weight: 600;
     padding-left: 10px;
     display: block;
@@ -67,6 +67,34 @@
       padding: 5px;
       margin: 5px 10px 5px 10px;
       border-radius: 10px;
+    }
+    select{
+      background-color: white;
+      border: none;
+      font-size: 30px;
+      /*border-radius: 10px;*/
+      &:hover{
+        background-color: lightblue;
+      }
+      &:focus{
+        outline: none;
+      }
+      option{
+        background-color: white;
+      }
+      option:hover{
+        background-color: lightblue;
+      }
+      option:focus{
+        outline: none;
+      }
+      option:checked{
+        background-color: lightblue;
+      }
+      option:disabled{
+        color: grey;
+      }
+      
     }
   }
 

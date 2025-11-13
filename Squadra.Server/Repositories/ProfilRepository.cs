@@ -24,13 +24,16 @@ public class ProfilRepository(AppDbContext appDbContext,
             var jezykiUzytkownika = await jezykRepository.GetJezykiProfilu(profil.IdUzytkownika);
             
             var regionIKraj = await regionRepository.GetRegionIKraj(profil.RegionId);
+            var status = await statusRepository.GetStatus(profil.StatusId) ?? statusRepository.GetStatusOffline();
+
             profileDoZwrocenia.Add(new ProfilGetResDto(
                 profil.Pseudonim,
                 regionIKraj,
                 profil.Zaimki,
                 profil.Opis,
                 jezykiUzytkownika,
-                profil.Awatar
+                profil.Awatar,
+                status.Nazwa
             ));
         }
         return profileDoZwrocenia;
@@ -42,16 +45,19 @@ public class ProfilRepository(AppDbContext appDbContext,
         
         if(profil == null) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
         
-        // Dane mają zostać wysłane w formie: {pseudonim, zaimki, kraj {id, nazwa} , region {id, nazwa}, opis}
+        // Dane mają zostać wysłane w formie: {pseudonim, zaimki, kraj {id, nazwa} , region {id, nazwa}, opis, awatar, nazwa statusu}
         
         var jezykiUzytkownika = await jezykRepository.GetJezykiProfilu(profil.IdUzytkownika);
         
         var region = profil.RegionId == null ? null : await regionRepository.GetRegionIKraj(profil.RegionId);
         
-        return new ProfilGetResDto(profil.Pseudonim, region, profil.Zaimki, profil.Opis, jezykiUzytkownika, profil.Awatar);
+        var status = await statusRepository.GetStatus(profil.StatusId) ?? statusRepository.GetStatusOffline();
+
+        
+        return new ProfilGetResDto(profil.Pseudonim, region, profil.Zaimki, profil.Opis, jezykiUzytkownika, profil.Awatar, status.Nazwa);
     }
 
-    public async Task<ProfilGetResDto> UpdateProfil(int id, ProfilUpdateDto profil)
+    public async Task<bool> UpdateProfil(int id, ProfilUpdateDto profil)
     {
         var profilDoZmiany = await appDbContext.Profil.FindAsync(id);
         if(profilDoZmiany == null) throw new NieZnalezionoWBazieException("Profil uzytkownika o id " + id + " nie istnieje");
@@ -63,21 +69,9 @@ public class ProfilRepository(AppDbContext appDbContext,
         profilDoZmiany.Awatar = profil.Awatar;
 
         await appDbContext.SaveChangesAsync();
-
-        var jezykiUzytkownika = await jezykRepository.ZmienJezykiProfilu(id, profil.Jezyki);
-        var region = profil.RegionId == null ? null : await regionRepository.GetRegionIKraj(profil.RegionId);
-
-        return new ProfilGetResDto(
-            profilDoZmiany.Pseudonim,
-            region,
-            profilDoZmiany.Zaimki,
-            profilDoZmiany.Opis,
-            jezykiUzytkownika,
-            profilDoZmiany.Awatar
-        );
+        
+        return true;
     }
-
-    // coś się dzieje w linijce 99
     
     public async Task<ProfilGetResDto> CreateProfil(ProfilCreateReqDto profil)
     {
@@ -111,18 +105,21 @@ public class ProfilRepository(AppDbContext appDbContext,
         var profil = await appDbContext.Profil.FindAsync(id);
         if(profil == null) throw new Exception("Profil o id uzytkownika " + id + " nie istnieje");
         
-        var status = await statusRepository.GetStatus(profil.StatusId) ?? statusRepository.GetStatusDomyslny();
+        var status = await statusRepository.GetStatus(profil.StatusId) ?? statusRepository.GetStatusOffline();
         return status;
     }
     
     
-    public async Task<ProfilGetResDto> UpdateStatus(int id, int idStatus)
+    // zwracamy status dto bo możemy od razu zmienić to w nagłówku bez pobierania na nowo
+    public async Task<StatusDto> UpdateStatus(int id, int idStatus)
     {
         var profil = await appDbContext.Profil.FindAsync(id);
-        if(profil == null) throw new Exception("Profil o id uzytkownika " + id + " nie istnieje");
+        if(profil == null) throw new NieZnalezionoWBazieException("Profil o id uzytkownika " + id + " nie istnieje");
+        var status = await statusRepository.GetStatus(idStatus);
+        if(status == null) throw new NieZnalezionoWBazieException("Status o id " + idStatus + " nie istnieje");
         profil.StatusId = idStatus;
         await appDbContext.SaveChangesAsync();
-        return await GetProfilUzytkownika(id);
+        return status;
     }
     
 }

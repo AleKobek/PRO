@@ -10,6 +10,6 @@ public interface IStatusRepository
 
     public Task<int?> GetIdStatusu(string nazwa);
 
-    public StatusDto GetStatusDomyslny();
+    public StatusDto GetStatusOffline();
 
 }

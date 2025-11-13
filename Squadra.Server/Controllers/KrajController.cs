@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Squadra.Server.DTO.KrajRegion;
 using Squadra.Server.Exceptions;
@@ -12,6 +13,7 @@ namespace Squadra.Server.Controllers;
 public class KrajController(IKrajService krajService) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<KrajDto>), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<IEnumerable<KrajDto>>> GetKraje()
     {
         var result = await krajService.GetKraje();
@@ -19,6 +21,8 @@ public class KrajController(IKrajService krajService) : ControllerBase
     }
     
     [HttpGet("{id}")]
+    [ProducesResponseType(typeof(KrajDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<KrajDto?>> GetKraj(int id)
     {
         var result = await krajService.GetKraj(id);
