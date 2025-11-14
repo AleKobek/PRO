@@ -100,8 +100,8 @@ export default function FormularzProfilu({
     const przyWysylaniu = async() =>{
         const profilDoWyslania = {
             regionId: region.id ?? null,
-            zaimki: zaimki,
-            opis: opis,
+            zaimki: zaimki.trim(),
+            opis: opis.trim(),
             jezyki: (listaJezykowUzytkownika ?? []).map(j => ({
                 jezykId: j.idJezyka,
                 stopienId: j.idStopnia

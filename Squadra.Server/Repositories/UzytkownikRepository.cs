@@ -164,15 +164,26 @@ public class UzytkownikRepository(
         await appDbContext.SaveChangesAsync();
     }
     
-    public async Task<bool> CzyLoginIstnieje(string login)
+    public async Task<bool> CzyLoginIstnieje(int id, string login)
     {
-        var q = login.Trim().ToUpper();
-        return await appDbContext.Uzytkownik.AnyAsync(u => u.UserName == q);
+        var znormalizowanyLogin = login.Trim().ToUpper();
+        var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
+        // jeżeli to ten sam login, co on ma, to na pewno jest unikalny
+        // nie może być nullem, bo w kontrolerze przy sprawdzaniu czy edytuje swoje konto od razu go odrzuci
+        if(uzytkownik.NormalizedUserName == znormalizowanyLogin) return false;
+        return await appDbContext.Uzytkownik.AnyAsync(u => u.NormalizedUserName == znormalizowanyLogin);
     }
 
-    public async Task<bool> CzyEmailIstnieje(string email)
+    public async Task<bool> CzyEmailIstnieje(int id, string email)
     {
-        var q = email.Trim().ToUpper();
-        return await appDbContext.Uzytkownik.AnyAsync(u => u.Email == q);
+        var znormalizowanyEmail = email.Trim().ToUpper();
+        // sprawdzamy tylko, jeżeli to nie jest nowy użytkownik (a wtedy przekazujemy -1 jako id)
+        if (id != -1){
+            var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
+            // jeżeli to ten sam email, co on ma, to na pewno jest unikalny
+            // nie może być nullem, bo w kontrolerze przy sprawdzaniu czy edytuje swoje konto od razu go odrzuci
+            if (uzytkownik.NormalizedEmail == znormalizowanyEmail) return false;
+        }
+        return await appDbContext.Uzytkownik.AnyAsync(u => u.NormalizedEmail == znormalizowanyEmail);
     }
 }

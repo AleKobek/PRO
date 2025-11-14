@@ -20,7 +20,7 @@ public interface IUzytkownikRepository
 
     public Task DeleteUzytkownik(int id);
     
-    Task<bool> CzyLoginIstnieje(string login);
+    Task<bool> CzyLoginIstnieje(int id, string login);
     
-    Task<bool> CzyEmailIstnieje(string email);
+    Task<bool> CzyEmailIstnieje(int id, string email);
 }

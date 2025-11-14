@@ -119,9 +119,19 @@ export default function Rejestracja() {
             <div id = "glowna">
                 <h1>Rejestracja</h1>
                 <form id = "form" name="formularz-rejestracji">
+                    <label>
+                        Pseudonim (maks. 20 znaków)<br/>
+                        <input
+                            type="text"
+                            value={pseudonim}
+                            onChange={(e) => ustawPseudonim(e.target.value)}
+                            placeholder="np. ProGamer"
+                            maxLength={20}
+                        />
+                    </label><br/>
+                    <span id = "error-pseudonim" className="error-wiadomosc">{bladPseudonimu}</span><br/>
+                    
                     <FormularzKonta
-                        pseudonim = {pseudonim}
-                        ustawPseudonim = {ustawPseudonim}
                         login = {login}
                         ustawLogin = {ustawLogin}
                         email = {email}
@@ -131,7 +141,6 @@ export default function Rejestracja() {
                         numerTelefonu = {numerTelefonu}
                         ustawNumerTelefonu = {ustawNumerTelefonu}
                         czySieWysyla = {czySieWysyla}
-                        bladPseudonimu = {bladPseudonimu}
                         bladLoginu = {bladLoginu}
                         bladEmaila = {bladEmaila}
                         bladDatyUrodzenia = {bladDatyUrodzenia}
@@ -139,8 +148,9 @@ export default function Rejestracja() {
                         bladNumeruTelefonu = {bladNumeruTelefonu}
                         bladHasla = {bladHasla}
                         bladOgolny = {bladOgolny}
-                    ></FormularzKonta>
-                    <br/><label>
+                    ></FormularzKonta><br/>
+                    
+                    <label>
                     Hasło (Musi mieć dużą literę, małą literę, cyfrę, znak specjalny i minimum 8 znaków) <br/>
                     <input
                         type="password"

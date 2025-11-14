@@ -32,6 +32,8 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
         
         // sprawdzamy wszystkie dane, pseudonim niżej
         var bledy = await SprawdzPoprawnoscDanychPozaHaslem(
+            // oznacza że nie ma tego użytkownika jeszcze
+            -1,
             uzytkownik.Login,
             uzytkownik.Email,
             uzytkownik.NumerTelefonu,
@@ -78,6 +80,7 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
             
             
             var bledy = await SprawdzPoprawnoscDanychPozaHaslem(
+                id,
                 dto.Login,
                 dto.Email,
                 dto.NumerTelefonu,
@@ -131,18 +134,18 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
         }
         return ServiceResult<bool>.Ok(true, 204);
     }
-    private async Task<bool> CzyLoginIstnieje(string login) => await uzytkownikRepository.CzyLoginIstnieje(login);
-    private async Task<bool> CzyEmailIstnieje(string email) => await uzytkownikRepository.CzyEmailIstnieje(email);
+    private async Task<bool> CzyLoginIstnieje(int idUzytkownika, string login) => await uzytkownikRepository.CzyLoginIstnieje(idUzytkownika, login);
+    private async Task<bool> CzyEmailIstnieje(int idUzytkownika, string email) => await uzytkownikRepository.CzyEmailIstnieje(idUzytkownika, email);
 
     // tutaj wyciągamy aby użyć też w update
-    private async Task<List<ErrorItem>> SprawdzPoprawnoscDanychPozaHaslem(string Login,string Email, string? NumerTelefonu, DateOnly DataUrodzenia)
+    private async Task<List<ErrorItem>> SprawdzPoprawnoscDanychPozaHaslem(int id, string Login, string Email, string? NumerTelefonu, DateOnly DataUrodzenia)
     {
         var bledy = new List<ErrorItem>();
         
-        if (await CzyLoginIstnieje(Login))
+        if (await CzyLoginIstnieje(id, Login))
             bledy.Add(new ErrorItem("Taki login już istnieje.", nameof(Login), "LoginIstnieje"));
 
-        if (await CzyEmailIstnieje(Email))
+        if (await CzyEmailIstnieje(id, Email))
             bledy.Add(new ErrorItem("Taki email już istnieje.", nameof(Email), "EmailIstnieje"));
         
         var re = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");

@@ -90,7 +90,7 @@ import Naglowek from "./Naglowek";
     }, [uzytkownik]);
 
     if(ladowanie) return (<>
-            <Naglowek/>
+            <NaglowekZalogowano/>
             <div id = "glowna">
                 <h1>Ładowanie...</h1>
             </div>

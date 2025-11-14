@@ -41,7 +41,6 @@ export default function NaglowekZalogowano(){
             credentials: "include",
             body: idStatusu
         }
-        console.log("Co wysyłamy do bazy:", opcje);
 
         const res = await fetch("http://localhost:5014/api/Profil/" + uzytkownik.id + "/status", opcje);
         if(!res.ok){
@@ -50,15 +49,11 @@ export default function NaglowekZalogowano(){
         }
 
         // jeżeli git
-        console.log("lista statusów:", listaStatusow)
-        console.log("id statusu:", idStatusu);
         let tempStatus = listaStatusow.find(item => item.id == idStatusu);
         ustawAktualnyStatusZBazy(tempStatus);
-        console.log("Teraz status to:", tempStatus);
     }
     
     useEffect(() => {
-        console.log("Uruchamiam się!")
         // czekamy aż się załaduje id użytkownika
         if(!uzytkownik) return;
         if(!uzytkownik.id) return;
@@ -82,7 +77,6 @@ export default function NaglowekZalogowano(){
         };
         const podajStatusy = async () => {
             const statusy = await fetchJsonAbort("http://localhost:5014/api/Status");
-            console.log("Statusy z bazy:", statusy);
             if(!alive || !statusy || !Array.isArray(statusy)) return;
             ustawListeStatusow(statusy);
         }
@@ -115,7 +109,7 @@ export default function NaglowekZalogowano(){
             <NavLink to = '/twojProfil' className = "nawigacja">Gildie</NavLink>
             <NavLink to = '/twojProfil' className = "nawigacja">Znajomi</NavLink>
             <NavLink to = '/twojProfil' className = "nawigacja">Twój profil</NavLink>
-            <NavLink to = '/twojProfil' className = "nawigacja">Twoje konto</NavLink>
+            <NavLink to = '/twojeKonto' className = "nawigacja">Twoje konto</NavLink>
             <span>Status:</span>
             <select 
                 value={aktualnyStatus.id}

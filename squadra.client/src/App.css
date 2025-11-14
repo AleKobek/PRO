@@ -37,18 +37,18 @@
     float: right;
     .nawigacja, span, select{
       float: right;
-      font-size: 35px;
+      font-size: 30px;
       display: block;
       color: black;
       text-align: center;
-      padding: 10px 10px 20px;
+      padding: 10px 10px 24px;
       text-decoration: none;
       border-left: solid 2px blue;
     }
     a:hover {
       background-color: lightblue;
       color: darkblue;
-      padding: 10px 10px 10px;
+      padding: 10px 10px 22px;
       
     }
     a.active {
@@ -219,6 +219,35 @@
     }
     
     .pole-w-danych-profilu{
+      margin: 10px 0;
+      padding: 10px;
+      border: solid 2px black;
+      border-radius: 10px;
+      background-color: #f1f1f1;
+    }
+  }
+
+  .dane-konta{
+    vertical-align: center;
+    width: fit-content;
+    font-size: 20px;
+    padding: 10px 30px;
+    align-self: center;
+    horiz-align: center;
+    /*border: outset 20px #eadaa0;*/
+    text-align: center;
+    align-content: center;
+    /*margin-top: 20px;*/
+    margin: 40px auto;
+    input{
+      font-size: 20px;
+    }
+    label{
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .pole-w-danych-konta{
       margin: 10px 0;
       padding: 10px;
       border: solid 2px black;

@@ -8,6 +8,8 @@ import Rejestracja from "./Components/Rejestracja";
 import {AuthProvider} from "./Context/AuthContext";
 import StronaGlowna from "./Components/StronaGlowna";
 import NaglowekZalogowano from "./Components/NaglowekZalogowano";
+import TwojeKonto from "./Components/TwojeKonto";
+import EdytujKonto from "./Components/EdytujKonto";
 
 function App() {
 
@@ -25,6 +27,14 @@ function App() {
                   <NaglowekZalogowano/>
                   <TwojProfil/>
               </>}></Route>
+                <Route path = "/twojeKonto" element = {<>
+                    <NaglowekZalogowano/>
+                    <TwojeKonto/>
+                </>}></Route>
+                <Route path = "/edytujKonto" element = {<>
+                    <NaglowekZalogowano/>
+                    <EdytujKonto/>
+                </>}></Route>
               <Route path = "/login" element = {<Logowanie/>}></Route>
               <Route path = "/rejestracja" element = {<Rejestracja/>}></Route>
               <Route path = "*" element = {<Error404/>}></Route>

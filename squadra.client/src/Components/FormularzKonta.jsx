@@ -1,8 +1,6 @@
 ﻿import React from "react";
+// jest bardziej wybrakowany niż formularz konta, bo ma same pola
 export default function FormularzKonta({ // pamiętać, aby dać nawias klamrowy!
-        // trochę dużo tego >_<
-        pseudonim,
-        ustawPseudonim,
         login,
         ustawLogin,
         email,
@@ -11,7 +9,6 @@ export default function FormularzKonta({ // pamiętać, aby dać nawias klamrowy
         ustawDateUrodzenia,
         numerTelefonu,
         ustawNumerTelefonu,
-        bladPseudonimu,
         bladLoginu,
         bladEmaila,
         bladNumeruTelefonu,
@@ -29,20 +26,7 @@ export default function FormularzKonta({ // pamiętać, aby dać nawias klamrowy
                 />
             </label><br/>
             <span id = "error-login" className="error-wiadomosc">{bladLoginu}</span><br/>
-            
-            <label>
-                Pseudonim (maks. 20 znaków)<br/>
-                <input
-                    type="text"
-                    value={pseudonim}
-                    onChange={(e) => ustawPseudonim(e.target.value)}
-                    placeholder="np. ProGamer"
-                    maxLength={20}
-                />
-            </label><br/>
-            <span id = "error-pseudonim" className="error-wiadomosc">{bladPseudonimu}</span><br/>
-
-            
+        
             <label>
                 E-mail <br/>
                 <input

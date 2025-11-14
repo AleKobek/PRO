@@ -40,7 +40,6 @@ export default function DaneProfilu({uzytkownik}) {
         };
 
         const podajDaneProfilu = async () => {
-            // z jakiegoś powodu jest to jeszcze opakowane w użytkownika
             const idUzytkownika = uzytkownik.id;
             const data = await fetchJsonAbort(`http://localhost:5014/api/Profil/${idUzytkownika}`);
             console.log("profil:", data);
