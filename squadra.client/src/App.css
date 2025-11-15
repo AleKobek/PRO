@@ -106,6 +106,11 @@
   min-height: 600px;
   font:  18px/1.5 Bahnschrift, serif;
   padding: 30px;
+  background-image: url("../public/img/tło.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  background-size: cover;
   /*"Cooper Black", */
   h1{
     font: 60px/1.5 Georgia, serif;
@@ -129,6 +134,7 @@
   /* tak sobie nadpisujemy dla danej klasy*/
   button.przycisk-nawigacji{
     background: darkblue;
+    display: grid;
     /* jak najeżdżamy myszką, zmienia kolor*/
     &:hover{
       background: blue;
@@ -181,6 +187,8 @@
     align-content: center;
     /*margin-top: 20px;*/
     margin: 40px auto;
+    border: groove 10px black;
+    border-radius: 10px;
     input{
       font-size: 20px;
     }
@@ -215,7 +223,7 @@
       padding: 0;
       border: groove 2px black;
       border-radius: 10px;
-      background-color: #f1f1f1;
+      background-color: white;
     }
     
     .pole-w-danych-profilu{
@@ -223,7 +231,7 @@
       padding: 10px;
       border: solid 2px black;
       border-radius: 10px;
-      background-color: #f1f1f1;
+      background-color: white;
     }
   }
 
@@ -252,7 +260,7 @@
       padding: 10px;
       border: solid 2px black;
       border-radius: 10px;
-      background-color: #f1f1f1;
+      background-color: white;
     }
   }
 
@@ -279,6 +287,18 @@
       }
     }
   }
+  
+  .box-zmiany-hasla{
+    text-align: center;
+    margin: 40px auto;
+    border: solid 2px darkred;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: #fcb7ab;
+    form{
+      border: none;
+    }
+  }
 
   .error-wiadomosc{
     color: red;
@@ -287,5 +307,12 @@
   .error-pole{
     border-color: red;
     border-style: solid;
+  }
+  
+  .success-widomosc{
+    color: green;
+    font-weight: bold;
+    display: grid;
+    text-align: center;
   }
 }

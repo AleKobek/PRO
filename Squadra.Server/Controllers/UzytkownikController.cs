@@ -10,13 +10,13 @@ namespace Squadra.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize]
 public class UzytkownikController(IUzytkownikService uzytkownikService,
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
 
     // GET: api/Uzytkownik
     [HttpGet]
-    [Authorize]
     [ProducesResponseType(typeof(IEnumerable<UzytkownikResDto>), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<IEnumerable<UzytkownikResDto>>> GetUzytkownicy()
     {
@@ -26,7 +26,6 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
 
     // GET: api/Uzytkownik/5
     [HttpGet("{id:int}")]
-    [Authorize]
     [ProducesResponseType(typeof(UzytkownikResDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<UzytkownikResDto>> GetUzytkownikById(int id)
@@ -48,8 +47,7 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
     // PUT: api/Uzytkownik/id
     // Aktualizacja oparta na zawartości DTO (repozytorium przyjmuje UzytkownikUpdateDto).
     [HttpPut("{id:int}")]
-    [Authorize]
-    [ProducesResponseType(typeof(UzytkownikResDto), (int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
@@ -80,7 +78,12 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
     }
 
     [HttpPut("{id:int}/haslo")]
-    public async Task<ActionResult> UpdateHaslo(int id, string stareHaslo, string noweHaslo)
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult> UpdateHaslo(int id, ZmienHasloDto dto)
     {
         // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
         var uzytkownik = await userManager.GetUserAsync(User);
@@ -91,6 +94,28 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
         if (uzytkownik.Id != id)
             return Forbid("Nie możesz zmienić hasła innego użytkownika.");
         
+        var result = await uzytkownikService.UpdateHaslo(id, dto.StareHaslo, dto.NoweHaslo);
+        switch (result.StatusCode)
+        {
+            case 400:
+                return BadRequest(result.Errors);
+            case 404:
+                return NotFound(result.Errors[0].Message);
+            default:
+                return NoContent();
+        }
+    }
+    
+    [HttpPut("{id:int}/haslo/admin")]
+    [Authorize(Roles = "Admin")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult> UpdateHasloAdmin([FromRoute]int id, string stareHaslo, string noweHaslo)
+    {
+        
         var result = await uzytkownikService.UpdateHaslo(id, stareHaslo, noweHaslo);
         switch (result.StatusCode)
         {
@@ -99,11 +124,10 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
             case 404:
                 return NotFound(result.Errors[0].Message);
             default:
-                return Ok(result.Value);
+                return NoContent();
         }
     }
     
-    // też wersja dla admina, bo bezpośrednio w bazie ciężko zrobić hasha
     
     // DELETE: api/Uzytkownik/id
     [HttpDelete("{id:int}")]

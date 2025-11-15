@@ -102,24 +102,24 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
         }
     }
 
-    public async Task<ServiceResult<ICollection<string>>> UpdateHaslo(int idUzytkownika, string stareHaslo, string noweHaslo)
+    public async Task<ServiceResult<bool>> UpdateHaslo(int idUzytkownika, string stareHaslo, string noweHaslo)
     {
-        if(idUzytkownika < 1) return ServiceResult<ICollection<string>>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika + " nie istnieje"));
+        if(idUzytkownika < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika + " nie istnieje"));
         if (stareHaslo == noweHaslo)
-            return ServiceResult<ICollection<string>>.BadRequest(new ErrorItem("Stare hasło nie może być takie samo jak nowe hasło"));
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Hasła są takie same"));
 
         var bladHasla = SprawdzPoprawnoscHasla(noweHaslo);
-        if (bladHasla != null) ServiceResult<ICollection<string>>.BadRequest(bladHasla);
+        if (bladHasla != null) return ServiceResult<bool>.BadRequest(bladHasla);
         try
         {
             var wynikZBledami = await uzytkownikRepository.UpdateHaslo(idUzytkownika, stareHaslo, noweHaslo);
             // jeżeli jest git
-            if (wynikZBledami.Count == 0) return ServiceResult<ICollection<string>>.Ok(wynikZBledami);
+            if (wynikZBledami.Count == 0) return ServiceResult<bool>.Ok(true);
             // jeżeli nie jest git
             var bledy = wynikZBledami.Select(e => new ErrorItem(e, nameof(noweHaslo)));
-            return ServiceResult<ICollection<string>>.BadRequest(bledy.ToArray());
+            return ServiceResult<bool>.BadRequest(bledy.ToArray());
         }catch(NieZnalezionoWBazieException e){
-            return ServiceResult<ICollection<string>>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
     

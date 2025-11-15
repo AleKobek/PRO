@@ -98,6 +98,9 @@ export default function FormularzProfilu({
 
 
     const przyWysylaniu = async() =>{
+        
+        ustawBledy({pseudonim: "", zaimki: "", opis: "", zapisz: ""});
+        
         const profilDoWyslania = {
             regionId: region.id ?? null,
             zaimki: zaimki.trim(),

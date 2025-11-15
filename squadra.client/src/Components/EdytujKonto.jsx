@@ -28,7 +28,16 @@ export default function EdytujKonto() {
     const[bladEmaila, ustawBladEmaila] = useState("");
     const[bladNumeruTelefonu, ustawBladNumeruTelefonu] = useState("");
     const[bladDatyUrodzenia, ustawBladDatyUrodzenia] = useState("");
-    const[bladOgolny, ustawBladOgolny] = useState("");
+    const[bladOgolnyKonta, ustawBladOgolnyKonta] = useState("");
+    const[sukcesKonta, ustawSukcesKonta] = useState("");
+    
+    // do zmiany hasła
+    
+    const [stareHaslo, ustawStareHaslo] = useState("");
+    const [noweHaslo, ustawNoweHaslo] = useState("");
+    const [powtorzHaslo, ustawPowtorzHaslo] = useState("");
+    const [bladOgolnyHasla, ustawbladOgolnyHasla] = useState("");
+    const [sukcesHasla, ustawSukcesHasla] = useState("");
     
     
     useEffect(() => {
@@ -92,7 +101,7 @@ export default function EdytujKonto() {
         };
     }, [uzytkownik]);
 
-    const czyZablokowaneWyslij = useMemo(() =>{
+    const czyZablokowaneWyslijKonta = useMemo(() =>{
         return(
             (login === staryLogin && 
             email === staryEmail && 
@@ -105,6 +114,13 @@ export default function EdytujKonto() {
     },[login, email, numerTelefonu, dataUrodzenia]);
 
     const przyWysylaniuZmianyKonta = async() => {
+        ustawBladOgolnyKonta("");
+        ustawBladLoginu("");
+        ustawBladEmaila("");
+        ustawBladNumeruTelefonu("");
+        ustawBladDatyUrodzenia("");
+        ustawSukcesKonta("");
+        
         const kontoDoWyslania = {
             login: login.trim(),
             email: email.trim(),
@@ -121,11 +137,7 @@ export default function EdytujKonto() {
             body: JSON.stringify(kontoDoWyslania)
         }
         
-        console.log("Co wysyłamy:", kontoDoWyslania);
-
         const res = await fetch("http://localhost:5014/api/Uzytkownik/" + uzytkownik.id, opcje);
-        
-        console.log("Odpowiedź z bazy:", res);
         
         // Odczyt body różni się zależnie od typu odpowiedzi
         // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
@@ -141,15 +153,64 @@ export default function EdytujKonto() {
                 ustawBladEmaila(bledy.Email ? bledy.Email[0] : "");
                 ustawBladNumeruTelefonu(bledy.NumerTelefonu ? bledy.NumerTelefonu[0] : "");
                 ustawBladDatyUrodzenia(bledy.DataUrodzenia ? bledy.DataUrodzenia[0] : "");
-                ustawBladOgolny(body.message);
+                ustawBladOgolnyKonta(body.message);
             }
             return;
         }
 
         // jak tutaj dojdziemy, wszystko jest git
-        navigate("/twojeKonto");
+        ustawSukcesKonta("Konto zmienione pomyślnie!")
     }
-    
+
+    const czyZablokowaneWyslijHasla = useMemo(() =>{
+        let tempNoweHaslo = noweHaslo.trim();
+        let tempPowtorzHaslo = powtorzHaslo.trim();
+        return(
+            stareHaslo.trim().length === 0 ||
+            tempNoweHaslo.length === 0 || 
+            tempPowtorzHaslo.length === 0 || 
+            tempNoweHaslo !== tempPowtorzHaslo
+        )
+    },[stareHaslo, noweHaslo, powtorzHaslo]);
+
+    const przyWysylaniuZmianyHasla = async() => {
+        ustawbladOgolnyHasla("");
+        ustawSukcesHasla("");
+        
+        const hasloDoWyslania = {
+            stareHaslo: stareHaslo.trim(),
+            noweHaslo: noweHaslo.trim(),
+        };
+
+        const opcje = {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: "include",
+            body: JSON.stringify(hasloDoWyslania)
+        }
+        
+        const res = await fetch("http://localhost:5014/api/Uzytkownik/" + uzytkownik.id +"/haslo", opcje);
+
+
+        // Odczyt body różni się zależnie od typu odpowiedzi
+        // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
+        const ct = res.headers.get("content-type") || "";
+        const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+            ? await res.json().catch(() => null)
+            : await res.text().catch(() => "");
+
+        if (!res.ok) {
+            if(res.status === 400){
+                ustawbladOgolnyHasla(body[0].message);
+            }
+            return;
+        }
+
+        // jak tutaj dojdziemy, wszystko jest git
+        ustawSukcesHasla("Hasło zmienione pomyślnie!")
+    }
     
     if(ladowanie) return (<>
             <NaglowekZalogowano/>
@@ -164,7 +225,7 @@ export default function EdytujKonto() {
             <h1>Edytuj konto</h1>
             <button className={"przycisk-nawigacji"} onClick={() => {navigate('/twojeKonto')}}>Powrót do konta</button>
             <br/><br/>
-            <form id = "form" name = "formularz-konta">
+            <form id = "formularz-konta" name = "formularz-konta">
                 <FormularzKonta
                     login={login}
                     ustawLogin={ustawLogin}
@@ -179,12 +240,34 @@ export default function EdytujKonto() {
                     bladNumeruTelefonu={bladNumeruTelefonu}
                     bladDatyUrodzenia={bladDatyUrodzenia}
                 />
-                <input type = "button" value = "Zapisz" onClick={przyWysylaniuZmianyKonta} disabled={czyZablokowaneWyslij}/>
-                <span id = "error-zapisz" className="error-wiadomosc">{bladOgolny}</span><br/>
+                <input type = "button" value = "Zapisz" onClick={przyWysylaniuZmianyKonta} disabled={czyZablokowaneWyslijKonta}/>
+                <span id = "error-zapisz" className="error-wiadomosc">{bladOgolnyKonta}</span><br/>
             </form>
+            <span className="success-widomosc">{sukcesKonta}</span>
             <br></br>
+            <div className="box-zmiany-hasla">
+                <h2>Zmień hasło</h2>
+                <form id= "formularz-hasła" name = "formularz-hasła">
+                    <label>
+                        Stare hasło<br/>
+                        <input
+                        type="password" value={stareHaslo} onChange={(e) => ustawStareHaslo(e.target.value)}/><br/>
+                    </label>
+                    <label>
+                        Nowe hasło<br/>
+                        <input
+                            type="password" value={noweHaslo} onChange={(e) => ustawNoweHaslo(e.target.value)}/><br/>
+                    </label>
+                    <label>
+                        Powtórz nowe hasło<br/>
+                        <input
+                            type="password" value={powtorzHaslo} onChange={(e) => ustawPowtorzHaslo(e.target.value)}/><br/>
+                    </label>
+                    <input type="button" value="Zapisz" onClick={przyWysylaniuZmianyHasla} disabled={czyZablokowaneWyslijHasla}/><br/>
+                    <span id = "error-ogolny-hasla" className="error-wiadomosc">{bladOgolnyHasla}</span><br/>
+                </form>
+            </div>
+            <span className="success-widomosc">{sukcesHasla}</span>
         </div>
-
-    {/* tutaj będzie jeszcze zmiana hasła, na razie testujemy tylko edycję konta bez tego */}
     </>);
 }

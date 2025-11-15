@@ -128,18 +128,16 @@ public class UzytkownikRepository(
         var user = await appDbContext.Uzytkownik.FindAsync(idUzytkownika);
         if(user == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + idUzytkownika + " nie istnieje");
         
-        // musimy sprawdzić, czy hasła są takie same. Nie chodzi o argument, bo ktoś mógł sobie zmienić stare hasło
-        var passwordHasher = new PasswordHasher<Uzytkownik>();
-        // tu chyba możemy zignorować nulla, bo u nas każdy będzie to miał
-        var verificationResult = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, noweHaslo);
-        // jeżeli hasła stare i nowe są takie same
-        if (verificationResult == PasswordVerificationResult.Success)
+        // sprawdzamy czy stare hasło się zgadza
+        var czyHasloTakieSamo = await userManager.CheckPasswordAsync(user, stareHaslo);
+        if (!czyHasloTakieSamo)
         {
-            bledy.Add("Nowe hasło jest takie samo, jak stare hasło");
+            bledy.Add("Nieprawidłowe stare hasło");
             return bledy;
         }
         
-        // nie są takie same, zmieniamy
+        // nie trzeba sprawdzać, czy nowe jest takie samo jak stare, bo jeżeli stare się zgadza i nowe nie jest takie samo
+        // jak stare, to nowe nie może być takie samo jak stare
         
         var result = await userManager.ChangePasswordAsync(user, stareHaslo, noweHaslo);
         if (!result.Succeeded)
