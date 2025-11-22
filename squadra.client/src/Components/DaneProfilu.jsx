@@ -60,7 +60,7 @@ export default function DaneProfilu({uzytkownik}) {
             }
             ustawOpis(data.opis ?? "");
             ustawNazweStatusu(data.nazwaStatusu ?? "");
-            ustawAwatar(data.awatar ? "data:image/jpeg;base64,"+data.awatar : "");
+            ustawAwatar(data.awatar ? "data:image/jpeg;base64," + data.awatar : "");
         };
 
         const podajJezykiIStopnieUzytkownika = async () => {

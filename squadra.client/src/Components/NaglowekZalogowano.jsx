@@ -9,8 +9,10 @@ export default function NaglowekZalogowano(){
     // to, co pobieramy, w prototypie nie zmieniamy
     const [aktualnyStatus, ustawAktualnyStatusZBazy] = useState("Dostępny");
     const [listaStatusow, ustawListeStatusow] = useState([]);
+    const [awatarUrl, ustawAwatarUrl] = useState("");
     const navigate = useNavigate();
-    
+
+
     // ping
     useEffect(() => {
         const interval = setInterval(async () => {
@@ -20,6 +22,10 @@ export default function NaglowekZalogowano(){
         // jak wychodzimy to usuwamy nasz interval
         return () => clearInterval(interval);
     }, []);
+    
+    useEffect(() => {
+        ustawAwatarUrl(uzytkownik?.awatar ? "data:image/jpeg;base64," + uzytkownik?.awatar : "");
+    },[uzytkownik]);
     
 
     const przyWylogowywaniu = async () =>{
@@ -99,6 +105,11 @@ export default function NaglowekZalogowano(){
         
     },[uzytkownik])
     
+    // nawigujemy do strony "twój profil"
+    const przyKliknieciuWAwatar = () =>{
+        navigate('/twojProfil');
+    }
+    
     
     return(<div className ="menu" id = "menu">
         <span className="logo">Squadra</span>
@@ -120,6 +131,13 @@ export default function NaglowekZalogowano(){
                     <option key = {item.id} value={item.id}>{item.nazwa}</option>
                 )}
             </select>
+            <img id = "awatar" 
+                 src = {awatarUrl} 
+                 alt = "awatar" 
+                 className = "awatar"
+                 style={{width: 50, height: 50, borderRadius: "50%", margin: "0 10px"}}
+                 onClick={przyKliknieciuWAwatar}
+            /><br/>
             <button onClick={przyWylogowywaniu}>Wyloguj</button>
         </ul>
     </div>)

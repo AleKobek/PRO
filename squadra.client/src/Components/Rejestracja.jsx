@@ -66,9 +66,7 @@ export default function Rejestracja() {
             if (!res.ok) {
                 const body = await res.json().catch(() => ({}));
                 if(res.status === 400 || res.status === 409){
-                    console.log(body.errors)
                     let bledy = body.errors;
-                    console.log(bledy.Pseudonim, !bledy.Pseudonim);
                     ustawBladPseudonimu(!bledy.Pseudonim ? "" : bledy.Pseudonim[0]);
                     ustawBladLoginu(!bledy.Login ? "" : bledy.Login[0]);
                     ustawBladEmaila(!bledy.Email ? "" : bledy.Email[0]);

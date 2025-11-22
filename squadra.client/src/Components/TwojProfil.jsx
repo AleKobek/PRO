@@ -32,7 +32,7 @@ export default function TwojProfil() {
             <h1>Twój profil</h1>
             <h3 className="success-widomosc">{location.state?.message}</h3>
             <DaneProfilu uzytkownik = {uzytkownik}></DaneProfilu>
-            <button className={"przycisk-nawigacji"} onClick={() => navigate('/edytujProfil')} style={{textAlign: "center", alignSelf: "center"}}>Edytuj profil</button>
+            <button className={"przycisk-nawigacji"} onClick={() => navigate('/edytujProfil')}>Edytuj profil</button>
         </div>
     </>);
 }

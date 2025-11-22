@@ -1,3 +1,8 @@
 ﻿namespace Squadra.Server.DTO.Auth;
 
-public record AuthUserDto(int Id, string Login, string Email, string[] Role);
+public record AuthUserDto(
+    int Id, 
+    string Login, 
+    string Email, 
+    string[] Role,
+    byte[]? Awatar);

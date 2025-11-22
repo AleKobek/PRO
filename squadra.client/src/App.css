@@ -64,7 +64,7 @@
       font-size: 20px;
       color: white;
       background-color: darkred;
-      padding: 5px;
+      padding: 10px;
       margin: 5px 10px 5px 10px;
       border-radius: 10px;
     }
@@ -72,6 +72,7 @@
       background-color: white;
       border: none;
       font-size: 30px;
+      width: 160px;
       /*border-radius: 10px;*/
       &:hover{
         background-color: lightblue;
@@ -95,6 +96,10 @@
         color: grey;
       }
       
+    }
+    #awatar{
+      border-radius: 100%;
+      border: solid 2px black;
     }
   }
 
@@ -134,7 +139,10 @@
   /* tak sobie nadpisujemy dla danej klasy*/
   button.przycisk-nawigacji{
     background: darkblue;
-    display: grid;
+    display: block;         /* zamiast grid */
+    margin: 5px auto;       /* wyśrodkowanie poziome */
+    font-size: 25px;
+    padding: 10px 20px;
     /* jak najeżdżamy myszką, zmienia kolor*/
     &:hover{
       background: blue;
@@ -197,7 +205,7 @@
       font-weight: bold;
     }
     
-    img{
+    #awatar{
       width: 200px;
       border-radius: 100%;
       border: solid 5px black;
@@ -240,9 +248,10 @@
       background-color: white;
     }
     
-    img{
+    #awatar{
       width: 200px;
       border-radius: 50%;
+      border: solid 5px black;
     }
   }
 

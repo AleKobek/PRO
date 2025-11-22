@@ -14,6 +14,7 @@ namespace Squadra.Server.Controllers;
 [Route("api/[controller]")]
 [method: ActivatorUtilitiesConstructor]
 public class AuthController(IUzytkownikService uzytkownikService,
+    IProfilService profilService,
     UserManager<Uzytkownik> userManager,
     SignInManager<Uzytkownik> signInManager) : ControllerBase
 {
@@ -76,7 +77,10 @@ public class AuthController(IUzytkownikService uzytkownikService,
         await userManager.UpdateAsync(uzytkownik);
 
         var roles = (await userManager.GetRolesAsync(uzytkownik)).ToArray();
-        return Ok(new AuthUserDto(uzytkownik.Id, uzytkownik.UserName!, uzytkownik.Email!, roles));
+        var result = await profilService.GetProfil(uzytkownik.Id);
+        var profil = result.Value;
+        var awatar = profil?.Awatar;
+        return Ok(new AuthUserDto(uzytkownik.Id, uzytkownik.UserName!, uzytkownik.Email!, roles, awatar));
     }
 
     [HttpPost("logout")]
@@ -96,11 +100,14 @@ public class AuthController(IUzytkownikService uzytkownikService,
         
         // ASP.NET Identity używa tego, żeby znaleźć w bazie obiekt Uzytkownik odpowiadający zalogowanej osobie
         // (na podstawie claimu NameIdentifier w cookie).
-        var user = await userManager.GetUserAsync(User);
-        if (user is null) return Unauthorized();
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized();
 
-        var roles = (await userManager.GetRolesAsync(user)).ToArray();
-        return Ok(new AuthUserDto(user.Id, user.UserName!, user.Email!, roles));
+        var roles = (await userManager.GetRolesAsync(uzytkownik)).ToArray();
+        var result = await profilService.GetProfil(uzytkownik.Id);
+        var profil = result.Value;
+        var awatar = profil?.Awatar;
+        return Ok(new AuthUserDto(uzytkownik.Id, uzytkownik.UserName!, uzytkownik.Email!, roles, awatar));
     }
 
 }

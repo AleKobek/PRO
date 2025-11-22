@@ -127,11 +127,9 @@ export default function FormularzProfilu({
             body: JSON.stringify(profilDoWyslania)
         }
         
-        console.log("Co wysyłamy do bazy:", profilDoWyslania)
         
         const res = await fetch("http://localhost:5014/api/Profil/" + uzytkownik.id, opcje);
         
-        console.log("Odpowiedź z serwera:", res);
         
         // Odczyt body różni się zależnie od typu odpowiedzi
         // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić

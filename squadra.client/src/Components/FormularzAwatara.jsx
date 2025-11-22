@@ -39,13 +39,9 @@ export default function FormularzAwatara({
             credentials: "include",
             body: formularz
         }
-
-        console.log("Co wysyłamy do bazy:", opcje)
         
         const res = await fetch("http://localhost:5014/api/Profil/" + uzytkownik.id + "/awatar", opcje);
-
-        console.log("Odpowiedź z serwera:", res);
-
+        
         // Odczyt body różni się zależnie od typu odpowiedzi
         // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
         const ct = res.headers.get("content-type") || "";
@@ -79,7 +75,7 @@ export default function FormularzAwatara({
             className="awatar" 
             src={podgladAwatara || "/img/domyslny_awatar.png"}
             alt="awatar"
-            style={{ width: 128, height: 128, objectFit: "cover", borderRadius: "50%" }}
+            style={{ width: 128, height: 128, objectFit: "cover", borderRadius: "100%" }}
         /><br/>
             <input
                 type="file"

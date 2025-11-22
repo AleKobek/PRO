@@ -36,7 +36,6 @@ export default function DaneKonta({uzytkownik}) {
         const podajDaneKonta = async () => {
             const idUzytkownika = uzytkownik.id;
             const data = await fetchJsonAbort(`http://localhost:5014/api/Uzytkownik/${idUzytkownika}`);
-            console.log("uzytkownik:", data);
 
             // przerywamy działanie funkcji
             if (!alive) return;
