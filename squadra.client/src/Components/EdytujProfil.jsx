@@ -3,21 +3,24 @@
 import React, {useEffect, useState} from 'react';
 import NaglowekZalogowano from './NaglowekZalogowano';
 import FormularzProfilu from './FormularzProfilu';
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import Naglowek from "./Naglowek";
+import FormularzAwatara from "./FormularzAwatara";
     export default function EdytujProfil() {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
+    const location = useLocation();
 
     const [pseudonim, ustawPseudonim] = useState("");
     const [zaimki, ustawZaimki] = useState("");
     const [kraj, ustawKraj] = useState({});
     const [region, ustawRegion] = useState({});
     const [opis, ustawOpis] = useState("");
+    const [awatar, ustawAwatar] = useState("");
 
-    // lista języków użytkownika przed zmianami, jej postać to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
+        // lista języków użytkownika przed zmianami, jej postać to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
     const [staraListaJezykowUzytkownika, ustawStaraListeJezykowUzytkownika] = useState([])
 
     useEffect(() => {
@@ -65,6 +68,7 @@ import Naglowek from "./Naglowek";
                 ustawRegion({id: null, nazwa: null});   
             }
             ustawOpis(profil.opis ?? '');
+            ustawAwatar(profil.awatar ? "data:image/jpeg;base64,"+profil.awatar : "");
             
 
             const jezyki = await fetchJsonAbort(`http://localhost:5014/api/Jezyk/profil/${id}`);
@@ -102,9 +106,12 @@ import Naglowek from "./Naglowek";
             <h1>Edytuj profil</h1>
             <button className={"przycisk-nawigacji"} onClick={() => {navigate('/')}}>Powrót do profilu</button>
             <br/><br/>
+            <span className="success-widomosc">{location.state?.message}</span>
             <FormularzProfilu czyEdytuj = {true} staraListaJezykowUzytkownika = {staraListaJezykowUzytkownika} staryPseudonim = {pseudonim} 
-                              stareZaimki = {zaimki} staryOpis = {opis} staryRegion = {region} staryKraj = {kraj} uzytkownik={uzytkownik}/>
+                              stareZaimki = {zaimki} staryOpis = {opis} staryRegion = {region} staryKraj = {kraj} uzytkownik={uzytkownik} staryAwatar={awatar}/>
             <br></br>
+            <h2>Edytuj awatar</h2>
+            <FormularzAwatara uzytkownik={uzytkownik} staryAwatar={awatar}/>
         </div>
 
     </>);

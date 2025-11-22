@@ -10,6 +10,7 @@ public interface IProfilRepository
     public Task<ProfilGetResDto> GetProfilUzytkownika(int id);
 
     public Task<bool> UpdateProfil(int id, ProfilUpdateDto profil);
+    public Task<bool> UpdateAwatar(int id, byte[] awatar);
 
     public Task<ProfilGetResDto> CreateProfil(ProfilCreateReqDto profil);
     

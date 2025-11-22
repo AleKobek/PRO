@@ -79,7 +79,7 @@ export default function Logowanie() {
             <Naglowek />
             <div id = "glowna">
                 <h1>Logowanie</h1>
-                <h3 style={{color: "green"}}>{location.state?.message}</h3>
+                <h3 className="success-widomosc">{location.state?.message}</h3>
                 <form id = "form" name="formularz-logowania">
                     <label>
                         <div>E-mail lub nazwa użytkownika</div>

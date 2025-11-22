@@ -86,22 +86,22 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
             new JezykProfilu {UzytkownikId = 1, JezykId = 3, StopienBieglosciId = 1}
         );
 
-        modelBuilder.Entity<Uzytkownik>().HasData(
-            new Uzytkownik
-        {
-            Id = 1,
-            UserName = "Leczo",
-            NormalizedUserName = "LECZO",
-            Email = "eee@eeee.ee",
-            NormalizedEmail = "EEE@EEEE.EE",
-            PhoneNumber = "123456789",
-            DataUrodzenia = new DateOnly(2002, 10, 05),
-            EmailConfirmed = true,
-            SecurityStamp = "00000000-0000-0000-0000-000000000001",
-            ConcurrencyStamp = "00000000-0000-0000-0000-000000000002",
-            // aA1!12345 (podobno, chyba, mam nadzieję)
-            PasswordHash = "AQAAAAIAAYagAAAAEP/9zHapujLFF7cdZeFgdRHL2ueNgRrIRoFWCoyV9eycnY+o/q5y7krDeXOf/7FWkA=="
-        });
+        // modelBuilder.Entity<Uzytkownik>().HasData(
+        //     new Uzytkownik
+        // {
+        //     Id = 1,
+        //     UserName = "Leczo",
+        //     NormalizedUserName = "LECZO",
+        //     Email = "eee@eeee.ee",
+        //     NormalizedEmail = "EEE@EEEE.EE",
+        //     PhoneNumber = "123456789",
+        //     DataUrodzenia = new DateOnly(2002, 10, 05),
+        //     EmailConfirmed = true,
+        //     SecurityStamp = "00000000-0000-0000-0000-000000000001",
+        //     ConcurrencyStamp = "00000000-0000-0000-0000-000000000002",
+        //     // aA1!12345 (podobno, chyba, mam nadzieję)
+        //     PasswordHash = "AQAAAAIAAYagAAAAEP/9zHapujLFF7cdZeFgdRHL2ueNgRrIRoFWCoyV9eycnY+o/q5y7krDeXOf/7FWkA=="
+        // });
         
         modelBuilder.Entity<Profil>().HasData(
             new Profil

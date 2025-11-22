@@ -57,6 +57,7 @@ public class ProfilRepository(AppDbContext appDbContext,
         return new ProfilGetResDto(profil.Pseudonim, region, profil.Zaimki, profil.Opis, jezykiUzytkownika, profil.Awatar, status.Nazwa);
     }
 
+    // bez awatara!
     public async Task<bool> UpdateProfil(int id, ProfilUpdateDto profil)
     {
         var profilDoZmiany = await appDbContext.Profil.FindAsync(id);
@@ -66,10 +67,22 @@ public class ProfilRepository(AppDbContext appDbContext,
         profilDoZmiany.RegionId = profil.RegionId;
         profilDoZmiany.Zaimki = profil.Zaimki;
         profilDoZmiany.Opis = profil.Opis;
-        profilDoZmiany.Awatar = profil.Awatar;
 
         await appDbContext.SaveChangesAsync();
         
+        return true;
+    }
+    
+    public async Task<bool> UpdateAwatar(int id, byte[] awatar)
+    {
+        var profilDoZmiany = await appDbContext.Profil.FindAsync(id);
+        if(profilDoZmiany == null) throw new NieZnalezionoWBazieException("Profil uzytkownika o id " + id + " nie istnieje");
+
+        if (awatar.Length <= 0) return true;
+        profilDoZmiany.Awatar = awatar;
+
+        await appDbContext.SaveChangesAsync();
+
         return true;
     }
     

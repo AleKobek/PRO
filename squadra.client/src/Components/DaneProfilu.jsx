@@ -12,6 +12,7 @@ export default function DaneProfilu({uzytkownik}) {
     const [kraj, ustawKraj] = useState({});
     const [opis, ustawOpis] = useState("");
     const [nazwaStatusu, ustawNazweStatusu] = useState("");
+    const [awatar, ustawAwatar] = useState("");
     
     // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
     const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState([])
@@ -42,7 +43,6 @@ export default function DaneProfilu({uzytkownik}) {
         const podajDaneProfilu = async () => {
             const idUzytkownika = uzytkownik.id;
             const data = await fetchJsonAbort(`http://localhost:5014/api/Profil/${idUzytkownika}`);
-            console.log("profil:", data);
 
             // przerywamy działanie funkcji
             if (!alive) return;
@@ -60,6 +60,7 @@ export default function DaneProfilu({uzytkownik}) {
             }
             ustawOpis(data.opis ?? "");
             ustawNazweStatusu(data.nazwaStatusu ?? "");
+            ustawAwatar(data.awatar ? "data:image/jpeg;base64,"+data.awatar : "");
         };
 
         const podajJezykiIStopnieUzytkownika = async () => {
@@ -103,6 +104,8 @@ export default function DaneProfilu({uzytkownik}) {
     if(!uzytkownik || !uzytkownik.id) return(<><p>Ładowanie...</p></>);
     
     return(<div className = "dane-profilu">
+                                      {/* v dzięki "||" bierze też jak jest pusty string  */}
+        <img id = "awatar" src = {awatar || "/img/domyslny_awatar.png"} alt = "awatar" className = "awatar"/><br/>
         <label>
             Pseudonim:
             <p id = "pseudonim" className= "pole-w-danych-profilu">{pseudonim}</p>
@@ -130,6 +133,6 @@ export default function DaneProfilu({uzytkownik}) {
         <label>
             Status:
         <p id = "status" className= "pole-w-danych-profilu">{nazwaStatusu}</p>
-    </label>
+        </label>
     </div>)
 }

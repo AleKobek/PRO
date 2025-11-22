@@ -83,7 +83,6 @@ export default function NaglowekZalogowano(){
         
         const podajAktualnyStatus = async () => {
             const aktualnyStatus = await fetchJsonAbort("http://localhost:5014/api/Profil/" + uzytkownik.id + "/status/baza");
-            console.log("Aktualny status z bazy:", aktualnyStatus);
             if(!alive || !aktualnyStatus) return;
             ustawAktualnyStatusZBazy(aktualnyStatus);
         }

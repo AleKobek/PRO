@@ -2,6 +2,9 @@
 using Squadra.Server.DTO.Status;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Repositories;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
 
 namespace Squadra.Server.Services;
 
@@ -60,7 +63,7 @@ public class ProfilService(
         {
             bledy.Add(new ErrorItem("Maksymalna długość pseudonimu wynosi 20 znaków", nameof(profil.Pseudonim)));
         }
-
+        
         try
         {
             return bledy.Count > 0
@@ -72,7 +75,20 @@ public class ProfilService(
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
-    
+
+    public async Task<ServiceResult<bool>> UpdateAwatar(int id, IFormFile awatar)
+    {
+        if(awatar.Length == 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowy awatar"));
+        using (var memoryStream = new MemoryStream())
+        {
+            // przenosimy to do memory stream
+            await awatar.CopyToAsync(memoryStream);
+            // przenosimy to do tablicy bajtów, tak jak chcemy to mieć
+            var awatarWBajtach = memoryStream.ToArray();
+            awatarWBajtach = NormalizujAwatar(awatarWBajtach);
+            return ServiceResult<bool>.Ok(await profilRepository.UpdateAwatar(id, awatarWBajtach ?? []),204);
+        }
+    }
     public async Task<ServiceResult<StatusDto>> GetStatusZBazyProfilu(int id)
     {
         try{
@@ -104,7 +120,7 @@ public class ProfilService(
             return ServiceResult<StatusDto>.NotFound(new ErrorItem(e.Message));
         }
     }
-    
+
     public async Task<ServiceResult<StatusDto>> UpdateStatus(int id, int idStatus)
     {
         try{
@@ -119,5 +135,29 @@ public class ProfilService(
         }catch(NieZnalezionoWBazieException e){
             return ServiceResult<StatusDto>.NotFound(new ErrorItem(e.Message));
         }
+    }
+
+    // awatar ma zawsze być JPEG o rozmiarze 256 x 256
+    private byte[]? NormalizujAwatar(byte[]? awatar)
+    {
+        if(awatar == null || awatar.Length == 0) return null;
+        
+        using var image = Image.Load(awatar); // wykrywa PNG/JPG/WEBP automatycznie, jak to nie jest obraz rzuci wyjątkiem
+
+        // Skalowanie do kwadratu np. 256x256 (zachowa proporcje)
+        image.Mutate(x => x.Resize(new ResizeOptions
+        {
+            Size = new Size(256, 256),
+            Mode = ResizeMode.Crop // wypełnia cały kwadrat
+        }));
+
+        // Konwersja do JPEG
+        using var ms = new MemoryStream();
+        image.Save(ms, new JpegEncoder
+        {
+            Quality = 85 // 70–90 to najlepszy kompromis
+        });
+
+        return ms.ToArray();
     }
 }

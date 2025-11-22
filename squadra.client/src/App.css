@@ -196,11 +196,17 @@
       font-size: 20px;
       font-weight: bold;
     }
+    
+    img{
+      width: 200px;
+      border-radius: 100%;
+      border: solid 5px black;
+    }
   }
   
   .dane-profilu{
     vertical-align: center;
-    width: fit-content;
+    width: 400px;
     font-size: 20px;
     padding: 10px 30px;
     align-self: center;
@@ -232,6 +238,11 @@
       border: solid 2px black;
       border-radius: 10px;
       background-color: white;
+    }
+    
+    img{
+      width: 200px;
+      border-radius: 50%;
     }
   }
 

@@ -36,6 +36,8 @@ public class ProfilController(IProfilService profilService,
         return Ok(result.Value);
     }
 
+    
+    // bez awatara!
     [HttpPut("{id}")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails),(int)HttpStatusCode.BadRequest)]
@@ -54,6 +56,37 @@ public class ProfilController(IProfilService profilService,
             return Forbid("Nie możesz edytować profilu innego użytkownika.");
         
         var result = await profilService.UpdateProfil(id, profil);
+        switch (result.StatusCode)
+        {
+            case 404:
+                return NotFound(result.Errors[0].Message);
+            case 400:
+                foreach (var e in result.Errors)
+                    ModelState.AddModelError(e.Field ?? string.Empty, e.Message);
+                return ValidationProblem();
+            default:
+                return NoContent();
+        }
+    }
+    
+    [HttpPut("{id}/awatar")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(ValidationProblemDetails),(int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    public async Task<ActionResult> UpdateAwatar(int id, [FromForm] IFormFile awatar)
+    {
+        // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+
+        // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
+        if (uzytkownik.Id != id)
+            return Forbid("Nie możesz edytować awatara innego użytkownika.");
+        
+        var result = await profilService.UpdateAwatar(id, awatar);
         switch (result.StatusCode)
         {
             case 404:

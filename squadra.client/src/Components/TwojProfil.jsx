@@ -3,13 +3,14 @@
 import React, {useEffect} from 'react';
 import NaglowekZalogowano from './NaglowekZalogowano';
 import DaneProfilu from './DaneProfilu';
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import Naglowek from "./Naglowek";
 export default function TwojProfil() {
     
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
+    const location = useLocation();
 
 
     useEffect(() => {
@@ -29,6 +30,7 @@ export default function TwojProfil() {
     return (<>
         <div id = "glowna">
             <h1>Twój profil</h1>
+            <h3 className="success-widomosc">{location.state?.message}</h3>
             <DaneProfilu uzytkownik = {uzytkownik}></DaneProfilu>
             <button className={"przycisk-nawigacji"} onClick={() => navigate('/edytujProfil')} style={{textAlign: "center", alignSelf: "center"}}>Edytuj profil</button>
         </div>

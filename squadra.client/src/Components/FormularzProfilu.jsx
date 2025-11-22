@@ -9,7 +9,7 @@ export default function FormularzProfilu({
                                              staryOpis,
                                              staryRegion,
                                              staryKraj,
-                                             uzytkownik
+                                             uzytkownik,
                                          }) 
 {
     
@@ -22,8 +22,11 @@ export default function FormularzProfilu({
     const [listaRegionowZBazy, ustawListeRegionowZBazy] = useState([])
     
     
-    const [bledy, ustawBledy] = useState({pseudonim: "", zaimki: "", opis: "", zapisz: ""});
-
+    const [bladPseudonimu, ustawBladPseudonimu] = useState("");
+    const [bladZaimkow, ustawBladZaimkow] = useState("");
+    const [bladOpisu, ustawBladOpisu] = useState("");
+    const [bladOgolny, ustawBladOgolny] = useState("");
+    
     // to, co jest aktualnie w formularzu
     // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia, wartoscStopnia}
     // inicjalizacja lokalnego stanu ze starej listy, też ubezpieczamy się jakby nie istniała
@@ -99,7 +102,10 @@ export default function FormularzProfilu({
 
     const przyWysylaniu = async() =>{
         
-        ustawBledy({pseudonim: "", zaimki: "", opis: "", zapisz: ""});
+        ustawBladOgolny("");
+        ustawBladPseudonimu("");
+        ustawBladZaimkow("");
+        
         
         const profilDoWyslania = {
             regionId: region.id ?? null,
@@ -110,8 +116,6 @@ export default function FormularzProfilu({
                 stopienId: j.idStopnia
             })),
             pseudonim: pseudonim,
-            awatar: null
-            
         };
         
         const opcje = {
@@ -123,7 +127,12 @@ export default function FormularzProfilu({
             body: JSON.stringify(profilDoWyslania)
         }
         
+        console.log("Co wysyłamy do bazy:", profilDoWyslania)
+        
         const res = await fetch("http://localhost:5014/api/Profil/" + uzytkownik.id, opcje);
+        
+        console.log("Odpowiedź z serwera:", res);
+        
         // Odczyt body różni się zależnie od typu odpowiedzi
         // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
         const ct = res.headers.get("content-type") || "";       
@@ -134,18 +143,16 @@ export default function FormularzProfilu({
         if (!res.ok) {
             if(res.status === 400){
                 let bledy = body.errors;
-                ustawBledy({
-                    pseudonim: bledy.Pseudonim ? bledy.Pseudonim[0] : "",
-                    zaimki: bledy.Zaimki ? bledy.Zaimki[0] : "",
-                    opis: bledy.Opis ? bledy.Opis[0] : "",
-                    zapisz: body.message,
-                });
+                ustawBladPseudonimu(bledy.Pseudonim ? bledy.Pseudonim[0] : "");
+                ustawBladZaimkow(bledy.Zaimki ? bledy.Zaimki[0] : "");
+                ustawBladOpisu(bledy.Opis ? bledy.Opis[0] : "");
+                ustawBladOgolny(body.message);
             }
             return;
         }
 
         // jak tutaj dojdziemy, wszystko jest git
-        navigate("/twojProfil");
+        navigate("/twojProfil", {state: {message: "Pomyślnie edytowano profil"}});
     }
 
     // ustawiamy nową listę dostępnych regionów, jeśli kraj się zmieni
@@ -183,14 +190,14 @@ export default function FormularzProfilu({
      * sprawdzamy, czy jest zablokowane wyślij
      */
     const czyZablokowaneWyslij = useMemo(() => {
-        //console.log("Stary region id:", staryRegion.id, ", nowy region id:", region ? region.id : null);
             return (
-                (pseudonim === staryPseudonim &&
-                zaimki === stareZaimki &&
-                region?.id === staryRegion?.id &&
-                opis === staryOpis && czyListyJezykoweTakieSame) 
+                    (pseudonim === staryPseudonim &&
+                    zaimki === stareZaimki &&
+                    region?.id === staryRegion?.id &&
+                    opis === staryOpis && czyListyJezykoweTakieSame
+                    )
                 ||
-                pseudonim.trim().length === 0) // pseudonim nie może być pusty (reszta jest opcjonalna)
+                pseudonim.trim().length === 0) // pseudonim nie może być pusty       ( (reszta jest opcjonalna)
         }, [
             pseudonim, zaimki, kraj, region, opis,
             czyListyJezykoweTakieSame]);
@@ -206,7 +213,7 @@ export default function FormularzProfilu({
             // maxLength={20}
             onChange={(e)=>ustawPseudonim(e.target.value)}>
         </input></label><br/>
-        <span id = "error-pseudonim" className="error-wiadomosc">{bledy.pseudonim}</span><br/>
+        <span id = "error-pseudonim" className="error-wiadomosc">{bladPseudonimu}</span><br/>
         
         <label>Zaimki<br/>
         <input 
@@ -216,7 +223,7 @@ export default function FormularzProfilu({
             value={zaimki} 
             onChange={(e)=>ustawZaimki(e.target.value)}>
         </input></label><br/>
-        <span id = "error-zaimki" className="error-wiadomosc">{bledy.zaimki}</span><br/>
+        <span id = "error-zaimki" className="error-wiadomosc">{bladZaimkow}</span><br/>
         
         {/* kraj */}
         
@@ -270,7 +277,7 @@ export default function FormularzProfilu({
         <br/>
         <label htmlFor="opis">Opis<br/>
         <textarea id = "opis" name ="opis" maxLength={100} value={opis} onChange={(e)=>ustawOpis(e.target.value)}></textarea></label>
-        <span id = "error-opis" className="error-wiadomosc">{bledy.opis}</span><br/>
+        <span id = "error-opis" className="error-wiadomosc">{bladOpisu}</span><br/>
         
         <br/>
         
@@ -284,8 +291,6 @@ export default function FormularzProfilu({
         <br/>
 
         <input type = "button" value = "Zapisz" onClick={przyWysylaniu} disabled={czyZablokowaneWyslij}/>
-        <span id = "error-zapisz" className="error-wiadomosc">{bledy.zapisz}</span><br/>
+        <span id = "error-zapisz" className="error-wiadomosc">{bladOgolny}</span><br/>
     </form>)
-
-    
 }

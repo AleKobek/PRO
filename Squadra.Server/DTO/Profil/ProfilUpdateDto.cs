@@ -7,6 +7,5 @@ public record ProfilUpdateDto(
     string? Zaimki,
     string? Opis,
     ICollection<JezykProfiluCreateDto> Jezyki,
-    string Pseudonim,
-    byte[]? Awatar
+    string Pseudonim
 );

@@ -12,6 +12,8 @@ public interface IProfilService
 
     public Task<ServiceResult<bool>> UpdateProfil(int id, ProfilUpdateDto profil);
 
+    public Task<ServiceResult<bool>> UpdateAwatar(int id, IFormFile awatar);
+
     public Task<ServiceResult<StatusDto>> GetStatusZBazyProfilu(int id);
 
     public Task<ServiceResult<StatusDto>> GetStatusDoWyswietleniaProfilu(int id);
