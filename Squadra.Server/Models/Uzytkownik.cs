@@ -10,4 +10,6 @@ public class Uzytkownik : IdentityUser<int>
     
     // jest nullable, bo profil może być tworzony tuż po użytkowniku
     public virtual Profil? Profil { get; set; } = null!;
+    
+    public virtual ICollection<Powiadomienie> PowiadomienieCollection { get; set; } = null!;
 }

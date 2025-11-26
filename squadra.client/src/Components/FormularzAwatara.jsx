@@ -76,7 +76,7 @@ export default function FormularzAwatara({
             src={podgladAwatara || "/img/domyslny_awatar.png"}
             alt="awatar"
             style={{ width: 128, height: 128, objectFit: "cover", borderRadius: "100%" }}
-        /><br/>
+        /><br/><br/>
             <input
                 type="file"
                 accept="image/*"
@@ -90,7 +90,7 @@ export default function FormularzAwatara({
 
                     ustawAwatar(file);
                 }}
-            />
+            /><br/><br/>
         <input type = "button" value = "Zapisz" onClick={przyWysylaniu} disabled={czyZablokowaneWyslij}/>
         <span id = "error-awatar" className="error-wiadomosc">{bladAwatara}</span><br/><br/>
     </form>)
