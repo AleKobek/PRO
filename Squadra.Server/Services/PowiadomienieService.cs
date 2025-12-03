@@ -55,11 +55,11 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
     // robimy rozpatrzenie odpowiedzi na powiadomienie. Jeżeli jest to drugie, to reagujemy inaczej niż w przypadku reszty (na ten moment), bo wymagana jest akcja
     // jeżeli to typ "zaproszenie do znajomych", czyZaakceptowane nie jest null
 
-    public async Task<ServiceResult<bool>> RozpatrzPowiadomienie(OdpowiedzNaPowiadomienieDto odpowiedz, ClaimsPrincipal user)
+    public async Task<ServiceResult<bool>> RozpatrzPowiadomienie(int id, bool? czyZaakceptowane, ClaimsPrincipal user)
     {
         try
         {
-            var powiadomienie = await powiadomienieRepository.GetPowiadomienie(odpowiedz.IdPowiadomienia);
+            var powiadomienie = await powiadomienieRepository.GetPowiadomienie(id);
             var uzytkownik = await userManager.GetUserAsync(user);
             if(uzytkownik == null) return ServiceResult<bool>.Unauthorized(new ErrorItem("Nie jesteś zalogowany"));
             if (powiadomienie.UzytkownikId != uzytkownik.Id)
@@ -72,7 +72,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             if (powiadomienie.IdTypuPowiadomienia == 2)
             {
                 if(powiadomienie.IdPowiazanegoObiektu == null) return ServiceResult<bool>.NotFound(new ErrorItem("Nie podano użytkownika, którego zaproszenie akceptujesz"));
-                switch (odpowiedz.CzyZaakceptowane)
+                switch (czyZaakceptowane)
                 {
                     case true:
                     {
