@@ -82,6 +82,13 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
             new Region {Id = 17, Nazwa = "East od England", KrajId = 2},
             new Region {Id = 18, Nazwa = "East Midlands", KrajId = 2}
         );
+
+        modelBuilder.Entity<TypPowiadomienia>().HasData(
+            new TypPowiadomienia {Id = 1, Nazwa = "Systemowe"},
+            new TypPowiadomienia {Id = 2, Nazwa = "Zaproszenie do znajomych"},
+            new TypPowiadomienia {Id = 3, Nazwa = "Zaakceptowano zaproszenie do znajomych"},
+            new TypPowiadomienia {Id = 4, Nazwa = "Odrzucono zaproszenie do znajomych"}
+        );
         
         // chyba to już niepotrzebne
 

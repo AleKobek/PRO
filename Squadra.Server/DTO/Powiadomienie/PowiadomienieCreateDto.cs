@@ -4,5 +4,5 @@ public record PowiadomienieCreateDto(
     int IdTypuPowiadomienia, 
     int IdUzytkownika,
     int? IdPowiazanegoObiektu,
-    string Tresc
+    string? Tresc
 );

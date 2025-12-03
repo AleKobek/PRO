@@ -13,7 +13,8 @@ public class Powiadomienie
     public int? PowiazanyObiektId { get; set; }
     
     [MaxLength(200)]
-    public string Tresc { get; set; } = null!;
+    // treść jest tylko dla systemowych, reszta jest tworzona na miejscu
+    public string? Tresc { get; set; } = null!;
     public DateTime DataWyslania { get; set; }
     public virtual TypPowiadomienia TypPowiadomienia { get; set; } = null!;
     public virtual Uzytkownik Uzytkownik { get; set; } = null!;

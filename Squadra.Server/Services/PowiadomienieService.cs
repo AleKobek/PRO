@@ -1,0 +1,131 @@
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+using Squadra.Server.DTO.Powiadomienie;
+using Squadra.Server.Exceptions;
+using Squadra.Server.Models;
+using Squadra.Server.Repositories;
+
+namespace Squadra.Server.Services;
+
+public class PowiadomienieService(IPowiadomienieRepository powiadomienieRepository,
+    UserManager<Uzytkownik> userManager,
+    IUzytkownikService uzytkownikService
+    // IZnajomiService znajomiService
+    ) : IPowiadomienieService
+{
+    public async Task<ServiceResult<PowiadomienieDto>> GetPowiadomienie(int id, ClaimsPrincipal user) {
+        var powiadomienie = await powiadomienieRepository.GetPowiadomienie(id);
+        var uzytkownik = await userManager.GetUserAsync(user);
+        if(uzytkownik == null) return ServiceResult<PowiadomienieDto>.Unauthorized(new ErrorItem("Nie jesteś zalogowany"));
+        if (powiadomienie.UzytkownikId != uzytkownik.Id)
+        {
+            return ServiceResult<PowiadomienieDto>.Forbidden(new ErrorItem("Nie możesz pobrać powiadomienia innego użytkownika"));
+        } 
+        return ServiceResult<PowiadomienieDto>.Ok(powiadomienie);
+    }
+
+    public async Task<ServiceResult<ICollection<PowiadomienieDto>>> GetPowiadomieniaUzytkownika(int idUzytkownika)
+    {
+        // czy to dobry użytkownik sprawdzamy już w controllerze, bo mamy od razu id
+        return ServiceResult<ICollection<PowiadomienieDto>>.Ok(await powiadomienieRepository.GetPowiadomieniaUzytkownika(idUzytkownika));
+    }
+    
+    public async Task<ServiceResult<bool>> CreatePowiadomienie(PowiadomienieCreateDto powiadomienie)
+    {
+        // okolicznościami tworzenia powiadomienia zajmują się inne klasy, tutaj tylko tworzymy
+        if(powiadomienie.IdTypuPowiadomienia < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Typ powiadomienia o id " + powiadomienie.IdTypuPowiadomienia + " nie istnieje"));
+        if(powiadomienie.IdPowiazanegoObiektu < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Obiekt o id " + powiadomienie.IdPowiazanegoObiektu + " nie istnieje w żadnym typie obiektów"));
+
+        // sprawdzamy, czy odnosi się do istniejącego obiektu
+        
+        // odnośnie znajomych
+        if (powiadomienie.IdTypuPowiadomienia is 2 or 3 or 4)
+        {
+            // nie będzie sytuacji tutaj, że to będzie null, ale aby się nie czepiał kompilator
+            var idUzytkownika = powiadomienie.IdPowiazanegoObiektu ?? 1;
+            var wynikZnalezieniaUzytkownika = await uzytkownikService.GetUzytkownik(idUzytkownika);
+            if(wynikZnalezieniaUzytkownika.StatusCode != 200) return ServiceResult<bool>.NotFound(wynikZnalezieniaUzytkownika.Errors[0]);
+        }
+        
+        // jak tu dochodzimy, wszystko jest git
+        
+        return ServiceResult<bool>.Ok(await powiadomienieRepository.CreatePowiadomienie(powiadomienie));
+    }
+    
+    // robimy rozpatrzenie odpowiedzi na powiadomienie. Jeżeli jest to drugie, to reagujemy inaczej niż w przypadku reszty (na ten moment), bo wymagana jest akcja
+    // jeżeli to typ "zaproszenie do znajomych", czyZaakceptowane nie jest null
+
+    public async Task<ServiceResult<bool>> RozpatrzPowiadomienie(OdpowiedzNaPowiadomienieDto odpowiedz, ClaimsPrincipal user)
+    {
+        try
+        {
+            var powiadomienie = await powiadomienieRepository.GetPowiadomienie(odpowiedz.IdPowiadomienia);
+            var uzytkownik = await userManager.GetUserAsync(user);
+            if(uzytkownik == null) return ServiceResult<bool>.Unauthorized(new ErrorItem("Nie jesteś zalogowany"));
+            if (powiadomienie.UzytkownikId != uzytkownik.Id)
+            {
+                return ServiceResult<bool>.Forbidden(new ErrorItem("Nie możesz rozpatrzyć powiadomienia innego użytkownika"));
+            }
+            // jak tu doszliśmy, wszystko jest git, chyba że nie podano powiązanego obiektu w konkretnych typach
+        
+            // zaproszenie do znajomych
+            if (powiadomienie.IdTypuPowiadomienia == 2)
+            {
+                if(powiadomienie.IdPowiazanegoObiektu == null) return ServiceResult<bool>.NotFound(new ErrorItem("Nie podano użytkownika, którego zaproszenie akceptujesz"));
+                switch (odpowiedz.CzyZaakceptowane)
+                {
+                    case true:
+                    {
+                        //TODO znajomiService jeszcze do zaimplementowania
+                        
+                        // var result = znajomiService.DodajZnajomego();
+                        // // coś poszło nie tak
+                        // if (result.statusCode != 200) return result;
+                        
+                        
+                        // wszystko git
+                        // wysyłamy uzytkownikowi, który jest powiązany, że jego zaproszenie zostało zaakceptowane
+                        await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
+                            // zaakceptowano zaproszenie
+                            3,
+                            // wysyłamy to użytkownikowi, którego to zaproszenie dotyczy
+                            powiadomienie.IdPowiazanegoObiektu ?? 1, // już null odfiltrowaliśmy, ale aby się nie czepiał kompilator
+                            // powiązany jest użytkownik, który zaakceptował
+                            uzytkownik.Id,
+                            // treść zostanie sklejona na miejscu
+                            null
+                        ));
+                        break;
+                    }
+                    case false:
+                    {
+                        // wysyłamy uzytkownikowi, który jest powiązany, że jego zaproszenie zostało odrzucone
+                        await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
+                            // odrzucono zaproszenie
+                            4,
+                            // wysyłamy to użytkownikowi, którego to zaproszenie dotyczy
+                            powiadomienie.IdPowiazanegoObiektu ?? 1, // już to odfiltrowaliśmy, ale aby się nie czepiał kompilator
+                            // powiązany jest użytkownik, który odrzucił
+                            uzytkownik.Id,
+                            // treść zostanie sklejona na miejscu
+                            null
+                        ));
+                        break;
+                    }
+                    default:
+                    {
+                        return ServiceResult<bool>.BadRequest(new ErrorItem("Nie podano, czy zaakceptowano zaproszenie"));
+                    }
+                }
+            }
+            
+            // jak tu dochodzimy, wszystko zostało pomyślnie rozpatrzone i usuwamy
+            await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
+            return ServiceResult<bool>.Ok(true);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+}

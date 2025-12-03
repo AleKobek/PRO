@@ -15,14 +15,14 @@ public class PowiadomienieRepository(AppDbContext context, UzytkownikRepository 
         var typPowiadomienia = await context.TypPowiadomienia.FindAsync(powiadomienie.TypPowiadomieniaId);
         if(typPowiadomienia == null) throw new NieZnalezionoWBazieException("Typ powiadomienia o id " + id + " nie istnieje");
         if (powiadomienie.PowiazanyObiektId != null && 
-            (typPowiadomienia.Nazwa == "Zaproszenie do znajomych" || typPowiadomienia.Nazwa =="Odrzucone zaproszenie do znajomych")) {
+            (powiadomienie.TypPowiadomieniaId is 2 or 4)) {
             // te dwie linijki pod spodem robimy tylko po to, aby kompilator nie płakał
             var idUzytkownika = powiadomienie.PowiazanyObiektId ?? -1;
             if (idUzytkownika == -1) throw new NieZnalezionoWBazieException("Użytkownik o takim id nie istnieje!");
             var uzytkownik = await uzytkownikRepository.GetUzytkownik(idUzytkownika);
             return new PowiadomienieDto(
                 powiadomienie.Id,
-                typPowiadomienia.Nazwa,
+                powiadomienie.TypPowiadomieniaId,
                 powiadomienie.UzytkownikId,
                 uzytkownik.Id,
                 uzytkownik.Login,
@@ -33,7 +33,7 @@ public class PowiadomienieRepository(AppDbContext context, UzytkownikRepository 
         // jak tu dochodzimy, to jest systemowe
         return new PowiadomienieDto(
             powiadomienie.Id,
-            typPowiadomienia.Nazwa,
+            powiadomienie.TypPowiadomieniaId,
             powiadomienie.UzytkownikId,
             null,
             null,
@@ -73,6 +73,13 @@ public class PowiadomienieRepository(AppDbContext context, UzytkownikRepository 
         context.Powiadomienie.Remove(powiadomienie);
         await context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<string> GetNazwaTypuPowiadomienia(int idTypuPowiadomienia)
+    {
+        var typPowiadomienia = await context.TypPowiadomienia.FindAsync(idTypuPowiadomienia);
+        if(typPowiadomienia == null) throw new NieZnalezionoWBazieException("Typ powiadomienia o id " + idTypuPowiadomienia + " nie istnieje");
+        return typPowiadomienia.Nazwa;
     }
     
     // w service będzie stwórz powiadomienie każdego typu, na razie mamy:

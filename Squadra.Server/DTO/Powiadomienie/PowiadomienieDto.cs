@@ -2,10 +2,10 @@
 
 public record PowiadomienieDto(
     int Id,
-    string NazwaTypu,
+    int IdTypuPowiadomienia,
     int UzytkownikId,
     int? IdPowiazanegoObiektu,
-    string? NazwaPowiazanegoObiektu,
-    string Tresc,
+    string? NazwaPowiazanegoObiektu, // pseudonim dla uzytkownika i nazwa dla gildii
+    string? Tresc,
     DateTime DataWyslania
 );
