@@ -13,5 +13,6 @@ public class Uzytkownik : IdentityUser<int>
     
     public virtual ICollection<Powiadomienie> PowiadomienieCollection { get; set; } = null!;
     
-    public virtual ICollection<Znajomi> ZnajomiCollection { get; set; } = null!;
+    public virtual ICollection<Znajomi> ZnajomiJakoPierwszyCollection { get; set; } = null!;
+    public virtual ICollection<Znajomi> ZnajomiJakoDrugiCollection { get; set; } = null!;
 }

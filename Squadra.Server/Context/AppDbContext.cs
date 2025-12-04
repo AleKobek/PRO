@@ -89,7 +89,8 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
             new TypPowiadomienia {Id = 1, Nazwa = "Systemowe"},
             new TypPowiadomienia {Id = 2, Nazwa = "Zaproszenie do znajomych"},
             new TypPowiadomienia {Id = 3, Nazwa = "Zaakceptowano zaproszenie do znajomych"},
-            new TypPowiadomienia {Id = 4, Nazwa = "Odrzucono zaproszenie do znajomych"}
+            new TypPowiadomienia {Id = 4, Nazwa = "Odrzucono zaproszenie do znajomych"},
+            new TypPowiadomienia {Id = 5, Nazwa = "Usunieto cie ze znajomych"}
         );
         
 

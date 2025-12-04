@@ -42,6 +42,7 @@ builder.Services.AddScoped<IPowiadomienieRepository, PowiadomienieRepository>();
 builder.Services.AddScoped<IPowiadomienieService, PowiadomienieService>();
 
 builder.Services.AddScoped<IZnajomiRepository, ZnajomiRepository>();
+builder.Services.AddScoped<IZnajomiService, ZnajomiService>();
 
 // ustawiamy Identity
 builder.Services

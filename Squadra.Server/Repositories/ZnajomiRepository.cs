@@ -43,7 +43,6 @@ public class ZnajomiRepository(AppDbContext context, IProfilRepository profilRep
     {
         var znajomosc = await context.Znajomi.Where(x => x.IdUzytkownika1 == idUzytkownika1 && x.IdUzytkownika2 == idUzytkownika2).FirstOrDefaultAsync();
         if(znajomosc == null) throw new NieZnalezionoWBazieException("Znajomosc o idUzytkownika1: " + idUzytkownika1 + " i idUzytkownika2: " + idUzytkownika2 + " nie istnieje");
-        // tutaj w przyszłości usuwamy też wszystkie wiadomości
         context.Znajomi.Remove(znajomosc);
         return await context.SaveChangesAsync() > 0;
     }

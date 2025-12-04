@@ -9,8 +9,8 @@ namespace Squadra.Server.Services;
 
 public class PowiadomienieService(IPowiadomienieRepository powiadomienieRepository,
     UserManager<Uzytkownik> userManager,
-    IUzytkownikService uzytkownikService
-    // IZnajomiService znajomiService
+    IUzytkownikService uzytkownikService,
+    IZnajomiService znajomiService
     ) : IPowiadomienieService
 {
     public async Task<ServiceResult<PowiadomienieDto>> GetPowiadomienie(int id, ClaimsPrincipal user) {
@@ -38,8 +38,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
 
         // sprawdzamy, czy odnosi się do istniejącego obiektu
         
-        // odnośnie znajomych
-        if (powiadomienie.IdTypuPowiadomienia is 2 or 3 or 4)
+        // odnośnie znajomych (nowe zaproszenie, zaakceptowano zaproszenie, odrzucono zaproszenie, usunięto ze znajomych)
+        if (powiadomienie.IdTypuPowiadomienia is 2 or 3 or 4 or 5)
         {
             // nie będzie sytuacji tutaj, że to będzie null, ale aby się nie czepiał kompilator
             var idUzytkownika = powiadomienie.IdPowiazanegoObiektu ?? 1;
@@ -60,6 +60,15 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         try
         {
             var powiadomienie = await powiadomienieRepository.GetPowiadomienie(id);
+            /*
+                int Id,
+                int IdTypuPowiadomienia,
+                int UzytkownikId,
+                int? IdPowiazanegoObiektu,
+                string? NazwaPowiazanegoObiektu, // pseudonim dla uzytkownika i nazwa dla gildii
+                string? Tresc,
+                DateTime DataWyslania
+             */
             var uzytkownik = await userManager.GetUserAsync(user);
             if(uzytkownik == null) return ServiceResult<bool>.Unauthorized(new ErrorItem("Nie jesteś zalogowany"));
             if (powiadomienie.UzytkownikId != uzytkownik.Id)
@@ -76,11 +85,9 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 {
                     case true:
                     {
-                        //TODO znajomiService jeszcze do zaimplementowania
-                        
-                        // var result = znajomiService.DodajZnajomego();
-                        // // coś poszło nie tak
-                        // if (result.statusCode != 200) return result;
+                        var result = await znajomiService.CreateZnajomosc(powiadomienie.UzytkownikId, powiadomienie.IdPowiazanegoObiektu ?? 1); // aby się kompilator nie czepiał
+                        // coś poszło nie tak
+                        if (result.StatusCode != 200) return result;
                         
                         
                         // wszystko git

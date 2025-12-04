@@ -14,14 +14,14 @@ public class ZnajomiEFConfig : IEntityTypeConfiguration<Znajomi>
         
         builder
             .HasOne(x => x.Uzytkownik1)
-            .WithMany(x => x.ZnajomiCollection)
+            .WithMany(x => x.ZnajomiJakoPierwszyCollection)
             .HasForeignKey(x => x.IdUzytkownika1)
             .HasConstraintName("Znajomi_Uzytkownik1")
             .OnDelete(DeleteBehavior.Restrict);
         
         builder
             .HasOne(x => x.Uzytkownik2)
-            .WithMany(x => x.ZnajomiCollection)
+            .WithMany(x => x.ZnajomiJakoDrugiCollection)
             .HasForeignKey(x => x.IdUzytkownika2)
             .HasConstraintName("Znajomi_Uzytkownik2")
             .OnDelete(DeleteBehavior.Restrict);

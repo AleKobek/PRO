@@ -6,7 +6,7 @@ using Squadra.Server.Models;
 
 namespace Squadra.Server.Repositories;
 
-public class PowiadomienieRepository(AppDbContext context, IUzytkownikRepository uzytkownikRepository, IProfilRepository profilRepository) : IPowiadomienieRepository
+public class PowiadomienieRepository(AppDbContext context, IProfilRepository profilRepository) : IPowiadomienieRepository
 {
     public async Task<PowiadomienieDto> GetPowiadomienie(int id)
     {
