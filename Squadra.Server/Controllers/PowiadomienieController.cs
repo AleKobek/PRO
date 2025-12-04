@@ -36,10 +36,11 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
         var result = await powiadomienieService.GetPowiadomienie(id, User);
         return result.StatusCode switch
         {
+            200 => Ok(result.Value),
             401 => Unauthorized(result.Errors[0].Message),
             403 => Forbid(result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
-            _ => Ok(result.Value)
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
 
@@ -54,11 +55,12 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
         var result = await powiadomienieService.RozpatrzPowiadomienie(id, czyZaakceptowane, User);
         return result.StatusCode switch
         {
+            204 => NoContent(),
             400 => BadRequest(result.Errors[0].Message),
             401 => Unauthorized(result.Errors[0].Message),
             403 => Forbid(result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
-            _ => NoContent()
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
     
@@ -74,8 +76,12 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
 
         return result.StatusCode switch
         {
+            204 => NoContent(),
             404 => NotFound(result.Errors[0].Message),
-            _ => NoContent()
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
+    // coś jeszcze innego
+ 
+    //public async Task<ActionResult> WyslijZaproszenieDoZnajomych(int idUzytkownika)
 }

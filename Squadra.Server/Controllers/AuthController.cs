@@ -21,20 +21,19 @@ public class AuthController(IUzytkownikService uzytkownikService,
 
     [HttpPost("register")]
     [AllowAnonymous]
-    [ProducesResponseType(typeof(UzytkownikResDto), (int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails),(int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
-    public async Task<ActionResult<UzytkownikResDto>> Zarejestruj([FromBody] UzytkownikCreateDto dto)
+    public async Task<IActionResult> Zarejestruj([FromBody] UzytkownikCreateDto dto)
     {
         var result = await uzytkownikService.CreateUzytkownik(dto);
-        
-        // jeżeli wszystko git: zwracamy nowo utworzonego użytkownika ze statusem
-        if (result.Succeeded) return StatusCode(result.StatusCode, result.Value);
         
         // jeżeli coś jest źle
         switch (result.StatusCode)
         {
             // Dla 400 u nas zwracamy ValidationProblem, ponieważ błędy dotyczą konkretnych pól
+            case 201:
+                return Created();
             case 400:
             {
                 foreach (var e in result.Errors)
@@ -48,6 +47,7 @@ public class AuthController(IUzytkownikService uzytkownikService,
                 return Conflict();
             case 404:
                 return NotFound(new { errors = result.Errors });
+            // coś jeszcze innego
             default:
                 return StatusCode(result.StatusCode, new { errors = result.Errors });
         }

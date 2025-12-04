@@ -23,6 +23,8 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
     public DbSet<Powiadomienie> Powiadomienie { get; set; } = null!;
     public DbSet<TypPowiadomienia> TypPowiadomienia { get; set; } = null!;
     
+    public DbSet<Znajomi> Znajomi { get; set; } = null!;
+    
     public AppDbContext(){}
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }

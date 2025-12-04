@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Squadra.Server.DTO.Uzytkownik;
 using Squadra.Server.Models;
 using Squadra.Server.Services;
@@ -48,11 +50,11 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
     // Aktualizacja oparta na zawartości DTO (repozytorium przyjmuje UzytkownikUpdateDto).
     [HttpPut("{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    public async Task<ActionResult> UpdateUzytkownik(int id, [FromBody] UzytkownikUpdateDto dto)
+    public async Task<IActionResult> UpdateUzytkownik(int id, [FromBody] UzytkownikUpdateDto dto)
     {
         
         // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
@@ -69,11 +71,14 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
         {
             case 204:
                 return NoContent();
+            case 400:
+                foreach (var e in result.Errors)
+                    ModelState.AddModelError(e.Field ?? string.Empty, e.Message);
+                return ValidationProblem();
             case 404:
                 return NotFound(result.Errors[0].Message);
-            // czyli 400 lub inny syf, ale zakładam że 400
             default:
-                return BadRequest(result.Errors);
+                return StatusCode(result.StatusCode, new { errors = result.Errors });
         }
     }
 
@@ -83,7 +88,7 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    public async Task<ActionResult> UpdateHaslo(int id, ZmienHasloDto dto)
+    public async Task<IActionResult> UpdateHaslo(int id, ZmienHasloDto dto)
     {
         // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
         var uzytkownik = await userManager.GetUserAsync(User);
@@ -95,15 +100,13 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
             return Forbid("Nie możesz zmienić hasła innego użytkownika.");
         
         var result = await uzytkownikService.UpdateHaslo(id, dto.StareHaslo, dto.NoweHaslo);
-        switch (result.StatusCode)
+        return result.StatusCode switch
         {
-            case 400:
-                return BadRequest(result.Errors);
-            case 404:
-                return NotFound(result.Errors[0].Message);
-            default:
-                return NoContent();
-        }
+            204 => NoContent(),
+            400 => BadRequest(result.Errors),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
     }
     
     [HttpPut("{id:int}/haslo/admin")]
@@ -113,19 +116,16 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    public async Task<ActionResult> UpdateHasloAdmin([FromRoute]int id, string stareHaslo, string noweHaslo)
+    public async Task<IActionResult> UpdateHasloAdmin([FromRoute]int id, string stareHaslo, string noweHaslo)
     {
-        
         var result = await uzytkownikService.UpdateHaslo(id, stareHaslo, noweHaslo);
-        switch (result.StatusCode)
+        return result.StatusCode switch
         {
-            case 400:
-                return BadRequest(result.Errors);
-            case 404:
-                return NotFound(result.Errors[0].Message);
-            default:
-                return NoContent();
-        }
+            204 => NoContent(),
+            400 => BadRequest(result.Errors),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
     }
     
     
@@ -151,10 +151,10 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
         var result = await uzytkownikService.DeleteUzytkownik(id);
         
         // mamy tylko dwie opcje, albo się udało albo nie znalazło
-        if(result.StatusCode == 204)
-            return NoContent();
+        if(result.StatusCode == 404)
+            return NotFound();
         
-        return NotFound();
+        return NoContent();
     }
     
     // co minutę dostajemy od zalogowanego użytkownika, że jest online
@@ -163,15 +163,19 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
     [Authorize]
     [HttpGet("ping")]
     public async Task<IActionResult> Ping()
-    {
-        var user = await userManager.GetUserAsync(User);
-        if (user != null)
-        {
-            user.OstatniaAktywnosc = DateTime.Now;
-            await userManager.UpdateAsync(user);
-        }
-        // nie mamy nic zwracać, to jest tylko po to, aby to aktualizować
-        return Ok();
-    }
+     {
+         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier); // Pobieramy ID z claimów
+         if (int.TryParse(userIdString, out var userId))
+         {
+             var user = await userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
+             if (user != null)
+             {
+                 user.OstatniaAktywnosc = DateTime.Now;
+                 await userManager.UpdateAsync(user);
+             }
+         }
+         return Ok();
+     }
+
 
 }

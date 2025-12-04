@@ -41,6 +41,8 @@ builder.Services.AddScoped<IStopienBieglosciJezykaService, StopienBieglosciJezyk
 builder.Services.AddScoped<IPowiadomienieRepository, PowiadomienieRepository>();
 builder.Services.AddScoped<IPowiadomienieService, PowiadomienieService>();
 
+builder.Services.AddScoped<IZnajomiRepository, ZnajomiRepository>();
+
 // ustawiamy Identity
 builder.Services
     .AddIdentity<Uzytkownik, IdentityRole<int>>()

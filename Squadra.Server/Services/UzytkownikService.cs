@@ -19,7 +19,7 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
             : ServiceResult<UzytkownikResDto>.Ok(await uzytkownikRepository.GetUzytkownik(id));
     }
     
-    public async Task<ServiceResult<UzytkownikResDto>> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
+    public async Task<ServiceResult<bool>> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
     {
         /*
          string Login,
@@ -56,13 +56,11 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
             // jeżeli którykolwiek z nich to błąd "coś już istnieje"
             var czySaKonflikty = bledy.Any(e => e.Code is "LoginIstnieje" or "EmailIstnieje");
             return czySaKonflikty
-                ? ServiceResult<UzytkownikResDto>.Conflict(bledy.ToArray())
-                : ServiceResult<UzytkownikResDto>.BadRequest(bledy.ToArray());
+                ? ServiceResult<bool>.Conflict(bledy.ToArray())
+                : ServiceResult<bool>.BadRequest(bledy.ToArray());
         }
         // skoro tu doszliśmy, wszystko jest git
-        var stworzonyUzytkownik = await uzytkownikRepository.CreateUzytkownik(uzytkownik);
-        
-        return ServiceResult<UzytkownikResDto>.Ok(stworzonyUzytkownik, 201);
+        return ServiceResult<bool>.Created(true);
 
     }
     public async Task<ServiceResult<bool>> UpdateUzytkownik(int id, UzytkownikUpdateDto dto)

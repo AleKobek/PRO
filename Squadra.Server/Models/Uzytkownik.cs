@@ -12,4 +12,6 @@ public class Uzytkownik : IdentityUser<int>
     public virtual Profil? Profil { get; set; } = null!;
     
     public virtual ICollection<Powiadomienie> PowiadomienieCollection { get; set; } = null!;
+    
+    public virtual ICollection<Znajomi> ZnajomiCollection { get; set; } = null!;
 }

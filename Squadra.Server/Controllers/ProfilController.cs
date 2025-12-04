@@ -44,7 +44,7 @@ public class ProfilController(IProfilService profilService,
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-    public async Task<ActionResult<ProfilGetResDto>> UpdateProfil(int id, [FromBody] ProfilUpdateDto profil)
+    public async Task<IActionResult> UpdateProfil(int id, [FromBody] ProfilUpdateDto profil)
     {
         // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
         var uzytkownik = await userManager.GetUserAsync(User);
@@ -58,6 +58,7 @@ public class ProfilController(IProfilService profilService,
         var result = await profilService.UpdateProfil(id, profil);
         switch (result.StatusCode)
         {
+            case 204: return NoContent();
             case 404:
                 return NotFound(result.Errors[0].Message);
             case 400:
@@ -65,7 +66,7 @@ public class ProfilController(IProfilService profilService,
                     ModelState.AddModelError(e.Field ?? string.Empty, e.Message);
                 return ValidationProblem();
             default:
-                return NoContent();
+                return StatusCode(result.StatusCode, new { errors = result.Errors });
         }
     }
     
@@ -75,7 +76,7 @@ public class ProfilController(IProfilService profilService,
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-    public async Task<ActionResult> UpdateAwatar(int id, IFormFile awatar)
+    public async Task<IActionResult> UpdateAwatar(int id, IFormFile awatar)
     {
         // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
         var uzytkownik = await userManager.GetUserAsync(User);
@@ -89,6 +90,7 @@ public class ProfilController(IProfilService profilService,
         var result = await profilService.UpdateAwatar(id, awatar);
         switch (result.StatusCode)
         {
+            case 204: return NoContent();
             case 404:
                 return NotFound(result.Errors[0].Message);
             case 400:
@@ -96,7 +98,7 @@ public class ProfilController(IProfilService profilService,
                     ModelState.AddModelError(e.Field ?? string.Empty, e.Message);
                 return ValidationProblem();
             default:
-                return NoContent();
+                return StatusCode(result.StatusCode, new { errors = result.Errors });
         }
     }
 

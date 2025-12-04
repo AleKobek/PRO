@@ -31,6 +31,9 @@ public sealed class ServiceResult<T>
         new() { Succeeded = false, StatusCode = statusCode, Errors = errors.ToArray() };
 
     
+    public static ServiceResult<T> Created(T value) => Ok(value, 201);
+    public static ServiceResult<T> NoContent(T value) => Ok(value, 204);
+    
     // skróty do Fail z odpowiednimi kodami 400, 401, 403, 404, 409
     public static ServiceResult<T> BadRequest(params ErrorItem[] errors) => Fail(400, errors);
     public static ServiceResult<T> Unauthorized(params ErrorItem[] errors) => Fail(401, errors);
