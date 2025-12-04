@@ -26,7 +26,7 @@ public class ProfilController(IProfilService profilService,
         return Ok(result.Value);
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(ProfilGetResDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<ProfilGetResDto>> GetProfil(int id)
@@ -38,7 +38,7 @@ public class ProfilController(IProfilService profilService,
 
     
     // bez awatara!
-    [HttpPut("{id}")]
+    [HttpPut("{id:int}")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails),(int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -69,13 +69,13 @@ public class ProfilController(IProfilService profilService,
         }
     }
     
-    [HttpPut("{id}/awatar")]
+    [HttpPut("{id:int}/awatar")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails),(int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-    public async Task<ActionResult> UpdateAwatar(int id, [FromForm] IFormFile awatar)
+    public async Task<ActionResult> UpdateAwatar(int id, IFormFile awatar)
     {
         // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
         var uzytkownik = await userManager.GetUserAsync(User);
@@ -101,7 +101,7 @@ public class ProfilController(IProfilService profilService,
     }
 
     // w reszcie tak samo i not found tak samo i na froncie dostosować
-    [HttpGet("{id}/status/baza")]
+    [HttpGet("{id:int}/status/baza")]
     [ProducesResponseType(typeof(StatusDto),(int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
@@ -121,7 +121,7 @@ public class ProfilController(IProfilService profilService,
         return Ok(result.Value);
     }
 
-    [HttpGet("{id}/status/wyswietlenie")]
+    [HttpGet("{id:int}/status/wyswietlenie")]
     [ProducesResponseType(typeof(StatusDto),(int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<StatusDto>> GetStatusDoWyswietleniaProfilu(int id)
@@ -131,7 +131,7 @@ public class ProfilController(IProfilService profilService,
         return Ok(result.Value);
     }
 
-    [HttpPut("{id}/status")]
+    [HttpPut("{id:int}/status")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]

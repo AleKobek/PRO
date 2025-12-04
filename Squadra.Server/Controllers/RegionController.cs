@@ -19,7 +19,7 @@ public class RegionController(IRegionService regionService) : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(RegionDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<RegionDto?>> GetRegion(int id)
@@ -29,7 +29,7 @@ public class RegionController(IRegionService regionService) : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpGet("kraj/{id}")]
+    [HttpGet("kraj/{id:int}")]
     [ProducesResponseType(typeof(IEnumerable<RegionDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<IEnumerable<RegionDto>>> GetRegionyKraju(int id)

@@ -20,7 +20,7 @@ public class KrajController(IKrajService krajService) : ControllerBase
         return Ok(result.Value);
     }
     
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(KrajDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<KrajDto?>> GetKraj(int id)

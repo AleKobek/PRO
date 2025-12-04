@@ -55,6 +55,8 @@ public class AuthController(IUzytkownikService uzytkownikService,
     
     [HttpPost("login")]
     [AllowAnonymous]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     // robimy robotę service, bo byłoby tylko na tę jedną funkcję
     public async Task<IActionResult> Zaloguj([FromBody] LoginRequest req)
     {
@@ -75,24 +77,29 @@ public class AuthController(IUzytkownikService uzytkownikService,
         // od razu zaznaczamy mu, że jest aktywny
         uzytkownik.OstatniaAktywnosc = DateTime.Now;
         await userManager.UpdateAsync(uzytkownik);
-
-        var roles = (await userManager.GetRolesAsync(uzytkownik)).ToArray();
-        var result = await profilService.GetProfil(uzytkownik.Id);
-        var profil = result.Value;
-        var awatar = profil?.Awatar;
-        return Ok(new AuthUserDto(uzytkownik.Id, uzytkownik.UserName!, uzytkownik.Email!, roles, awatar));
+        
+        return NoContent();
     }
 
     [HttpPost("logout")]
     [Authorize]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> Wyloguj()
     {
+        // nie może się wylogować, jeżeli nie jest zalogowany
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
         await signInManager.SignOutAsync();
         return NoContent();
     }
 
     [HttpGet("me")]
     [Authorize]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType(typeof(AuthUserDto),(int)HttpStatusCode.OK)]
     public async Task<IActionResult> Me()
     {
         // User To obiekt typu ClaimsPrincipal, automatycznie wypełniany przez ASP.NET Core na podstawie cookie.

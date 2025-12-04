@@ -20,7 +20,7 @@ public class StatusController(IStatusService statusService) : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(StatusDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<StatusDto?>> GetStatus(int id)

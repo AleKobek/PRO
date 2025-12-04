@@ -19,7 +19,7 @@ public class StopienBieglosciJezykaController(IStopienBieglosciJezykaService sto
         return Ok(result.Value);
     }
 
-    [HttpGet("{id}")]
+    [HttpGet("{id:int}")]
     [ProducesResponseType(typeof(StopienBieglosciJezykaDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<StopienBieglosciJezykaDto?>> GetStopienBieglosciJezyka(int id)

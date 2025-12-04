@@ -21,7 +21,7 @@ public class JezykController(IJezykService jezykService) : ControllerBase
         return Ok(result.Value);
     }
     
-    [HttpGet("{id}")]   
+    [HttpGet("{id:int}")]   
     [ProducesResponseType(typeof(JezykDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<JezykDto?>> GetJezyk(int id)
@@ -32,7 +32,7 @@ public class JezykController(IJezykService jezykService) : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpGet("profil/{id}")]
+    [HttpGet("profil/{id:int}")]
     [ProducesResponseType(typeof(IEnumerable<JezykOrazStopienDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<IEnumerable<JezykOrazStopienDto>>> GetJezykiProfilu(int id)

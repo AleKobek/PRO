@@ -8,7 +8,7 @@ public class TypPowiadomienia
 {
     public int Id { get; set; }
     
-    [Required] [StringLength(20)]
+    [Required] [StringLength(100)]
     public string Nazwa { get; set; } = null!;
     
     public virtual ICollection<Powiadomienie> PowiadomienieCollection { get; set; } = null!;

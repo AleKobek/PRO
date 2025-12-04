@@ -38,6 +38,9 @@ builder.Services.AddScoped<IJezykService, JezykService>();
 builder.Services.AddScoped<IStopienBieglosciJezykaRepository, StopienBieglosciJezykaRepository>();
 builder.Services.AddScoped<IStopienBieglosciJezykaService, StopienBieglosciJezykaService>();
 
+builder.Services.AddScoped<IPowiadomienieRepository, PowiadomienieRepository>();
+builder.Services.AddScoped<IPowiadomienieService, PowiadomienieService>();
+
 // ustawiamy Identity
 builder.Services
     .AddIdentity<Uzytkownik, IdentityRole<int>>()

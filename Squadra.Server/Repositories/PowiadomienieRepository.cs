@@ -6,7 +6,7 @@ using Squadra.Server.Models;
 
 namespace Squadra.Server.Repositories;
 
-public class PowiadomienieRepository(AppDbContext context, UzytkownikRepository uzytkownikRepository) : IPowiadomienieRepository
+public class PowiadomienieRepository(AppDbContext context, IUzytkownikRepository uzytkownikRepository, IProfilRepository profilRepository) : IPowiadomienieRepository
 {
     public async Task<PowiadomienieDto> GetPowiadomienie(int id)
     {
@@ -17,15 +17,15 @@ public class PowiadomienieRepository(AppDbContext context, UzytkownikRepository 
         if (powiadomienie.PowiazanyObiektId != null && 
             (powiadomienie.TypPowiadomieniaId is 2 or 4)) {
             // te dwie linijki pod spodem robimy tylko po to, aby kompilator nie płakał
-            var idUzytkownika = powiadomienie.PowiazanyObiektId ?? -1;
-            if (idUzytkownika == -1) throw new NieZnalezionoWBazieException("Użytkownik o takim id nie istnieje!");
-            var uzytkownik = await uzytkownikRepository.GetUzytkownik(idUzytkownika);
+            var idPowiazanegoUzytkownika = powiadomienie.PowiazanyObiektId ?? -1;
+            if (idPowiazanegoUzytkownika == -1) throw new NieZnalezionoWBazieException("Użytkownik o takim id nie istnieje");
+            var powiazanyProfil = await profilRepository.GetProfilUzytkownika(idPowiazanegoUzytkownika);
             return new PowiadomienieDto(
                 powiadomienie.Id,
                 powiadomienie.TypPowiadomieniaId,
                 powiadomienie.UzytkownikId,
-                uzytkownik.Id,
-                uzytkownik.Login,
+                idPowiazanegoUzytkownika,
+                powiazanyProfil.Pseudonim,
                 powiadomienie.Tresc,
                 powiadomienie.DataWyslania
             );
