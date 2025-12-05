@@ -90,7 +90,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                     {
                         var result = await znajomiService.CreateZnajomosc(powiadomienie.UzytkownikId, powiadomienie.IdPowiazanegoObiektu ?? 1); // aby się kompilator nie czepiał
                         // coś poszło nie tak
-                        if (result.StatusCode != 200) return result;
+                        if (result.StatusCode != 201) return result;
                         
                         
                         // wszystko git
@@ -149,7 +149,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                     new ErrorItem("Nie podano loginu użytkownika, któremu wysyłasz zaproszenie"));
 
             var uzytkownik = await uzytkownikRepository.GetUzytkownik(login);
-            var uzupelnionyDto = dto with { IdPowiazanegoObiektu = uzytkownik.Id };
+                                                // powiadomienie idzie do zapraszanego użytkownika, powiązany jest wysyłający
+            var uzupelnionyDto = dto with { IdUzytkownika = uzytkownik.Id, IdPowiazanegoObiektu = dto.IdUzytkownika};
 
             // już odfiltorwane, ale aby kompilator się nie czepiał
             if (await znajomiRepository.CzyJestZnajomosc(uzupelnionyDto.IdUzytkownika,
