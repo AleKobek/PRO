@@ -81,7 +81,24 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
-    // coś jeszcze innego
- 
-    //public async Task<ActionResult> WyslijZaproszenieDoZnajomych(int idUzytkownika)
+    [HttpPut("zaproszenie/znajomi")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Conflict)]
+    public async Task<ActionResult> WyslijZaproszenieDoZnajomych(string loginUzytkownika)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        var result = await powiadomienieService.WyslijZaproszenieDoZnajomych(new PowiadomienieCreateDto(
+            2, uzytkownik.Id, null, null), loginUzytkownika);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            404 => NotFound(result.Errors[0].Message),
+            409 => Conflict(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
 }

@@ -51,14 +51,6 @@ public class ZnajomiService(IZnajomiRepository znajomiRepository) : IZnajomiServ
             
             //TODO wiadomościService.UsunHistorieWiadomosci(idUzytkownikaInicjujacego, idUzytkownika2)
             
-            //TODO to niżej przenosimy do kontrolera, aby nie było w kółko
-            
-            // await powiadomienieService.CreatePowiadomienie(new PowiadomienieCreateDto(
-            //     5,
-            //     idUzytkownikaInicjujacego,
-            //     idUzytkownika2,
-            //     null
-            // ));
             return ServiceResult<bool>.NoContent(await znajomiRepository.DeleteZnajomosc(idUzytkownikaInicjujacego, idUzytkownika2));
         }
         catch (NieZnalezionoWBazieException e)

@@ -51,6 +51,17 @@ public class UzytkownikRepository(
         return new UzytkownikResDto(uzytkownik.Id, uzytkownik.UserName ?? string.Empty, uzytkownik.Email ?? string.Empty, uzytkownik.PhoneNumber, uzytkownik.DataUrodzenia, role);
     }
 
+    public async Task<UzytkownikResDto> GetUzytkownik(string login)
+    {
+        var uzytkownik = await appDbContext.Uzytkownik.FirstOrDefaultAsync(u => u.UserName == login);
+        
+        if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o loginie " + login + " nie istnieje");
+
+        var role = (await userManager.GetRolesAsync(uzytkownik)).ToArray();
+        
+        return new UzytkownikResDto(uzytkownik.Id, uzytkownik.UserName ?? string.Empty, uzytkownik.Email ?? string.Empty, uzytkownik.PhoneNumber, uzytkownik.DataUrodzenia, role);
+    }
+
     public async Task<DateTime?> GetOstatniaAktywnoscUzytkownika(int id)
     {
         var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);

@@ -9,6 +9,8 @@ public interface IUzytkownikRepository
     
     public Task<UzytkownikResDto> GetUzytkownik(int id);
 
+    public Task<UzytkownikResDto> GetUzytkownik(string login);
+
     public Task<UzytkownikResDto> CreateUzytkownik(UzytkownikCreateDto uzytkownik);
 
     public Task<bool> UpdateUzytkownik(int id, UzytkownikUpdateDto uzytkownik);

@@ -12,7 +12,6 @@ namespace Squadra.Server.Controllers;
 // do rejestracji, logowania i wylogowywania
 [ApiController]
 [Route("api/[controller]")]
-[method: ActivatorUtilitiesConstructor]
 public class AuthController(IUzytkownikService uzytkownikService,
     IProfilService profilService,
     UserManager<Uzytkownik> userManager,

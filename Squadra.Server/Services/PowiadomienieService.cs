@@ -1,5 +1,6 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Squadra.Server.DTO.Powiadomienie;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Models;
@@ -10,7 +11,9 @@ namespace Squadra.Server.Services;
 public class PowiadomienieService(IPowiadomienieRepository powiadomienieRepository,
     UserManager<Uzytkownik> userManager,
     IUzytkownikService uzytkownikService,
-    IZnajomiService znajomiService
+    IZnajomiService znajomiService,
+    IZnajomiRepository znajomiRepository,
+    IUzytkownikRepository uzytkownikRepository
     ) : IPowiadomienieService
 {
     public async Task<ServiceResult<PowiadomienieDto>> GetPowiadomienie(int id, ClaimsPrincipal user) {
@@ -49,7 +52,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         
         // jak tu dochodzimy, wszystko jest git
         
-        return ServiceResult<bool>.Ok(await powiadomienieRepository.CreatePowiadomienie(powiadomienie));
+        return ServiceResult<bool>.NoContent(await powiadomienieRepository.CreatePowiadomienie(powiadomienie));
     }
     
     // robimy rozpatrzenie odpowiedzi na powiadomienie. Jeżeli jest to drugie, to reagujemy inaczej niż w przypadku reszty (na ten moment), bo wymagana jest akcja
@@ -80,7 +83,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             // zaproszenie do znajomych
             if (powiadomienie.IdTypuPowiadomienia == 2)
             {
-                if(powiadomienie.IdPowiazanegoObiektu == null) return ServiceResult<bool>.NotFound(new ErrorItem("Nie podano użytkownika, którego zaproszenie akceptujesz"));
+                if(powiadomienie.IdPowiazanegoObiektu == null) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie podano użytkownika, którego zaproszenie akceptujesz"));
                 switch (czyZaakceptowane)
                 {
                     case true:
@@ -128,7 +131,36 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             
             // jak tu dochodzimy, wszystko zostało pomyślnie rozpatrzone i usuwamy
             await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult<bool>.NoContent(true);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
+    // najpierw zmieniamy login na id, potem sprawdzamy, czy już nie są znajomymi, na końcu tworzymy zaproszenie
+    public async Task<ServiceResult<bool>> WyslijZaproszenieDoZnajomych(PowiadomienieCreateDto dto, string login)
+    {
+        try
+        {
+            if (login.IsNullOrEmpty())
+                return ServiceResult<bool>.NotFound(
+                    new ErrorItem("Nie podano loginu użytkownika, któremu wysyłasz zaproszenie"));
+
+            var uzytkownik = await uzytkownikRepository.GetUzytkownik(login);
+            var uzupelnionyDto = dto with { IdPowiazanegoObiektu = uzytkownik.Id };
+
+            // już odfiltorwane, ale aby kompilator się nie czepiał
+            if (await znajomiRepository.CzyJestZnajomosc(uzupelnionyDto.IdUzytkownika,
+                    uzupelnionyDto.IdPowiazanegoObiektu ?? 1))
+            {
+                return ServiceResult<bool>.Conflict(
+                    new ErrorItem("Użytkownik o id " + uzupelnionyDto.IdPowiazanegoObiektu + " jest już Twoim znajomym"));
+            }
+
+            // jest git
+            return ServiceResult<bool>.NoContent(await powiadomienieRepository.CreatePowiadomienie(uzupelnionyDto));
         }
         catch (NieZnalezionoWBazieException e)
         {
