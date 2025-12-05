@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Squadra.Server.Context;
 
@@ -11,9 +12,11 @@ using Squadra.Server.Context;
 namespace Squadra.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251205184112_Tresc_powiadomienia_nie_jest_wymagana_zapomnialam_wczesniej_zmienic")]
+    partial class Tresc_powiadomienia_nie_jest_wymagana_zapomnialam_wczesniej_zmienic
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

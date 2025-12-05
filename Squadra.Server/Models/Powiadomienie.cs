@@ -14,7 +14,7 @@ public class Powiadomienie
     
     [MaxLength(200)]
     // treść jest tylko dla systemowych, reszta jest tworzona na miejscu
-    public string? Tresc { get; set; } = null!;
+    public string? Tresc { get; set; }
     public DateTime DataWyslania { get; set; }
     public virtual TypPowiadomienia TypPowiadomienia { get; set; } = null!;
     public virtual Uzytkownik Uzytkownik { get; set; } = null!;
