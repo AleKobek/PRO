@@ -11,7 +11,7 @@ public interface IUzytkownikRepository
 
     public Task<UzytkownikResDto> GetUzytkownik(string login);
 
-    public Task<UzytkownikResDto> CreateUzytkownik(UzytkownikCreateDto uzytkownik);
+    public Task<bool> CreateUzytkownik(UzytkownikCreateDto uzytkownik);
 
     public Task<bool> UpdateUzytkownik(int id, UzytkownikUpdateDto uzytkownik);
 
@@ -22,7 +22,7 @@ public interface IUzytkownikRepository
 
     public Task DeleteUzytkownik(int id);
     
-    Task<bool> CzyLoginIstnieje(int id, string login);
+    Task<bool> CzyLoginIstnieje(int? id, string login);
     
-    Task<bool> CzyEmailIstnieje(int id, string email);
+    Task<bool> CzyEmailIstnieje(int? id, string email);
 }

@@ -71,7 +71,7 @@ public class UzytkownikRepository(
         return uzytkownik.OstatniaAktywnosc;
     }
 
-    public async Task<UzytkownikResDto> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
+    public async Task<bool> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
     {
         var uzytkownikDoDodania = new Uzytkownik {
             UserName = uzytkownik.Login,
@@ -103,14 +103,7 @@ public class UzytkownikRepository(
 
         // kończymy transakcję
         await transaction.CommitAsync();
-        return new UzytkownikResDto(
-            id,
-            uzytkownik.Login,
-            uzytkownik.Email,
-            uzytkownik.NumerTelefonu,
-            uzytkownik.DataUrodzenia,
-            role
-        );
+        return true;
     }
 
     // do zmiany hasła będzie oddzielne
@@ -173,21 +166,23 @@ public class UzytkownikRepository(
         await appDbContext.SaveChangesAsync();
     }
     
-    public async Task<bool> CzyLoginIstnieje(int id, string login)
+    public async Task<bool> CzyLoginIstnieje(int? id, string login)
     {
         var znormalizowanyLogin = login.Trim().ToUpper();
         var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
-        // jeżeli to ten sam login, co on ma, to na pewno jest unikalny
-        // nie może być nullem, bo w kontrolerze przy sprawdzaniu czy edytuje swoje konto od razu go odrzuci
-        if(uzytkownik.NormalizedUserName == znormalizowanyLogin) return false;
+        if (id != null){
+            // jeżeli to ten sam login, co on ma, to na pewno jest unikalny
+            // nie może być nullem, bo w kontrolerze przy sprawdzaniu czy edytuje swoje konto od razu go odrzuci
+            if(uzytkownik.NormalizedUserName == znormalizowanyLogin) return false;
+        }
         return await appDbContext.Uzytkownik.AnyAsync(u => u.NormalizedUserName == znormalizowanyLogin);
     }
 
-    public async Task<bool> CzyEmailIstnieje(int id, string email)
+    public async Task<bool> CzyEmailIstnieje(int? id, string email)
     {
         var znormalizowanyEmail = email.Trim().ToUpper();
         // sprawdzamy tylko, jeżeli to nie jest nowy użytkownik (a wtedy przekazujemy -1 jako id)
-        if (id != -1){
+        if (id != null){
             var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
             // jeżeli to ten sam email, co on ma, to na pewno jest unikalny
             // nie może być nullem, bo w kontrolerze przy sprawdzaniu czy edytuje swoje konto od razu go odrzuci

@@ -74,6 +74,7 @@ export default function Rejestracja() {
                     ustawBladNumeruTelefonu(!bledy.NumerTelefonu ? "" : bledy.NumerTelefonu[0]);
                     ustawBladDatyUrodzenia(!bledy.DataUrodzenia ? "" : bledy.DataUrodzenia[0]);
                 }
+                ustawBladOgolny(body?.message || "Rejestracja nie powiodła się.");
                 console.error(body?.message || "Rejestracja nie powiodła się.");
                 return;
             }

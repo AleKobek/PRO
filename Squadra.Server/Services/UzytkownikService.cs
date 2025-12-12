@@ -33,7 +33,7 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
         // sprawdzamy wszystkie dane, pseudonim niżej
         var bledy = await SprawdzPoprawnoscDanychPozaHaslem(
             // oznacza że nie ma tego użytkownika jeszcze
-            -1,
+            null,
             uzytkownik.Login,
             uzytkownik.Email,
             uzytkownik.NumerTelefonu,
@@ -60,7 +60,7 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
                 : ServiceResult<bool>.BadRequest(bledy.ToArray());
         }
         // skoro tu doszliśmy, wszystko jest git
-        return ServiceResult<bool>.Created(true);
+        return ServiceResult<bool>.Created(await uzytkownikRepository.CreateUzytkownik(uzytkownik));
 
     }
     public async Task<ServiceResult<bool>> UpdateUzytkownik(int id, UzytkownikUpdateDto dto)
@@ -132,11 +132,11 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
         }
         return ServiceResult<bool>.Ok(true, 204);
     }
-    private async Task<bool> CzyLoginIstnieje(int idUzytkownika, string login) => await uzytkownikRepository.CzyLoginIstnieje(idUzytkownika, login);
-    private async Task<bool> CzyEmailIstnieje(int idUzytkownika, string email) => await uzytkownikRepository.CzyEmailIstnieje(idUzytkownika, email);
+    private async Task<bool> CzyLoginIstnieje(int? idUzytkownika, string login) => await uzytkownikRepository.CzyLoginIstnieje(idUzytkownika, login);
+    private async Task<bool> CzyEmailIstnieje(int? idUzytkownika, string email) => await uzytkownikRepository.CzyEmailIstnieje(idUzytkownika, email);
 
     // tutaj wyciągamy aby użyć też w update
-    private async Task<List<ErrorItem>> SprawdzPoprawnoscDanychPozaHaslem(int id, string Login, string Email, string? NumerTelefonu, DateOnly DataUrodzenia)
+    private async Task<List<ErrorItem>> SprawdzPoprawnoscDanychPozaHaslem(int? id, string Login, string Email, string? NumerTelefonu, DateOnly DataUrodzenia)
     {
         var bledy = new List<ErrorItem>();
         
