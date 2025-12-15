@@ -24,6 +24,8 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
     public DbSet<TypPowiadomienia> TypPowiadomienia { get; set; } = null!;
     
     public DbSet<Znajomi> Znajomi { get; set; } = null!;
+
+    public DbSet<Wiadomosc> Wiadomosci { get; set; } = null!;
     
     public AppDbContext(){}
     
