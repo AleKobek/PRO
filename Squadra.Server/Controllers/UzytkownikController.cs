@@ -64,7 +64,7 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
 
         // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
         if (uzytkownik.Id != id)
-            return Forbid("Nie możesz edytować konta innego użytkownika.");
+            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz edytować konta innego użytkownika.");
         
         var result = await uzytkownikService.UpdateUzytkownik(id, dto);
         switch (result.StatusCode)
@@ -97,7 +97,7 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
 
         // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
         if (uzytkownik.Id != id)
-            return Forbid("Nie możesz zmienić hasła innego użytkownika.");
+            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz zmieniać hasła innego użytkownika.");
         
         var result = await uzytkownikService.UpdateHaslo(id, dto.StareHaslo, dto.NoweHaslo);
         return result.StatusCode switch
@@ -146,7 +146,7 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
 
         // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
         if (uzytkownik.Id != id)
-            return Forbid("Nie możesz usunąć konta innego użytkownika.");
+            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz usunąć konta innego użytkownika.");
         
         var result = await uzytkownikService.DeleteUzytkownik(id);
         

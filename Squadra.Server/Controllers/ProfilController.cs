@@ -53,7 +53,7 @@ public class ProfilController(IProfilService profilService,
 
         // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
         if (uzytkownik.Id != id)
-            return Forbid("Nie możesz edytować profilu innego użytkownika.");
+            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz edytować profilu innego użytkownika.");
         
         var result = await profilService.UpdateProfil(id, profil);
         switch (result.StatusCode)
@@ -85,7 +85,7 @@ public class ProfilController(IProfilService profilService,
 
         // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
         if (uzytkownik.Id != id)
-            return Forbid("Nie możesz edytować awatara innego użytkownika.");
+            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz edytować profilu innego użytkownika.");
         
         var result = await profilService.UpdateAwatar(id, awatar);
         switch (result.StatusCode)

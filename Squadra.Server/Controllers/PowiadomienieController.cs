@@ -58,7 +58,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
             204 => NoContent(),
             400 => BadRequest(result.Errors[0].Message),
             401 => Unauthorized(result.Errors[0].Message),
-            403 => Forbid(result.Errors[0].Message),
+            403 => StatusCode(StatusCodes.Status403Forbidden,result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };

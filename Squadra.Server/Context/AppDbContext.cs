@@ -27,6 +27,8 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
 
     public DbSet<Wiadomosc> Wiadomosci { get; set; } = null!;
     
+    public DbSet<TypWiadomosci> TypWiadomosci { get; set; } = null!;
+    
     public AppDbContext(){}
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
@@ -93,6 +95,12 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
             new TypPowiadomienia {Id = 3, Nazwa = "Zaakceptowano zaproszenie do znajomych"},
             new TypPowiadomienia {Id = 4, Nazwa = "Odrzucono zaproszenie do znajomych"},
             new TypPowiadomienia {Id = 5, Nazwa = "Usunieto cie ze znajomych"}
+        );
+
+
+        modelBuilder.Entity<TypWiadomosci>().HasData(
+          new TypWiadomosci {Id = 1, Nazwa = "Prywatna"},
+          new TypWiadomosci {Id = 2, Nazwa = "Do gildii"}
         );
         
 
