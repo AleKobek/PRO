@@ -208,7 +208,7 @@ export default function FormularzProfilu({
             type="text" 
             id = "pseudonim" name ="pseudonim"
             value={pseudonim}
-            // maxLength={20}
+            maxLength={20}
             onChange={(e)=>ustawPseudonim(e.target.value)}>
         </input></label><br/>
         <span id = "error-pseudonim" className="error-wiadomosc">{bladPseudonimu}</span><br/>

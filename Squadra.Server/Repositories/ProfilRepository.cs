@@ -67,6 +67,9 @@ public class ProfilRepository(AppDbContext appDbContext,
         profilDoZmiany.RegionId = profil.RegionId;
         profilDoZmiany.Zaimki = profil.Zaimki;
         profilDoZmiany.Opis = profil.Opis;
+        
+        // zmieniamy języki
+        await jezykRepository.ZmienJezykiProfilu(id, profil.Jezyki);
 
         await appDbContext.SaveChangesAsync();
         
