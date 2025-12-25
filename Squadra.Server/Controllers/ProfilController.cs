@@ -116,7 +116,7 @@ public class ProfilController(IProfilService profilService,
 
         // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
         if (uzytkownik.Id != id)
-            return Forbid("Nie możesz pobrać statusu z bazy dotyczącego profilu innego użytkownika.");
+            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz pobrać statusu z bazy dotyczącego profilu innego użytkownika.");
         
         var result = await profilService.GetStatusZBazyProfilu(id);
         if(result.StatusCode == 404) return NotFound(result.Errors[0].Message);
@@ -147,7 +147,7 @@ public class ProfilController(IProfilService profilService,
 
         // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
         if (uzytkownik.Id != id)
-            return Forbid("Nie możesz edytować statusu innego użytkownika.");
+            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz edytować statusu innego użytkownika.");
         var result = await profilService.UpdateStatus(id, idStatus);
         
         if (result.StatusCode == 400)
