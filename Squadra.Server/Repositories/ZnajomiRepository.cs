@@ -6,7 +6,10 @@ using Squadra.Server.Models;
 
 namespace Squadra.Server.Repositories;
 
-public class ZnajomiRepository(AppDbContext context, IProfilRepository profilRepository) : IZnajomiRepository
+public class ZnajomiRepository(
+    AppDbContext context, 
+    IProfilRepository profilRepository,
+    IWiadomoscRepository wiadomoscRepository) : IZnajomiRepository
 {
 
     public async Task<ICollection<ProfilGetResDto>> GetZnajomiUzytkownika(int id)
@@ -43,8 +46,23 @@ public class ZnajomiRepository(AppDbContext context, IProfilRepository profilRep
     {
         var znajomosc = await context.Znajomi.Where(x => x.IdUzytkownika1 == idUzytkownika1 && x.IdUzytkownika2 == idUzytkownika2).FirstOrDefaultAsync();
         if(znajomosc == null) throw new NieZnalezionoWBazieException("Znajomosc o idUzytkownika1: " + idUzytkownika1 + " i idUzytkownika2: " + idUzytkownika2 + " nie istnieje");
-        context.Znajomi.Remove(znajomosc);
+        // zaczynamy transakcję
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        
+        await wiadomoscRepository.DeleteWiadomosciUzytkownikow(idUzytkownika1, idUzytkownika2); // usuwamy ich wiadomości
+        context.Znajomi.Remove(znajomosc); // usuwamy samą znajomość
+        
+        // kończymy transakcję
+        await transaction.CommitAsync();
         return await context.SaveChangesAsync() > 0;
+    }
+
+    public async Task<bool> DeleteZnajomosciUzytkownika(int idUzytkownika)
+    {
+        var znajomosci = await context.Znajomi.Where(x => x.IdUzytkownika1 == idUzytkownika || x.IdUzytkownika2 == idUzytkownika).ToListAsync();
+        foreach (var znajomosc in znajomosci) await DeleteZnajomosc(idUzytkownika, znajomosc.IdUzytkownika2);
+        await context.SaveChangesAsync();
+        return true;
     }
     
     public async Task<bool> CzyJestZnajomosc(int idUzytkownika1, int idUzytkownika2)

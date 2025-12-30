@@ -13,6 +13,8 @@ namespace Squadra.Server.Repositories;
 public class UzytkownikRepository(
     AppDbContext appDbContext,
     IProfilRepository profilRepository,
+    IPowiadomienieRepository powiadomienieRepository,
+    IZnajomiRepository znajomiRepository,
     UserManager<Uzytkownik> userManager,
     RoleManager<IdentityRole<int>> roleManager)
     : IUzytkownikRepository
@@ -106,7 +108,7 @@ public class UzytkownikRepository(
         return true;
     }
 
-    // do zmiany hasła będzie oddzielne
+    // do zmiany hasła jest oddzielne
     public async Task<bool> UpdateUzytkownik(int id, UzytkownikUpdateDto uzytkownik)
     {
         
@@ -159,8 +161,10 @@ public class UzytkownikRepository(
         if(uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + id + " nie istnieje");
         // zaczynamy transakcję
         await using var transaction = await appDbContext.Database.BeginTransactionAsync();
-        await profilRepository.DeleteProfil(id);
-        await userManager.DeleteAsync(uzytkownik);
+        await profilRepository.DeleteProfil(id); // usuwamy jego profil
+        await powiadomienieRepository.DeletePowiadomieniaUzytkownika(id); // usuwamy jego powiadomienia
+        await znajomiRepository.DeleteZnajomosciUzytkownika(id); // usuwamy jego znajomości
+        await userManager.DeleteAsync(uzytkownik); // usuwamy użytkownika
         // kończymy transakcję
         await transaction.CommitAsync();
         await appDbContext.SaveChangesAsync();

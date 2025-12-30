@@ -165,40 +165,57 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                         new ErrorItem("Nie podano loginu użytkownika, któremu wysyłasz zaproszenie"));
 
                 // pobieramy zapraszanego użytkownika
-                var uzytkownik = await userManager.FindByNameAsync(loginZaproszonego);
+                var zapraszanyUzytkownik = await userManager.FindByNameAsync(loginZaproszonego);
                 
-                if (uzytkownik == null)
+                if (zapraszanyUzytkownik == null)
                     return ServiceResult<bool>.NotFound(
                         new ErrorItem("Użytkownik o loginie " + loginZaproszonego + " nie istnieje"));
+                var idZapraszanego = zapraszanyUzytkownik.Id;
                 
                 // szukamy, czy zaproszony użytkownik ma już takie zaproszenie
-                var powiadomieniaZaproszonego = await powiadomienieRepository.GetPowiadomieniaUzytkownika(uzytkownik.Id);
+                var powiadomieniaZaproszonego = await powiadomienieRepository.GetPowiadomieniaUzytkownika(idZapraszanego);
                 if (powiadomieniaZaproszonego.Any(p => p.IdTypuPowiadomienia == 2 && p.IdPowiazanegoObiektu == idZapraszajacego))
                 { 
                     return ServiceResult<bool>.Conflict(
                         new ErrorItem("Użytkownik o loginie " + loginZaproszonego + " ma już wysłane zaproszenie od Ciebie"));
                 }
             
+                // sprawdzamy, czy już są znajomymi                         
+                if (await znajomiRepository.CzyJestZnajomosc(idZapraszanego, idZapraszajacego))
+                {
+                    return ServiceResult<bool>.Conflict(
+                        new ErrorItem("Użytkownik o id " + idZapraszanego + " jest już Twoim znajomym"));
+                }
+                
+                // sprawdzamy, czy zapraszajacy nie ma już maksymalnej liczby znajomych
+                var znajomiZapraszajacego = await znajomiService.GetZnajomiUzytkownika(idZapraszajacego);
+                if (znajomiZapraszajacego.Value != null && znajomiZapraszajacego.Value.Count >= ZnajomiService.MaxLiczbaZnajomych)
+                {
+                    return ServiceResult<bool>.Conflict(
+                        new ErrorItem("Masz już maksymalną liczbę znajomych i nie możesz wysłać więcej zaproszeń"));
+                }
+                
+                // sprawdzamy, czy zapraszany nie ma już maksymalnej liczby znajomych
+                var znajomiZapraszanego = await znajomiService.GetZnajomiUzytkownika(idZapraszanego);
+                if (znajomiZapraszanego.Value != null && znajomiZapraszanego.Value.Count >= ZnajomiService.MaxLiczbaZnajomych)
+                {
+                    return ServiceResult<bool>.Conflict(
+                        new ErrorItem("Użytkownik o loginie " + loginZaproszonego +
+                                      " ma już maksymalną liczbę znajomych i nie może przyjąć więcej zaproszeń"));
+                }
+                
                 // pobieramy profil zapraszającego, aby mieć jego pseudonim do powiadomienia
                 var wynikSzukaniaPseudonimuZapraszajacego = await profilService.GetProfil(idZapraszajacego);
                 if (wynikSzukaniaPseudonimuZapraszajacego.StatusCode != 200 || wynikSzukaniaPseudonimuZapraszajacego.Value == null)
                     return ServiceResult<bool>.NotFound(
                         new ErrorItem("Nie znaleziono profilu użytkownika o loginie " + loginZaproszonego));
-            
+                
                 var dto = new PowiadomienieCreateDto(
                     2, 
-                    uzytkownik.Id, 
+                    idZapraszanego, 
                     idZapraszajacego, // powiadomienie idzie do zapraszanego użytkownika, powiązany jest wysyłający
                     wynikSzukaniaPseudonimuZapraszajacego.Value.Pseudonim, 
                     null);
-
-                // już odfiltorwane, ale aby kompilator się nie czepiał
-                if (await znajomiRepository.CzyJestZnajomosc(dto.IdUzytkownika,
-                        dto.IdPowiazanegoObiektu ?? 1))
-                {
-                    return ServiceResult<bool>.Conflict(
-                        new ErrorItem("Użytkownik o id " + dto.IdPowiazanegoObiektu + " jest już Twoim znajomym"));
-                }
 
                 // jest git
                 return ServiceResult<bool>.NoContent(await powiadomienieRepository.CreatePowiadomienie(dto));

@@ -76,6 +76,14 @@ public class PowiadomienieRepository(AppDbContext context, IProfilRepository pro
         await context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> DeletePowiadomieniaUzytkownika(int idUzytkownika)
+    {
+        var powiadomienia = await context.Powiadomienie.Where(x => x.UzytkownikId == idUzytkownika).ToListAsync();
+        context.Powiadomienie.RemoveRange(powiadomienia);
+        await context.SaveChangesAsync();
+        return true;
+    }
 
     public async Task<string> GetNazwaTypuPowiadomienia(int idTypuPowiadomienia)
     {
