@@ -86,6 +86,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     public async Task<ActionResult> WyslijZaproszenieDoZnajomych(string loginZapraszanegoUzytkownika)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
@@ -96,6 +97,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
         return result.StatusCode switch
         {
             204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
             409 => Conflict(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })

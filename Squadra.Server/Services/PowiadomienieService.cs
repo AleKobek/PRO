@@ -170,7 +170,11 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 if (zapraszanyUzytkownik == null)
                     return ServiceResult<bool>.NotFound(
                         new ErrorItem("Użytkownik o loginie " + loginZaproszonego + " nie istnieje"));
+                
                 var idZapraszanego = zapraszanyUzytkownik.Id;
+                if(idZapraszanego == idZapraszajacego)
+                    return ServiceResult<bool>.BadRequest(
+                        new ErrorItem("Nie możesz wysłać zaproszenia do samego siebie"));
                 
                 // szukamy, czy zaproszony użytkownik ma już takie zaproszenie
                 var powiadomieniaZaproszonego = await powiadomienieRepository.GetPowiadomieniaUzytkownika(idZapraszanego);
