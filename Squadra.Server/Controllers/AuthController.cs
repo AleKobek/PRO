@@ -60,7 +60,6 @@ public class AuthController(IUzytkownikService uzytkownikService,
     public async Task<IActionResult> Zaloguj([FromBody] LoginRequest req)
     {
         // Pozwalamy logować przez email lub nazwę użytkownika
-        Console.WriteLine("Login lub email: " + req.LoginLubEmail);
         var uzytkownik = await userManager.FindByEmailAsync(req.LoginLubEmail) 
                    ?? await userManager.FindByNameAsync(req.LoginLubEmail);
 

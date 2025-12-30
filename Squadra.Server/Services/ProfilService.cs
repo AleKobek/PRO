@@ -29,6 +29,23 @@ public class ProfilService(
             return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem(e.Message));
         }
     }
+
+    public async Task<ServiceResult<ProfilGetResDto>> GetProfil(string login)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(login))
+            {
+                return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem("Nieprawidłowy login"));
+            }
+            var uzytkownik = await uzytkownikRepository.GetUzytkownik(login);
+            return ServiceResult<ProfilGetResDto>.Ok(await profilRepository.GetProfilUzytkownika(uzytkownik.Id));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem(e.Message));
+        }
+    }
     
     
     public async Task<ServiceResult<bool>> UpdateProfil(int id, ProfilUpdateDto profil)

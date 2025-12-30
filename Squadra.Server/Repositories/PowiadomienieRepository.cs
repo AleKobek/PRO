@@ -59,6 +59,7 @@ public class PowiadomienieRepository(AppDbContext context, IProfilRepository pro
             PowiazanyObiektId = powiadomienie.IdPowiazanegoObiektu,
             Tresc = powiadomienie.Tresc,
             TypPowiadomieniaId = powiadomienie.IdTypuPowiadomienia,
+            PowiazanyObiektNazwa = powiadomienie.NazwaPowiazanegoObiektu,
             UzytkownikId = powiadomienie.IdUzytkownika
         };
         await context.Powiadomienie.AddAsync(powiadomienieDoDodania);
@@ -69,6 +70,7 @@ public class PowiadomienieRepository(AppDbContext context, IProfilRepository pro
     public async Task<bool> DeletePowiadomienie(int id)
     {
         var powiadomienie = await context.Powiadomienie.FindAsync(id);
+        if(id == 1) throw new NieZnalezionoWBazieException("Nie można usunąć powiadomienia Ello >:C");
         if(powiadomienie == null) throw new NieZnalezionoWBazieException("Powiadomienie o id " + id + " nie istnieje");;
         context.Powiadomienie.Remove(powiadomienie);
         await context.SaveChangesAsync();

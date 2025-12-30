@@ -10,6 +10,8 @@ public interface IProfilService
     
     public Task<ServiceResult<ProfilGetResDto>> GetProfil(int id);
 
+    public Task<ServiceResult<ProfilGetResDto>> GetProfil(string login);
+
     public Task<ServiceResult<bool>> UpdateProfil(int id, ProfilUpdateDto profil);
 
     public Task<ServiceResult<bool>> UpdateAwatar(int id, IFormFile awatar);

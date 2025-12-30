@@ -13,7 +13,9 @@ namespace Squadra.Server.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 public class ZnajomiController(IZnajomiService znajomiService, 
-    IPowiadomienieService powiadomienieService, UserManager<Uzytkownik> userManager) : ControllerBase
+    IPowiadomienieService powiadomienieService, 
+    UserManager<Uzytkownik> userManager,
+    IProfilService profilService) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<ProfilGetResDto>), (int)HttpStatusCode.OK)]
@@ -29,24 +31,30 @@ public class ZnajomiController(IZnajomiService znajomiService,
         return Ok(result.Value);
     }
     
-    [HttpDelete("{id:int}")]
+    // tutaj wyjątkowo przejmujemy część funkcji service, aby się nie zapętlało
+    [HttpDelete("{idUsuwanego:int}")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult<bool>> DeleteZnajomego(int id)
+    public async Task<ActionResult<bool>> DeleteZnajomego(int idUsuwanego)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
         
-        var result = await znajomiService.DeleteZnajomosc(uzytkownik.Id, id);
+        var result = await znajomiService.DeleteZnajomosc(uzytkownik.Id, idUsuwanego);
         
         if(result.StatusCode == 404) return NotFound(result.Errors[0].Message);
         
+        var wynikWyszukiwaniaProfilu = await profilService.GetProfil(idUsuwanego);
+        if (wynikWyszukiwaniaProfilu.StatusCode == 404 || wynikWyszukiwaniaProfilu.Value == null)
+            return NotFound(wynikWyszukiwaniaProfilu.Errors[0].Message);
+        
         var resultPowiadomienia = await powiadomienieService.CreatePowiadomienie(new PowiadomienieCreateDto(
             5,
-            id, // wysyłamy to temu, który został usunięty
+            idUsuwanego, // wysyłamy to temu, który został usunięty
             uzytkownik.Id,
+            wynikWyszukiwaniaProfilu.Value.Pseudonim,
             null
         ));
 

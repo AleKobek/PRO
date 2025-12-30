@@ -18,6 +18,10 @@ public class PowiadomienieEFConfig : IEntityTypeConfiguration<Powiadomienie>
         builder
             .Property(x => x.DataWyslania)
             .IsRequired();
+        
+        builder
+            .Property(x => x.PowiazanyObiektNazwa)
+            .HasMaxLength(30);
 
         builder
             .Property(x => x.Tresc)

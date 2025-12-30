@@ -7,6 +7,8 @@ public interface IUzytkownikService
     public Task<ServiceResult<ICollection<UzytkownikResDto>>> GetUzytkownicy();
     public Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(int id);
 
+    public Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(string login);
+
     Task<ServiceResult<bool>> CreateUzytkownik(UzytkownikCreateDto uzytkownik);
 
     public Task<ServiceResult<bool>> UpdateUzytkownik(int id, UzytkownikUpdateDto dto);

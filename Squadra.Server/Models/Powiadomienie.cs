@@ -12,6 +12,9 @@ public class Powiadomienie
     public int UzytkownikId { get; set; }
     public int? PowiazanyObiektId { get; set; }
     
+    [MaxLength(30)]
+    public string? PowiazanyObiektNazwa { get; set; }
+    
     [MaxLength(200)]
     // treść jest tylko dla systemowych, reszta jest tworzona na miejscu
     public string? Tresc { get; set; }

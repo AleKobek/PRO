@@ -18,6 +18,13 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
             ? ServiceResult<UzytkownikResDto>.NotFound(new ErrorItem("Uzytkownik o id " + id + " nie istnieje")) 
             : ServiceResult<UzytkownikResDto>.Ok(await uzytkownikRepository.GetUzytkownik(id));
     }
+
+    public async Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(string login)
+    {
+        return string.IsNullOrWhiteSpace(login) 
+            ? ServiceResult<UzytkownikResDto>.NotFound(new ErrorItem("Uzytkownik o podanym loginie nie istnieje")) 
+            : ServiceResult<UzytkownikResDto>.Ok(await uzytkownikRepository.GetUzytkownik(login));
+    }
     
     public async Task<ServiceResult<bool>> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
     {
