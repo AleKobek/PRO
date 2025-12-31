@@ -27,6 +27,7 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
             .Where(x => (x.IdNadawcy == idUzytkownika1 && x.IdOdbiorcy == idUzytkownika2) ||
                                   (x.IdNadawcy == idUzytkownika2 && x.IdOdbiorcy == idUzytkownika1))
             .ToListAsync();
+        wiadomosci.Sort((x,y) => x.DataWyslania.CompareTo(y.DataWyslania));
         return wiadomosci.Select(wiadomosc => new WiadomoscDto(
             wiadomosc.IdNadawcy,
             wiadomosc.IdOdbiorcy,
@@ -36,11 +37,11 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         )).ToList();
     }
     
-    public async Task<bool> CreateWiadomosc(WiadomoscCreateDto wiadomosc)
+    public async Task<bool> CreateWiadomosc(WiadomoscCreateDto wiadomosc, int idNadawcy)
     {
         var wiadomoscDoDodania = new Models.Wiadomosc
         {
-            IdNadawcy = wiadomosc.IdNadawcy,
+            IdNadawcy = idNadawcy,
             IdOdbiorcy = wiadomosc.IdOdbiorcy,
             DataWyslania = DateTime.Now, // liczymy moment, w którym dotrze do bazy
             Tresc = wiadomosc.Tresc,

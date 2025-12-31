@@ -5,7 +5,8 @@ using Squadra.Server.Repositories;
 
 namespace Squadra.Server.Services;
 
-public class WiadomoscService(IWiadomoscRepository wiadomoscRepository) : IWiadomoscService
+public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
+    IZnajomiRepository znajomiRepository) : IWiadomoscService
 {
     public async Task<ServiceResult<WiadomoscDto>> GetWiadomosc(int idWiadomosci, int idObecnegoUzytkownika)
     {
@@ -40,20 +41,23 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository) : IWiado
         }
     }
     
-    public async Task<ServiceResult<bool>> CreateWiadomosc(WiadomoscCreateDto wiadomosc)
+    public async Task<ServiceResult<bool>> CreateWiadomosc(WiadomoscCreateDto wiadomosc, int idObecnegoUzytkownika)
     {
         try
         {
-            if(wiadomosc.IdNadawcy == wiadomosc.IdOdbiorcy) 
+            if(idObecnegoUzytkownika == wiadomosc.IdOdbiorcy) 
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Nadawca i odbiorca wiadomości nie mogą być tym samym użytkownikiem"));
             
             if(wiadomosc.Tresc.IsNullOrEmpty())
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Treść wiadomości nie może być pusta"));
             
-            if(wiadomosc.Tresc.Length > 1000)
+            if(wiadomosc.Tresc.Length > 1000)   
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Treść wiadomości nie może przekraczać 1000 znaków"));
             
-            return ServiceResult<bool>.Created(await wiadomoscRepository.CreateWiadomosc(wiadomosc));
+            if(!await znajomiRepository.CzyJestZnajomosc(idObecnegoUzytkownika, wiadomosc.IdOdbiorcy))
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Nie można wysłać wiadomości do użytkownika, który nie jest Twoim znajomym"));
+            
+            return ServiceResult<bool>.Created(await wiadomoscRepository.CreateWiadomosc(wiadomosc, idObecnegoUzytkownika));
         }
         catch (NieZnalezionoWBazieException e)
         {
