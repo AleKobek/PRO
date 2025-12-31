@@ -44,6 +44,9 @@ builder.Services.AddScoped<IPowiadomienieService, PowiadomienieService>();
 builder.Services.AddScoped<IZnajomiRepository, ZnajomiRepository>();
 builder.Services.AddScoped<IZnajomiService, ZnajomiService>();
 
+builder.Services.AddScoped<IWiadomoscRepository, WiadomoscRepository>();
+builder.Services.AddScoped<IWiadomoscService, WiadomoscService>();
+
 // ustawiamy Identity
 builder.Services
     .AddIdentity<Uzytkownik, IdentityRole<int>>()

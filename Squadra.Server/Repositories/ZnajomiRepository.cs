@@ -67,6 +67,7 @@ public class ZnajomiRepository(
     
     public async Task<bool> CzyJestZnajomosc(int idUzytkownika1, int idUzytkownika2)
     {
-        return await context.Znajomi.AnyAsync(x => x.IdUzytkownika1 == idUzytkownika1 && x.IdUzytkownika2 == idUzytkownika2);
+        return await context.Znajomi.AnyAsync(x => x.IdUzytkownika1 == idUzytkownika1 && x.IdUzytkownika2 == idUzytkownika2 || 
+                                                   x.IdUzytkownika1 == idUzytkownika2 && x.IdUzytkownika2 == idUzytkownika1);
     }
 }
