@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore;
 using Squadra;
 using Squadra.Server.Context;
 using Squadra.Server.Models;
+using Squadra.Server.Modules.Powiadomienia;
+using Squadra.Server.Modules.Profil;
+using Squadra.Server.Modules.Uzytkownik;
+using Squadra.Server.Modules.Wiadomosci;
+using Squadra.Server.Modules.Znajomi;
 using Squadra.Server.Repositories;
 using Squadra.Server.Services;
 
@@ -16,36 +21,12 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<IKrajRepository, KrajRepository>();
-builder.Services.AddScoped<IKrajService, KrajService>();
-
-builder.Services.AddScoped<IProfilRepository, ProfilRepository>();
-builder.Services.AddScoped<IProfilService, ProfilService>();
-
-builder.Services.AddScoped<IUzytkownikRepository, UzytkownikRepository>();
-builder.Services.AddScoped<IUzytkownikService, UzytkownikService>();
-
-builder.Services.AddScoped<IStatusRepository, StatusRepository>();
-builder.Services.AddScoped<IStatusService, StatusService>();
-
-
-builder.Services.AddScoped<IRegionRepository, RegionRepository>();
-builder.Services.AddScoped<IRegionService, RegionService>();
-
-builder.Services.AddScoped<IJezykRepository, JezykRepository>();
-builder.Services.AddScoped<IJezykService, JezykService>();
-
-builder.Services.AddScoped<IStopienBieglosciJezykaRepository, StopienBieglosciJezykaRepository>();
-builder.Services.AddScoped<IStopienBieglosciJezykaService, StopienBieglosciJezykaService>();
-
-builder.Services.AddScoped<IPowiadomienieRepository, PowiadomienieRepository>();
-builder.Services.AddScoped<IPowiadomienieService, PowiadomienieService>();
-
-builder.Services.AddScoped<IZnajomiRepository, ZnajomiRepository>();
-builder.Services.AddScoped<IZnajomiService, ZnajomiService>();
-
-builder.Services.AddScoped<IWiadomoscRepository, WiadomoscRepository>();
-builder.Services.AddScoped<IWiadomoscService, WiadomoscService>();
+// rejestrujemy nasze moduły
+builder.Services.AddPowiadomieniaModule();
+builder.Services.AddProfilModule();
+builder.Services.AddUzytkownikModule();
+builder.Services.AddWiadomosciModule();
+builder.Services.AddZnajomiModule();
 
 // ustawiamy Identity
 builder.Services
