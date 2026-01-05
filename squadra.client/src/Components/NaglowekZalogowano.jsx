@@ -111,7 +111,11 @@ export default function NaglowekZalogowano(){
     }
     
     
-    return(<div className ="menu" id = "menu">
+    return(<>
+        <header>
+            <title>Squadra</title>
+        </header>
+        <div className ="menu" id = "menu">
         <span className="logo">Squadra</span>
         <ul id = "menu-na-pasku">
             {/* na razie wszystkie prowadzą do profilu, bo nie ma reszty */}
@@ -140,7 +144,8 @@ export default function NaglowekZalogowano(){
             /><br/>
             <button onClick={przyWylogowywaniu}>Wyloguj</button>
         </ul>
-    </div>)
+    </div>
+    </>)
     
     
 }

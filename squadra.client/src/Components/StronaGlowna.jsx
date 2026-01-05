@@ -26,7 +26,7 @@ export default function StronaGlowna() {
     return (<>
         <Naglowek></Naglowek>
         <div id = "glowna">
-            <h1>Witamy w Squadra!</h1>
+            <h1>Witamy w Squadra - twojej platformie do jednoczenia się z innymi graczami i komunikacji!</h1>
             <p>Zaloguj się, aby skorzystać z usług.</p>
         </div>
     </>);
