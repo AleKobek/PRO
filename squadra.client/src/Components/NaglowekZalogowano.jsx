@@ -136,7 +136,7 @@ export default function NaglowekZalogowano(){
                 )}
             </select>
             <img id = "awatar" 
-                 src = {awatarUrl} 
+                 src = {awatarUrl || "/img/domyslny_awatar.png"} 
                  alt = "awatar" 
                  className = "awatar"
                  style={{width: 50, height: 50, borderRadius: "50%", margin: "0 10px"}}

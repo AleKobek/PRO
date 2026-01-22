@@ -29,8 +29,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="DTO\Wiadomosc\" />
-      <Folder Include="Middleware\" />
       <Folder Include="Modules\Uzytkownik\DTO\" />
     </ItemGroup>
 
