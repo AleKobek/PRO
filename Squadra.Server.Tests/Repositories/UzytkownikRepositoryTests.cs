@@ -187,7 +187,7 @@ public class UzytkownikRepositoryTests : IDisposable
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(new DateTime(2024, 1, 1), result);
+        Assert.Equal(new DateTime(2024, 1, 1), result.Value);
     }
 
     [Fact]
