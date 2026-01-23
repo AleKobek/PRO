@@ -61,7 +61,7 @@ public class WiadomoscControllerTests
     {
         // Arrange
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync((Uzytkownik)null!);
+            .ReturnsAsync((Uzytkownik?)null);
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
@@ -161,7 +161,7 @@ public class WiadomoscControllerTests
     {
         // Arrange
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync((Uzytkownik)null!);
+            .ReturnsAsync((Uzytkownik?)null);
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
@@ -205,7 +205,7 @@ public class WiadomoscControllerTests
     {
         // Arrange
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync((Uzytkownik)null!);
+            .ReturnsAsync((Uzytkownik?)null);
         _controller.ControllerContext = new ControllerContext
         {
             HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
