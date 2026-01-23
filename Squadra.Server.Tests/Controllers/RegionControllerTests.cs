@@ -24,9 +24,9 @@ public class RegionControllerTests
         // Arrange
         ICollection<RegionDto> regions = new List<RegionDto>
         {
-            new RegionDto(1, "Mazowieckie", 1),
-            new RegionDto(2, "Wielkopolskie", 1),
-            new RegionDto(3, "Śląskie", 1)
+            new RegionDto(1, 1, "Mazowieckie"),
+            new RegionDto(2, 1, "Wielkopolskie"),
+            new RegionDto(3, 1, "Śląskie")
         };
         var result = ServiceResult<ICollection<RegionDto>>.Ok(regions);
         _mockRegionService.Setup(s => s.GetRegiony())
@@ -45,7 +45,7 @@ public class RegionControllerTests
     public async Task GetRegion_WithValidId_ReturnsOkWithRegion()
     {
         // Arrange
-        var regionDto = new RegionDto(1, "Mazowieckie", 1);
+        var regionDto = new RegionDto(1, 1, "Mazowieckie");
         var result = ServiceResult<RegionDto?>.Ok(regionDto);
         _mockRegionService.Setup(s => s.GetRegion(1))
             .ReturnsAsync(result);
@@ -83,8 +83,8 @@ public class RegionControllerTests
         var krajId = 1;
         ICollection<RegionDto> regions = new List<RegionDto>
         {
-            new RegionDto(1, "Mazowieckie", krajId),
-            new RegionDto(2, "Wielkopolskie", krajId)
+            new RegionDto(1, krajId, "Mazowieckie"),
+            new RegionDto(2, krajId, "Wielkopolskie")
         };
         var result = ServiceResult<ICollection<RegionDto>>.Ok(regions);
         _mockRegionService.Setup(s => s.GetRegionyKraju(krajId))
