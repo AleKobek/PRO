@@ -20,7 +20,6 @@ export default function TwojeKonto() {
     }, [ladowanie, uzytkownik, navigate]);
 
     if(ladowanie) return (<>
-            <Naglowek/>
             <div id = "glowna">
                 <h1>Ładowanie...</h1>
             </div>
