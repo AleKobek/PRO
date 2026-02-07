@@ -10,6 +10,7 @@ import StronaGlowna from "./Components/StronaGlowna";
 import NaglowekZalogowano from "./Components/NaglowekZalogowano";
 import TwojeKonto from "./Components/TwojeKonto";
 import EdytujKonto from "./Components/EdytujKonto";
+import TwoiZnajomiStrona from "./Components/TwoiZnajomiStrona";
 
 function App() {
 
@@ -34,6 +35,10 @@ function App() {
                 <Route path = "/edytujKonto" element = {<>
                     <NaglowekZalogowano/>
                     <EdytujKonto/>
+                </>}></Route>
+                <Route path = "/twoiZnajomi" element = {<>
+                    <NaglowekZalogowano/>
+                    <TwoiZnajomiStrona/>
                 </>}></Route>
               <Route path = "/login" element = {<Logowanie/>}></Route>
               <Route path = "/rejestracja" element = {<Rejestracja/>}></Route>

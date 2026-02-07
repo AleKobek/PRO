@@ -156,12 +156,12 @@ export default function FormularzProfilu({
     // ustawiamy nową listę dostępnych regionów, jeśli kraj się zmieni
     const regionyDoWyboru = useMemo(() => {
         if (!kraj?.id) return [];
-        return listaRegionowZBazy.filter(r => r.krajId == kraj.id);
+        return listaRegionowZBazy.filter(r => r.krajId === kraj.id);
     }, [kraj?.id, listaRegionowZBazy]);
 
-    //
+    // jeśli zmieni się lista dostępnych regionów, a wybrany region nie będzie już pasował, to go odznaczamy
     useEffect(() => {
-        if (region?.id && !regionyDoWyboru.some(r => r.id == region.id)) {
+        if (region?.id && !regionyDoWyboru.some(r => r.id === region.id)) {
             ustawRegion({});
         }
     }, [regionyDoWyboru, region?.id]);
@@ -288,7 +288,7 @@ export default function FormularzProfilu({
         </label>
         <br/>
 
-        <input type = "button" value = "Zapisz" onClick={przyWysylaniu} disabled={czyZablokowaneWyslij}/>
+        <input className={czyZablokowaneWyslij ? "zablokowany-przycisk" :"wyslij-formularz-przycisk"} type = "button" value = "Zapisz" onClick={przyWysylaniu} disabled={czyZablokowaneWyslij}/>
         <span id = "error-zapisz" className="error-wiadomosc">{bladOgolny}</span><br/>
     </form>)
 }

@@ -1,4 +1,4 @@
-﻿import {useEffect, useMemo, useRef, useState} from "react";
+﻿import {useEffect, useMemo, useState} from "react";
 import JezykNaLiscieKomponent from "./JezykNaLiscieKomponent";
 
 export default function ListaJezykow({
@@ -9,7 +9,7 @@ export default function ListaJezykow({
                                      }){
 
 
-    
+
     const liczbaJezykowNaStronie = 3;
 
     const [aktualnaStrona, ustawAktualnaStrone] = useState(0);
@@ -73,14 +73,14 @@ export default function ListaJezykow({
         if (listaStopniZBazy.length > 0 && !wybranyStopienDoDodania) {
             ustawWybranyStopienDoDodania(listaStopniZBazy[0]);
         }
-    }, [listaStopniZBazy]);
+    }, [listaStopniZBazy, wybranyStopienDoDodania]);
 
 
     useEffect(() => {
         if (listaJezykowDostepnychDoDodania.length > 0 && !wybranyJezykDoDodania) {
             ustawWybranyJezykDoDodania(listaJezykowDostepnychDoDodania[0]);
         }
-    }, [listaJezykowDostepnychDoDodania]);
+    }, [listaJezykowDostepnychDoDodania, wybranyJezykDoDodania]);
 
 
 
@@ -126,15 +126,15 @@ export default function ListaJezykow({
     // przyciski do paginacji stron listy
     let przyciski = <>
         {/* strona 1 z 5 itp */}
-        <p>Strona {aktualnaStrona + 1} z {liczbaStron}</p>
+        <p className="mt-3">Strona {aktualnaStrona + 1} z {liczbaStron}</p><br/>
 
         {/* przycisk poprzedniej strony */}
-        <button disabled={aktualnaStrona === 0}
+        <button className={aktualnaStrona === 0 ? "zablokowany-przycisk" : "bg-blue-900 hover:bg-blue-600 text-white"} disabled={aktualnaStrona === 0}
                 onClick={ () => { ustawAktualnaStrone(aktualnaStrona - 1) } }
         >Poprzednia strona</button>
 
         {/* przycisk następnej strony*/}
-        <button disabled= {liczbaStron === 0 || aktualnaStrona === liczbaStron - 1}
+        <button className={liczbaStron === 0 || aktualnaStrona === liczbaStron - 1 ? "zablokowany-przycisk" : "bg-blue-900 hover:bg-blue-600 text-white"} disabled= {liczbaStron === 0 || aktualnaStrona === liczbaStron - 1}
                 onClick={ () => { ustawAktualnaStrone(aktualnaStrona + 1) } }
         >Następna strona</button>
     </>
@@ -182,7 +182,7 @@ export default function ListaJezykow({
                         }
                     })}
                 {/* select języka */}
-                <select onChange={(e) => {
+                <select className="border border-gray-600 pl-2 mr-1 rounded rounded-l" onChange={(e) => {
                     let id = e.target.value;
                     let tempJezyk = listaJezykowZBazy.find(jezyk => jezyk.id == id);
                     ustawWybranyJezykDoDodania(tempJezyk);
@@ -193,7 +193,7 @@ export default function ListaJezykow({
                     ))}
                 </select>
                 {/* select stopnia */}
-                <select onChange={(e) => {
+                <select className="border border-gray-600 pl-2 mr-1 rounded rounded-l" onChange={(e) => {
                     let id = e.target.value;
                     let tempStopien = listaStopniZBazy.find(stopien => stopien.id == id);
                     ustawWybranyStopienDoDodania(tempStopien);
@@ -209,7 +209,7 @@ export default function ListaJezykow({
                     )}
                 </select>
                 {/* przycisk obok selectów */}
-                <button onClick={przyKliknieciuDodaj} disabled={listaJezykowDostepnychDoDodania.length === 0}>Dodaj</button>
+                <button className={listaJezykowDostepnychDoDodania.length === 0 ? "zablokowany-przycisk" :"p-2 bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600"} onClick={przyKliknieciuDodaj} disabled={listaJezykowDostepnychDoDodania.length === 0}>Dodaj</button>
             </ul>
             {przyciski}
         </div>)

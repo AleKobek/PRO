@@ -2,10 +2,8 @@
 
 import React, {useEffect, useMemo, useState} from 'react';
 import NaglowekZalogowano from './NaglowekZalogowano';
-import FormularzProfilu from './FormularzProfilu';
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
-import Naglowek from "./Naglowek";
 import FormularzKonta from "./FormularzKonta";
 export default function EdytujKonto() {
 
@@ -99,7 +97,7 @@ export default function EdytujKonto() {
             alive = false;
             ac.abort(); // przerywamy fetch
         };
-    }, [uzytkownik]);
+    }, [login, staryEmail, uzytkownik]);
 
     const czyZablokowaneWyslijKonta = useMemo(() =>{
         return(
@@ -111,7 +109,7 @@ export default function EdytujKonto() {
             login.trim().length === 0 || 
             email.trim().length === 0
         )
-    },[login, email, numerTelefonu, dataUrodzenia]);
+    },[login, staryLogin, email, staryEmail, numerTelefonu, staryNumerTelefonu, dataUrodzenia, staraDataUrodzenia]);
 
     const przyWysylaniuZmianyKonta = async() => {
         ustawBladOgolnyKonta("");
@@ -240,14 +238,14 @@ export default function EdytujKonto() {
                     bladNumeruTelefonu={bladNumeruTelefonu}
                     bladDatyUrodzenia={bladDatyUrodzenia}
                 />
-                <input type = "button" value = "Zapisz" onClick={przyWysylaniuZmianyKonta} disabled={czyZablokowaneWyslijKonta}/>
+                <input className="wyslij-formularz-przycisk" type = "button" value = "Zapisz" onClick={przyWysylaniuZmianyKonta} disabled={czyZablokowaneWyslijKonta}/>
                 <span id = "error-zapisz" className="error-wiadomosc">{bladOgolnyKonta}</span><br/>
             </form>
             <span className="success-widomosc">{sukcesKonta}</span>
             <br></br>
-            <div className="box-zmiany-hasla">
+            <div className="box-zmiany-hasla text-center my-10 border-2 border-red-900 rounded-md p-2.5 bg-[#fcb7ab]">
                 <h2>Zmień hasło</h2>
-                <form id= "formularz-hasła" name = "formularz-hasła">
+                <form id= "formularz-hasła" name = "formularz-hasła" className="border-0">
                     <label>
                         Stare hasło<br/>
                         <input
@@ -263,7 +261,7 @@ export default function EdytujKonto() {
                         <input
                             type="password" value={powtorzHaslo} onChange={(e) => ustawPowtorzHaslo(e.target.value)}/><br/>
                     </label>
-                    <input type="button" value="Zapisz" onClick={przyWysylaniuZmianyHasla} disabled={czyZablokowaneWyslijHasla}/><br/>
+                    <input className="wyslij-formularz-przycisk" type="button" value="Zapisz" onClick={przyWysylaniuZmianyHasla} disabled={czyZablokowaneWyslijHasla}/><br/>
                     <span id = "error-ogolny-hasla" className="error-wiadomosc">{bladOgolnyHasla}</span><br/>
                 </form>
             </div>

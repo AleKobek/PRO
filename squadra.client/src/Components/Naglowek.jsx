@@ -7,12 +7,12 @@ export default function Naglowek() {
         <header>
             <title>Squadra</title>
         </header>
-        <div className = "menu" id = "menu">
-        <span className="logo" id ="logo">Squadra</span>
+        <div className = "menu" id="menu">
+        <span className="logo">Squadra</span>
         <ul id = "menu-na-pasku">
-            <NavLink to = '/' className = "nawigacja">Strona główna</NavLink>
-            <NavLink to = '/login' className = "nawigacja">Zaloguj się</NavLink>
-            <NavLink to = '/rejestracja' className = "nawigacja">Zarejestruj się</NavLink>
+            <NavLink to = '/' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Strona główna</NavLink>
+            <NavLink to = '/login' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Zaloguj się</NavLink>
+            <NavLink to = '/rejestracja' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Zarejestruj się</NavLink>
         </ul>
     </div></>)
     

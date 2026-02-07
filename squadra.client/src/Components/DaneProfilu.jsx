@@ -98,14 +98,14 @@ export default function DaneProfilu({uzytkownik}) {
             alive = false;
             ac.abort(); // przerywamy fetch
         };
-    }, []);
+    }, [listaJezykowUzytkownika.length, opis, pseudonim, uzytkownik, zaimki]);
 
 
     if(!uzytkownik || !uzytkownik.id) return(<><p>Ładowanie...</p></>);
     
     return(<div className = "dane-profilu">
                                       {/* v dzięki "||" bierze też jak jest pusty string  */}
-        <img id = "awatar" src = {awatar || "/img/domyslny_awatar.png"} alt = "awatar" className = "awatar"/><br/>
+        <img id = "awatar" src = {awatar || "/img/domyslny_awatar.png"} alt = "awatar" className = "awatar block mx-auto w-[200px] rounded-full border-[5px] border-black"/><br/>
         <label>
             Pseudonim:
             <p id = "pseudonim" className= "pole-w-danych-profilu">{pseudonim}</p>
@@ -123,7 +123,7 @@ export default function DaneProfilu({uzytkownik}) {
             <p className= "pole-w-danych-profilu">{region ? region.nazwa : "Nie określono"}</p>
         </label>
         <div id = "lista-jezykow-dane-profilu" className = "lista-jezykow-dane-profilu">
-            <p style={{fontWeight: "bold"}}>Języki</p>
+            <p className="font-bold">Języki</p>
             <ListaJezykow typ = "wyswietlanie" listaJezykowUzytkownika = {listaJezykowUzytkownika} ustawListeJezykowUzytkownika={ustawListeJezykowUzytkownika}/>
         </div><br/>
         <label>

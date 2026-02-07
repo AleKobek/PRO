@@ -1,5 +1,4 @@
 ﻿import React, {useEffect, useMemo, useState} from "react";
-import ListaJezykow from "./ListaJezykow";
 import {useNavigate} from "react-router-dom";
 
 export default function FormularzAwatara({
@@ -66,21 +65,20 @@ export default function FormularzAwatara({
      */
     const czyZablokowaneWyslij = useMemo(() => {
             return (staryAwatar === null || awatar === null || staryAwatar === awatar);
-    }, [awatar]);
+    }, [awatar, staryAwatar]);
 
     
     return(<form id = "form" name= "formularz-awatara">
-        <img 
-            id="awatar" 
-            className="awatar" 
+        <img
+            className="awatar block mx-auto w-[128px] h-[128px] object-cover rounded-full border-4 border-black mt-4"
             src={podgladAwatara || "/img/domyslny_awatar.png"}
             alt="awatar"
-            style={{ width: 128, height: 128, objectFit: "cover", borderRadius: "100%" }}
+            // style={{ width: 128, height: 128, objectFit: "cover", borderRadius: "100%" }}
         /><br/><br/>
             <input
                 type="file"
                 accept="image/*"
-                style={{ transform: "scale(0.8)", transformOrigin: "center" }}
+                className="p-2"
                 onChange={async (e) => {
                     ustawBladAwatara("");
 
@@ -91,7 +89,7 @@ export default function FormularzAwatara({
                     ustawAwatar(file);
                 }}
             /><br/><br/>
-        <input type = "button" value = "Zapisz" onClick={przyWysylaniu} disabled={czyZablokowaneWyslij}/>
+        <input className={czyZablokowaneWyslij ? "zablokowany-przycisk" :"wyslij-formularz-przycisk"} type = "button" value = "Zapisz" onClick={przyWysylaniu} disabled={czyZablokowaneWyslij}/>
         <span id = "error-awatar" className="error-wiadomosc">{bladAwatara}</span><br/><br/>
     </form>)
 }

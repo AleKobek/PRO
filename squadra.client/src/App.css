@@ -1,338 +1,203 @@
-#menu{
-  top: 0;
-  height: 60px;
-  width: 100%;
-  color: black;
-  font-size: 40px;
-  /*font-family: Algerian, serif;*/
-  border-bottom: solid blue 10px;
-  background-color: lightgrey;
-  position: sticky;
-  padding-bottom: 12px;
-  /*Bahnschrift, Times, "Bodoni MT", "Felix Titling"*/
-  .logo{
-    float: left;
-    font-size: 60px;
-    font-weight: 600;
-    padding-left: 10px;
-    display: block;
-    color: black;
-    text-align: center;
-    text-decoration: none;
+/* css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  /* Główny pasek menu (odpowiednik podanego SCSS) */
+  #menu {
+    @apply sticky top-0 w-full bg-gray-200 text-black px-4 h-[60px] flex items-center justify-between;
+    /* border-bottom: solid blue 10px */
+    border-bottom: 10px solid blue;
+    font-size: 40px; /* ogólny rozmiar (można override dla poszczególnych elementów) */
+  }
+
+  /* logo po lewej */
+  #menu .logo {
+    @apply pl-2 text-[60px] font-semibold text-black no-underline h-full flex items-center;
     font-family: Bahnschrift, serif;
   }
-  #menu-na-pasku{
-    list-style-type: none;
-    /*font-family: Felix Titling, serif;*/
-    font-weight: 600;
-    margin: 0;
+
+  /* kontener elementów po prawej */
+  #menu #menu-na-pasku {
+    @apply list-none m-0 p-0 flex items-center  h-full;
+    /* odpowiada: list-style-type:none; font-weight:600; margin:0; padding-left:20px; display:flex; justify-content:space-between; align-items:center; */
     padding-left: 20px;
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    float: right;
-    .nawigacja, span, select{
-      float: right;
-      font-size: 30px;
-      display: block;
-      color: black;
-      text-align: center;
-      padding: 10px 10px 24px;
-      text-decoration: none;
-      border-left: solid 2px blue;
-    }
-    a:hover {
-      background-color: lightblue;
-      color: darkblue;
-      padding: 10px 10px 22px;
-      
-    }
-    a.active {
-      color: blue;
-    }
-    ul{
-      list-style-type: none;
-      margin: 0;
-      padding: 0 10px;
-      overflow: hidden;
-    }
-    button{
-      font-size: 20px;
-      color: white;
-      background-color: darkred;
-      padding: 10px;
-      margin: 5px 10px 5px 10px;
-      border-radius: 10px;
-    }
-    select{
-      background-color: white;
-      border: none;
-      font-size: 30px;
-      width: 160px;
-      /*border-radius: 10px;*/
-      &:hover{
-        background-color: lightblue;
-      }
-      &:focus{
-        outline: none;
-      }
-      option{
-        background-color: white;
-      }
-      option:hover{
-        background-color: lightblue;
-      }
-      option:focus{
-        outline: none;
-      }
-      option:checked{
-        background-color: lightblue;
-      }
-      option:disabled{
-        color: grey;
-      }
-      
-    }
-    #awatar{
-      border-radius: 100%;
-      border: solid 2px black;
-    }
   }
 
-}
-
-
-
-#glowna{
-  min-height: 600px;
-  font:  18px/1.5 Bahnschrift, serif;
-  padding: 30px;
-  background-image: url("../public/img/tło.jpg");
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;
-  background-size: cover;
-  /*"Cooper Black", */
-  h1{
-    font: 60px/1.5 Georgia, serif;
-    text-align: center;
+  /* nawigacyjne elementy (linki, span, select) */
+  #menu #menu-na-pasku span{
+    /* oryginalnie padding: 10px 10px 24px; tutaj zachowujemy wysokie wyrównanie pionowe przez h-full */
+    border-left: 2px solid #3b82f6; /* blue-500 */
+    @apply inline-flex items-center text-[30px] text-black text-center px-3 h-full;
+  }
+  #menu #menu-na-pasku select{
+    @apply inline-flex items-center text-[30px] text-black text-center px-3 h-full;
+    box-sizing: border-box;
   }
 
-  h1, h2, h3{
+  #menu #menu-na-pasku .nawigacja{
+    /* oryginalnie padding: 10px 10px 24px; tutaj zachowujemy wysokie wyrównanie pionowe przez h-full */
+    border-left: 2px solid #3b82f6; /* blue-500 */
+    @apply inline-flex items-center text-[30px] text-black text-center px-3 h-full no-underline;
+  }
+
+  #menu #menu-na-pasku .nawigacja-na-pasku {
+    @apply flex items-center h-full ;
+  }
+
+    /* hover (tylko tło/kolor, bez zmiany paddingów) */
+  #menu #menu-na-pasku a:hover {
+    @apply bg-blue-200 text-blue-900;
+  }
+
+  /* aktywny link: NavLink v6 dodaje aria-current="page", starsze wersje mogły używać .active */
+  #menu #menu-na-pasku a.nawigacja[aria-current="page"],
+  #menu #menu-na-pasku a.nawigacja.active {
+    @apply text-blue-600 font-semibold;
+  }
+
+  /* wewnętrzne ul jeśli występuje */
+  #menu #menu-na-pasku ul {
+    @apply list-none m-0 p-0 flex items-center;
+  }
+
+  /* select - dodatkowe style state */
+  #menu #menu-na-pasku select {
+    @apply bg-white border-white text-[30px] w-[160px] h-full p-1;
+  }
+  #menu #menu-na-pasku select:hover { @apply bg-blue-200; }
+  #menu #menu-na-pasku select:focus { outline: none; }
+  #menu #menu-na-pasku select option { background-color: white; }
+  #menu #menu-na-pasku select option:hover { background-color: #bfdbfe; }
+  #menu #menu-na-pasku select option:disabled { color: grey; }
+
+  /* awatar w menu na pasku*/
+  #menu #menu-na-pasku #awatar {
+    @apply rounded-full border-2 border-black w-[50px] h-[50px] object-cover ml-2; /* w oryginale niekończone wartości; ustawiam 50px podobnie do inline style w JSX */
+  }
+
+  /* Sekcja główna i reszta */
+  #glowna {
+    min-height: 600px;
+    font-family: Bahnschrift, serif;
+    @apply text-[18px] leading-[1.5] p-7;
+    background-image: url("../public/img/tło.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-position: center;
+    background-size: cover;
+  }
+
+  #glowna h1 {
+    @apply text-[60px] text-center;
+    line-height: 1.5;
     font-family: Georgia, serif;
-    text-align: center;
   }
 
-  button{
-    font-size: 20px;
-    color: white;
-    background-color: darkred;
-    padding: 5px;
-    margin: 5px 0 5px 10px;
-    border-radius: 10px;
-
-  }
-  /* tak sobie nadpisujemy dla danej klasy*/
-  button.przycisk-nawigacji{
-    background: darkblue;
-    display: block;         /* zamiast grid */
-    margin: 5px auto;       /* wyśrodkowanie poziome */
-    font-size: 25px;
-    padding: 10px 20px;
-    /* jak najeżdżamy myszką, zmienia kolor*/
-    &:hover{
-      background: blue;
-    }
+  #glowna h2 {
+    @apply text-[40px] text-center;
+    line-height: 1.5;
+    font-family: Georgia, serif;
   }
 
-  button:disabled{
-    font-size: 20px;
-    color: black;
-    background-color: lightgray;
-    padding: 5px;
-    margin: 5px 0 5px 10px;
-    border-radius: 10px;
+  #glowna h1, #glowna h2, #glowna h3 {
+    @apply text-center;
+    font-family: Georgia, serif;
   }
 
-  table{
-    border: ridge 8px black;
-    border-collapse: collapse;
-    text-align: center;
-    margin: 40px auto;
-    th{
-      border: solid 5px black;
-      color: darkred;
-      padding: 10px;
-    }
-    td{
-      border: solid 2px black;
-      padding: 5px;
-    }
-    /* to jeszcze pozostałość z psiotelu, może się przyda*/
-    .tabela-oferta{
-      border-right: solid 5px black;
-      font-weight: bold;
-    }
-    .tabela-srodek{
-      border-right: solid 4px black;
-    }
+  #glowna button {
+    @apply text-[20px] rounded-md px-2 py-1 my-1 ml-2;
   }
 
+  #glowna button.przycisk-nawigacji {
+    @apply text-white bg-blue-900 block mx-auto text-[25px] px-5 py-2.5 hover:bg-blue-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105;
+  }
 
-  form{
-    vertical-align: center;
-    width: fit-content;
-    font-size: 20px;
-    padding: 10px 30px;
-    align-self: center;
-    horiz-align: center;
-    /*border: outset 20px #eadaa0;*/
-    text-align: center;
-    align-content: center;
-    /*margin-top: 20px;*/
-    margin: 40px auto;
+  #glowna button:disabled, .zablokowany-przycisk {
+    @apply text-black bg-gray-300 rounded-md px-2 py-1 border border-black shadow-md cursor-not-allowed;
+  }
+
+  /* Tabele  ( na razie niepotrzebne) */
+
+  /*#glowna table {*/
+  /*  border: ridge 8px black;*/
+  /*  border-collapse: collapse;*/
+  /*  text-align: center;*/
+  /*  margin: 40px auto;*/
+  /*}*/
+  /*#glowna table th { @apply p-2; border: solid 5px black; color: #8b0000; }*/
+  /*#glowna table td { @apply p-1; border: solid 2px black; }*/
+  /*#glowna .tabela-oferta { border-right: solid 5px black; font-weight: bold; }*/
+  /*#glowna .tabela-srodek { border-right: solid 4px black; }*/
+
+  /* Formularze */
+  #glowna form {
+    @apply w-fit text-[20px] text-center my-10 mx-auto rounded-[10px] p-[10px_30px];
     border: groove 10px black;
-    border-radius: 10px;
-    input{
-      font-size: 20px;
-    }
-    label{
-      font-size: 20px;
-      font-weight: bold;
-    }
-    
-    #awatar{
-      width: 200px;
-      border-radius: 100%;
-      border: solid 5px black;
-    }
   }
-  
-  .dane-profilu{
-    vertical-align: center;
-    width: 400px;
-    font-size: 20px;
-    padding: 10px 30px;
-    align-self: center;
-    horiz-align: center;
-    /*border: outset 20px #eadaa0;*/
-    text-align: center;
-    align-content: center;
-    /*margin-top: 20px;*/
-    margin: 40px auto;
-    input{
-      font-size: 20px;
-    }
-    label{
-      font-size: 20px;
-      font-weight: bold;
-    }
-    .lista-jezykow-dane-profilu{
-      list-style-type: none;
-      margin: 0;
-      padding: 0;
-      border: groove 2px black;
-      border-radius: 10px;
-      background-color: white;
-    }
-    
-    .pole-w-danych-profilu{
-      margin: 10px 0;
-      padding: 10px;
-      border: solid 2px black;
-      border-radius: 10px;
-      background-color: white;
-    }
-    
-    #awatar{
-      width: 200px;
-      border-radius: 50%;
-      border: solid 5px black;
-    }
+  #glowna form input, textarea{ @apply text-[20px] px-2 border border-gray-800; }
+  #glowna form label { @apply text-[20px] font-bold; }
+  #glowna form #awatar { @apply w-[200px] h-[200px] rounded-full border-[5px] border-black object-cover; }
+  #glowna form .wyslij-formularz-przycisk {
+    @apply bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105;
+  }
+  /*#glowna form .zablokowany-przycisk {*/
+  /*  @apply bg-gray-400 text-black rounded-md px-3 py-1 my-4 cursor-not-allowed;*/
+  /*}*/
+
+  /* Dane profilu */
+  #glowna .dane-profilu {
+    width: min(90%, 600px); /* szerszy, żeby dłuższe nazwy się mieściły */
+    @apply text-[20px] p-[10px_30px] text-center my-10 mx-auto;
+  }
+  #glowna .dane-profilu .lista-jezykow-dane-profilu {
+    @apply list-none m-0 p-3 rounded-md bg-white border-2 border-black;
   }
 
-  .dane-konta{
-    vertical-align: center;
-    width: fit-content;
-    font-size: 20px;
-    padding: 10px 30px;
-    align-self: center;
-    horiz-align: center;
-    /*border: outset 20px #eadaa0;*/
-    text-align: center;
-    align-content: center;
-    /*margin-top: 20px;*/
-    margin: 40px auto;
-    input{
-      font-size: 20px;
-    }
-    label{
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .pole-w-danych-konta{
-      margin: 10px 0;
-      padding: 10px;
-      border: solid 2px black;
-      border-radius: 10px;
-      background-color: white;
-    }
+  #glowna .dane-profilu .pole-w-danych-profilu {
+    @apply my-4 p-2.5 rounded-md bg-white; border: 2px solid black;
   }
 
-  .lista-jezykow{
-    li{
-      text-align: left;
-      .jezyk-na-liscie{
-        .nazwa-jezyka{
-          font-weight: bold;
-        }
-        list-style-type: none;
-        margin: 0;
-        border: solid 2px black;
-        border-radius: 10px;
-        background-color: #f1f1f1;
-        padding: 10px;
-      }
-      padding: 7px;
-      &:last-child{
-        border-right: none;
-      }
-      a{
-        display: block;
-      }
-    }
+  /* Dane konta */
+  #glowna .dane-konta { @apply w-fit text-[20px] p-[10px_30px] text-center my-10 mx-auto; }
+  #glowna .dane-konta .pole-w-danych-konta { @apply my-2.5 p-2.5 rounded-md bg-white border-2 border-black; }
+
+  /* Lista języków */
+  #glowna .lista-jezykow li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0;
   }
-  
-  .box-zmiany-hasla{
-    text-align: center;
-    margin: 40px auto;
-    border: solid 2px darkred;
-    border-radius: 10px;
-    padding: 10px;
-    background-color: #fcb7ab;
-    form{
-      border: none;
-    }
+  #glowna .lista-jezykow li .jezyk-na-liscie {
+    @apply bg-gray-100 rounded-md border-2 border-black p-3;
+    flex: 1 1 auto; /* zabiera dostępną szerokość */
+    min-width: 0; /* konieczne dla text-overflow w flexie */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #glowna .lista-jezykow li .jezyk-na-liscie .nazwa-jezyka { @apply font-bold; }
+  /* przycisk Usuń obok elementu */
+  #glowna .lista-jezykow li button { @apply text-[16px] bg-red-900 hover:bg-red-600 text-white rounded px-3 py-1; }
+
+  /* Przyciski paginacji i etykieta powinny być obok siebie */
+  #glowna .lista-jezykow > p,
+  #glowna .lista-jezykow > button {
+    display: inline-block;
+    margin: 8px 8px 0 0;
+    vertical-align: middle;
   }
 
-  .error-wiadomosc{
-    color: red;
-    font-weight: bold;
-  }
-  .error-pole{
-    border-color: red;
-    border-style: solid;
-  }
-  
-  .success-widomosc{
-    color: green;
-    font-weight: bold;
-    display: grid;
-    text-align: center;
-  }
+  /* Gdy lista znajduje się w panelu profilu (specyficzne) zwiększamy padding listy */
+  #glowna .dane-profilu .lista-jezykow-dane-profilu li { margin: 6px 0; }
+
+  /* Box zmiany hasła */
+  #glowna .box-zmiany-hasla { @apply text-center my-10 border-2 border-red-900 rounded-md p-2.5 bg-[#fcb7ab]; }
+  #glowna .box-zmiany-hasla form { border: none; }
+
+  .error-wiadomosc { @apply text-red-600 font-bold; }
+  .error-pole { border-color: red; border-style: solid; }
+  .success-widomosc { @apply text-green-600 font-bold grid text-center; }
 }

@@ -5,7 +5,6 @@ import NaglowekZalogowano from './NaglowekZalogowano';
 import FormularzProfilu from './FormularzProfilu';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
-import Naglowek from "./Naglowek";
 import FormularzAwatara from "./FormularzAwatara";
     export default function EdytujProfil() {
 

@@ -1,5 +1,4 @@
 ﻿import {useEffect, useState} from "react";
-import ListaJezykow from "./ListaJezykow";
 
 // pamiętać o tym, aby to było w nawiasach klamrowych!
 export default function DaneKonta({uzytkownik}) {
@@ -56,7 +55,7 @@ export default function DaneKonta({uzytkownik}) {
             alive = false;
             ac.abort(); // przerywamy fetch
         };
-    }, [uzytkownik]);
+    }, [email, login, uzytkownik]);
 
 
     if(!uzytkownik || !uzytkownik.id) return(<><p>Ładowanie...</p></>);
