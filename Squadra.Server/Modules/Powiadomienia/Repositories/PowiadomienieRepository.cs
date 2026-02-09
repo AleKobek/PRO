@@ -27,7 +27,7 @@ public class PowiadomienieRepository(AppDbContext context, IProfilRepository pro
                 idPowiazanegoUzytkownika,
                 powiazanyProfil.Pseudonim,
                 powiadomienie.Tresc,
-                powiadomienie.DataWyslania
+                powiadomienie.DataWyslania.ToString("dd.MM.yyyy HH:mm")
             );
         }
         // jak tu dochodzimy, to jest systemowe
@@ -38,17 +38,18 @@ public class PowiadomienieRepository(AppDbContext context, IProfilRepository pro
             null,
             null,
             powiadomienie.Tresc,
-            powiadomienie.DataWyslania
+            powiadomienie.DataWyslania.ToString("dd.MM.yyyy HH:mm")
         );
     }
 
     public async Task<ICollection<PowiadomienieDto>> GetPowiadomieniaUzytkownika(int idUzytkownika)
     {
         var powiadomienia = await context.Powiadomienie.Where(x => x.UzytkownikId == idUzytkownika).ToListAsync();
-        var listaDoZwrocenia = new List<PowiadomienieDto>();
+        powiadomienia.Sort((x, y) => y.DataWyslania.CompareTo(x.DataWyslania));
+        var lista = new List<PowiadomienieDto>();
         foreach (var powiadomienie in powiadomienia) 
-            listaDoZwrocenia.Add(await GetPowiadomienie(powiadomienie.Id));
-        return listaDoZwrocenia;
+            lista.Add(await GetPowiadomienie(powiadomienie.Id));
+        return lista;
     }
 
     public async Task<bool> CreatePowiadomienie(PowiadomienieCreateDto powiadomienie)

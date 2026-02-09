@@ -50,7 +50,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-    public async Task<ActionResult> RozpatrzPowiadomienie(int id, bool? czyZaakceptowane)
+    public async Task<ActionResult> RozpatrzPowiadomienie(int id, [FromBody] bool? czyZaakceptowane)
     {
         var result = await powiadomienieService.RozpatrzPowiadomienie(id, czyZaakceptowane, User);
         return result.StatusCode switch

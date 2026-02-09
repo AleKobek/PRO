@@ -65,7 +65,7 @@ public class PowiadomienieServiceTests
         // Arrange
         var notificationId = 1;
         var user = CreateClaimsPrincipal(1);
-        var notification = new PowiadomienieDto(notificationId, 2, 1, 2, "TestUser", "Test", DateTime.Now);
+        var notification = new PowiadomienieDto(notificationId, 2, 1, 2, "TestUser", "Test", DateTime.Now.ToString("dd.MM.yyyy HH:mm"));
         
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomienie(notificationId))
             .ReturnsAsync(notification);
@@ -89,7 +89,7 @@ public class PowiadomienieServiceTests
         var userId = 1;
         var otherUserId = 2;
         var user = CreateClaimsPrincipal(userId);
-        var notification = new PowiadomienieDto(notificationId, 2, otherUserId, 3, "TestUser", "Test", DateTime.Now);
+        var notification = new PowiadomienieDto(notificationId, 2, otherUserId, 3, "TestUser", "Test", DateTime.Now.ToString("dd.MM.yyyy HH:mm"));
         var uzytkownik = new Uzytkownik { Id = userId };
         
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomienie(notificationId))
@@ -113,7 +113,7 @@ public class PowiadomienieServiceTests
         var notificationId = 1;
         var userId = 1;
         var user = CreateClaimsPrincipal(userId);
-        var notification = new PowiadomienieDto(notificationId, 2, userId, 2, "TestUser", "Test", DateTime.Now);
+        var notification = new PowiadomienieDto(notificationId, 2, userId, 2, "TestUser", "Test", DateTime.Now.ToString("dd.MM.yyyy HH:mm"));
         var uzytkownik = new Uzytkownik { Id = userId };
         
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomienie(notificationId))
@@ -142,8 +142,8 @@ public class PowiadomienieServiceTests
         var userId = 1;
         var notifications = new List<PowiadomienieDto>
         {
-            new PowiadomienieDto(1, 2, userId, 2, "User1", "Test1", DateTime.Now),
-            new PowiadomienieDto(2, 3, userId, 2, "User2", "Test2", DateTime.Now)
+            new PowiadomienieDto(1, 2, userId, 2, "User1", "Test1", DateTime.Now.ToString("dd.MM.yyyy HH:mm")),
+            new PowiadomienieDto(2, 3, userId, 2, "User2", "Test2", DateTime.Now.ToString("dd.MM.yyyy HH:mm"))
         };
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomieniaUzytkownika(userId))
             .ReturnsAsync(notifications);
@@ -318,7 +318,7 @@ public class PowiadomienieServiceTests
         var invitee = new Uzytkownik { Id = inviteeId, UserName = inviteeLogin };
         var existingNotifications = new List<PowiadomienieDto>
         {
-            new PowiadomienieDto(1, 2, inviteeId, inviterId, "Inviter", null, DateTime.Now)
+            new PowiadomienieDto(1, 2, inviteeId, inviterId, "Inviter", null, DateTime.Now.ToString("dd.MM.yyyy HH:mm"))
         };
         
         _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))

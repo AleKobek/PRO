@@ -7,5 +7,5 @@ public record PowiadomienieDto(
     int? IdPowiazanegoObiektu,
     string? NazwaPowiazanegoObiektu, // pseudonim dla uzytkownika i nazwa dla gildii
     string? Tresc,
-    DateTime DataWyslania
+    string DataWyslania
 );

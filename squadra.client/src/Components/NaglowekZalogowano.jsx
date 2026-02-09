@@ -1,6 +1,7 @@
 ﻿import {useEffect, useRef, useState} from "react";
 import {NavLink, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
+import Powiadomienie from "./Powiadomienie";
 
 export default function NaglowekZalogowano(){
 
@@ -197,32 +198,33 @@ export default function NaglowekZalogowano(){
             </div>
             {ladowaniePowiadomien && <div>Ładowanie...</div>}
             {!ladowaniePowiadomien && powiadomienia.length === 0 && <div>Brak powiadomień</div>}
-            {/*
-                powiadomienia przyjdą w formacie:
-                [
-                  {
-                    "id": 0,
-                    "idTypuPowiadomienia": 0,
-                    "uzytkownikId": 0,
-                    "idPowiazanegoObiektu": 0,
-                    "nazwaPowiazanegoObiektu": "string",
-                    "tresc": "string",
-                    "dataWyslania": "2026-02-07T17:12:02.518Z"
-                  }
-                ]
 
-            */}
             <ul className="list-none p-0 m-0">
                 {powiadomienia.map((p) => (
-                    <li key={p.id} className="p-2 border-b border-gray-200">
-                        <div className="font-semibold">{p.nazwaPowiazanegoObiektu || 'Powiadomienie systemowe'}</div>
-                        <div className="text-sm text-gray-600">{p.tresc}</div>
-                        <div className="text-xs text-gray-400 mt-1.5">{p.dataWyslania}</div>
-                    </li>
+                   <Powiadomienie key={p.id} powiadomienie={p} przyRozpatrzaniuPowiadomienia={przyRozpatrzaniuPowiadomienia} />
                 ))}
             </ul>
         </div>
     );
+
+    const przyRozpatrzaniuPowiadomienia = async (id, czyZaakceptowane) => {
+
+        const opcje = {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include",
+            body: JSON.stringify(czyZaakceptowane)
+        }
+
+        console.log("body: ", opcje.body);
+
+        const res = await fetch("http://localhost:5014/api/Powiadomienie/" + id, opcje);
+        if(!res.ok) {
+            return;
+        }
+        // jeśli git, usuwamy rozpatrzone powiadomienie z listy
+        ustawPowiadomienia(powiadomienia.filter(item => item.id !== id));
+    }
     
     
     return(<>
