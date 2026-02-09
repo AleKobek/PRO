@@ -19,7 +19,8 @@ import {useEffect, useState} from "react";
 
 export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomienia}) {
     
-    const [trescPowiadomienia, ustawTrescPowiadomienia] = useState("");
+    const [trescPowiadomieniaCz1, ustawTrescPowiadomieniaCz1] = useState("");
+    const [trescPowiadomieniaCz2, ustawTrescPowiadomieniaCz2] = useState("");
     const [typPowiadomienia, ustawTypPowiadomienia] = useState("");
 
 
@@ -36,27 +37,31 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         switch (powiadomienie.idTypuPowiadomienia){
             case TypyPowiadomien.SYSTEMOWE:{
                 ustawTypPowiadomienia("Powiadomienie systemowe")
-                ustawTrescPowiadomienia(powiadomienie.tresc);
+                ustawTrescPowiadomieniaCz1(powiadomienie.tresc);
                 break;
             }
             case TypyPowiadomien.ZAPROSZENIE_DO_ZNAJOMYCH:{
                 ustawTypPowiadomienia("Zaproszenie do znajomych")
-                ustawTrescPowiadomienia("Uzytkownik " + powiadomienie.nazwaPowiazanegoObiektu + " wysłał Ci zaproszenie do znajomych.");
+                ustawTrescPowiadomieniaCz1("Uzytkownik ");
+                ustawTrescPowiadomieniaCz2(" wysłał Ci zaproszenie do znajomych.");
                 break;
             }
             case TypyPowiadomien.ZAAKCEPTOWANIE_ZAPROSZENIA_DO_ZNAJOMYCH:{
                 ustawTypPowiadomienia("Zaakceptowanie zaproszenia do znajomych")
-                ustawTrescPowiadomienia("Uzytkownik " + powiadomienie.nazwaPowiazanegoObiektu + " zaakceptował Twoje zaproszenie do znajomych.");
+                ustawTrescPowiadomieniaCz1("Uzytkownik ");
+                ustawTrescPowiadomieniaCz2(" zaakceptował Twoje zaproszenie do znajomych.");
                 break;
             }
             case TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH:{
                 ustawTypPowiadomienia("Odrzucenie zaproszenia do znajomych")
-                ustawTrescPowiadomienia("Uzytkownik " + powiadomienie.nazwaPowiazanegoObiektu + " odrzucił Twoje zaproszenie do znajomych.");
+                ustawTrescPowiadomieniaCz1("Uzytkownik ");
+                ustawTrescPowiadomieniaCz2(" odrzucił Twoje zaproszenie do znajomych.");
                 break;
             }
             case TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH:{
                 ustawTypPowiadomienia("Usunięto cię ze znajomych")
-                ustawTrescPowiadomienia("Uzytkownik " + powiadomienie.nazwaPowiazanegoObiektu + " usunął cię ze znajomych.");
+                ustawTrescPowiadomieniaCz1("Uzytkownik ");
+                ustawTrescPowiadomieniaCz2(" usunął cię ze znajomych.");
                 break;
             }
             default:{
@@ -71,7 +76,8 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH,
         TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH,
         powiadomienie.idTypuPowiadomienia,
-        powiadomienie.nazwaPowiazanegoObiektu
+        powiadomienie.nazwaPowiazanegoObiektu,
+        powiadomienie.tresc
     ]);
 
 
@@ -94,14 +100,19 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
             />
             </button>
         </div>
-        <div className="text-sm text-gray-600">{trescPowiadomienia}</div>
+        <div className="text-sm text-gray-600">{trescPowiadomieniaCz1}</div>
         <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
     </li>);
 
+    // na razie są tylko odnośnie użytkowników
     return (
         <li key={powiadomienie.id} className="p-2 border-b border-gray-200">
             <div className="font-semibold mb-1">{typPowiadomienia}</div>
-            <div className="text-sm text-gray-600">{trescPowiadomienia}</div>
+            <div className="text-sm text-gray-600">
+                {trescPowiadomieniaCz1}
+                <a href={"http://localhost:3000/profil/"+powiadomienie.idPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
+                {trescPowiadomieniaCz2}
+            </div>
             <div className="text-xs text-gray-400 mt-1">{powiadomienie.dataWyslania}</div>
             {/* przycisk zaakceptuj i odrzuć */}
             <div className="flex justify-center items-center mt-2">
