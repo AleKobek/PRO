@@ -81,19 +81,43 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
+    
     [HttpPost("zaproszenie/znajomi")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<ActionResult> WyslijZaproszenieDoZnajomych(string loginZapraszanegoUzytkownika)
+    public async Task<ActionResult> WyslijZaproszenieDoZnajomychPoLoginie(string loginZapraszanegoUzytkownika)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
         
-        var result = await powiadomienieService.WyslijZaproszenieDoZnajomych(uzytkownik.Id, loginZapraszanegoUzytkownika);
+        var result = await powiadomienieService.WyslijZaproszenieDoZnajomychPoLoginie(uzytkownik.Id, loginZapraszanegoUzytkownika);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            409 => Conflict(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpPost("zaproszenie/znajomi/id")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Conflict)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<ActionResult> WyslijZaproszenieDoZnajomychPoId(int idZapraszanegoUzytkownika)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await powiadomienieService.WyslijZaproszenieDoZnajomychPoId(uzytkownik.Id, idZapraszanegoUzytkownika);
         return result.StatusCode switch
         {
             204 => NoContent(),

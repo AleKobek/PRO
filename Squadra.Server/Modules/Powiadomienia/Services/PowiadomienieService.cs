@@ -154,8 +154,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             }
         }
 
-        // najpierw zmieniamy login na id, potem sprawdzamy, czy już nie są znajomymi, na końcu tworzymy zaproszenie
-        public async Task<ServiceResult<bool>> WyslijZaproszenieDoZnajomych(int idZapraszajacego, string loginZaproszonego)
+        // najpierw zmieniamy login na id, potem wywołujemy zapraszanie po id
+        public async Task<ServiceResult<bool>> WyslijZaproszenieDoZnajomychPoLoginie(int idZapraszajacego, string loginZaproszonego)
         {
             try
             {
@@ -172,7 +172,20 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                         new ErrorItem("Użytkownik o loginie " + loginZaproszonego + " nie istnieje"));
                 
                 var idZapraszanego = zapraszanyUzytkownik.Id;
-                if(idZapraszanego == idZapraszajacego)
+                
+                // jest git
+                return await WyslijZaproszenieDoZnajomychPoId(idZapraszajacego, idZapraszanego);
+            }
+            catch (NieZnalezionoWBazieException e)
+            {
+                return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+            }
+        }
+
+        public async Task<ServiceResult<bool>> WyslijZaproszenieDoZnajomychPoId(int idZapraszajacego,
+            int idZapraszanego)
+        {
+            if(idZapraszanego == idZapraszajacego)
                     return ServiceResult<bool>.BadRequest(
                         new ErrorItem("Nie możesz wysłać zaproszenia do samego siebie"));
                 
@@ -181,7 +194,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 if (powiadomieniaZaproszonego.Any(p => p.IdTypuPowiadomienia == 2 && p.IdPowiazanegoObiektu == idZapraszajacego))
                 { 
                     return ServiceResult<bool>.Conflict(
-                        new ErrorItem("Użytkownik o loginie " + loginZaproszonego + " ma już wysłane zaproszenie od Ciebie"));
+                        new ErrorItem("Użytkownik o id " + idZapraszanego + " ma już wysłane zaproszenie od Ciebie"));
                 }
             
                 // sprawdzamy, czy już są znajomymi                         
@@ -204,7 +217,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 if (znajomiZapraszanego.Value != null && znajomiZapraszanego.Value.Count >= ZnajomiService.MaxLiczbaZnajomych)
                 {
                     return ServiceResult<bool>.Conflict(
-                        new ErrorItem("Użytkownik o loginie " + loginZaproszonego +
+                        new ErrorItem("Użytkownik o id " + idZapraszanego +
                                       " ma już maksymalną liczbę znajomych i nie może przyjąć więcej zaproszeń"));
                 }
                 
@@ -212,7 +225,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 var wynikSzukaniaPseudonimuZapraszajacego = await profilService.GetProfil(idZapraszajacego);
                 if (wynikSzukaniaPseudonimuZapraszajacego.StatusCode != 200 || wynikSzukaniaPseudonimuZapraszajacego.Value == null)
                     return ServiceResult<bool>.NotFound(
-                        new ErrorItem("Nie znaleziono profilu użytkownika o loginie " + loginZaproszonego));
+                        new ErrorItem("Nie znaleziono profilu użytkownika o id " + idZapraszanego));
                 
                 var dto = new PowiadomienieCreateDto(
                     2, 
@@ -223,10 +236,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
 
                 // jest git
                 return ServiceResult<bool>.NoContent(await powiadomienieRepository.CreatePowiadomienie(dto));
-            }
-            catch (NieZnalezionoWBazieException e)
-            {
-                return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
-            }
         }
+
+
+        // wydzielamy z funkcji zapraszającej zamianę loginu na id, bo potrzebujemy jej tylko w jednym wariancie
 }

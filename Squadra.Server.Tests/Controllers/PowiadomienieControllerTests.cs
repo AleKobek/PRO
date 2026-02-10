@@ -177,11 +177,11 @@ public class PowiadomienieControllerTests
         };
 
         var result = ServiceResult<bool>.Ok(true, 204);
-        _mockPowiadomienieService.Setup(s => s.WyslijZaproszenieDoZnajomych(1, "friend"))
+        _mockPowiadomienieService.Setup(s => s.WyslijZaproszenieDoZnajomychPoLoginie(1, "friend"))
             .ReturnsAsync(result);
 
         // Act
-        var actionResult = await _controller.WyslijZaproszenieDoZnajomych("friend");
+        var actionResult = await _controller.WyslijZaproszenieDoZnajomychPoLoginie("friend");
 
         // Assert
         Assert.IsType<NoContentResult>(actionResult);
@@ -199,7 +199,7 @@ public class PowiadomienieControllerTests
         };
 
         // Act
-        var actionResult = await _controller.WyslijZaproszenieDoZnajomych("friend");
+        var actionResult = await _controller.WyslijZaproszenieDoZnajomychPoLoginie("friend");
 
         // Assert
         var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(actionResult);
@@ -220,11 +220,11 @@ public class PowiadomienieControllerTests
 
         var result = ServiceResult<bool>.Fail(404, 
             new[] { new ErrorItem("User not found", "loginZapraszanegoUzytkownika") });
-        _mockPowiadomienieService.Setup(s => s.WyslijZaproszenieDoZnajomych(1, "nonexistent"))
+        _mockPowiadomienieService.Setup(s => s.WyslijZaproszenieDoZnajomychPoLoginie(1, "nonexistent"))
             .ReturnsAsync(result);
 
         // Act
-        var actionResult = await _controller.WyslijZaproszenieDoZnajomych("nonexistent");
+        var actionResult = await _controller.WyslijZaproszenieDoZnajomychPoLoginie("nonexistent");
 
         // Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult);
@@ -245,11 +245,11 @@ public class PowiadomienieControllerTests
 
         var result = ServiceResult<bool>.Fail(409, 
             new[] { new ErrorItem("Invitation already sent", null) });
-        _mockPowiadomienieService.Setup(s => s.WyslijZaproszenieDoZnajomych(1, "friend"))
+        _mockPowiadomienieService.Setup(s => s.WyslijZaproszenieDoZnajomychPoLoginie(1, "friend"))
             .ReturnsAsync(result);
 
         // Act
-        var actionResult = await _controller.WyslijZaproszenieDoZnajomych("friend");
+        var actionResult = await _controller.WyslijZaproszenieDoZnajomychPoLoginie("friend");
 
         // Assert
         var conflictResult = Assert.IsType<ConflictObjectResult>(actionResult);
@@ -270,11 +270,11 @@ public class PowiadomienieControllerTests
 
         var result = ServiceResult<bool>.Fail(400, 
             new[] { new ErrorItem("Invalid data", "loginZapraszanegoUzytkownika") });
-        _mockPowiadomienieService.Setup(s => s.WyslijZaproszenieDoZnajomych(1, ""))
+        _mockPowiadomienieService.Setup(s => s.WyslijZaproszenieDoZnajomychPoLoginie(1, ""))
             .ReturnsAsync(result);
 
         // Act
-        var actionResult = await _controller.WyslijZaproszenieDoZnajomych("");
+        var actionResult = await _controller.WyslijZaproszenieDoZnajomychPoLoginie("");
 
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult);

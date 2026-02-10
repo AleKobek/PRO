@@ -261,7 +261,7 @@ public class PowiadomienieServiceTests
         var inviteeLogin = "";
 
         // Act
-        var result = await _service.WyslijZaproszenieDoZnajomych(inviterId, inviteeLogin);
+        var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -280,7 +280,7 @@ public class PowiadomienieServiceTests
             .ReturnsAsync((Uzytkownik?)null);
 
         // Act
-        var result = await _service.WyslijZaproszenieDoZnajomych(inviterId, inviteeLogin);
+        var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -300,7 +300,7 @@ public class PowiadomienieServiceTests
             .ReturnsAsync(uzytkownik);
 
         // Act
-        var result = await _service.WyslijZaproszenieDoZnajomych(userId, login);
+        var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(userId, login);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -327,7 +327,7 @@ public class PowiadomienieServiceTests
             .ReturnsAsync(existingNotifications);
 
         // Act
-        var result = await _service.WyslijZaproszenieDoZnajomych(inviterId, inviteeLogin);
+        var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -352,7 +352,7 @@ public class PowiadomienieServiceTests
             .ReturnsAsync(true);
 
         // Act
-        var result = await _service.WyslijZaproszenieDoZnajomych(inviterId, inviteeLogin);
+        var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -385,7 +385,7 @@ public class PowiadomienieServiceTests
             .ReturnsAsync(friendsResult);
 
         // Act
-        var result = await _service.WyslijZaproszenieDoZnajomych(inviterId, inviteeLogin);
+        var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -421,7 +421,7 @@ public class PowiadomienieServiceTests
             .ReturnsAsync(inviteeFriendsResult);
 
         // Act
-        var result = await _service.WyslijZaproszenieDoZnajomych(inviterId, inviteeLogin);
+        var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -458,7 +458,7 @@ public class PowiadomienieServiceTests
             .ReturnsAsync(true);
 
         // Act
-        var result = await _service.WyslijZaproszenieDoZnajomych(inviterId, inviteeLogin);
+        var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);
 
         // Assert
         Assert.True(result.Succeeded);
@@ -477,7 +477,7 @@ public class PowiadomienieServiceTests
             .ThrowsAsync(new NieZnalezionoWBazieException("Database error"));
 
         // Act
-        var result = await _service.WyslijZaproszenieDoZnajomych(inviterId, inviteeLogin);
+        var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);
 
         // Assert
         Assert.False(result.Succeeded);
