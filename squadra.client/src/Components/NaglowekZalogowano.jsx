@@ -81,7 +81,6 @@ export default function NaglowekZalogowano(){
         ustawLadowaniePowiadomien(true);
         try {
             const res = await fetch(`${API_BASE_URL}/Powiadomienie`, { credentials: "include", signal });
-            console.log("res: ",res);
             if (!res.ok) {
                 console.error("Błąd pobierania powiadomień", res.status);
                 ustawPowiadomienia([]);
@@ -89,7 +88,6 @@ export default function NaglowekZalogowano(){
                 return;
             }
             const data = await res.json();
-            console.log("data: ", data);
             const list = Array.isArray(data) ? data : [];
             ustawPowiadomienia(list);
             ustawMaPowiadomienia(list.length > 0);
@@ -216,8 +214,6 @@ export default function NaglowekZalogowano(){
             credentials: "include",
             body: JSON.stringify(czyZaakceptowane)
         }
-
-        console.log("body: ", opcje.body);
 
         const res = await fetch(`${API_BASE_URL}/Powiadomienie/` + id, opcje);
         if(!res.ok) {

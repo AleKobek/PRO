@@ -3,7 +3,7 @@ import ListaJezykow from "./ListaJezykow";
 import {API_BASE_URL} from "../config/api";
 
 // pamiętać o tym, aby to było w nawiasach klamrowych!
-export default function DaneProfilu({uzytkownik}) {
+export default function DaneProfilu({idUzytkownika}) {
     
     const [pseudonim, ustawPseudonim] = useState("");
     const [zaimki, ustawZaimki] = useState("");
@@ -22,8 +22,7 @@ export default function DaneProfilu({uzytkownik}) {
     useEffect(() => {
 
         // czekamy aż się załaduje id użytkownika
-        if(!uzytkownik) return;
-        if(!uzytkownik.id) return;
+        if(!idUzytkownika) return;
         
         const ac = new AbortController();
         let alive = true;
@@ -42,7 +41,6 @@ export default function DaneProfilu({uzytkownik}) {
         };
 
         const podajDaneProfilu = async () => {
-            const idUzytkownika = uzytkownik.id;
             const data = await fetchJsonAbort(`${API_BASE_URL}/Profil/${idUzytkownika}`);
 
             // przerywamy działanie funkcji
@@ -65,7 +63,6 @@ export default function DaneProfilu({uzytkownik}) {
         };
 
         const podajJezykiIStopnieUzytkownika = async () => {
-            const idUzytkownika = uzytkownik.id;
             const data = await fetchJsonAbort(`${API_BASE_URL}/Jezyk/profil/${idUzytkownika}`);
 
             if (!alive) return;
@@ -99,10 +96,10 @@ export default function DaneProfilu({uzytkownik}) {
             alive = false;
             ac.abort(); // przerywamy fetch
         };
-    }, [listaJezykowUzytkownika.length, opis, pseudonim, uzytkownik, zaimki]);
+    }, [listaJezykowUzytkownika.length, opis, pseudonim, idUzytkownika, zaimki]);
 
 
-    if(!uzytkownik || !uzytkownik.id) return(<><p>Ładowanie...</p></>);
+    if(!idUzytkownika) return(<><p>Ładowanie...</p></>);
     
     return(<div className = "dane-profilu">
                                       {/* v dzięki "||" bierze też jak jest pusty string  */}

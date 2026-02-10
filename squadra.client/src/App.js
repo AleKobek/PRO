@@ -11,6 +11,7 @@ import NaglowekZalogowano from "./Components/NaglowekZalogowano";
 import TwojeKonto from "./Components/TwojeKonto";
 import EdytujKonto from "./Components/EdytujKonto";
 import TwoiZnajomiStrona from "./Components/TwoiZnajomiStrona";
+import ProfilOgolny from "./Components/ProfilOgolny";
 
 function App() {
 
@@ -39,6 +40,10 @@ function App() {
                 <Route path = "/twoiZnajomi" element = {<>
                     <NaglowekZalogowano/>
                     <TwoiZnajomiStrona/>
+                </>}></Route>
+              <Route path = "/profil/:idUzytkownika" element = {<>
+                    <NaglowekZalogowano/>
+                    <ProfilOgolny/>
                 </>}></Route>
               <Route path = "/login" element = {<Logowanie/>}></Route>
               <Route path = "/rejestracja" element = {<Rejestracja/>}></Route>

@@ -39,6 +39,8 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
             case TypyPowiadomien.SYSTEMOWE:{
                 ustawTypPowiadomienia("Powiadomienie systemowe")
                 ustawTrescPowiadomieniaCz1(powiadomienie.tresc);
+                console.log("tresc powiadomienia cz1 systemowe: ",trescPowiadomieniaCz1);
+
                 break;
             }
             case TypyPowiadomien.ZAPROSZENIE_DO_ZNAJOMYCH:{
@@ -57,6 +59,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
                 ustawTypPowiadomienia("Odrzucenie zaproszenia do znajomych")
                 ustawTrescPowiadomieniaCz1("Uzytkownik ");
                 ustawTrescPowiadomieniaCz2(" odrzucił Twoje zaproszenie do znajomych.");
+                console.log("tresc powiadomienia cz2: ",trescPowiadomieniaCz2);
                 break;
             }
             case TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH:{
@@ -69,6 +72,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
                 ustawTypPowiadomienia("Nieznany typ powiadomienia");
             }
         }
+        console.log("tresc powiadomienia cz2: ",trescPowiadomieniaCz2);
 
     }, [
         TypyPowiadomien.SYSTEMOWE,
@@ -85,10 +89,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
     if(!powiadomienie) return (<></>);
 
     if(
-        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.SYSTEMOWE ||
-        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.ZAAKCEPTOWANIE_ZAPROSZENIA_DO_ZNAJOMYCH ||
-        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH ||
-        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH
+        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.SYSTEMOWE
     ) return (
         <li key={powiadomienie.id} className="p-2 border-b border-gray-200">
         <div className="flex flex-row justify-between items-center w-full">
@@ -105,13 +106,36 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
     </li>);
 
+    if(powiadomienie.idTypuPowiadomienia === TypyPowiadomien.ZAAKCEPTOWANIE_ZAPROSZENIA_DO_ZNAJOMYCH ||
+        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH ||
+        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH
+    ) return (
+        <li key={powiadomienie.id} className="p-2 border-b border-gray-200">
+            <div className="flex flex-row justify-between items-center w-full">
+                <div className="font-semibold">{typPowiadomienia}</div>
+                <button onClick={() => przyRozpatrzaniuPowiadomienia(null)}>
+                    <img
+                        src = "/img/x.svg"
+                        alt = "x"
+                        className="w-4 h-4 cursor-pointer"
+                    />
+                </button>
+            </div>
+            <div className="text-sm text-gray-600">
+                {trescPowiadomieniaCz1}
+                <a href={`${CLIENT_URL}/profil/`+powiadomienie.idPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
+                {trescPowiadomieniaCz2}
+            </div>
+            <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
+        </li>);
+
     // na razie są tylko odnośnie użytkowników
     return (
         <li key={powiadomienie.id} className="p-2 border-b border-gray-200">
             <div className="font-semibold mb-1">{typPowiadomienia}</div>
             <div className="text-sm text-gray-600">
                 {trescPowiadomieniaCz1}
-                <a href={`${CLIENT_URL}/`+powiadomienie.idPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
+                <a href={`${CLIENT_URL}/profil/`+powiadomienie.idPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
                 {trescPowiadomieniaCz2}
             </div>
             <div className="text-xs text-gray-400 mt-1">{powiadomienie.dataWyslania}</div>
