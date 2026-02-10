@@ -2,6 +2,7 @@
 import {useLocation, useNavigate} from "react-router-dom";
 import Naglowek from "./Naglowek";
 import {useAuth} from "../Context/AuthContext";
+import {API_BASE_URL} from "../config/api";
 
 export default function Logowanie() {
     const navigate = useNavigate();
@@ -37,7 +38,7 @@ export default function Logowanie() {
 
         ustawCzySieWysyla(true);
         try {
-            const res = await fetch("http://localhost:5014/api/Auth/login", {
+            const res = await fetch(`${API_BASE_URL}/Auth/login`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -52,7 +53,7 @@ export default function Logowanie() {
                 return;
             }
 
-            const resMe = await fetch("http://localhost:5014/api/Auth/me", { credentials: "include" });
+            const resMe = await fetch(`${API_BASE_URL}/Auth/me`, { credentials: "include" });
             if (resMe.ok) {
                 const tempUzytkownik = await resMe.json();
                 ustawUzytkownika(tempUzytkownik);

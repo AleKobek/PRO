@@ -1,8 +1,9 @@
 ﻿import React, {useEffect, useMemo, useState} from 'react';
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Naglowek from "./Naglowek";
 import FormularzKonta from "./FormularzKonta";
 import {useAuth} from "../Context/AuthContext";
+import {API_BASE_URL} from "../config/api";
 
 export default function Rejestracja() {
     const navigate = useNavigate();
@@ -50,7 +51,7 @@ export default function Rejestracja() {
         
         ustawCzySieWysyla(true);
         try {
-            const res = await fetch("http://localhost:5014/api/Auth/register", {
+            const res = await fetch(`${API_BASE_URL}/Auth/register`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -102,7 +103,7 @@ export default function Rejestracja() {
             !dataUrodzenia ||
             czySieWysyla
         )
-    },[pseudonim, email, dataUrodzenia, haslo1, haslo2, czySieWysyla]);
+    },[pseudonim, login, email, haslo1, haslo2, dataUrodzenia, czySieWysyla]);
 
     if(ladowanie) return (<>
             <Naglowek/>

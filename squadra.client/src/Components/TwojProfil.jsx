@@ -1,7 +1,6 @@
 ﻿import '../App.css';
 
 import React, {useEffect} from 'react';
-import NaglowekZalogowano from './NaglowekZalogowano';
 import DaneProfilu from './DaneProfilu';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";

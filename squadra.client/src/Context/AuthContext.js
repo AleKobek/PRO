@@ -1,4 +1,5 @@
 ﻿import { createContext, useContext, useState, useEffect } from "react";
+import {API_BASE_URL} from "../config/api";
 
 // tworzy obiekt kontekstu (AuthContext), który React używa do przekazywania danych w dół drzewa komponentów, 
 // bez konieczności przekazywania ich przez props
@@ -16,7 +17,7 @@ export function AuthProvider({ children }) {
             if (czyTrwaFetch) return;
             czyTrwaFetch = true;
             try {
-                const res = await fetch("http://localhost:5014/api/Auth/me", {
+                const res = await fetch(`${API_BASE_URL}/Auth/me`, {
                     credentials: "include"
                 });
                 if (res.ok) {

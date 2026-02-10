@@ -1,4 +1,5 @@
 ﻿import {useEffect, useState} from "react";
+import {API_BASE_URL} from "../config/api";
 
 // pamiętać o tym, aby to było w nawiasach klamrowych!
 export default function DaneKonta({uzytkownik}) {
@@ -34,7 +35,7 @@ export default function DaneKonta({uzytkownik}) {
 
         const podajDaneKonta = async () => {
             const idUzytkownika = uzytkownik.id;
-            const data = await fetchJsonAbort(`http://localhost:5014/api/Uzytkownik/${idUzytkownika}`);
+            const data = await fetchJsonAbort(`${API_BASE_URL}/Uzytkownik/${idUzytkownika}`);
 
             // przerywamy działanie funkcji
             if (!alive) return;

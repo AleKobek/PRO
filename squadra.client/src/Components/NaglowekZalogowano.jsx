@@ -2,6 +2,7 @@
 import {NavLink, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import Powiadomienie from "./Powiadomienie";
+import {API_BASE_URL} from "../config/api";
 
 export default function NaglowekZalogowano(){
 
@@ -26,7 +27,7 @@ export default function NaglowekZalogowano(){
     // ping
     useEffect(() => {
         const interval = setInterval(async () => {
-            await fetch("http://localhost:5014/api/Uzytkownik/ping", {credentials: "include" });
+            await fetch(`${API_BASE_URL}/Uzytkownik/ping`, {credentials: "include"});
         }, 60000); // co minutę
 
         // jak wychodzimy to usuwamy nasz interval
@@ -79,7 +80,7 @@ export default function NaglowekZalogowano(){
     const pobierzPowiadomienia = async (signal) => {
         ustawLadowaniePowiadomien(true);
         try {
-            const res = await fetch("http://localhost:5014/api/Powiadomienie", { credentials: "include", signal });
+            const res = await fetch(`${API_BASE_URL}/Powiadomienie`, { credentials: "include", signal });
             console.log("res: ",res);
             if (!res.ok) {
                 console.error("Błąd pobierania powiadomień", res.status);
@@ -105,7 +106,7 @@ export default function NaglowekZalogowano(){
 
     const przyWylogowywaniu = async () =>{
         
-        const res = await fetch("http://localhost:5014/api/Auth/logout", {method: "POST", credentials: "include"});
+        const res = await fetch(`${API_BASE_URL}/Auth/logout`, {method: "POST", credentials: "include"});
         if(!res.ok) {
             console.error(res);
             console.error("Nie udało się wylogować")
@@ -123,7 +124,7 @@ export default function NaglowekZalogowano(){
             body: idStatusu
         }
 
-        const res = await fetch("http://localhost:5014/api/Profil/" + uzytkownik.id + "/status", opcje);
+        const res = await fetch(`${API_BASE_URL}/Profil/` + uzytkownik.id + "/status", opcje);
         if(!res.ok){
             console.error(res);
             return
@@ -157,13 +158,13 @@ export default function NaglowekZalogowano(){
             }
         };
         const podajStatusy = async () => {
-            const statusy = await fetchJsonAbort("http://localhost:5014/api/Status");
+            const statusy = await fetchJsonAbort(`${API_BASE_URL}/Status`);
             if(!alive || !statusy || !Array.isArray(statusy)) return;
             ustawListeStatusow(statusy);
         }
         
         const podajAktualnyStatus = async () => {
-            const aktualnyStatus = await fetchJsonAbort("http://localhost:5014/api/Profil/" + uzytkownik.id + "/status/baza");
+            const aktualnyStatus = await fetchJsonAbort(`${API_BASE_URL}/Profil/` + uzytkownik.id + "/status/baza");
             if(!alive || !aktualnyStatus) return;
             ustawAktualnyStatusZBazy(aktualnyStatus);
         }
@@ -218,7 +219,7 @@ export default function NaglowekZalogowano(){
 
         console.log("body: ", opcje.body);
 
-        const res = await fetch("http://localhost:5014/api/Powiadomienie/" + id, opcje);
+        const res = await fetch(`${API_BASE_URL}/Powiadomienie/` + id, opcje);
         if(!res.ok) {
             return;
         }

@@ -6,6 +6,7 @@ import FormularzProfilu from './FormularzProfilu';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import FormularzAwatara from "./FormularzAwatara";
+import {API_BASE_URL} from "../config/api";
     export default function EdytujProfil() {
 
     const navigate = useNavigate();
@@ -53,7 +54,7 @@ import FormularzAwatara from "./FormularzAwatara";
             const id = uzytkownik.id;
 
             // podajemy języki profilu
-            const profil = await fetchJsonAbort(`http://localhost:5014/api/Profil/${id}`);
+            const profil = await fetchJsonAbort(`${API_BASE_URL}/Profil/${id}`);
             if(!alive || !profil) return
             
             ustawStaraListeJezykowUzytkownika(Array.isArray(profil.jezyki) ? profil.jezyki : []);
@@ -70,7 +71,7 @@ import FormularzAwatara from "./FormularzAwatara";
             ustawAwatar(profil.awatar ? "data:image/jpeg;base64,"+profil.awatar : "");
             
 
-            const jezyki = await fetchJsonAbort(`http://localhost:5014/api/Jezyk/profil/${id}`);
+            const jezyki = await fetchJsonAbort(`${API_BASE_URL}/Jezyk/profil/${id}`);
             if(!alive || !jezyki || !Array.isArray(jezyki)) return;
             
             ustawStaraListeJezykowUzytkownika(jezyki.map(item => ({

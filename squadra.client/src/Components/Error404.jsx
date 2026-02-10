@@ -9,14 +9,18 @@ export default function Error404({czyZalogowano}) {
     if(czyZalogowano)
         return (<>
             <NaglowekZalogowano navigate = {navigate}></NaglowekZalogowano>
-            <h1>"Coś poszło nie tak, ta strona nie istnieje!"</h1>
-            <h2>404</h2>
+            <div className="glowna" id="glowna">
+                <h1>"Coś poszło nie tak, ta strona nie istnieje!"</h1>
+                <h2>404</h2>
+            </div>
         </>);
     
     
   return (<>
       <Naglowek></Naglowek>
-      <h1>"Coś poszło nie tak, ta strona nie istnieje!"</h1>
-      <h2>404</h2>
+      <div className="glowna" id="glowna">
+          <h1>"Coś poszło nie tak, ta strona nie istnieje!"</h1>
+          <h2>404</h2>
+      </div>
   </>);
 }

@@ -1,5 +1,6 @@
 
 import {useEffect, useState} from "react";
+import {CLIENT_URL} from "../config/api";
 
 {/*
         powiadomienia przyjdą w formacie:
@@ -110,7 +111,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
             <div className="font-semibold mb-1">{typPowiadomienia}</div>
             <div className="text-sm text-gray-600">
                 {trescPowiadomieniaCz1}
-                <a href={"http://localhost:3000/profil/"+powiadomienie.idPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
+                <a href={`${CLIENT_URL}/`+powiadomienie.idPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
                 {trescPowiadomieniaCz2}
             </div>
             <div className="text-xs text-gray-400 mt-1">{powiadomienie.dataWyslania}</div>

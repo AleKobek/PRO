@@ -1,5 +1,6 @@
 ﻿import {useEffect, useMemo, useState} from "react";
 import JezykNaLiscieKomponent from "./JezykNaLiscieKomponent";
+import {API_BASE_URL} from "../config/api";
 
 export default function ListaJezykow({
                                          typ,
@@ -50,11 +51,11 @@ export default function ListaJezykow({
         };
         
         const pobierzJezykiIStopnie = async () => {
-            const jezyki = await fetchJsonAbort("http://localhost:5014/api/Jezyk");
+            const jezyki = await fetchJsonAbort(`${API_BASE_URL}/Jezyk`);
             if (!alive || !jezyki) return;
             ustawListeJezykowZBazy(jezyki);
             
-            const stopnie = await fetchJsonAbort("http://localhost:5014/api/StopienBieglosciJezyka");
+            const stopnie = await fetchJsonAbort(`${API_BASE_URL}/StopienBieglosciJezyka`);
             if (!alive || !stopnie) return;
             ustawListeStopniZBazy(stopnie);
         };

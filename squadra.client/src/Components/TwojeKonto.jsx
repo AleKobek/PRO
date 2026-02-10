@@ -1,11 +1,8 @@
 ﻿import '../App.css';
 
 import React, {useEffect} from 'react';
-import NaglowekZalogowano from './NaglowekZalogowano';
-import DaneProfilu from './DaneProfilu';
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
-import Naglowek from "./Naglowek";
 import DaneKonta from "./DaneKonta";
 export default function TwojeKonto() {
 

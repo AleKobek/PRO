@@ -1,6 +1,7 @@
 import React, {useEffect, useMemo, useState} from "react";
 import ListaJezykow from "./ListaJezykow";
 import {useNavigate} from "react-router-dom";
+import {API_BASE_URL} from "../config/api";
 
 export default function FormularzProfilu({
                                              staraListaJezykowUzytkownika,
@@ -77,12 +78,12 @@ export default function FormularzProfilu({
         const podajKrajeIRegionyZBazy = async () => {
             
             // podajemy kraje
-            const kraje = await fetchJsonAbort("http://localhost:5014/api/Kraj");
+            const kraje = await fetchJsonAbort(`${API_BASE_URL}/Kraj`);
             if (!alive || !kraje || !Array.isArray(kraje)) return;
             ustawListeKrajowZBazy(kraje);
             
             // podajemy regiony
-            const regiony = await fetchJsonAbort("http://localhost:5014/api/Region");
+            const regiony = await fetchJsonAbort(`${API_BASE_URL}/Region`);
             if(!alive || !regiony || !Array.isArray(regiony)) return;
             ustawListeRegionowZBazy(regiony);
             
@@ -128,7 +129,7 @@ export default function FormularzProfilu({
         }
         
         
-        const res = await fetch("http://localhost:5014/api/Profil/" + uzytkownik.id, opcje);
+        const res = await fetch(`${API_BASE_URL}/Profil/` + uzytkownik.id, opcje);
         
         
         // Odczyt body różni się zależnie od typu odpowiedzi
@@ -196,9 +197,7 @@ export default function FormularzProfilu({
                     )
                 ||
                 pseudonim.trim().length === 0) // pseudonim nie może być pusty       ( (reszta jest opcjonalna)
-        }, [
-            pseudonim, zaimki, kraj, region, opis,
-            czyListyJezykoweTakieSame]);
+        }, [pseudonim, staryPseudonim, zaimki, stareZaimki, region?.id, staryRegion?.id, opis, staryOpis, czyListyJezykoweTakieSame]);
     
     
     

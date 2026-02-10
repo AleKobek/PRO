@@ -1,5 +1,6 @@
 ﻿import React, {useEffect, useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {API_BASE_URL} from "../config/api";
 
 export default function FormularzAwatara({
                                              uzytkownik,
@@ -39,7 +40,7 @@ export default function FormularzAwatara({
             body: formularz
         }
         
-        const res = await fetch("http://localhost:5014/api/Profil/" + uzytkownik.id + "/awatar", opcje);
+        const res = await fetch(`${API_BASE_URL}/Profil/` + uzytkownik.id + "/awatar", opcje);
         
         // Odczyt body różni się zależnie od typu odpowiedzi
         // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
