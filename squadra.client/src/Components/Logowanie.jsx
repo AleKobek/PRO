@@ -3,6 +3,7 @@ import {useLocation, useNavigate} from "react-router-dom";
 import Naglowek from "./Naglowek";
 import {useAuth} from "../Context/AuthContext";
 import {API_BASE_URL} from "../config/api";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 
 export default function Logowanie() {
     const navigate = useNavigate();
@@ -50,6 +51,17 @@ export default function Logowanie() {
                 if(res.status === 400 || res.status === 401){
                     ustawBladOgolny(body.message);
                 }
+                toast.error('Nie udało się zalogować', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
                 return;
             }
 
@@ -121,6 +133,19 @@ export default function Logowanie() {
                     <span id="error-ogolny" className="error-wiadomosc">{bladOgolny}</span><br/>
             </form>
         </div>
+        <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />
 </>
     )
 }

@@ -3,15 +3,15 @@
 import React, {useEffect, useState} from 'react';
 import NaglowekZalogowano from './NaglowekZalogowano';
 import FormularzProfilu from './FormularzProfilu';
-import {useLocation, useNavigate} from "react-router-dom";
+import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import FormularzAwatara from "./FormularzAwatara";
 import {API_BASE_URL} from "../config/api";
+import {Bounce, toast, ToastContainer} from "react-toastify";
     export default function EdytujProfil() {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
-    const location = useLocation();
 
     const [pseudonim, ustawPseudonim] = useState("");
     const [zaimki, ustawZaimki] = useState("");
@@ -39,13 +39,37 @@ import {API_BASE_URL} from "../config/api";
         const fetchJsonAbort = async (url) => {
             try {
                 const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include"});
-                if (!res.ok) return null;
+                if (!res.ok) {
+                    toast.error('Wystąpił błąd podczas pobierania danych profilu', {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    return null;
+                }
                 return await res.json();
             } catch (err) {
                 // To zdarza się przy czyszczeniu efektu / Hot Reload / StrictMode – ignorujemy
                 if (err && err.name === 'AbortError') return null;
                 // Inne błędy warto zalogować
                 console.error('Błąd pobierania:', err);
+                toast.error('Wystąpił błąd podczas pobierania danych profilu', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
                 return null;
             }
         };
@@ -106,13 +130,24 @@ import {API_BASE_URL} from "../config/api";
             <h1>Edytuj profil</h1>
             <button className={"przycisk-nawigacji"} onClick={() => {navigate('/')}}>Powrót do profilu</button>
             <br/><br/>
-            <span className="success-widomosc">{location.state?.message}</span>
-            <FormularzProfilu czyEdytuj = {true} staraListaJezykowUzytkownika = {staraListaJezykowUzytkownika} staryPseudonim = {pseudonim} 
+            <FormularzProfilu czyEdytuj = {true} staraListaJezykowUzytkownika = {staraListaJezykowUzytkownika} staryPseudonim = {pseudonim}
                               stareZaimki = {zaimki} staryOpis = {opis} staryRegion = {region} staryKraj = {kraj} uzytkownik={uzytkownik} staryAwatar={awatar}/>
             <br></br>
             <h2>Edytuj awatar</h2>
             <FormularzAwatara uzytkownik={uzytkownik} staryAwatar={awatar}/>
         </div>
-
+        <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />
     </>);
 }

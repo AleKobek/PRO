@@ -1,6 +1,7 @@
 ﻿import {useEffect, useMemo, useState} from "react";
 import JezykNaLiscieKomponent from "./JezykNaLiscieKomponent";
 import {API_BASE_URL} from "../config/api";
+import {Bounce, toast} from "react-toastify";
 
 export default function ListaJezykow({
                                          typ,
@@ -41,7 +42,20 @@ export default function ListaJezykow({
         const fetchJsonAbort = async (url) => {
             try {
                 const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
-                if (!res.ok) return null;
+                if (!res.ok) {
+                    toast.error('Wystąpił błąd podczas pobierania listy języków i stopni', {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    return null;
+                }
                 return await res.json();
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;

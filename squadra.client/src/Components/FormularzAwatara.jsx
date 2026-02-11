@@ -1,6 +1,7 @@
 ﻿import React, {useEffect, useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {API_BASE_URL} from "../config/api";
+import {Bounce, toast} from "react-toastify";
 
 export default function FormularzAwatara({
                                              uzytkownik,
@@ -53,12 +54,25 @@ export default function FormularzAwatara({
             if(res.status === 400){
                 let bledy = body.errors;
                 ustawBladAwatara(bledy.Awatar ? bledy.Awatar[0] : "");
+                toast.error('Wystąpił błąd podczas edytowania awatara', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
             }
             return;
         }
 
         // jak tutaj dojdziemy, wszystko jest git
-        navigate("/twojProfil", {state: {message: "Pomyślnie edytowano awatar"}});
+        navigate("/twojProfil", {
+            state: { pomyslnieEdytowanoProfil: true }
+        });
     }
 
     /**

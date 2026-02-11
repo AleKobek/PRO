@@ -6,6 +6,7 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import FormularzKonta from "./FormularzKonta";
 import {API_BASE_URL} from "../config/api";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 export default function EdytujKonto() {
 
     const navigate = useNavigate();
@@ -36,8 +37,6 @@ export default function EdytujKonto() {
     const [noweHaslo, ustawNoweHaslo] = useState("");
     const [powtorzHaslo, ustawPowtorzHaslo] = useState("");
     const [bladOgolnyHasla, ustawbladOgolnyHasla] = useState("");
-    const [sukcesHasla, ustawSukcesHasla] = useState("");
-    
     
     useEffect(() => {
         if (!ladowanie && !uzytkownik) {
@@ -154,11 +153,24 @@ export default function EdytujKonto() {
                 ustawBladDatyUrodzenia(bledy.DataUrodzenia ? bledy.DataUrodzenia[0] : "");
                 ustawBladOgolnyKonta(body.message);
             }
+            toast.error('Wystąpił błąd podczas edycji danych konta', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
             return;
         }
 
         // jak tutaj dojdziemy, wszystko jest git
-        ustawSukcesKonta("Konto zmienione pomyślnie!")
+        navigate("/twojeKonto", {
+            state: { pomyslnieEdytowanoKonto: true }
+        });
     }
 
     const czyZablokowaneWyslijHasla = useMemo(() =>{
@@ -174,8 +186,7 @@ export default function EdytujKonto() {
 
     const przyWysylaniuZmianyHasla = async() => {
         ustawbladOgolnyHasla("");
-        ustawSukcesHasla("");
-        
+
         const hasloDoWyslania = {
             stareHaslo: stareHaslo.trim(),
             noweHaslo: noweHaslo.trim(),
@@ -207,8 +218,17 @@ export default function EdytujKonto() {
             return;
         }
 
-        // jak tutaj dojdziemy, wszystko jest git
-        ustawSukcesHasla("Hasło zmienione pomyślnie!")
+        toast.success('Pomyślnie edytowano hasło!', {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+        });
     }
     
     if(ladowanie) return (<>
@@ -266,7 +286,19 @@ export default function EdytujKonto() {
                     <span id = "error-ogolny-hasla" className="error-wiadomosc">{bladOgolnyHasla}</span><br/>
                 </form>
             </div>
-            <span className="success-widomosc">{sukcesHasla}</span>
         </div>
+        <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />
     </>);
 }

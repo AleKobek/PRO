@@ -1,6 +1,7 @@
 ﻿import {useEffect, useState} from "react";
 import ListaJezykow from "./ListaJezykow";
 import {API_BASE_URL} from "../config/api";
+import {Bounce, toast} from "react-toastify";
 
 // pamiętać o tym, aby to było w nawiasach klamrowych!
 export default function DaneProfilu({idUzytkownika}) {
@@ -31,11 +32,35 @@ export default function DaneProfilu({idUzytkownika}) {
         const fetchJsonAbort = async (url) => {
             try {
                 const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
-                if (!res.ok) return null;
+                if (!res.ok) {
+                    toast.error('Wystąpił błąd podczas pobierania danych profilu', {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    return null;
+                }
                 return await res.json();
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;
                 console.error('Błąd pobierania:', err);
+                toast.error('Wystąpił błąd podczas pobierania danych profilu', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
                 return null;
             }
         };

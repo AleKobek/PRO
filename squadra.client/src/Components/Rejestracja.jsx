@@ -4,6 +4,7 @@ import Naglowek from "./Naglowek";
 import FormularzKonta from "./FormularzKonta";
 import {useAuth} from "../Context/AuthContext";
 import {API_BASE_URL} from "../config/api";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 
 export default function Rejestracja() {
     const navigate = useNavigate();
@@ -77,6 +78,17 @@ export default function Rejestracja() {
                 }
                 ustawBladOgolny(body?.message || "Rejestracja nie powiodła się.");
                 console.error(body?.message || "Rejestracja nie powiodła się.");
+                toast.error('Wystąpił błąd podczas rejestracji', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
                 return;
             }
 
@@ -88,6 +100,17 @@ export default function Rejestracja() {
             });
         } catch (err) {
             ustawBladOgolny(err.message || "Rejestracja nie powiodła się.");
+            toast.error('Wystąpił błąd podczas rejestracji.', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         } finally {
             ustawCzySieWysyla(false);
         }
@@ -180,6 +203,19 @@ export default function Rejestracja() {
                     <span id = "error-ogolny" className="error-wiadomosc">{bladOgolny}</span><br/>
                 </form>
             </div>
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                transition={Bounce}
+            />
         </>
     );
 }

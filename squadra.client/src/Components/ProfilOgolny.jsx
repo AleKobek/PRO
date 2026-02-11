@@ -5,6 +5,7 @@ import DaneProfilu from './DaneProfilu';
 import {useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import {API_BASE_URL} from "../config/api";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 export default function ProfilOgolny() {
 
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ export default function ProfilOgolny() {
     useEffect(() => {
         if(uzytkownik === null) return;
         if(idUzytkownika === uzytkownik.id.toString()) navigate("/twojProfil");
-    }, [idUzytkownika, navigate, uzytkownik?.id]);
+    }, [idUzytkownika, navigate, uzytkownik?.id]); // z jakiegoś powodu dodanie dep użytkownik wywala stronę
 
 
     const przyWysylaniuZaproszenia = async () => {
@@ -36,6 +37,17 @@ export default function ProfilOgolny() {
         if(!res.ok) {
             const body = await res.json().catch(() => ({}));
             console.error(body);
+            toast.error('Nie udało się wysłać zaproszenia do znajomych.', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
     }
 
@@ -53,5 +65,18 @@ export default function ProfilOgolny() {
             <DaneProfilu idUzytkownika={parseInt(idUzytkownika)}></DaneProfilu>
             <button className="block !mx-auto bg-green-900 !text-[25px] text-white rounded-md !px-3 !py-1 !my-4 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105" onClick={() =>przyWysylaniuZaproszenia()}>Wyślij zaproszenie do znajomych</button>
         </div>
+        <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />
     </>);
 }
