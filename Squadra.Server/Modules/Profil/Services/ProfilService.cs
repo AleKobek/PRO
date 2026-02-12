@@ -22,9 +22,20 @@ public class ProfilService(
     public async Task<ServiceResult<ProfilGetResDto>> GetProfil(int id)
     {
         try{
-            return id < 1
-                ? ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem("Profil o id " + id + " nie istnieje"))
-                : ServiceResult<ProfilGetResDto>.Ok(await profilRepository.GetProfilUzytkownika(id));
+            if (id < 1) return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem("Profil o id " + id + " nie istnieje"));
+            
+            var profil = await profilRepository.GetProfilUzytkownika(id);
+            
+            // podajemy status do wyświetlenia, czyli jeżeli użytkownik jest aktywny, to jego aktualny status, a jeżeli nie jest aktywny, to status offline
+            var statusDoWyswietleniaRes = await GetStatusDoWyswietleniaProfilu(id);
+            var statusDoWyswietlenia = statusDoWyswietleniaRes.Value;
+            
+            if(statusDoWyswietleniaRes.StatusCode == 404) return ServiceResult<ProfilGetResDto>.NotFound(statusDoWyswietleniaRes.Errors[0]);
+            if(statusDoWyswietlenia == null) return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem("Status o podanym id nie istnieje")); // tylko aby nie było ostrzeżenia
+            
+            var profilDoZwrocenia = profil with {NazwaStatusu = statusDoWyswietlenia.Nazwa};
+            return ServiceResult<ProfilGetResDto>.Ok(profilDoZwrocenia);
+            
         }catch(NieZnalezionoWBazieException e){
             return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem(e.Message));
         }
