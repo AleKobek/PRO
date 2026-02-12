@@ -12,6 +12,9 @@ public class Znajomi
     
     public DateOnly DataNawiazaniaZnajomosci { get; set; }
     
+    public DateTime? OstatnieOtwarcieCzatuUzytkownika1 { get; set; }
+    public DateTime? OstatnieOtwarcieCzatuUzytkownika2 { get; set; }
+    
     
     [ForeignKey(nameof(IdUzytkownika1))]
     public virtual Uzytkownik Uzytkownik1 { get; set; } = null!;

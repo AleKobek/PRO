@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Squadra.Server.DTO.Powiadomienie;
 using Squadra.Server.DTO.Profil;
 using Squadra.Server.Models;
+using Squadra.Server.Modules.Znajomi.DTO;
 using Squadra.Server.Services;
 
 namespace Squadra.Server.Controllers;
@@ -18,15 +19,15 @@ public class ZnajomiController(IZnajomiService znajomiService,
     IProfilService profilService) : ControllerBase
 {
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<ProfilGetResDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<ZnajomyDoListyDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult<IEnumerable<ProfilGetResDto>>> GetZnajomi()
+    public async Task<ActionResult<IEnumerable<ZnajomyDoListyDto>>> GetZnajomiDoListy()
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
-        var result = await znajomiService.GetZnajomiUzytkownika(uzytkownik.Id);
+        var result = await znajomiService.GetZnajomiDoListyUzytkownika(uzytkownik.Id);
         if (result.StatusCode == 404) return NotFound(result.Errors[0].Message);
         return Ok(result.Value);
     }
@@ -64,5 +65,23 @@ public class ZnajomiController(IZnajomiService znajomiService,
             404 => NotFound(resultPowiadomienia.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
+    }
+    
+    // jak użytkownik otworzy czat z danym znajomym, to aktualizujemy datę ostatniego otwarcia czatu, żeby wiedzieć, czy są jakieś nowe wiadomości od tego znajomego
+    [HttpPut("{idZnajomego:int}")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult<bool>> ZaktualizujOstatnieOtwarcieCzatu(int idZnajomego)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await znajomiService.ZaktualizujOstatnieOtwarcieCzatu(uzytkownik.Id, idZnajomego);
+        
+        if(result.StatusCode == 404) return NotFound(result.Errors[0].Message);
+        
+        return NoContent();
     }
 }

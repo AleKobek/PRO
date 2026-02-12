@@ -37,6 +37,16 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         )).ToList();
     }
     
+    // nie obchodzi nas, kto jest nadawcą, a kto odbiorcą, więc bierzemy max z obu
+    public async Task<DateTime?> GetDataNajnowszejWiadomosci(int idUzytkownika1, int idUzytkownika2) {
+        var wiadomosci = await context.Wiadomosc
+            .Where(x => (x.IdNadawcy == idUzytkownika1 && x.IdOdbiorcy == idUzytkownika2) ||
+                                  (x.IdNadawcy == idUzytkownika2 && x.IdOdbiorcy == idUzytkownika1))
+            .ToListAsync();
+        if(wiadomosci.Count == 0) return null;
+        return wiadomosci.Max(x => x.DataWyslania);
+    }
+    
     public async Task<bool> CreateWiadomosc(WiadomoscCreateDto wiadomosc, int idNadawcy)
     {
         var wiadomoscDoDodania = new Models.Wiadomosc

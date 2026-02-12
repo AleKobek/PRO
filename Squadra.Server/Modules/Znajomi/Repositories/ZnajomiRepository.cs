@@ -3,6 +3,8 @@ using Squadra.Server.Context;
 using Squadra.Server.DTO.Profil;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Models;
+using Squadra.Server.Modules.Znajomi.DTO;
+using Squadra.Server.Services;
 
 namespace Squadra.Server.Repositories;
 
@@ -11,19 +13,25 @@ public class ZnajomiRepository(
     IProfilRepository profilRepository,
     IWiadomoscRepository wiadomoscRepository) : IZnajomiRepository
 {
-
-    public async Task<ICollection<ProfilGetResDto>> GetZnajomiUzytkownika(int id)
+    
+    public async Task<ICollection<Znajomi>> GetZnajomiUzytkownika(int id)
     {
-        // najpierw z bazy znajomych pobieramy id wszystkich osób, które są w parze z naszym
-        ICollection<Znajomi> znajomi = await context.Znajomi.Where(x => x.IdUzytkownika1 == id || x.IdUzytkownika2 == id).ToListAsync();
-        ICollection<ProfilGetResDto> listaDoZwrocenia = new List<ProfilGetResDto>();
-        // dla każdego użytkownika bierzemy jego profil
-        foreach (var uzytkownik in znajomi)
-        {
-            var idZnajomego = uzytkownik.IdUzytkownika1 == id ? uzytkownik.IdUzytkownika2 : uzytkownik.IdUzytkownika1;
-            listaDoZwrocenia.Add(await profilRepository.GetProfilUzytkownika(idZnajomego));
-        }
-        return listaDoZwrocenia;
+        if (id < 1) throw new NieZnalezionoWBazieException("Użytkownik o id " + id + " nie istnieje");
+        
+        // sprawdzamy, czy użytkownik o podanym id istnieje, żeby w razie czego wywalić "Nie znaleziono w bazie exception"
+        if(!context.Uzytkownik.Any(x => x.Id == id)) throw new NieZnalezionoWBazieException("Użytkownik o id " + id + " nie istnieje");
+        
+        return await context.Znajomi.Where(x => x.IdUzytkownika1 == id || x.IdUzytkownika2 == id).ToListAsync();
+    }
+    
+    
+    public async Task<DateTime?> GetDataOstatniegoOtwarciaCzatu(int idSprawdzajacego, int idZnajomego)
+    {
+        var znajomosc = await context.Znajomi.Where(x => x.IdUzytkownika1 == idSprawdzajacego && x.IdUzytkownika2 == idZnajomego || 
+                                                          x.IdUzytkownika1 == idZnajomego && x.IdUzytkownika2 == idSprawdzajacego).FirstOrDefaultAsync();
+        if(znajomosc == null) throw new NieZnalezionoWBazieException("Znajomosc o idUzytkownika1: " + idSprawdzajacego + " i idUzytkownika2: " + idZnajomego + " nie istnieje");
+        
+        return znajomosc.IdUzytkownika1 == idSprawdzajacego ? znajomosc.OstatnieOtwarcieCzatuUzytkownika1 : znajomosc.OstatnieOtwarcieCzatuUzytkownika2;
     }
     
     public async Task<bool> CreateZnajomosc(int idUzytkownika1, int idUzytkownika2)
@@ -69,5 +77,20 @@ public class ZnajomiRepository(
     {
         return await context.Znajomi.AnyAsync(x => x.IdUzytkownika1 == idUzytkownika1 && x.IdUzytkownika2 == idUzytkownika2 || 
                                                    x.IdUzytkownika1 == idUzytkownika2 && x.IdUzytkownika2 == idUzytkownika1);
+    }
+    
+    public async Task<bool> ZaktualizujOstatnieOtwarcieCzatu(int idOtwierajacego, int idZnajomego)
+    {
+        var znajomosc = await context.Znajomi.Where(x => x.IdUzytkownika1 == idOtwierajacego && x.IdUzytkownika2 == idZnajomego || 
+                                                          x.IdUzytkownika1 == idZnajomego && x.IdUzytkownika2 == idOtwierajacego).FirstOrDefaultAsync();
+        if(znajomosc == null) throw new NieZnalezionoWBazieException("Znajomosc o idUzytkownika1: " + idOtwierajacego + " i idUzytkownika2: " + idZnajomego + " nie istnieje");
+        
+        // aktualizujemy datę ostatniego otwarcia czatu dla użytkownika, który otwiera czat
+        // mamy dwie zmienne w bazie danych, OstatnieOtwarcieCzatuUzytkownika1 i OstatnieOtwarcieCzatuUzytkownika2, więc musimy sprawdzić, który z nich aktualizować
+        if (znajomosc.IdUzytkownika1 == idOtwierajacego) znajomosc.OstatnieOtwarcieCzatuUzytkownika1 = DateTime.Now;
+        else znajomosc.OstatnieOtwarcieCzatuUzytkownika2 = DateTime.Now;
+        
+        context.Znajomi.Update(znajomosc);
+        return await context.SaveChangesAsync() > 0;
     }
 }
