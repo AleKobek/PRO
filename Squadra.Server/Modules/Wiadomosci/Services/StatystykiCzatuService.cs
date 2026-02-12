@@ -45,6 +45,7 @@ public class StatystykiCzatuService (IWiadomoscRepository wiadomoscRepository, I
             try
             {
                 var dataOstatniegoOtwarciaCzatu = await znajomiRepository.GetDataOstatniegoOtwarciaCzatu(idObecnegoUzytkownika, idZnajomego);
+                if (dataOstatniegoOtwarciaCzatu == null) return ServiceResult<bool>.Ok(true); // jeżeli użytkownik nigdy nie otworzył czatu z tym znajomym a jest jakaś wiadomość, to na pewno jest nowa wiadomość
                 return ServiceResult<bool>.Ok(dataNajnowszejWiadomosci > dataOstatniegoOtwarciaCzatu);
             }
             catch (NieZnalezionoWBazieException e)
