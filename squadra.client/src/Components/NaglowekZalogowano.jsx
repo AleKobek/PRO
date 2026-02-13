@@ -4,15 +4,17 @@ import {useAuth} from "../Context/AuthContext";
 import Powiadomienie from "./Powiadomienie";
 import {API_BASE_URL} from "../config/api";
 
-export default function NaglowekZalogowano(){
+export default function NaglowekZalogowano({
+                                           czySaNoweWiadomosci = false,
+                                           ustawCzySaNoweWiadomosci = () => {}
+}){
 
+    const navigate = useNavigate();
     const {uzytkownik, ustawUzytkownika} = useAuth();
-    
-    // to, co pobieramy, w prototypie nie zmieniamy
+
     const [aktualnyStatus, ustawAktualnyStatusZBazy] = useState("Dostępny");
     const [listaStatusow, ustawListeStatusow] = useState([]);
     const [awatarUrl, ustawAwatarUrl] = useState("");
-    const navigate = useNavigate();
 
     // powiadomienia
     const [pokazPowiadomienia, ustawPokazPowiadomienia] = useState(false);
@@ -21,9 +23,7 @@ export default function NaglowekZalogowano(){
     const [maPowiadomienia, ustawMaPowiadomienia] = useState(false);
 
     const notyRef = useRef(null);
-
-
-
+    
     // ping
     useEffect(() => {
         const interval = setInterval(async () => {
@@ -32,6 +32,25 @@ export default function NaglowekZalogowano(){
 
         // jak wychodzimy to usuwamy nasz interval
         return () => clearInterval(interval);
+    }, []);
+    
+
+    // co minutę pobieramy czy są nowe wiadomości
+    useEffect(() => {
+        const ac = new AbortController();
+        let alive = true;
+
+        const interval = setInterval(async () => {
+            if (!alive) return;
+            await sprawdzCzySaNoweWiadomosci(ac.signal)
+        }, 60000);
+
+        // jak wychodzmy to zatrzymujemy nasz interval
+        return () => {
+            alive = false;
+            ac.abort();
+            clearInterval(interval);
+        };
     }, []);
     
     useEffect(() => {
@@ -75,6 +94,24 @@ export default function NaglowekZalogowano(){
         };
     },[])
 
+    // przy załadowaniu strony także jednorazowo sprawdzamy czy są nowe wiadomości
+    useEffect(() => {
+        const ac = new AbortController();
+        let alive = true;
+
+        async function fetchNow(signal) {
+            if (!alive) return;
+            await sprawdzCzySaNoweWiadomosci(signal);
+        }
+
+        fetchNow(ac.signal);
+
+        return () => {
+            alive = false;
+            ac.abort();
+        };
+    },[])
+
 
     // pobieramy powiadomienia
     const pobierzPowiadomienia = async (signal) => {
@@ -100,6 +137,20 @@ export default function NaglowekZalogowano(){
             ustawLadowaniePowiadomien(false);
         }
     };
+    
+    const sprawdzCzySaNoweWiadomosci = async (signal) => {
+        try {
+            const res = await fetch(`${API_BASE_URL}/Wiadomosc/nowe`, {credentials: "include", signal});
+            if(!res.ok) return;
+            const czyNowe = await res.json();
+            if(czySaNoweWiadomosci !== czyNowe) ustawCzySaNoweWiadomosci(czyNowe);
+        } catch (err) {
+            if (err && err.name === 'AbortError') return;
+            console.error(err);
+            ustawPowiadomienia([]);
+            ustawMaPowiadomienia(false);
+        }
+    }
     
 
     const przyWylogowywaniu = async () =>{
@@ -229,13 +280,22 @@ export default function NaglowekZalogowano(){
             <title>Squadra</title>
         </header>
         <div className ="menu" id = "menu">
-            <span className="logo">Squadra</span>
+            <div className="flex items-center flex-row  gap-3 h-full">
+                <span className="logo">Squadra</span>
+                <img src="/img/gamepad-2.svg" alt="gamepad" className="h-full"/>
+            </div>
+
             <div id = "menu-na-pasku">
                 <div className="nawigacja-na-pasku">
                     {/* na razie wszystkie prowadzą do profilu, bo nie ma reszty */}
                     <NavLink to = '/twojProfil' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Drużyny</NavLink>
                     <NavLink to = '/twojProfil' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Gildie</NavLink>
-                    <NavLink to = '/twoiZnajomi' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Znajomi</NavLink>
+                    <NavLink to = '/twoiZnajomi' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja' }>
+                        <div className="flex flex-row gap-2 items-center">
+                            Znajomi
+                            {czySaNoweWiadomosci ? <img src="/img/koperta.svg" alt="koperta" className="text-red-600 h-9"/> : null}
+                        </div>
+                    </NavLink>
                     <NavLink to = '/twojProfil' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Twój profil</NavLink>
                     <NavLink to = '/twojeKonto' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Twoje konto</NavLink>
                 </div>
