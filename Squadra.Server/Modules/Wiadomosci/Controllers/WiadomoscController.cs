@@ -13,6 +13,7 @@ namespace Squadra.Server.Controllers;
 [ApiController]
 public class WiadomoscController(
     IWiadomoscService wiadomoscService,
+    IStatystykiCzatuService statykiCzatuService,
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
     [HttpGet("{id:int}")]
@@ -51,6 +52,26 @@ public class WiadomoscController(
         {
             200 => Ok(result.Value),
             403 => StatusCode(StatusCodes.Status403Forbidden, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+
+    [HttpGet("nowe")]
+    [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult> CzySaNoweWiadomosci()
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        var result = await statykiCzatuService.CzySaNoweWiadomosciOdZnajomych(uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
