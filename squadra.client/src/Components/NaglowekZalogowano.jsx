@@ -10,7 +10,7 @@ export default function NaglowekZalogowano({
 }){
 
     const navigate = useNavigate();
-    const {uzytkownik, ustawUzytkownika} = useAuth();
+    const {uzytkownik, ustawUzytkownika, ladowanie} = useAuth();
 
     const [aktualnyStatus, ustawAktualnyStatusZBazy] = useState("Dostępny");
     const [listaStatusow, ustawListeStatusow] = useState([]);
@@ -26,10 +26,10 @@ export default function NaglowekZalogowano({
 
     // Jeśli nie ma użytkownika, nawiguj do logowania
     useEffect(() => {
-        if (!uzytkownik) {
+        if (!ladowanie && !uzytkownik) {
             navigate('/login');
         }
-    }, [uzytkownik, navigate]);
+    }, [uzytkownik, navigate, ladowanie]);
     
     // ping
     useEffect(() => {
