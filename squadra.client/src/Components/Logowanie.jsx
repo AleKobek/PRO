@@ -126,6 +126,7 @@ export default function Logowanie() {
                     
                     <input
                         type="button"
+                        className="wyslij-formularz-przycisk"
                         disabled={czySieWysyla || czyZablokowaneWyslij}
                         onClick={przyWysylaniu}
                         value="Zaloguj się"

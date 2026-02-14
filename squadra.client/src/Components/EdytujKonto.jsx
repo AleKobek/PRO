@@ -37,12 +37,7 @@ export default function EdytujKonto() {
     const [noweHaslo, ustawNoweHaslo] = useState("");
     const [powtorzHaslo, ustawPowtorzHaslo] = useState("");
     const [bladOgolnyHasla, ustawbladOgolnyHasla] = useState("");
-    
-    useEffect(() => {
-        if (!ladowanie && !uzytkownik) {
-            navigate("/login"); // jeśli jest niezalogowany
-        }
-    }, [ladowanie, uzytkownik, navigate]);
+
 
 
     useEffect(() => {

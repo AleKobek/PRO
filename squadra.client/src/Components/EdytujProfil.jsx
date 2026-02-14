@@ -23,11 +23,6 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
         // lista języków użytkownika przed zmianami, jej postać to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
     const [staraListaJezykowUzytkownika, ustawStaraListeJezykowUzytkownika] = useState([])
 
-    useEffect(() => {
-        if (!ladowanie && !uzytkownik) {
-            navigate("/login"); // jeśli jest niezalogowany
-        }
-    }, [ladowanie, uzytkownik, navigate]);
         
 
     useEffect(() => {

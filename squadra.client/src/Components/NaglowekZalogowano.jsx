@@ -23,6 +23,13 @@ export default function NaglowekZalogowano({
     const [maPowiadomienia, ustawMaPowiadomienia] = useState(false);
 
     const notyRef = useRef(null);
+
+    // Jeśli nie ma użytkownika, nawiguj do logowania
+    useEffect(() => {
+        if (!uzytkownik) {
+            navigate('/login');
+        }
+    }, [uzytkownik, navigate]);
     
     // ping
     useEffect(() => {

@@ -11,11 +11,6 @@ export default function TwojProfil() {
     const { uzytkownik, ladowanie } = useAuth();
     const location = useLocation();
 
-    useEffect(() => {
-        if (!ladowanie && !uzytkownik) {
-            navigate("/login"); // jeśli jest niezalogowany
-        }
-    }, [ladowanie, uzytkownik, navigate]);
 
     useEffect(() => {
         if (location.state?.pomyslnieEdytowanoProfil) {
@@ -33,7 +28,7 @@ export default function TwojProfil() {
         }
     },[location.state?.pomyslnieEdytowanoProfil])
 
-    if(ladowanie) return (<>
+    if(ladowanie || !uzytkownik) return (<>
             <div id = "glowna">
                 <h1>Ładowanie...</h1>
             </div>

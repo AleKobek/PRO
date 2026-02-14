@@ -12,11 +12,6 @@ export default function TwojeKonto() {
     const location = useLocation();
 
 
-    useEffect(() => {
-        if (!ladowanie && !uzytkownik) {
-            navigate("/login"); // jeśli jest niezalogowany
-        }
-    }, [ladowanie, uzytkownik, navigate]);
 
     useEffect(() => {
         if (location.state?.pomyslnieEdytowanoKonto) {

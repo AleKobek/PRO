@@ -14,12 +14,6 @@ export default function ProfilOgolny() {
 
 
     useEffect(() => {
-        if (!ladowanie && !uzytkownik) {
-            navigate("/login"); // jeśli jest niezalogowany
-        }
-    }, [ladowanie, uzytkownik, navigate, idUzytkownika]);
-
-    useEffect(() => {
         if(uzytkownik === null) return;
         if(idUzytkownika === uzytkownik.id.toString()) navigate("/twojProfil");
     }, [idUzytkownika, navigate, uzytkownik?.id]); // z jakiegoś powodu dodanie dep użytkownik wywala stronę
