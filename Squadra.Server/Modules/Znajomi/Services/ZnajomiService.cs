@@ -54,6 +54,7 @@ public class ZnajomiService(
             if(czySaNoweWiadomosciRes.StatusCode == 400) return ServiceResult<ICollection<ZnajomyDoListyDto>>.BadRequest(czySaNoweWiadomosciRes.Errors[0]);
     
             var znajomyDoListy = new ZnajomyDoListyDto(
+                    idZnajomego,
                     profil.Pseudonim,
                     profil.Awatar ?? [],
                     dataNajnowszejWiadomosciRes.Value,
