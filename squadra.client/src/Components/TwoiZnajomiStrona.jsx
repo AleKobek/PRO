@@ -99,11 +99,16 @@ export default function TwoiZnajomiStrona() {
                         <button className="bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105">Dodaj znajomego (nic nie robi)</button>
                     </div>
                     <div className="border-t-2 border-gray-400">
-                        <ul>
-                        {znajomi.map((znajomy) => (
-                            <ZnajomyNaLiscieKomponent key={znajomy.id} znajomy={znajomy}/>
-                        ))}
-                        </ul>
+                        {znajomi.length===0
+                            ? <p className="p-4 font-light text-gray-700 text-center">
+                                Lista znajomych jest pusta. <br/> Użyj przycisku "dodaj znajomego", aby to zmienić!
+                              </p>
+                            : <ul>
+                                {znajomi.map((znajomy) => (
+                                    <ZnajomyNaLiscieKomponent key={znajomy.id} znajomy={znajomy}/>
+                                ))}
+                                </ul>
+                        }
                     </div>
                 </div>
                 {/* czat */}

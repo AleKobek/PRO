@@ -52,8 +52,10 @@ public class ZnajomiRepository(
 
     public async Task<bool> DeleteZnajomosc(int idUzytkownika1, int idUzytkownika2)
     {
-        var znajomosc = await context.Znajomi.Where(x => x.IdUzytkownika1 == idUzytkownika1 && x.IdUzytkownika2 == idUzytkownika2).FirstOrDefaultAsync();
-        if(znajomosc == null) throw new NieZnalezionoWBazieException("Znajomosc o idUzytkownika1: " + idUzytkownika1 + " i idUzytkownika2: " + idUzytkownika2 + " nie istnieje");
+        var znajomosc = await context.Znajomi.Where(x => (
+            x.IdUzytkownika1 == idUzytkownika1 && x.IdUzytkownika2 == idUzytkownika2) || x.IdUzytkownika2 == idUzytkownika1 && x.IdUzytkownika1 == idUzytkownika2
+        ).FirstOrDefaultAsync();
+        if(znajomosc == null) throw new NieZnalezionoWBazieException("Znajomosc między użytkownikiem: " + idUzytkownika1 + " a użytkownikiem: " + idUzytkownika2 + " nie istnieje");
         // zaczynamy transakcję
         await using var transaction = await context.Database.BeginTransactionAsync();
         
