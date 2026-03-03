@@ -24,14 +24,23 @@ export default function ProfilOgolny() {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             credentials: "include",
+            body: JSON.stringify(idUzytkownika)
         }
 
-        const res = await fetch(`${API_BASE_URL}/Powiadomienie/zaproszenie/znajomi/id?idZapraszanegoUzytkownika=${idUzytkownika}`, opcje);
-
+        const res = await fetch(`${API_BASE_URL}/Powiadomienie/zaproszenie/znajomi/id`, opcje);
         if(!res.ok) {
-            const body = await res.json().catch(() => ({}));
-            console.error(body);
-            toast.error('Nie udało się wysłać zaproszenia do znajomych.', {
+            const contentType = res.headers.get("content-type");
+            let wiadomosc = "Nie udało się wysłać zaproszenia do znajomych.";
+
+            if (contentType && contentType.includes("application/json")) {
+                const body = await res.json().catch(() => ({}));
+                wiadomosc = body.message || body.error || wiadomosc;
+            } else {
+                wiadomosc = await res.text();
+            }
+
+            console.error(wiadomosc);
+            toast.error(wiadomosc, {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -42,7 +51,20 @@ export default function ProfilOgolny() {
                 theme: "light",
                 transition: Bounce,
             });
+            return;
         }
+
+        toast.success('Zaproszenie zostało wysłane!', {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+        });
     }
 
 
