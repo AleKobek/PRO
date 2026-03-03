@@ -88,7 +88,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<ActionResult> WyslijZaproszenieDoZnajomychPoLoginie(string loginZapraszanegoUzytkownika)
+    public async Task<ActionResult> WyslijZaproszenieDoZnajomychPoLoginie([FromBody]string loginZapraszanegoUzytkownika)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
@@ -111,7 +111,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<ActionResult> WyslijZaproszenieDoZnajomychPoId(int idZapraszanegoUzytkownika)
+    public async Task<ActionResult> WyslijZaproszenieDoZnajomychPoId([FromBody]int idZapraszanegoUzytkownika)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)

@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import {API_BASE_URL} from "../config/api";
 import ZnajomyNaLiscieKomponent from "./ZnajomyNaLiscieKomponent";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 export default function TwoiZnajomiStrona() {
 
     const navigate = useNavigate();
@@ -12,6 +13,11 @@ export default function TwoiZnajomiStrona() {
     const [znajomi, ustawZnajomych] = useState([]);
     const [czat, ustawCzat] = useState([]);
     const [idZnajomegoZOtwartymCzatem, ustawIdZnajomegoZOtwartymCzatem] = useState(null);
+    const [pokazDodajZnajomego, ustawPokazDodajZnajomego] = useState(false);
+    const frReqRef = React.useRef(null);
+    const [loginDoZaproszenia, ustawLoginDoZaproszenia] = useState("");
+    const [czySieWysylaZaproszenie, ustawCzySieWysylaZaproszenie] = useState(false);
+
 
 
 
@@ -76,9 +82,113 @@ export default function TwoiZnajomiStrona() {
         ustawZnajomych(znajomi);
     }
 
-    // mam pobieranie znajomych, przydałoby się najpierw zrobić listę znajomych, potem wezmę się za czat
 
+    // render panelu dodawania znajomego, który jest na wierzchu, gdy klikniemy "dodaj znajomego"
+    const PanelDodajZnajomego = () => (
+        <div
+            ref={frReqRef}
+            className="fixed top-[230px] left-[165px] overflow-y-auto bg-white border-2 border-amber-300
+            rounded-md shadow-lg p-3 justify-center items-center"
+            style={{ zIndex: 2000 }}
+        >
+            <div className="flex flex-col">
+                <div className="flex justify-between items-center gap-6">
+                    <span>Login zapraszanego użytkownika <br/></span>
+                    <button onClick={() => ustawPokazDodajZnajomego(false)} className="cursor-pointer">
+                        <img
+                            src = "/img/x.svg"
+                            alt = "x"
+                            className="w-6 h-6 cursor-pointer"
+                        />
+                    </button>
+                </div>
 
+                <input
+                    type="text"
+                    className="px-2 border border-gray-800 mt-2 rounded-md w-full"
+                    value={loginDoZaproszenia}
+                    onChange={(e)=>ustawLoginDoZaproszenia(e.target.value)}
+                    autoFocus={true}
+                />
+                <button
+                    className="bg-green-900 text-white rounded-md px-3 py-1 mt-4 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
+                    onClick={przyWysylaniuZaproszenia}
+                >
+                    Wyślij zaproszenie do znajomych
+                </button>
+            </div>
+        </div>
+    );
+
+    const przyWysylaniuZaproszenia = async () => {
+        if(czySieWysylaZaproszenie) return;
+        ustawCzySieWysylaZaproszenie(true);
+        try {
+            const res = await fetch(`${API_BASE_URL}/Powiadomienie/zaproszenie/znajomi`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: "include",
+                body: JSON.stringify(loginDoZaproszenia.trim())
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                if(res.status === 404){
+                    toast.error('Użytkownik o takim loginie nie istnieje!', {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                }
+                else{
+                    toast.error(`Nie można wysłać zaproszenia: ${errorData.message || 'Nieznany błąd.'}`, {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                }
+                return;
+            }
+            toast.success("Pomyślnie wysłano zaproszenie!", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        } catch (err) {
+            console.error('Błąd wysyłania zaproszenia:', err);
+            toast.error('Wystąpił błąd podczas wysyłania zaproszenia. Spróbuj ponownie później.', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }finally {
+            ustawCzySieWysylaZaproszenie(false);
+        }
+    }
 
 
     if(ladowanie) return (<>
@@ -96,7 +206,14 @@ export default function TwoiZnajomiStrona() {
                     <h1>Twoi znajomi</h1>
                     {/* dodaj znajomego */}
                     <div className="flex flex-col items-center py-4">
-                        <button className="bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105">Dodaj znajomego (nic nie robi)</button>
+                        <button
+                            onClick={() => ustawPokazDodajZnajomego(v => !v)}
+                            className="bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
+                            aria-expanded={pokazDodajZnajomego}
+                            aria-controls="panel-dodaj-znajomego"
+                        >
+                            Dodaj znajomego
+                        </button>
                     </div>
                     <div className="border-t-2 border-gray-400">
                         {znajomi.length===0
@@ -125,5 +242,20 @@ export default function TwoiZnajomiStrona() {
                 </div>
             </div>
         </div>
+        {/* overlay dodaj znajomego, renderujemy na wierzchu tej samej strony */}
+        {pokazDodajZnajomego && <PanelDodajZnajomego/>}
+        <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />
     </>);
 }
