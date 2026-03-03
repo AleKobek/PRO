@@ -39,8 +39,6 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
             case TypyPowiadomien.SYSTEMOWE:{
                 ustawTypPowiadomienia("Powiadomienie systemowe")
                 ustawTrescPowiadomieniaCz1(powiadomienie.tresc);
-                console.log("tresc powiadomienia cz1 systemowe: ",trescPowiadomieniaCz1);
-
                 break;
             }
             case TypyPowiadomien.ZAPROSZENIE_DO_ZNAJOMYCH:{
@@ -59,7 +57,6 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
                 ustawTypPowiadomienia("Odrzucenie zaproszenia do znajomych")
                 ustawTrescPowiadomieniaCz1("Uzytkownik ");
                 ustawTrescPowiadomieniaCz2(" odrzucił Twoje zaproszenie do znajomych.");
-                console.log("tresc powiadomienia cz2: ",trescPowiadomieniaCz2);
                 break;
             }
             case TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH:{
@@ -72,7 +69,6 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
                 ustawTypPowiadomienia("Nieznany typ powiadomienia");
             }
         }
-        console.log("tresc powiadomienia cz2: ",trescPowiadomieniaCz2);
 
     }, [
         TypyPowiadomien.SYSTEMOWE,
@@ -94,7 +90,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         <li key={powiadomienie.id} className="p-2 border-b border-gray-200">
         <div className="flex flex-row justify-between items-center w-full">
             <div className="font-semibold">{typPowiadomienia}</div>
-            <button onClick={() => przyRozpatrzaniuPowiadomienia(null)}>
+            <button onClick={() => przyRozpatrzaniuPowiadomienia(powiadomienie.id, null)}>
                 <img
                 src = "/img/x.svg"
                 alt = "x"
@@ -113,7 +109,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         <li key={powiadomienie.id} className="p-2 border-b border-gray-200">
             <div className="flex flex-row justify-between items-center w-full">
                 <div className="font-semibold">{typPowiadomienia}</div>
-                <button onClick={() => przyRozpatrzaniuPowiadomienia(null)}>
+                <button onClick={() => przyRozpatrzaniuPowiadomienia(powiadomienie.id, null)}>
                     <img
                         src = "/img/x.svg"
                         alt = "x"
