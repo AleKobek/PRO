@@ -32,6 +32,23 @@ public class ZnajomiController(IZnajomiService znajomiService,
         return Ok(result.Value);
     }
     
+    [HttpGet("czyZnajomosc/{idZnajomego:int}")]
+    [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult<bool>> CzyJestZnajomosc(int idZnajomego)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await znajomiService.CzyJestZnajomosc(uzytkownik.Id, idZnajomego);
+        
+        if(result.StatusCode == 404) return NotFound(result.Errors[0].Message);
+        
+        return Ok(result.Value);
+    }
+    
     // tutaj wyjątkowo przejmujemy część funkcji service, aby się nie zapętlało
     [HttpDelete("{idUsuwanego:int}")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]

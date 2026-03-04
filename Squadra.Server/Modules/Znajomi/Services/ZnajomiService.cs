@@ -85,6 +85,21 @@ public class ZnajomiService(
             return ServiceResult<DateTime?>.NotFound(new ErrorItem(e.Message));
         }
     }
+    
+    public async Task<ServiceResult<bool>> CzyJestZnajomosc(int idUzytkownika1, int idUzytkownika2)
+    {
+        try
+        {
+            if (idUzytkownika1 < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika1 + " nie istnieje"));
+            if (idUzytkownika2 < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika2 + " nie istnieje"));
+            
+            return ServiceResult<bool>.Ok(await znajomiRepository.CzyJestZnajomosc(idUzytkownika1, idUzytkownika2));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
 
     public async Task<ServiceResult<bool>> CreateZnajomosc(int idUzytkownika1, int idUzytkownika2)
     {
