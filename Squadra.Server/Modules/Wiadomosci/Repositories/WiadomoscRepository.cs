@@ -47,12 +47,12 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         return wiadomosci.Max(x => x.DataWyslania);
     }
     
-    public async Task<bool> CreateWiadomosc(WiadomoscCreateDto wiadomosc, int idNadawcy)
+    public async Task<bool> CreateWiadomosc(int idOdbiorcy, WiadomoscCreateDto wiadomosc, int idNadawcy)
     {
         var wiadomoscDoDodania = new Models.Wiadomosc
         {
             IdNadawcy = idNadawcy,
-            IdOdbiorcy = wiadomosc.IdOdbiorcy,
+            IdOdbiorcy = idOdbiorcy,
             DataWyslania = DateTime.Now, // liczymy moment, w którym dotrze do bazy
             Tresc = wiadomosc.Tresc,
             IdTypuWiadomosci = wiadomosc.IdTypuWiadomosci

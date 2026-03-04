@@ -17,6 +17,7 @@ public class WiadomoscController(
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
     [HttpGet("{id:int}")]
+    [EndpointSummary("Zwraca wiadomość o podanym id")]
     [ProducesResponseType(typeof(WiadomoscDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
@@ -37,17 +38,18 @@ public class WiadomoscController(
         };
     }
 
-    [HttpGet("konwersacja/{idOdbiorcy:int}")]
+    [HttpGet("konwersacja/{idZnajomego:int}")]
+    [EndpointSummary("Pobiera wszystkie wiadomości między zalogowanym użytkownikiem a uzytkownikiem o podanym id")]
     [ProducesResponseType(typeof(IEnumerable<WiadomoscDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult> GetWiadomosci(int idOdbiorcy)
+    public async Task<ActionResult> GetWiadomosci(int idZnajomego)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
-        var result = await wiadomoscService.GetWiadomosci(uzytkownik.Id, idOdbiorcy);
+        var result = await wiadomoscService.GetWiadomosci(uzytkownik.Id, idZnajomego);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
@@ -58,6 +60,7 @@ public class WiadomoscController(
     }
 
     [HttpGet("nowe")]
+    [EndpointSummary("Zwraca, czy zalogowany uzytkownik ma nowe wiadomości od kogokolwiek")]
     [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
@@ -76,17 +79,19 @@ public class WiadomoscController(
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
-
-    [HttpPost]
+    
+    [HttpPost("{idOdbiorcy:int}")]
+    [EndpointSummary("Wysyła wiadomość do znajomego")]
+    [EndpointDescription("Tworzy nową wiadomość i wysyła ją do wybranego użytkownika")]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    public async Task<ActionResult> CreateWiadomosc(WiadomoscCreateDto wiadomosc)
+    public async Task<ActionResult> CreateWiadomosc(int idOdbiorcy, WiadomoscCreateDto wiadomosc)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
-        var result = await wiadomoscService.CreateWiadomosc(wiadomosc, uzytkownik.Id);
+        var result = await wiadomoscService.CreateWiadomosc(idOdbiorcy, wiadomosc, uzytkownik.Id);
         return result.StatusCode switch
         {
             201 => Created(),

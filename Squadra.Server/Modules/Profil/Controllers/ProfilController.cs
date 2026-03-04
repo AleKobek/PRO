@@ -13,11 +13,13 @@ namespace Squadra.Server.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 
-public class ProfilController(IProfilService profilService,
+public class ProfilController(
+    IProfilService profilService,
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
 
-    [HttpGet]
+    [HttpGet("admin")]
+    [EndpointSummary("Zwraca dane wszystkich istniejących profilów (tylko dla admina")]
     [Authorize(Roles = "Admin")]
     [ProducesResponseType(typeof(IEnumerable<ProfilGetResDto>), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<IEnumerable<ProfilGetResDto>>> GetProfile()
@@ -25,37 +27,37 @@ public class ProfilController(IProfilService profilService,
         var result = await profilService.GetProfile();
         return Ok(result.Value);
     }
-    
+
     [HttpGet("{id:int}")]
+    [EndpointSummary("Zwraca dane profilu o podanym id.")]
     [ProducesResponseType(typeof(ProfilGetResDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<ProfilGetResDto>> GetProfil(int id)
     {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
         var result = await profilService.GetProfil(id);
-        if(result.StatusCode == 404) return NotFound(result.Errors[0].Message);
+        if (result.StatusCode == 404) return NotFound(result.Errors[0].Message);
         return Ok(result.Value);
     }
-
     
-    // bez awatara!
-    [HttpPut("{id:int}")]
+    [HttpPut]
+    [EndpointSummary("Aktualizuje dane profilu zalogowanego użytkownika")]
+    [EndpointDescription("Nie zawiera w sobie aktualizacji awatara.")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails),(int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-    public async Task<IActionResult> UpdateProfil(int id, [FromBody] ProfilUpdateDto profil)
+    public async Task<IActionResult> UpdateProfil([FromBody] ProfilUpdateDto profil)
     {
         // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
-
-        // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
-        if (uzytkownik.Id != id)
-            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz edytować profilu innego użytkownika.");
         
-        var result = await profilService.UpdateProfil(id, profil);
+        var result = await profilService.UpdateProfil(uzytkownik.Id, profil);
         switch (result.StatusCode)
         {
             case 204: return NoContent();
@@ -70,24 +72,20 @@ public class ProfilController(IProfilService profilService,
         }
     }
     
-    [HttpPut("{id:int}/awatar")]
+    [EndpointSummary("Aktualizuje awatar profilu zalogowanego użytkownika.")]
+    [HttpPut("awatar")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails),(int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-    public async Task<IActionResult> UpdateAwatar(int id, IFormFile awatar)
+    public async Task<IActionResult> UpdateAwatar(IFormFile awatar)
     {
         // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
-
-        // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
-        if (uzytkownik.Id != id)
-            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz edytować profilu innego użytkownika.");
         
-        var result = await profilService.UpdateAwatar(id, awatar);
+        var result = await profilService.UpdateAwatar(uzytkownik.Id, awatar);
         switch (result.StatusCode)
         {
             case 204: return NoContent();
@@ -101,29 +99,29 @@ public class ProfilController(IProfilService profilService,
                 return StatusCode(result.StatusCode, new { errors = result.Errors });
         }
     }
-
-    // w reszcie tak samo i not found tak samo i na froncie dostosować
-    [HttpGet("{id:int}/status/baza")]
+    
+    [HttpGet("status")]
+    [EndpointSummary("Zwraca status profilu zalogowanego użytkownika, pobrany bezpośrednio z bazy.")]
+    [EndpointDescription(" Na froncie jest dostępne dla właściciela profilu.")]
     [ProducesResponseType(typeof(StatusDto),(int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult<StatusDto>> GetStatusZBazyProfilu(int id)
+    public async Task<ActionResult<StatusDto>> GetStatusZBazyProfilu()
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
-
-        // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
-        if (uzytkownik.Id != id)
-            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz pobrać statusu z bazy dotyczącego profilu innego użytkownika.");
         
-        var result = await profilService.GetStatusZBazyProfilu(id);
+        var result = await profilService.GetStatusZBazyProfilu(uzytkownik.Id);
         if(result.StatusCode == 404) return NotFound(result.Errors[0].Message);
         return Ok(result.Value);
     }
 
-    [HttpGet("{id:int}/status/wyswietlenie")]
+
+    [HttpGet("{id:int}/status")]
+    [EndpointSummary("Zwraca status danego profilu w formie przeznaczonej dla innych użytkowników.")]
+    [EndpointDescription("Może zwrócić status \"offline\", nieistniejący w bazie, jeżeli właściciel profilu nie " +
+                         "miał otwartego okna przeglądarki przez kilka minut lub ma ustawiony status \"niedostępny\".")]
     [ProducesResponseType(typeof(StatusDto),(int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<StatusDto>> GetStatusDoWyswietleniaProfilu(int id)
@@ -133,22 +131,19 @@ public class ProfilController(IProfilService profilService,
         return Ok(result.Value);
     }
 
-    [HttpPut("{id:int}/status")]
+    [EndpointSummary("Aktualizuje status profilu zalogowanego użytkownika.")]
+    [HttpPut("status")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-    public async Task<ActionResult> UpdateStatus(int id, [FromBody] int idStatus)
+    public async Task<ActionResult> UpdateStatus([FromBody] int idStatus)
     {
         
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
-
-        // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
-        if (uzytkownik.Id != id)
-            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz edytować statusu innego użytkownika.");
-        var result = await profilService.UpdateStatus(id, idStatus);
+        
+        var result = await profilService.UpdateStatus(uzytkownik.Id, idStatus);
         
         if (result.StatusCode == 400)
                 return NotFound(result.Errors[0].Message);

@@ -60,7 +60,7 @@ export default function DaneKonta({uzytkownik}) {
 
         const podajDaneKonta = async () => {
             const idUzytkownika = uzytkownik.id;
-            const data = await fetchJsonAbort(`${API_BASE_URL}/Uzytkownik/${idUzytkownika}`);
+            const data = await fetchJsonAbort(`${API_BASE_URL}/Uzytkownik/`);
 
             // przerywamy działanie funkcji
             if (!alive) return;

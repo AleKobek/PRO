@@ -13,6 +13,7 @@ namespace Squadra.Server.Controllers;
 public class KrajController(IKrajService krajService) : ControllerBase
 {
     [HttpGet]
+    [EndpointSummary("Zwraca dane wszystkich krajów w bazie.")]
     [ProducesResponseType(typeof(IEnumerable<KrajDto>), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<IEnumerable<KrajDto>>> GetKraje()
     {
@@ -21,6 +22,7 @@ public class KrajController(IKrajService krajService) : ControllerBase
     }
     
     [HttpGet("{id:int}")]
+    [EndpointSummary("Zwraca dane kraju o podanym id.")]
     [ProducesResponseType(typeof(KrajDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<KrajDto?>> GetKraj(int id)

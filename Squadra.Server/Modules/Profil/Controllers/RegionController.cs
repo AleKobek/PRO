@@ -12,6 +12,7 @@ namespace Squadra.Server.Controllers;
 public class RegionController(IRegionService regionService) : ControllerBase
 {
     [HttpGet]
+    [EndpointSummary("Zwraca dane wszystkich istniejących w bazie regionów.")]
     [ProducesResponseType(typeof(IEnumerable<RegionDto>), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<IEnumerable<RegionDto>>> GetRegiony()
     {
@@ -20,6 +21,7 @@ public class RegionController(IRegionService regionService) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [EndpointSummary("Zwraca dane regionu o podanym id.")]
     [ProducesResponseType(typeof(RegionDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<RegionDto?>> GetRegion(int id)
@@ -30,6 +32,7 @@ public class RegionController(IRegionService regionService) : ControllerBase
     }
 
     [HttpGet("kraj/{id:int}")]
+    [EndpointSummary("Zwraca dane wszystkich regionów kraju o podanym id.")]
     [ProducesResponseType(typeof(IEnumerable<RegionDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<IEnumerable<RegionDto>>> GetRegionyKraju(int id)

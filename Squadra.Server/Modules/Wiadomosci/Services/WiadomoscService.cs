@@ -41,11 +41,11 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
         }
     }
     
-    public async Task<ServiceResult<bool>> CreateWiadomosc(WiadomoscCreateDto wiadomosc, int idObecnegoUzytkownika)
+    public async Task<ServiceResult<bool>> CreateWiadomosc(int idOdbiorcy, WiadomoscCreateDto wiadomosc, int idObecnegoUzytkownika)
     {
         try
         {
-            if(idObecnegoUzytkownika == wiadomosc.IdOdbiorcy) 
+            if(idObecnegoUzytkownika == idOdbiorcy) 
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Nadawca i odbiorca wiadomości nie mogą być tym samym użytkownikiem"));
             
             if(wiadomosc.Tresc.IsNullOrEmpty())
@@ -54,10 +54,10 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
             if(wiadomosc.Tresc.Length > 1000)   
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Treść wiadomości nie może przekraczać 1000 znaków"));
             
-            if(!await znajomiRepository.CzyJestZnajomosc(idObecnegoUzytkownika, wiadomosc.IdOdbiorcy))
+            if(!await znajomiRepository.CzyJestZnajomosc(idObecnegoUzytkownika, idOdbiorcy))
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Nie można wysłać wiadomości do użytkownika, który nie jest Twoim znajomym"));
             
-            return ServiceResult<bool>.Created(await wiadomoscRepository.CreateWiadomosc(wiadomosc, idObecnegoUzytkownika));
+            return ServiceResult<bool>.Created(await wiadomoscRepository.CreateWiadomosc(idOdbiorcy, wiadomosc, idObecnegoUzytkownika));
         }
         catch (NieZnalezionoWBazieException e)
         {

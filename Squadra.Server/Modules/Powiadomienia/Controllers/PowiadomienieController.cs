@@ -1,4 +1,4 @@
-﻿using System.Net;
+﻿﻿using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,6 +15,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
     [HttpGet]
+    [EndpointSummary("Zwraca dane wszystkich powiadomień zalogowanego użytkownika")]
     [ProducesResponseType(typeof(IEnumerable<PowiadomienieDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     public async Task<ActionResult<IEnumerable<PowiadomienieDto>>> GetPowiadomienia()
@@ -27,6 +28,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     }
 
     [HttpGet("{id:int}")]
+    [EndpointSummary("Zwraca dane powiadomienia o podanym id")]
     [ProducesResponseType(typeof(PowiadomienieDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
@@ -45,6 +47,8 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     }
 
     [HttpPut("{id:int}")]
+    [EndpointSummary("Rozpatruje powiadomienie o podanym id")]
+    [EndpointDescription("W przypadku powiadomień wymagających akceptacji, należy w body przekazać czy zostało zaakceptowane czy odrzucone.")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -66,6 +70,8 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     
     [HttpPost("{idUzytkownika:int}")]
     [Authorize(Roles = "Admin")]
+    [EndpointSummary("Tworzy powiadomienie systemowe dla użytkownika o podanym id")]
+    [EndpointDescription("Tylko dla administratorów. Powiadomienie systemowe to takie, które nie jest związane z żadnym konkretnym działaniem użytkownika, ale ma na celu przekazanie mu ważnej informacji. Przykładowo, może to być powiadomienie o planowanej przerwie technicznej, aktualizacji regulaminu czy innych istotnych zmianach dotyczących korzystania z aplikacji.")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     
@@ -83,6 +89,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     }
     
     [HttpPost("zaproszenie/znajomi")]
+    [EndpointSummary("Wysyła zaproszenie do znajomych, skierowane do użytkownika o podanym loginie")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -106,6 +113,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     }
     
     [HttpPost("zaproszenie/znajomi/{idZapraszanegoUzytkownika:int}")]
+    [EndpointSummary("Wysyła zaproszenie do znajomych, skierowane do użytkownika o podanym id")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]

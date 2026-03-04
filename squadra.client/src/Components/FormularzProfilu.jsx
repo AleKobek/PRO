@@ -11,7 +11,6 @@ export default function FormularzProfilu({
                                              staryOpis,
                                              staryRegion,
                                              staryKraj,
-                                             uzytkownik,
                                          }) 
 {
     
@@ -141,7 +140,7 @@ export default function FormularzProfilu({
         }
         
         
-        const res = await fetch(`${API_BASE_URL}/Profil/` + uzytkownik.id, opcje);
+        const res = await fetch(`${API_BASE_URL}/Profil`, opcje);
         
         
         // Odczyt body różni się zależnie od typu odpowiedzi

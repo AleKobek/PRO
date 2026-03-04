@@ -13,6 +13,7 @@ namespace Squadra.Server.Controllers;
 public class StatusController(IStatusService statusService) : ControllerBase
 {
     [HttpGet]
+    [EndpointSummary("Zwraca dane wszystkich istniejących statusów.")]
     [ProducesResponseType(typeof(IEnumerable<StatusDto>), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<IEnumerable<StatusDto>>> GetStatusy()
     {
@@ -21,6 +22,7 @@ public class StatusController(IStatusService statusService) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
+    [EndpointSummary("Zwraca dane statusu o podanym id.")]
     [ProducesResponseType(typeof(StatusDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<StatusDto?>> GetStatus(int id)

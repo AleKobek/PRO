@@ -12,6 +12,7 @@ namespace Squadra.Server.Controllers;
 public class StopienBieglosciJezykaController(IStopienBieglosciJezykaService stopienBieglosciJezykaService) : ControllerBase
 {
     [HttpGet]
+    [EndpointSummary("Zwraca dane wszystich stopni biegłości języka w bazie.")]
     [ProducesResponseType(typeof(IEnumerable<StopienBieglosciJezykaDto>), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<IEnumerable<StopienBieglosciJezykaDto>>> GetStopienBieglosciJezyka()
     {
@@ -20,6 +21,7 @@ public class StopienBieglosciJezykaController(IStopienBieglosciJezykaService sto
     }
 
     [HttpGet("{id:int}")]
+    [EndpointSummary("Zwraca dane stopnia biegłości języka o podanym id.")]
     [ProducesResponseType(typeof(StopienBieglosciJezykaDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<StopienBieglosciJezykaDto?>> GetStopienBieglosciJezyka(int id)

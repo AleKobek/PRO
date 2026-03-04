@@ -1,4 +1,4 @@
-﻿using System.Net;
+﻿﻿using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +20,7 @@ public class AuthController(IUzytkownikService uzytkownikService,
 
     [HttpPost("register")]
     [AllowAnonymous]
+    [EndpointSummary("Rejestruje nowego użytkownika")]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType(typeof(ValidationProblemDetails),(int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
@@ -54,6 +55,7 @@ public class AuthController(IUzytkownikService uzytkownikService,
     
     [HttpPost("login")]
     [AllowAnonymous]
+    [EndpointSummary("Loguje użytkownika")]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     // robimy robotę service, bo byłoby tylko na tę jedną funkcję
@@ -81,6 +83,7 @@ public class AuthController(IUzytkownikService uzytkownikService,
 
     [HttpPost("logout")]
     [Authorize]
+    [EndpointSummary("Wylogowuje użytkownika")]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     public async Task<IActionResult> Wyloguj()
@@ -96,6 +99,7 @@ public class AuthController(IUzytkownikService uzytkownikService,
 
     [HttpGet("me")]
     [Authorize]
+    [EndpointSummary("Zwraca informacje o aktualnie zalogowanym użytkowniku")]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType(typeof(AuthUserDto),(int)HttpStatusCode.OK)]
     public async Task<IActionResult> Me()

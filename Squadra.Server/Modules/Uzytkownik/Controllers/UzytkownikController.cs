@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿﻿using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
@@ -16,9 +16,9 @@ namespace Squadra.Server.Controllers;
 public class UzytkownikController(IUzytkownikService uzytkownikService,
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
-
-    // GET: api/Uzytkownik
-    [HttpGet]
+    [HttpGet("wszyscy")]
+    [Authorize(Roles = "Admin")]
+    [EndpointSummary("Zwraca dane wszystkich użtykowników w bazie (tylko dla admina)")]
     [ProducesResponseType(typeof(IEnumerable<UzytkownikResDto>), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<IEnumerable<UzytkownikResDto>>> GetUzytkownicy()
     {
@@ -26,8 +26,9 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
         return Ok(result.Value);
     }
 
-    // GET: api/Uzytkownik/5
     [HttpGet("{id:int}")]
+    [Authorize(Roles = "Admin")]
+    [EndpointSummary("Zwraca dane użytkownika o podanym id (tylko dla admina)")]
     [ProducesResponseType(typeof(UzytkownikResDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<UzytkownikResDto>> GetUzytkownikById(int id)
@@ -45,14 +46,38 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
             return NotFound();
         }
     }
+    
+    [HttpGet]
+    [EndpointSummary("Zwraca dane zalogowanego użytkownika")]
+    [ProducesResponseType(typeof(UzytkownikResDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult<UzytkownikResDto>> GetUzytkownik()
+    {
+        try
+        {
+            var uzytkownik = await userManager.GetUserAsync(User);
+            if (uzytkownik is null)
+                return Unauthorized("Nie jesteś zalogowany.");
+            
+            var result = await uzytkownikService.GetUzytkownik(uzytkownik.Id);
+            if (result.StatusCode == 404)
+                return NotFound(result.Errors[0].Message);
 
-    // PUT: api/Uzytkownik/id
-    // Aktualizacja oparta na zawartości DTO (repozytorium przyjmuje UzytkownikUpdateDto).
+            return Ok(result.Value);
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+    }
+
     [HttpPut("{id:int}")]
+    [Authorize(Roles = "Admin")]
+    [EndpointSummary("Aktualizuje dane (poza hasłem) użytkownika o podanym id (tylko dla admina)")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     public async Task<IActionResult> UpdateUzytkownik(int id, [FromBody] UzytkownikUpdateDto dto)
     {
@@ -61,10 +86,6 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
-
-        // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
-        if (uzytkownik.Id != id)
-            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz edytować konta innego użytkownika.");
         
         var result = await uzytkownikService.UpdateUzytkownik(id, dto);
         switch (result.StatusCode)
@@ -81,25 +102,51 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
                 return StatusCode(result.StatusCode, new { errors = result.Errors });
         }
     }
+    
+    [HttpPut]
+    [EndpointSummary("Aktualizuje dane (poza hasłem) zalogowanego użytkownika")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<IActionResult> UpdateUzytkownik([FromBody] UzytkownikUpdateDto dto)
+    {
+        
+        // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await uzytkownikService.UpdateUzytkownik(uzytkownik.Id, dto);
+        switch (result.StatusCode)
+        {
+            case 204:
+                return NoContent();
+            case 400:
+                foreach (var e in result.Errors)
+                    ModelState.AddModelError(e.Field ?? string.Empty, e.Message);
+                return ValidationProblem();
+            case 404:
+                return NotFound(result.Errors[0].Message);
+            default:
+                return StatusCode(result.StatusCode, new { errors = result.Errors });
+        }
+    }
 
-    [HttpPut("{id:int}/haslo")]
+    [HttpPut("haslo")]
+    [EndpointSummary("Aktualizuje hasło zalogowanego użytkownika")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    public async Task<IActionResult> UpdateHaslo(int id, ZmienHasloDto dto)
+    public async Task<IActionResult> UpdateHaslo(ZmienHasloDto dto)
     {
         // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
-
-        // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
-        if (uzytkownik.Id != id)
-            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz zmieniać hasła innego użytkownika.");
         
-        var result = await uzytkownikService.UpdateHaslo(id, dto.StareHaslo, dto.NoweHaslo);
+        var result = await uzytkownikService.UpdateHaslo(uzytkownik.Id, dto.StareHaslo, dto.NoweHaslo);
         return result.StatusCode switch
         {
             204 => NoContent(),
@@ -109,8 +156,10 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
         };
     }
     
-    [HttpPut("{id:int}/haslo/admin")]
+    [HttpPut("{id:int}/haslo")]
     [Authorize(Roles = "Admin")]
+    [EndpointSummary("Zmienia hasło użytkownika o podanym id (tylko dla admina)")]
+    [EndpointDescription("Nie sprawdza starego hasła, ponieważ admin może zmieniać hasło bez jego znajomości.")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -129,9 +178,9 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
     }
     
     
-    // DELETE: api/Uzytkownik/id
     [HttpDelete("{id:int}")]
     [Authorize]
+    [EndpointSummary("Usuwa użytkownika o podanym id")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -157,11 +206,10 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
         return NoContent();
     }
     
-    // co minutę dostajemy od zalogowanego użytkownika, że jest online
-    // nie jest to zależne od zalogowania, może być offline i zalogowany
-    // znowu zrobi się online, jak otworzy stronę
     [Authorize]
     [HttpGet("ping")]
+    [EndpointSummary("Sygnał od klienta, że użytkownik jest online")]
+    [EndpointDescription("Co minutę dostajemy od zalogowanego użytkownika, że jest online. Nie jest to zależne od zalogowania, może być offline i zalogowany. Znowu zrobi się online, jak otworzy stronę.")]
     public async Task<IActionResult> Ping()
      {
          var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier); // Pobieramy ID z claimów

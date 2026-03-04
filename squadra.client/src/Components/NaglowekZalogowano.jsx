@@ -180,7 +180,7 @@ export default function NaglowekZalogowano({
             body: idStatusu
         }
 
-        const res = await fetch(`${API_BASE_URL}/Profil/` + uzytkownik.id + "/status", opcje);
+        const res = await fetch(`${API_BASE_URL}/Profil/status`, opcje);
         if(!res.ok){
             console.error(res);
             return
@@ -220,7 +220,7 @@ export default function NaglowekZalogowano({
         }
         
         const podajAktualnyStatus = async () => {
-            const aktualnyStatus = await fetchJsonAbort(`${API_BASE_URL}/Profil/` + uzytkownik.id + "/status/baza");
+            const aktualnyStatus = await fetchJsonAbort(`${API_BASE_URL}/Profil/status`);
             if(!alive || !aktualnyStatus) return;
             ustawAktualnyStatusZBazy(aktualnyStatus);
         }

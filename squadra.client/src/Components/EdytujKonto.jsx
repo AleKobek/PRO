@@ -63,8 +63,7 @@ export default function EdytujKonto() {
         };
 
         const podajDaneKonta = async () => {
-            const idUzytkownika = uzytkownik.id;
-            const data = await fetchJsonAbort(`${API_BASE_URL}/Uzytkownik/${idUzytkownika}`);
+            const data = await fetchJsonAbort(`${API_BASE_URL}/Uzytkownik/`);
 
             // przerywamy działanie funkcji
             if (!alive) return;
@@ -130,7 +129,7 @@ export default function EdytujKonto() {
             body: JSON.stringify(kontoDoWyslania)
         }
         
-        const res = await fetch(`${API_BASE_URL}/Uzytkownik/` + uzytkownik.id, opcje);
+        const res = await fetch(`${API_BASE_URL}/Uzytkownik/`, opcje);
         
         // Odczyt body różni się zależnie od typu odpowiedzi
         // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
@@ -196,7 +195,7 @@ export default function EdytujKonto() {
             body: JSON.stringify(hasloDoWyslania)
         }
         
-        const res = await fetch(`${API_BASE_URL}/Uzytkownik/` + uzytkownik.id +"/haslo", opcje);
+        const res = await fetch(`${API_BASE_URL}/Uzytkownik/haslo`, opcje);
 
 
         // Odczyt body różni się zależnie od typu odpowiedzi
