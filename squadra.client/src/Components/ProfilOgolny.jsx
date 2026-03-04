@@ -24,10 +24,9 @@ export default function ProfilOgolny() {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             credentials: "include",
-            body: JSON.stringify(idUzytkownika)
         }
 
-        const res = await fetch(`${API_BASE_URL}/Powiadomienie/zaproszenie/znajomi/id`, opcje);
+        const res = await fetch(`${API_BASE_URL}/Powiadomienie/zaproszenie/znajomi/`+idUzytkownika, opcje);
         if(!res.ok) {
             const contentType = res.headers.get("content-type");
             let wiadomosc = "Nie udało się wysłać zaproszenia do znajomych.";

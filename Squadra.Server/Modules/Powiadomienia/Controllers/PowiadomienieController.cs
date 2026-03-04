@@ -105,13 +105,13 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
         };
     }
     
-    [HttpPost("zaproszenie/znajomi/id")]
+    [HttpPost("zaproszenie/znajomi/{idZapraszanegoUzytkownika:int}")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<ActionResult> WyslijZaproszenieDoZnajomychPoId([FromBody]int idZapraszanegoUzytkownika)
+    public async Task<ActionResult> WyslijZaproszenieDoZnajomychPoId(int idZapraszanegoUzytkownika)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
