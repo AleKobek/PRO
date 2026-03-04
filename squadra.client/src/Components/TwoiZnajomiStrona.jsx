@@ -92,26 +92,27 @@ export default function TwoiZnajomiStrona() {
             style={{ zIndex: 2000 }}
         >
             <div className="flex flex-col">
-                <div className="flex justify-between items-center gap-6">
-                    <span>Login zapraszanego użytkownika <br/></span>
-                    <button onClick={() => ustawPokazDodajZnajomego(false)} className="cursor-pointer">
-                        <img
-                            src = "/img/x.svg"
-                            alt = "x"
-                            className="w-6 h-6 cursor-pointer"
-                        />
+                <div className="flex justify-end">
+                    <button onClick={() => ustawPokazDodajZnajomego(false)} className="cursor-pointer text-red-600 font-bold items-end">
+                        Zamknij
                     </button>
+                </div>
+                <div className="flex flex-col items-center">
+                    <span>Podaj login zapraszanego użytkownika <br/></span>
                 </div>
 
                 <input
                     type="text"
-                    className="px-2 border border-gray-800 mt-2 rounded-md w-full"
+                    className="px-2 border border-gray-800 my-2 rounded-md w-full"
                     value={loginDoZaproszenia}
                     onChange={(e)=>ustawLoginDoZaproszenia(e.target.value)}
                     autoFocus={true}
                 />
                 <button
-                    className="bg-green-900 text-white rounded-md px-3 py-1 mt-4 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
+                    className={czySieWysylaZaproszenie || !loginDoZaproszenia.trim() ?
+                        "zablokowany-przycisk" :
+                        "bg-green-900 text-white rounded-md px-3 py-1 mt-4 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"}
+                    disabled={czySieWysylaZaproszenie || !loginDoZaproszenia.trim()}
                     onClick={przyWysylaniuZaproszenia}
                 >
                     Wyślij zaproszenie do znajomych

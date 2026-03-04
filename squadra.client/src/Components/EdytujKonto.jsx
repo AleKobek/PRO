@@ -29,8 +29,7 @@ export default function EdytujKonto() {
     const[bladNumeruTelefonu, ustawBladNumeruTelefonu] = useState("");
     const[bladDatyUrodzenia, ustawBladDatyUrodzenia] = useState("");
     const[bladOgolnyKonta, ustawBladOgolnyKonta] = useState("");
-    const[sukcesKonta, ustawSukcesKonta] = useState("");
-    
+
     // do zmiany hasła
     
     const [stareHaslo, ustawStareHaslo] = useState("");
@@ -111,8 +110,7 @@ export default function EdytujKonto() {
         ustawBladEmaila("");
         ustawBladNumeruTelefonu("");
         ustawBladDatyUrodzenia("");
-        ustawSukcesKonta("");
-        
+
         const kontoDoWyslania = {
             login: login.trim(),
             email: email.trim(),
@@ -256,7 +254,6 @@ export default function EdytujKonto() {
                 <input className="wyslij-formularz-przycisk" type = "button" value = "Zapisz" onClick={przyWysylaniuZmianyKonta} disabled={czyZablokowaneWyslijKonta}/>
                 <span id = "error-zapisz" className="error-wiadomosc">{bladOgolnyKonta}</span><br/>
             </form>
-            <span className="success-widomosc">{sukcesKonta}</span>
             <br></br>
             <div className="box-zmiany-hasla text-center my-10 border-2 border-red-900 rounded-md p-2.5 bg-[#fcb7ab]">
                 <h2>Zmień hasło</h2>
@@ -276,7 +273,10 @@ export default function EdytujKonto() {
                         <input
                             type="password" value={powtorzHaslo} onChange={(e) => ustawPowtorzHaslo(e.target.value)}/><br/>
                     </label>
-                    <input className="wyslij-formularz-przycisk" type="button" value="Zapisz" onClick={przyWysylaniuZmianyHasla} disabled={czyZablokowaneWyslijHasla}/><br/>
+                    <input
+                        className={czyZablokowaneWyslijHasla ? "zablokowany-przycisk mt-2" : "wyslij-formularz-przycisk"}
+                        type="button"
+                        value="Zapisz" onClick={przyWysylaniuZmianyHasla} disabled={czyZablokowaneWyslijHasla}/><br/>
                     <span id = "error-ogolny-hasla" className="error-wiadomosc">{bladOgolnyHasla}</span><br/>
                 </form>
             </div>
