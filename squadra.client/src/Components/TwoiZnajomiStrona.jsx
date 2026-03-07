@@ -49,7 +49,7 @@ export default function TwoiZnajomiStrona() {
 
         if(!znajomi.length) podajZnajomych(ac.signal, alive);
 
-        if(!idZnajomegoZOtwartymCzatem && znajomi.length) ustawIdZnajomegoZOtwartymCzatem(znajomi[0].id);
+        if(!idZnajomegoZOtwartymCzatem && znajomi.length) ustawIdZnajomegoZOtwartymCzatem(znajomi[0].idZnajomego);
 
         // to funkcja sprzątająca. Odpali się od razu, gdy ten element zniknie, np. użytkownik zmieni stronę
         // albo pod koniec całej funkcji
@@ -216,14 +216,15 @@ export default function TwoiZnajomiStrona() {
                             Dodaj znajomego
                         </button>
                     </div>
+                    {/* lista znajomych */}
                     <div className="border-t-2 border-gray-400">
                         {znajomi.length===0
                             ? <p className="p-4 font-light text-gray-700 text-center">
                                 Lista znajomych jest pusta. <br/> Użyj przycisku "dodaj znajomego", aby to zmienić!
                               </p>
-                            : <ul>
+                            : <ul className="overflow-y-auto">
                                 {znajomi.map((znajomy) => (
-                                    <ZnajomyNaLiscieKomponent key={znajomy.id} znajomy={znajomy}/>
+                                    <ZnajomyNaLiscieKomponent key={znajomy.id} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} ustawIdZnajomegoZOtwartymCzatem={ustawIdZnajomegoZOtwartymCzatem}/>
                                 ))}
                                 </ul>
                         }
