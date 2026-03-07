@@ -82,6 +82,21 @@ export default function TwoiZnajomiStrona() {
         ustawZnajomych(znajomi);
     }
 
+    // zamykamy jak klikamy poza to
+    useEffect(() => {
+        if (!pokazDodajZnajomego) return;
+
+        const handleClickOutside = (e) => {
+            if (frReqRef.current && !frReqRef.current.contains(e.target)) {
+                ustawPokazDodajZnajomego(false);
+            }
+        };
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, [pokazDodajZnajomego]);
 
     // render panelu dodawania znajomego, który jest na wierzchu, gdy klikniemy "dodaj znajomego"
     const PanelDodajZnajomego = () => (
@@ -221,12 +236,12 @@ export default function TwoiZnajomiStrona() {
                         {znajomi.length===0
                             ? <p className="p-4 font-light text-gray-700 text-center">
                                 Lista znajomych jest pusta. <br/> Użyj przycisku "dodaj znajomego", aby to zmienić!
-                              </p>
+                            </p>
                             : <ul className="overflow-y-auto">
                                 {znajomi.map((znajomy) => (
                                     <ZnajomyNaLiscieKomponent key={znajomy.id} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} ustawIdZnajomegoZOtwartymCzatem={ustawIdZnajomegoZOtwartymCzatem}/>
                                 ))}
-                                </ul>
+                            </ul>
                         }
                     </div>
                 </div>
