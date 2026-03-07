@@ -79,7 +79,7 @@
 
   /* Sekcja główna i reszta */
   #glowna {
-    min-height: 600px;
+    min-height: calc(100vh - 60px); /* wysokość ekranu - menu */
     font-family: Bahnschrift, serif;
     @apply text-[18px] leading-[1.5] p-7;
     background-image: url("../public/img/tło.jpg");
