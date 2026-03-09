@@ -9,7 +9,7 @@ export default function AwatarComponent({obraz, wysokosc, status}) {
             case "Zaraz wracam": return "bg-yellow-400";
             case "Nie przeszkadzać": return "bg-red-500";
             case "Offline": return "bg-gray-400";
-            default : return "bg-gray-400";
+            default : return null; // jak nie ma statusu, nic nie rysujemy
         }
     },[status]);
 
@@ -25,7 +25,7 @@ export default function AwatarComponent({obraz, wysokosc, status}) {
                 alt="awatar"
                 className="awatar block h-full w-full object-cover rounded-full border-4 border-black"
             />
-            <span className={kropkaClass} />
+            {classNameStatusu && <span className={kropkaClass} />}
         </span>
     );
 }
