@@ -150,9 +150,34 @@ export default function ProfilOgolny() {
         });
     }
 
-    // na razie puste
-    const przyUsuwaniu = async () => {
-
+    const przyUsuwaniuZeZnajomych = async () => {
+        const opcje = {
+            method: "DELETE",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include",
+        }
+        const res = await fetch(`${API_BASE_URL}/Znajomi/`+idWlascicielaProfilu, opcje);
+        if(!res.ok){
+            const body = await res.json().catch(() => ({}));
+            let wiadomosc = "Wystąpił błąd podczas usuwania znajomego"
+            if(body.message.includes("nie istnieje")){
+                wiadomosc = "Ten użytkownik nie jest Twoim znajomym!"
+            }
+            toast.error(wiadomosc, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
+        ustawPokazUsunZnajomego(false);
+        ustawCzyZnajomy(false);
     }
 
     const PrzyciskPodProfilem = () => {
@@ -205,7 +230,7 @@ export default function ProfilOgolny() {
                             "text-black bg-gray-300 rounded-md px-4 py-3 border border-black shadow-md cursor-not-allowed" :
                             "bg-red-900 text-white rounded-md px-5 py-3.5 hover:bg-red-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"}
                         disabled={czyZablokowaneUsun}
-                        onClick={przyUsuwaniu}
+                        onClick={przyUsuwaniuZeZnajomych}
                     >
                         Potwierdź
                     </button>
