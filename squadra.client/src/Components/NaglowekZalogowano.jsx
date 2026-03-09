@@ -278,7 +278,9 @@ export default function NaglowekZalogowano({
             return;
         }
         // jeśli git, usuwamy rozpatrzone powiadomienie z listy
-        ustawPowiadomienia(powiadomienia.filter(item => item.id !== id));
+        const tempPowiadomienia = powiadomienia.filter(item => item.id !== id)
+        ustawPowiadomienia([...tempPowiadomienia]);
+        if(tempPowiadomienia.length === 0) ustawMaPowiadomienia(false);
     }
     
     
