@@ -147,33 +147,53 @@ export default function TwoiZnajomiStrona() {
                 body: JSON.stringify(loginDoZaproszenia.trim())
             });
 
+            const ct = res.headers.get("content-type") || "";
+            const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                ? await res.json().catch(() => null)
+                : await res.text().catch(() => "");
             if (!res.ok) {
-                const errorData = await res.json().catch(() => ({}));
-                if(res.status === 404){
-                    toast.error('Użytkownik o takim loginie nie istnieje!', {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    });
-                }
-                else{
-                    toast.error(`Nie można wysłać zaproszenia: ${errorData.message || 'Nieznany błąd.'}`, {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    });
+                switch (res.status) {
+                    case 404: {
+                        toast.error('Użytkownik o takim loginie nie istnieje!', {
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: false,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "light",
+                            transition: Bounce,
+                        });
+                        break;
+                    }
+                    case 409: { // konflikt, u nas to się dzieje gdy uzytkownik jest już znajomym
+                        toast.error('Ten użytkownik jest już Twoim znajomym!', {
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: false,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "light",
+                            transition: Bounce,
+                        });
+                        break;
+                    }
+                    default: {
+                        toast.error(`Nie można wysłać zaproszenia: ${body || 'Nieznany błąd.'}`, {
+                            position: "top-center",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: false,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "light",
+                            transition: Bounce,
+                        });
+                    }
                 }
                 return;
             }
