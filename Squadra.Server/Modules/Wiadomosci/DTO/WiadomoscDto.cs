@@ -3,7 +3,7 @@
 public record WiadomoscDto(
     int IdNadawcy,
     int IdOdbiorcy,
-    DateTime DataWyslania,
+    string DataWyslania,
     string Tresc,
     int IdTypuWiadomosci
 );

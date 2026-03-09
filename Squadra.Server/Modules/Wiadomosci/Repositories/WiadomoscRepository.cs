@@ -15,7 +15,7 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         return new WiadomoscDto(
             wiadomosc.IdNadawcy,
             wiadomosc.IdOdbiorcy,
-            wiadomosc.DataWyslania,
+            wiadomosc.DataWyslania.ToString("dd.MM.yyyy HH:mm"),
             wiadomosc.Tresc,
             wiadomosc.IdTypuWiadomosci
         );
@@ -31,7 +31,7 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         return wiadomosci.Select(wiadomosc => new WiadomoscDto(
             wiadomosc.IdNadawcy,
             wiadomosc.IdOdbiorcy,
-            wiadomosc.DataWyslania,
+            wiadomosc.DataWyslania.ToString("dd.MM.yyyy HH:mm"),
             wiadomosc.Tresc,
             wiadomosc.IdTypuWiadomosci
         )).ToList();
