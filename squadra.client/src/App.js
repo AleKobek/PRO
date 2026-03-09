@@ -44,7 +44,7 @@ function App() {
                     <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
                     <TwoiZnajomiStrona/>
                 </>}></Route>
-              <Route path = "/profil/:idUzytkownika" element = {<>
+              <Route path = "/profil/:idWlascicielaProfilu" element = {<>
                     <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
                     <ProfilOgolny/>
                 </>}></Route>
