@@ -19,6 +19,16 @@ export default function TwoiZnajomiStrona() {
     const [loginDoZaproszenia, ustawLoginDoZaproszenia] = useState("");
     const [czySieWysylaZaproszenie, ustawCzySieWysylaZaproszenie] = useState(false);
 
+    // aktualizujemy wybranemu znajomemu, czy ma nowe wiadomości
+    const przyWyborzeZnajomego = (idZnajomego) => {
+        ustawIdZnajomegoZOtwartymCzatem(idZnajomego);
+        ustawZnajomych((prev) => prev.map((znajomy) =>
+            znajomy.idZnajomego === idZnajomego
+                ? {...znajomy, czySaNoweWiadomosci: false}
+                : znajomy
+        ));
+    };
+
     // co minutę pobieramy nową listę znajomych, aby była aktualna
     useEffect(() => {
         const ac = new AbortController();
@@ -97,6 +107,12 @@ export default function TwoiZnajomiStrona() {
         const znajomy = znajomi.find(z => z.idZnajomego === idZnajomegoZOtwartymCzatem);
         if(!znajomy) {
             ustawIdZnajomegoZOtwartymCzatem(znajomi[0].idZnajomego);
+            // od razu ustawiamy znajomemu z otwartym czatem, że jego wiadomości są odczytane
+            ustawZnajomych((prev) => prev.map((znajomy) =>
+                znajomy.idZnajomego === znajomi[0].idZnajomego
+                    ? {...znajomy, czySaNoweWiadomosci: false}
+                    : znajomy
+            ));
             return;
         }
 
@@ -281,7 +297,7 @@ export default function TwoiZnajomiStrona() {
                             </p>
                             : <ul className="overflow-y-auto">
                                 {znajomi.map((znajomy) => (
-                                    <ZnajomyNaLiscieKomponent key={znajomy.id} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} ustawIdZnajomegoZOtwartymCzatem={ustawIdZnajomegoZOtwartymCzatem}/>
+                                    <ZnajomyNaLiscieKomponent key={znajomy.idZnajomego} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} przyWyborzeZnajomego={przyWyborzeZnajomego}/>
                                 ))}
                             </ul>
                         }
