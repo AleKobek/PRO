@@ -42,7 +42,7 @@ function App() {
                 </>}></Route>
                 <Route path = "/twoiZnajomi" element = {<>
                     <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
-                    <TwoiZnajomiStrona/>
+                    <TwoiZnajomiStrona ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
                 </>}></Route>
               <Route path = "/profil/:idWlascicielaProfilu" element = {<>
                     <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>

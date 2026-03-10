@@ -6,7 +6,7 @@ import {API_BASE_URL} from "../config/api";
 import ZnajomyNaLiscieKomponent from "./ZnajomyNaLiscieKomponent";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import CzatZeZnajomymKomponent from "./CzatZeZnajomymKomponent";
-export default function TwoiZnajomiStrona() {
+export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
 
     const { uzytkownik, ladowanie } = useAuth();
     const userId = uzytkownik?.id ?? null;
@@ -28,6 +28,11 @@ export default function TwoiZnajomiStrona() {
                 : znajomy
         ));
     };
+
+    // przy załadowaniu od razu ustawiamy, że nie ma nowych wiadomości. Najwyżej nagłówek potem to poprawi
+    useEffect(() => {
+        if(typeof ustawCzySaNoweWiadomosci === "function") ustawCzySaNoweWiadomosci(false);
+    },[ustawCzySaNoweWiadomosci])
 
     // co minutę pobieramy nową listę znajomych, aby była aktualna
     useEffect(() => {
