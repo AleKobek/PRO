@@ -6,7 +6,7 @@ using Squadra.Server.Models;
 
 namespace Squadra.Server.Repositories;
 
-public class PowiadomienieRepository(AppDbContext context, IProfilRepository profilRepository) : IPowiadomienieRepository
+public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepository
 {
     public async Task<PowiadomienieDto> GetPowiadomienie(int id)
     {
@@ -15,17 +15,16 @@ public class PowiadomienieRepository(AppDbContext context, IProfilRepository pro
         var typPowiadomienia = await context.TypPowiadomienia.FindAsync(powiadomienie.TypPowiadomieniaId);
         if(typPowiadomienia == null) throw new NieZnalezionoWBazieException("Typ powiadomienia o id " + id + " nie istnieje");
         if (powiadomienie.PowiazanyObiektId != null && 
-            (powiadomienie.TypPowiadomieniaId is 2 or 4)) {
+            ((TypPowiadomieniaEnum)powiadomienie.TypPowiadomieniaId is TypPowiadomieniaEnum.ZaproszenieDoZnajomych or TypPowiadomieniaEnum.PrzyjecieZaproszeniaDoZnajomych or TypPowiadomieniaEnum.OdrzucenieZaproszeniaDoZnajomych or TypPowiadomieniaEnum.UsuniecieZnajomosci)) {
             // te dwie linijki pod spodem robimy tylko po to, aby kompilator nie płakał
             var idPowiazanegoUzytkownika = powiadomienie.PowiazanyObiektId ?? -1;
             if (idPowiazanegoUzytkownika == -1) throw new NieZnalezionoWBazieException("Użytkownik o takim id nie istnieje");
-            var powiazanyProfil = await profilRepository.GetProfilUzytkownika(idPowiazanegoUzytkownika);
             return new PowiadomienieDto(
                 powiadomienie.Id,
                 powiadomienie.TypPowiadomieniaId,
                 powiadomienie.UzytkownikId,
                 idPowiazanegoUzytkownika,
-                powiazanyProfil.Pseudonim,
+                powiadomienie.PowiazanyObiektNazwa,
                 powiadomienie.Tresc,
                 powiadomienie.DataWyslania.ToString("dd.MM.yyyy HH:mm")
             );
@@ -98,4 +97,12 @@ public class PowiadomienieRepository(AppDbContext context, IProfilRepository pro
     //  - zaproszenie do znajomych,
     //  - przyjęto zaproszenie do znajomych
     //  - odrzucono zaproszenie do znajomych,
+}
+enum TypPowiadomieniaEnum
+{
+    Systemowe = 1,
+    ZaproszenieDoZnajomych = 2,
+    PrzyjecieZaproszeniaDoZnajomych = 3,
+    OdrzucenieZaproszeniaDoZnajomych = 4,
+    UsuniecieZnajomosci = 5
 }
