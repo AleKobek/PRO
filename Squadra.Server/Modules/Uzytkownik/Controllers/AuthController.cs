@@ -61,6 +61,12 @@ public class AuthController(IUzytkownikService uzytkownikService,
     // robimy robotę service, bo byłoby tylko na tę jedną funkcję
     public async Task<IActionResult> Zaloguj([FromBody] LoginRequest req)
     {
+        
+        // nie pozwalamy się zalogować, jeżeli już jest się zalogowanym - trzeba się najpierw wylogować
+        var obecnyUzytkownik = await userManager.GetUserAsync(User);
+        if(obecnyUzytkownik is not null) 
+            return BadRequest("Jesteś już zalogowany. Wyloguj się, żeby zalogować na inne konto.");
+        
         // Pozwalamy logować przez email lub nazwę użytkownika
         var uzytkownik = await userManager.FindByEmailAsync(req.LoginLubEmail) 
                    ?? await userManager.FindByNameAsync(req.LoginLubEmail);
