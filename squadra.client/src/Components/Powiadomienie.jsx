@@ -1,5 +1,5 @@
 
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {CLIENT_URL} from "../config/api";
 
 {/*
@@ -25,16 +25,20 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
     const [typPowiadomienia, ustawTypPowiadomienia] = useState("");
 
 
-    const TypyPowiadomien = Object.freeze({
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const TypyPowiadomien = useMemo(()=>Object.freeze({
         SYSTEMOWE: 1,
         ZAPROSZENIE_DO_ZNAJOMYCH: 2,
         ZAAKCEPTOWANIE_ZAPROSZENIA_DO_ZNAJOMYCH: 3,
         ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH: 4,
         USUNIETO_CIE_ZE_ZNAJOMYCH: 5,
-    });
+    }),[]);
 
     // ustawiamy treść powiadomienia na podstawie typu powiadomienia
     useEffect(() => {
+
+        if (!powiadomienie) return;
+
         switch (powiadomienie.idTypuPowiadomienia){
             case TypyPowiadomien.SYSTEMOWE:{
                 ustawTypPowiadomienia("Powiadomienie systemowe")
@@ -70,16 +74,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
             }
         }
 
-    }, [
-        TypyPowiadomien.SYSTEMOWE,
-        TypyPowiadomien.ZAPROSZENIE_DO_ZNAJOMYCH,
-        TypyPowiadomien.ZAAKCEPTOWANIE_ZAPROSZENIA_DO_ZNAJOMYCH,
-        TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH,
-        TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH,
-        powiadomienie.idTypuPowiadomienia,
-        powiadomienie.nazwaPowiazanegoObiektu,
-        powiadomienie.tresc
-    ]);
+    }, [TypyPowiadomien.SYSTEMOWE, TypyPowiadomien.ZAPROSZENIE_DO_ZNAJOMYCH, TypyPowiadomien.ZAAKCEPTOWANIE_ZAPROSZENIA_DO_ZNAJOMYCH, TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH, TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH, powiadomienie.idTypuPowiadomienia, powiadomienie.nazwaPowiazanegoObiektu, powiadomienie.tresc, powiadomienie]);
 
 
     if(!powiadomienie) return (<></>);
