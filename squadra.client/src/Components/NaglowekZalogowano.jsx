@@ -154,8 +154,6 @@ export default function NaglowekZalogowano({
         } catch (err) {
             if (err && err.name === 'AbortError') return;
             console.error(err);
-            ustawPowiadomienia([]);
-            ustawMaPowiadomienia(false);
         }
     }
     
