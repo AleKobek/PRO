@@ -9,6 +9,7 @@ import CzatZeZnajomymKomponent from "./CzatZeZnajomymKomponent";
 export default function TwoiZnajomiStrona() {
 
     const { uzytkownik, ladowanie } = useAuth();
+    const userId = uzytkownik?.id ?? null;
     const [znajomi, ustawZnajomych] = useState([]);
     const [idZnajomegoZOtwartymCzatem, ustawIdZnajomegoZOtwartymCzatem] = useState(null);
     const [pseudonimZnajomegoZOtwartymCzatem, ustawPseudonimZnajomegoZOtwartymCzatem] = useState("");
@@ -18,48 +19,45 @@ export default function TwoiZnajomiStrona() {
     const [loginDoZaproszenia, ustawLoginDoZaproszenia] = useState("");
     const [czySieWysylaZaproszenie, ustawCzySieWysylaZaproszenie] = useState(false);
 
-
-
-
     // co minutę pobieramy nową listę znajomych, aby była aktualna
     useEffect(() => {
         const ac = new AbortController();
         let alive = true;
 
         const interval = setInterval(async () => {
-            if (!alive) return;
+            if (!alive || !userId) return;
             await podajZnajomych(ac.signal, alive)
         }, 60000);
 
-        // jak wychodzmy to zatrzymujemy nasz interval
+        // jak wychodzimy to zatrzymujemy nasz interval
         return () => {
             alive = false;
             ac.abort();
             clearInterval(interval);
         };
-    }, []);
+    }, [userId]);
 
     // pobieramy listę znajomych z backendu przy załadowaniu strony
     useEffect(() => {
-        if(!uzytkownik) return;
-        if(!uzytkownik.id) return;
+        if(!userId) {
+            ustawZnajomych([]);
+            ustawIdZnajomegoZOtwartymCzatem(null);
+            ustawPseudonimZnajomegoZOtwartymCzatem("");
+            ustawAwatarZnajomegoZOtwartymCzatem("");
+            return;
+        }
 
         const ac = new AbortController();
         let alive = true;
 
-        if(!znajomi.length) podajZnajomych(ac.signal, alive);
+        podajZnajomych(ac.signal, alive);
 
-        if(!idZnajomegoZOtwartymCzatem && znajomi.length) ustawIdZnajomegoZOtwartymCzatem(znajomi[0].idZnajomego);
-
-        // to funkcja sprzątająca. Odpali się od razu, gdy ten element zniknie, np. użytkownik zmieni stronę
-        // albo pod koniec całej funkcji
         return () => {
             alive = false;
-            ac.abort(); // przerywamy fetch
+            ac.abort();
         };
 
-    }, [idZnajomegoZOtwartymCzatem, uzytkownik, znajomi, znajomi.length]);
-
+    }, [userId]);
 
     // wydzielone, aby używać przy pobieraniu na początku i co minutę
     const podajZnajomych = async (signal, alive) => {
@@ -78,16 +76,32 @@ export default function TwoiZnajomiStrona() {
         };
 
         const znajomi = await fetchJsonAbort(`${API_BASE_URL}/Znajomi`, {signal});
-        if(!alive || !znajomi) return;
+        if(!alive || !Array.isArray(znajomi)) return;
         ustawZnajomych(znajomi);
     }
-    
+
     // przy zmianie znajomego z otwartym czatem
     useEffect(() => {
-        if(!idZnajomegoZOtwartymCzatem) return;
+        if(!znajomi.length) {
+            ustawIdZnajomegoZOtwartymCzatem(null);
+            ustawPseudonimZnajomegoZOtwartymCzatem("");
+            ustawAwatarZnajomegoZOtwartymCzatem("");
+            return;
+        }
+
+        if(!idZnajomegoZOtwartymCzatem) {
+            ustawIdZnajomegoZOtwartymCzatem(znajomi[0].idZnajomego);
+            return;
+        }
+
         const znajomy = znajomi.find(z => z.idZnajomego === idZnajomegoZOtwartymCzatem);
-        ustawPseudonimZnajomegoZOtwartymCzatem(znajomy.pseudonim);
-        ustawAwatarZnajomegoZOtwartymCzatem(znajomy.awatar)
+        if(!znajomy) {
+            ustawIdZnajomegoZOtwartymCzatem(znajomi[0].idZnajomego);
+            return;
+        }
+
+        ustawPseudonimZnajomegoZOtwartymCzatem(znajomy.pseudonim ?? "");
+        ustawAwatarZnajomegoZOtwartymCzatem(znajomy.awatar ?? "")
     }, [idZnajomegoZOtwartymCzatem, znajomi])
 
     // zamykamy jak klikamy poza to
@@ -275,12 +289,14 @@ export default function TwoiZnajomiStrona() {
                 </div>
                 <div className="flex flex-col col-span-2 w-full">
                     {/* czat */}
-                    <CzatZeZnajomymKomponent
-                        idZnajomegoZOtwartymCzatem={idZnajomegoZOtwartymCzatem}
-                        naszeId={uzytkownik.id}
-                        pseudonimZnajomegoZOtwartymCzatem={pseudonimZnajomegoZOtwartymCzatem}
-                        awatarZnajomegoZOtwartymCzatem={awatarZnajomegoZOtwartymCzatem}
-                    />
+                    {userId && idZnajomegoZOtwartymCzatem && (
+                        <CzatZeZnajomymKomponent
+                            idZnajomegoZOtwartymCzatem={idZnajomegoZOtwartymCzatem}
+                            naszeId={userId}
+                            pseudonimZnajomegoZOtwartymCzatem={pseudonimZnajomegoZOtwartymCzatem}
+                            awatarZnajomegoZOtwartymCzatem={awatarZnajomegoZOtwartymCzatem}
+                        />
+                    )}
                     {/* pole do wysyłania */}
                     <div>
 
