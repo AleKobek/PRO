@@ -1,18 +1,18 @@
 ﻿import '../App.css';
 
 import React, {useEffect, useState} from 'react';
-import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import {API_BASE_URL} from "../config/api";
 import ZnajomyNaLiscieKomponent from "./ZnajomyNaLiscieKomponent";
 import {Bounce, toast, ToastContainer} from "react-toastify";
+import CzatZeZnajomymKomponent from "./CzatZeZnajomymKomponent";
 export default function TwoiZnajomiStrona() {
 
-    const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
     const [znajomi, ustawZnajomych] = useState([]);
-    const [czat, ustawCzat] = useState([]);
     const [idZnajomegoZOtwartymCzatem, ustawIdZnajomegoZOtwartymCzatem] = useState(null);
+    const [pseudonimZnajomegoZOtwartymCzatem, ustawPseudonimZnajomegoZOtwartymCzatem] = useState("");
+    const [awatarZnajomegoZOtwartymCzatem, ustawAwatarZnajomegoZOtwartymCzatem] = useState("");
     const [pokazDodajZnajomego, ustawPokazDodajZnajomego] = useState(false);
     const frReqRef = React.useRef(null);
     const [loginDoZaproszenia, ustawLoginDoZaproszenia] = useState("");
@@ -58,7 +58,7 @@ export default function TwoiZnajomiStrona() {
             ac.abort(); // przerywamy fetch
         };
 
-    }, [uzytkownik, znajomi.length]);
+    }, [idZnajomegoZOtwartymCzatem, uzytkownik, znajomi, znajomi.length]);
 
 
     // wydzielone, aby używać przy pobieraniu na początku i co minutę
@@ -81,6 +81,14 @@ export default function TwoiZnajomiStrona() {
         if(!alive || !znajomi) return;
         ustawZnajomych(znajomi);
     }
+    
+    // przy zmianie znajomego z otwartym czatem
+    useEffect(() => {
+        if(!idZnajomegoZOtwartymCzatem) return;
+        const znajomy = znajomi.find(z => z.idZnajomego === idZnajomegoZOtwartymCzatem);
+        ustawPseudonimZnajomegoZOtwartymCzatem(znajomy.pseudonim);
+        ustawAwatarZnajomegoZOtwartymCzatem(znajomy.awatar)
+    }, [idZnajomegoZOtwartymCzatem, znajomi])
 
     // zamykamy jak klikamy poza to
     useEffect(() => {
@@ -265,13 +273,14 @@ export default function TwoiZnajomiStrona() {
                         }
                     </div>
                 </div>
-                {/* czat */}
-                <div className="col-span-2 flex flex-col">
-                    <h1>Czat</h1>
-                    {/* wiadomości */}
-                    <div>
-
-                    </div>
+                <div className="flex flex-col col-span-2 w-full">
+                    {/* czat */}
+                    <CzatZeZnajomymKomponent
+                        idZnajomegoZOtwartymCzatem={idZnajomegoZOtwartymCzatem}
+                        naszeId={uzytkownik.id}
+                        pseudonimZnajomegoZOtwartymCzatem={pseudonimZnajomegoZOtwartymCzatem}
+                        awatarZnajomegoZOtwartymCzatem={awatarZnajomegoZOtwartymCzatem}
+                    />
                     {/* pole do wysyłania */}
                     <div>
 
