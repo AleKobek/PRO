@@ -68,7 +68,8 @@ public class ZnajomiController(IZnajomiService znajomiService,
         
         if(result.StatusCode == 404) return NotFound(result.Errors[0].Message);
         
-        var wynikWyszukiwaniaProfilu = await profilService.GetProfil(idUsuwanego);
+        // wyszukujemy nasz profil, aby dołączyć pseudonim do powiadomienia, które wyślemy do tego, który został usunięty
+        var wynikWyszukiwaniaProfilu = await profilService.GetProfil(uzytkownik.Id);
         if (wynikWyszukiwaniaProfilu.StatusCode == 404 || wynikWyszukiwaniaProfilu.Value == null)
             return NotFound(wynikWyszukiwaniaProfilu.Errors[0].Message);
         
