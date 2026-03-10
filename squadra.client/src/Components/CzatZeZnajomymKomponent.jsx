@@ -59,6 +59,8 @@ export default function CzatZeZnajomymKomponent({
             if(!data) ustawCzat([]);
             else ustawCzat(data);
 
+            await aktualizujDateOtwarciaCzatu();
+
         }, 5000);
 
         return () => {
@@ -76,11 +78,10 @@ export default function CzatZeZnajomymKomponent({
             const data = await fetchJsonAbort(`${API_BASE_URL}/Wiadomosc/konwersacja/${idZnajomegoZOtwartymCzatem}`, ac, " czatu");
             if(!data) ustawCzat([]);
             else ustawCzat(data);
+            await aktualizujDateOtwarciaCzatu()
         }
 
-        podajCzat().then(
-
-        );
+        podajCzat();
         
         ustawCzyTrwaLadowanieCzatu(false);
         return () => {
@@ -100,6 +101,74 @@ export default function CzatZeZnajomymKomponent({
         // aktualizujemy referencję poprzedniej liczby wiadomości
         poprzedniaCzatLengthRef.current = czat.length;
     }, [czat]);
+
+    const aktualizujDateOtwarciaCzatu = async () => {
+        if (!idZnajomegoZOtwartymCzatem) return null;
+
+        const ac = new AbortController();
+
+        try {
+            const opcje = {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                signal: ac.signal,
+            };
+
+            const res = await fetch(`${API_BASE_URL}/Znajomi/${idZnajomegoZOtwartymCzatem}`, opcje);
+
+            // Bezpieczne czytanie body: backend może zwrócić pustą odpowiedź (np. 204)
+            const raw = await res.text();
+            let body = null;
+            if (raw) {
+                try {
+                    body = JSON.parse(raw);
+                } catch {
+                    body = raw; // fallback, gdy to nie jest JSON
+                }
+            }
+
+            if (!res.ok) {
+                const message =
+                    (body && typeof body === "object" && body.message) ||
+                    (typeof body === "string" && body) ||
+                    "Wystąpił błąd podczas aktualizacji daty otwarcia czatu";
+
+                toast.error(message, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                return null;
+            }
+
+            return body; // może być null przy pustym body i to jest OK
+        } catch (err) {
+            if (err && err.name === "AbortError") return null;
+            console.error("Błąd aktualizacji:", err);
+            toast.error("Wystąpił błąd podczas aktualizacji daty otwarcia czatu", {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return null;
+        }
+    };
+
 
     // pomocnicza funkcja do pobierania danych z API
     const fetchJsonAbort = async (url, ac, coPobieramy) => {
