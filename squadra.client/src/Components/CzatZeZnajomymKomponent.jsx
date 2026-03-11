@@ -324,7 +324,7 @@ export default function CzatZeZnajomymKomponent({
             {/* pole do wysyłania */}
             <div className="row-span-1 border-t-4 border-gray-800 p-4 bg-gray-300 flex flex-col items-center justify-center">
                 <div className="flex flex-row items-center justify-center gap-2">
-                    <textarea className="w-[1100px] h-20 overflow-y-auto rounded-lg p-1 px-2" maxLength={1000} value={wiadomoscDoWyslania} onChange={(e)=>ustawWiadomoscDoWyslania(e.target.value)}/>
+                    <textarea className="w-[1100px] h-20 overflow-y-auto rounded-lg p-1 px-2 resize-none" maxLength={1000} value={wiadomoscDoWyslania} onChange={(e)=>ustawWiadomoscDoWyslania(e.target.value)}/>
                     <button
                         style={{ width: '64px', height: '64px', minWidth: '64px', minHeight: '64px', borderRadius: '50%' }}
                         className={czySieWysylaWiadomosc || wiadomoscDoWyslania.trim() === ""
