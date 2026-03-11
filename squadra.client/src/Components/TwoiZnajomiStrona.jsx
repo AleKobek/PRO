@@ -308,8 +308,8 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
                         }
                     </div>
                 </div>
+                {/* czat */}
                 <div className="flex flex-col col-span-2 w-full">
-                    {/* czat */}
                     {userId && idZnajomegoZOtwartymCzatem && (
                         <CzatZeZnajomymKomponent
                             idZnajomegoZOtwartymCzatem={idZnajomegoZOtwartymCzatem}
@@ -318,10 +318,6 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
                             awatarZnajomegoZOtwartymCzatem={awatarZnajomegoZOtwartymCzatem}
                         />
                     )}
-                    {/* pole do wysyłania */}
-                    <div>
-
-                    </div>
                 </div>
             </div>
         </div>

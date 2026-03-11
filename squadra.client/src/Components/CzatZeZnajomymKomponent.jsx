@@ -15,6 +15,9 @@ export default function CzatZeZnajomymKomponent({
     const [naszAwatar, ustawNaszAwatar] = useState("");
     const [naszPseudonim, ustawNaszPseudonim] = useState(null);
 
+    const [wiadomoscDoWyslania, ustawWiadomoscDoWyslania] = useState("");
+    const [czySieWysylaWiadomosc, ustawCzySieWysylaWiadomosc] = useState(false);
+
     // referencja do listy wiadomości
     const listaWiadomosciRef = useRef(null);
     // śledzenie poprzedniej liczby wiadomości
@@ -169,6 +172,74 @@ export default function CzatZeZnajomymKomponent({
         }
     };
 
+    const przyWysylaniuWiadomosci = async () => {
+        if(!idZnajomegoZOtwartymCzatem) return;
+        if(!wiadomoscDoWyslania) return;
+        if(wiadomoscDoWyslania.trim() === "") return;
+        if(wiadomoscDoWyslania.length > 1000) return;
+        if(czySieWysylaWiadomosc) return;
+
+        const ac = new AbortController();
+        ustawCzySieWysylaWiadomosc(true);
+        try{
+            const opcje = {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                signal: ac.signal,
+                body: JSON.stringify({
+                    tresc: wiadomoscDoWyslania,
+                    idTypuWiadomosci: 1,
+                })
+            }
+            const res = await fetch(`${API_BASE_URL}/Wiadomosc/${idZnajomegoZOtwartymCzatem}`, opcje);
+            const ct = res.headers.get("content-type") || "";
+            const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                ? await res.json().catch(() => null)
+                : await res.text().catch(() => "");
+            if (!res.ok) {
+                toast.error(body || 'Wystąpił błąd podczas wysyłania wiadomości', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                return;
+            }
+            ustawWiadomoscDoWyslania("");
+            // odświeżamy czat po wysłaniu wiadomości
+            const podajCzat = async () => {
+                const data = await fetchJsonAbort(`${API_BASE_URL}/Wiadomosc/konwersacja/${idZnajomegoZOtwartymCzatem}`, ac, " czatu");
+                if(!data) ustawCzat([]);
+                else ustawCzat(data);
+                await aktualizujDateOtwarciaCzatu()
+            }
+            podajCzat(ac);
+        }catch (err) {
+            console.error('Błąd wysyłania wiadomości:', err);
+            toast.error('Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie później.', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }finally {
+            ustawCzySieWysylaWiadomosc(false);
+        }
+    }
+
 
     // pomocnicza funkcja do pobierania danych z API
     const fetchJsonAbort = async (url, ac, coPobieramy) => {
@@ -225,50 +296,72 @@ export default function CzatZeZnajomymKomponent({
         </div>
     )
 
-    return(
-    <div className="flex flex-col overflow-y-auto w-full max-h-[700px] border-5">
-        <h2 className="border-b-2 p-2 bg-gray-100 item">
-            Czat
-        </h2>
-        {/* lista wiadomości */}
-        <ul ref={listaWiadomosciRef} className="overflow-y-auto w-full flex flex-col gap-4 p-2">
-            {
-                // jeśli czat jest pusty
-                czat.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full mt-10 text-gray-700 text-4xl">
-                        <p>Brak wiadomości. Zacznij konwersację!</p>
-                    </div>
-                ) :
+    return(<>
+    <div className="grid grid-rows-6 flex-col overflow-y-auto w-full h-[859px] border-5">
+        <div className="row-span-5 min-h-0 flex flex-col">
+            <h2 className="border-b-2 p-2 bg-gray-100 item">
+                Czat
+            </h2>
+            {/* lista wiadomości */}
+            <ul ref={listaWiadomosciRef} className="overflow-y-auto flex flex-col gap-4 p-2">
+                {
+                    // jeśli czat jest pusty
+                    czat.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center h-full mt-10 text-gray-700 text-4xl">
+                                <p>Brak wiadomości. Zacznij konwersację!</p>
+                            </div>
+                        ) :
 
-                czat.map((wiadomosc)=>(
-                    <WiadomoscNaLiscieKomponent
-                        wiadomosc={wiadomosc}
-                        awatarNadawcy={wiadomosc.idNadawcy === idZnajomegoZOtwartymCzatem
-                            ? awatarZnajomegoZOtwartymCzatem
-                            : naszAwatar
-                        }
-                        pseudonimNadawcy={wiadomosc.idNadawcy === idZnajomegoZOtwartymCzatem
-                            ? pseudonimZnajomegoZOtwartymCzatem
-                            : naszPseudonim
-                        }
+                        czat.map((wiadomosc)=>(
+                            <WiadomoscNaLiscieKomponent
+                                wiadomosc={wiadomosc}
+                                awatarNadawcy={wiadomosc.idNadawcy === idZnajomegoZOtwartymCzatem
+                                    ? awatarZnajomegoZOtwartymCzatem
+                                    : naszAwatar
+                                }
+                                pseudonimNadawcy={wiadomosc.idNadawcy === idZnajomegoZOtwartymCzatem
+                                    ? pseudonimZnajomegoZOtwartymCzatem
+                                    : naszPseudonim
+                                }
+                            />
+                        ))
+                }
+            </ul>
+        </div>
+        {/* pole do wysyłania */}
+        <div className="row-span-1 border-t-4 border-gray-800 p-4 bg-gray-300 flex flex-col items-center justify-center">
+            <div className="flex flex-row items-center justify-center gap-2">
+                <textarea className="w-[1100px] h-20 overflow-y-auto rounded-lg p-1 px-2" maxLength={1000} value={wiadomoscDoWyslania} onChange={(e)=>ustawWiadomoscDoWyslania(e.target.value)}/>
+                <button
+                    style={{ width: '64px', height: '64px', minWidth: '64px', minHeight: '64px', borderRadius: '50%' }}
+                    className={czySieWysylaWiadomosc || wiadomoscDoWyslania.trim() === ""
+                    ? "bg-gray-200 flex items-center justify-center border-2 border-gray-800 shrink-0 cursor-not-allowed"
+                    :"bg-blue-200 flex items-center justify-center border-2 border-gray-800 hover:bg-blue-300 transition-colors shrink-0"}
+                    onClick={przyWysylaniuWiadomosci}
+                    disabled={czySieWysylaWiadomosc}
+                >
+                    <img
+                        src="/img/send.svg"
+                        alt="Wyślij"
+                        className="w-8 h-8"
                     />
-                ))
-            }
-        </ul>
-        {/* ma własny kontener, bo nie chce mi się łączyć z tamtym */}
-        <ToastContainer
-            position="top-center"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick={false}
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            transition={Bounce}
-        />
+                </button>
+            </div>
+        </div>
     </div>
-)
+    {/* ma własny kontener, bo nie chce mi się łączyć z tamtym */}
+    <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        transition={Bounce}
+    />
+</>)
 }
