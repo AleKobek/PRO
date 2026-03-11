@@ -304,7 +304,7 @@ export default function CzatZeZnajomymKomponent({
                                 </div>
                             ) :
 
-                            czat.map((wiadomosc)=>(
+                            czat.map((wiadomosc, index)=>(
                                 <WiadomoscNaLiscieKomponent
                                     wiadomosc={wiadomosc}
                                     awatarNadawcy={wiadomosc.idNadawcy === idZnajomegoZOtwartymCzatem
@@ -315,6 +315,7 @@ export default function CzatZeZnajomymKomponent({
                                         ? pseudonimZnajomegoZOtwartymCzatem
                                         : naszPseudonim
                                     }
+                                    key = {wiadomosc.idNadawcy + index}
                                 />
                             ))
                     }
