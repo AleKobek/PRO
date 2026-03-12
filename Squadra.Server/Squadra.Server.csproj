@@ -30,7 +30,6 @@
 
     <ItemGroup>
       <Folder Include="Modules\Platformy\Controllers\" />
-      <Folder Include="Modules\Platformy\DTO\" />
       <Folder Include="Modules\Platformy\Services\" />
       <Folder Include="Modules\Uzytkownicy\DTO\" />
     </ItemGroup>
