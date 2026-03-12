@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Configs;
 using Squadra.Server.Models;
+using Squadra.Server.Modules.Platforma.Models;
 
 namespace Squadra.Server.Context;
 
@@ -28,6 +29,8 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
     public DbSet<Wiadomosc> Wiadomosc { get; set; } = null!;
     
     public DbSet<TypWiadomosci> TypWiadomosci { get; set; } = null!;
+    
+    public DbSet<Platforma> Platforma { get; set; } = null!;
     
     public AppDbContext(){}
     
