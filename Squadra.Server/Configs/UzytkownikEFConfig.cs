@@ -34,6 +34,14 @@ public class UzytkownikEFConfig : IEntityTypeConfiguration<Uzytkownik>
             .IsRequired();
             
         builder.HasIndex(x => x.NormalizedEmail).IsUnique();
+
+        builder
+            .Property(x => x.LoginNaZewnetrznymSerwisie)
+            .HasMaxLength(40);
+
+        builder
+            .Property(x => x.HasloNaZewnetrznymSerwisieHash)
+            .HasMaxLength(128);
         
 
         builder
