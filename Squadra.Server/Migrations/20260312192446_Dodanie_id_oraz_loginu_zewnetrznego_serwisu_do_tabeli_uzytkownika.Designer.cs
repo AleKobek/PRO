@@ -12,8 +12,8 @@ using Squadra.Server.Context;
 namespace Squadra.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260312155542_Dodanie_pol_do_uzytkownika_do_symulacji_zewnetrznego_serwisu")]
-    partial class Dodanie_pol_do_uzytkownika_do_symulacji_zewnetrznego_serwisu
+    [Migration("20260312192446_Dodanie_id_oraz_loginu_zewnetrznego_serwisu_do_tabeli_uzytkownika")]
+    partial class Dodanie_id_oraz_loginu_zewnetrznego_serwisu_do_tabeli_uzytkownika
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -158,7 +158,132 @@ namespace Squadra.Server.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Jezyk", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Platformy.Models.Platforma", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<byte[]>("Logo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
+                    b.Property<string>("Nazwa")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Platforma", (string)null);
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Platformy.Models.UzytkownikPlatforma", b =>
+                {
+                    b.Property<int>("PlatformaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UzytkownikId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PseudonimNaPlatformie")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("nvarchar(40)");
+
+                    b.HasKey("PlatformaId", "UzytkownikId")
+                        .HasName("id_uzytkownik_platforma");
+
+                    b.HasIndex("UzytkownikId");
+
+                    b.ToTable("UzytkownikPlatforma", (string)null);
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Powiadomienia.Models.Powiadomienie", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DataWyslania")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("PowiazanyObiektId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PowiazanyObiektNazwa")
+                        .HasMaxLength(30)
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<string>("Tresc")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("TypPowiadomieniaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UzytkownikId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TypPowiadomieniaId");
+
+                    b.HasIndex("UzytkownikId");
+
+                    b.ToTable("Powiadomienie", (string)null);
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Powiadomienia.Models.TypPowiadomienia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nazwa")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TypPowiadomienia", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nazwa = "Systemowe"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nazwa = "Zaproszenie do znajomych"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Nazwa = "Zaakceptowano zaproszenie do znajomych"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Nazwa = "Odrzucono zaproszenie do znajomych"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Nazwa = "Usunieto cie ze znajomych"
+                        });
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.Jezyk", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -213,7 +338,7 @@ namespace Squadra.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.JezykProfilu", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.JezykProfilu", b =>
                 {
                     b.Property<int>("JezykId")
                         .HasColumnType("int")
@@ -237,7 +362,7 @@ namespace Squadra.Server.Migrations
                     b.ToTable("JezykProfilu", (string)null);
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Kraj", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.Kraj", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -268,44 +393,7 @@ namespace Squadra.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Powiadomienie", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("DataWyslania")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("PowiazanyObiektId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PowiazanyObiektNazwa")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
-
-                    b.Property<string>("Tresc")
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("TypPowiadomieniaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UzytkownikId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TypPowiadomieniaId");
-
-                    b.HasIndex("UzytkownikId");
-
-                    b.ToTable("Powiadomienie", (string)null);
-                });
-
-            modelBuilder.Entity("Squadra.Server.Models.Profil", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.Profil", b =>
                 {
                     b.Property<int>("IdUzytkownika")
                         .HasColumnType("int");
@@ -343,7 +431,7 @@ namespace Squadra.Server.Migrations
                     b.ToTable("Profil", (string)null);
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Region", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.Region", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -477,7 +565,7 @@ namespace Squadra.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Status", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.Status", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -522,7 +610,7 @@ namespace Squadra.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.StopienBieglosciJezyka", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.StopienBieglosciJezyka", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -563,82 +651,7 @@ namespace Squadra.Server.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.TypPowiadomienia", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Nazwa")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TypPowiadomienia", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Nazwa = "Systemowe"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Nazwa = "Zaproszenie do znajomych"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Nazwa = "Zaakceptowano zaproszenie do znajomych"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Nazwa = "Odrzucono zaproszenie do znajomych"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Nazwa = "Usunieto cie ze znajomych"
-                        });
-                });
-
-            modelBuilder.Entity("Squadra.Server.Models.TypWiadomosci", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Nazwa")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("TypWiadomosci", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Nazwa = "Prywatna"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Nazwa = "Do gildii"
-                        });
-                });
-
-            modelBuilder.Entity("Squadra.Server.Models.Uzytkownik", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -663,10 +676,6 @@ namespace Squadra.Server.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
-
-                    b.Property<string>("HasloNaZewnetrznymSerwisieHash")
-                        .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
 
                     b.Property<int?>("IdNaZewnetrznymSerwisie")
                         .HasColumnType("int");
@@ -728,7 +737,37 @@ namespace Squadra.Server.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Wiadomosc", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Wiadomosci.Models.TypWiadomosci", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Nazwa")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TypWiadomosci", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nazwa = "Prywatna"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nazwa = "Do gildii"
+                        });
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Wiadomosci.Models.Wiadomosc", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -766,7 +805,7 @@ namespace Squadra.Server.Migrations
                     b.ToTable("Wiadomosc", (string)null);
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Znajomi", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Znajomosci.Models.Znajomi", b =>
                 {
                     b.Property<int>("IdUzytkownika1")
                         .HasColumnType("int")
@@ -793,49 +832,6 @@ namespace Squadra.Server.Migrations
                     b.ToTable("Znajomi", (string)null);
                 });
 
-            modelBuilder.Entity("Squadra.Server.Modules.Platforma.Models.Platforma", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<byte[]>("Logo")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<string>("Nazwa")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Platforma", (string)null);
-                });
-
-            modelBuilder.Entity("Squadra.Server.Modules.Platforma.Models.UzytkownikPlatforma", b =>
-                {
-                    b.Property<int>("PlatformaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UzytkownikId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PseudonimNaPlatformie")
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("nvarchar(40)");
-
-                    b.HasKey("PlatformaId", "UzytkownikId")
-                        .HasName("id_uzytkownik_platforma");
-
-                    b.HasIndex("UzytkownikId");
-
-                    b.ToTable("UzytkownikPlatforma", (string)null);
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<int>", null)
@@ -847,7 +843,7 @@ namespace Squadra.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
-                    b.HasOne("Squadra.Server.Models.Uzytkownik", null)
+                    b.HasOne("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -856,7 +852,7 @@ namespace Squadra.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
-                    b.HasOne("Squadra.Server.Models.Uzytkownik", null)
+                    b.HasOne("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -871,7 +867,7 @@ namespace Squadra.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Squadra.Server.Models.Uzytkownik", null)
+                    b.HasOne("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -880,30 +876,72 @@ namespace Squadra.Server.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.HasOne("Squadra.Server.Models.Uzytkownik", null)
+                    b.HasOne("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.JezykProfilu", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Platformy.Models.UzytkownikPlatforma", b =>
                 {
-                    b.HasOne("Squadra.Server.Models.Jezyk", "Jezyk")
+                    b.HasOne("Squadra.Server.Modules.Platformy.Models.Platforma", "Platforma")
+                        .WithMany("UzytkownikPlatformaCollection")
+                        .HasForeignKey("PlatformaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("UzytkownikPlatforma_Platforma");
+
+                    b.HasOne("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", "Uzytkownik")
+                        .WithMany("UzytkownikPlatformaCollection")
+                        .HasForeignKey("UzytkownikId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("UzytkownikPlatforma_Uzytkownik");
+
+                    b.Navigation("Platforma");
+
+                    b.Navigation("Uzytkownik");
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Powiadomienia.Models.Powiadomienie", b =>
+                {
+                    b.HasOne("Squadra.Server.Modules.Powiadomienia.Models.TypPowiadomienia", "TypPowiadomienia")
+                        .WithMany("PowiadomienieCollection")
+                        .HasForeignKey("TypPowiadomieniaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("Powiadomienie_TypPowiadomienia");
+
+                    b.HasOne("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", "Uzytkownik")
+                        .WithMany("PowiadomienieCollection")
+                        .HasForeignKey("UzytkownikId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("Powiadomienie_Uzytkownik");
+
+                    b.Navigation("TypPowiadomienia");
+
+                    b.Navigation("Uzytkownik");
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.JezykProfilu", b =>
+                {
+                    b.HasOne("Squadra.Server.Modules.Profile.Models.Jezyk", "Jezyk")
                         .WithMany("JezykProfiluCollection")
                         .HasForeignKey("JezykId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("JezykProfilu_Jezyk");
 
-                    b.HasOne("Squadra.Server.Models.StopienBieglosciJezyka", "StopienBieglosciJezyka")
+                    b.HasOne("Squadra.Server.Modules.Profile.Models.StopienBieglosciJezyka", "StopienBieglosciJezyka")
                         .WithMany("JezykUzytkownikaCollection")
                         .HasForeignKey("StopienBieglosciId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("JezykUzytkownika_StopienBieglosci");
 
-                    b.HasOne("Squadra.Server.Models.Profil", "Profil")
+                    b.HasOne("Squadra.Server.Modules.Profile.Models.Profil", "Profil")
                         .WithMany("JezykUzytkownikaCollection")
                         .HasForeignKey("UzytkownikId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -917,41 +955,20 @@ namespace Squadra.Server.Migrations
                     b.Navigation("StopienBieglosciJezyka");
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Powiadomienie", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.Profil", b =>
                 {
-                    b.HasOne("Squadra.Server.Models.TypPowiadomienia", "TypPowiadomienia")
-                        .WithMany("PowiadomienieCollection")
-                        .HasForeignKey("TypPowiadomieniaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("Powiadomienie_TypPowiadomienia");
-
-                    b.HasOne("Squadra.Server.Models.Uzytkownik", "Uzytkownik")
-                        .WithMany("PowiadomienieCollection")
-                        .HasForeignKey("UzytkownikId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("Powiadomienie_Uzytkownik");
-
-                    b.Navigation("TypPowiadomienia");
-
-                    b.Navigation("Uzytkownik");
-                });
-
-            modelBuilder.Entity("Squadra.Server.Models.Profil", b =>
-                {
-                    b.HasOne("Squadra.Server.Models.Uzytkownik", "Uzytkownik")
+                    b.HasOne("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", "Uzytkownik")
                         .WithOne("Profil")
-                        .HasForeignKey("Squadra.Server.Models.Profil", "IdUzytkownika")
+                        .HasForeignKey("Squadra.Server.Modules.Profile.Models.Profil", "IdUzytkownika")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Squadra.Server.Models.Region", "Region")
+                    b.HasOne("Squadra.Server.Modules.Profile.Models.Region", "Region")
                         .WithMany("ProfilCollection")
                         .HasForeignKey("RegionId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("Profil_Region");
 
-                    b.HasOne("Squadra.Server.Models.Status", "Status")
+                    b.HasOne("Squadra.Server.Modules.Profile.Models.Status", "Status")
                         .WithMany("ProfilCollection")
                         .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -965,9 +982,9 @@ namespace Squadra.Server.Migrations
                     b.Navigation("Uzytkownik");
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Region", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.Region", b =>
                 {
-                    b.HasOne("Squadra.Server.Models.Kraj", "Kraj")
+                    b.HasOne("Squadra.Server.Modules.Profile.Models.Kraj", "Kraj")
                         .WithMany("RegionCollection")
                         .HasForeignKey("KrajId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -977,23 +994,23 @@ namespace Squadra.Server.Migrations
                     b.Navigation("Kraj");
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Wiadomosc", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Wiadomosci.Models.Wiadomosc", b =>
                 {
-                    b.HasOne("Squadra.Server.Models.Uzytkownik", "Nadawca")
+                    b.HasOne("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", "Nadawca")
                         .WithMany("WiadomosciNadaneCollection")
                         .HasForeignKey("IdNadawcy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("Wiadomosc_Nadawca");
 
-                    b.HasOne("Squadra.Server.Models.Uzytkownik", "Odbiorca")
+                    b.HasOne("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", "Odbiorca")
                         .WithMany("WiadomosciOdebraneCollection")
                         .HasForeignKey("IdOdbiorcy")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("Wiadomosc_Odbiorca");
 
-                    b.HasOne("Squadra.Server.Models.TypWiadomosci", "TypWiadomosci")
+                    b.HasOne("Squadra.Server.Modules.Wiadomosci.Models.TypWiadomosci", "TypWiadomosci")
                         .WithMany("WiadomosciCollection")
                         .HasForeignKey("IdTypuWiadomosci")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1007,16 +1024,16 @@ namespace Squadra.Server.Migrations
                     b.Navigation("TypWiadomosci");
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Znajomi", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Znajomosci.Models.Znajomi", b =>
                 {
-                    b.HasOne("Squadra.Server.Models.Uzytkownik", "Uzytkownik1")
+                    b.HasOne("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", "Uzytkownik1")
                         .WithMany("ZnajomiJakoPierwszyCollection")
                         .HasForeignKey("IdUzytkownika1")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("Znajomi_Uzytkownik1");
 
-                    b.HasOne("Squadra.Server.Models.Uzytkownik", "Uzytkownik2")
+                    b.HasOne("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", "Uzytkownik2")
                         .WithMany("ZnajomiJakoDrugiCollection")
                         .HasForeignKey("IdUzytkownika2")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -1028,68 +1045,47 @@ namespace Squadra.Server.Migrations
                     b.Navigation("Uzytkownik2");
                 });
 
-            modelBuilder.Entity("Squadra.Server.Modules.Platforma.Models.UzytkownikPlatforma", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Platformy.Models.Platforma", b =>
                 {
-                    b.HasOne("Squadra.Server.Modules.Platforma.Models.Platforma", "Platforma")
-                        .WithMany("UzytkownikPlatformaCollection")
-                        .HasForeignKey("PlatformaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("UzytkownikPlatforma_Platforma");
-
-                    b.HasOne("Squadra.Server.Models.Uzytkownik", "Uzytkownik")
-                        .WithMany("UzytkownikPlatformaCollection")
-                        .HasForeignKey("UzytkownikId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("UzytkownikPlatforma_Uzytkownik");
-
-                    b.Navigation("Platforma");
-
-                    b.Navigation("Uzytkownik");
+                    b.Navigation("UzytkownikPlatformaCollection");
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Jezyk", b =>
-                {
-                    b.Navigation("JezykProfiluCollection");
-                });
-
-            modelBuilder.Entity("Squadra.Server.Models.Kraj", b =>
-                {
-                    b.Navigation("RegionCollection");
-                });
-
-            modelBuilder.Entity("Squadra.Server.Models.Profil", b =>
-                {
-                    b.Navigation("JezykUzytkownikaCollection");
-                });
-
-            modelBuilder.Entity("Squadra.Server.Models.Region", b =>
-                {
-                    b.Navigation("ProfilCollection");
-                });
-
-            modelBuilder.Entity("Squadra.Server.Models.Status", b =>
-                {
-                    b.Navigation("ProfilCollection");
-                });
-
-            modelBuilder.Entity("Squadra.Server.Models.StopienBieglosciJezyka", b =>
-                {
-                    b.Navigation("JezykUzytkownikaCollection");
-                });
-
-            modelBuilder.Entity("Squadra.Server.Models.TypPowiadomienia", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Powiadomienia.Models.TypPowiadomienia", b =>
                 {
                     b.Navigation("PowiadomienieCollection");
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.TypWiadomosci", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.Jezyk", b =>
                 {
-                    b.Navigation("WiadomosciCollection");
+                    b.Navigation("JezykProfiluCollection");
                 });
 
-            modelBuilder.Entity("Squadra.Server.Models.Uzytkownik", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.Kraj", b =>
+                {
+                    b.Navigation("RegionCollection");
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.Profil", b =>
+                {
+                    b.Navigation("JezykUzytkownikaCollection");
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.Region", b =>
+                {
+                    b.Navigation("ProfilCollection");
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.Status", b =>
+                {
+                    b.Navigation("ProfilCollection");
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.StopienBieglosciJezyka", b =>
+                {
+                    b.Navigation("JezykUzytkownikaCollection");
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", b =>
                 {
                     b.Navigation("PowiadomienieCollection");
 
@@ -1106,9 +1102,9 @@ namespace Squadra.Server.Migrations
                     b.Navigation("ZnajomiJakoPierwszyCollection");
                 });
 
-            modelBuilder.Entity("Squadra.Server.Modules.Platforma.Models.Platforma", b =>
+            modelBuilder.Entity("Squadra.Server.Modules.Wiadomosci.Models.TypWiadomosci", b =>
                 {
-                    b.Navigation("UzytkownikPlatformaCollection");
+                    b.Navigation("WiadomosciCollection");
                 });
 #pragma warning restore 612, 618
         }

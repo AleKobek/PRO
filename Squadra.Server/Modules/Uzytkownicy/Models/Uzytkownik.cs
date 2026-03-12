@@ -15,12 +15,7 @@ public class Uzytkownik : IdentityUser<int>
     public DateTime? OstatniaAktywnosc { get; set; }
     
     [MaxLength(40)]
-    // tylko na potrzeby symulacji tamtego serwisu
     public string? LoginNaZewnetrznymSerwisie { get; set; }
-    
-    [MaxLength(128)]
-    // tylko na potrzeby symulacji tamtego serwisu
-    public string? HasloNaZewnetrznymSerwisieHash { get; set; }
     
     public int? IdNaZewnetrznymSerwisie { get; set; }
     

@@ -5,18 +5,11 @@
 namespace Squadra.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class Dodanie_pol_do_uzytkownika_do_symulacji_zewnetrznego_serwisu : Migration
+    public partial class Dodanie_id_oraz_loginu_zewnetrznego_serwisu_do_tabeli_uzytkownika : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "HasloNaZewnetrznymSerwisieHash",
-                table: "AspNetUsers",
-                type: "nvarchar(128)",
-                maxLength: 128,
-                nullable: true);
-
             migrationBuilder.AddColumn<int>(
                 name: "IdNaZewnetrznymSerwisie",
                 table: "AspNetUsers",
@@ -34,10 +27,6 @@ namespace Squadra.Server.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "HasloNaZewnetrznymSerwisieHash",
-                table: "AspNetUsers");
-
             migrationBuilder.DropColumn(
                 name: "IdNaZewnetrznymSerwisie",
                 table: "AspNetUsers");

@@ -40,11 +40,6 @@ public class UzytkownikEFConfig : IEntityTypeConfiguration<Uzytkownik>
             .HasMaxLength(40);
 
         builder
-            .Property(x => x.HasloNaZewnetrznymSerwisieHash)
-            .HasMaxLength(128);
-        
-
-        builder
             .Property(x => x.PhoneNumber)
             .HasMaxLength(15);
     }
