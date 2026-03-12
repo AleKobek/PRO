@@ -1,7 +1,9 @@
 ﻿using Squadra.Server.Exceptions;
-using Squadra.Server.Repositories;
+using Squadra.Server.Modules.Shared.Services;
+using Squadra.Server.Modules.Wiadomosci.Repositories;
+using Squadra.Server.Modules.Znajomosci.Repositories;
 
-namespace Squadra.Server.Services;
+namespace Squadra.Server.Modules.Wiadomosci.Services;
 
 // używamy tego w GetZnajomiDoListyUżytkownika w ZnajomiService
 public class StatystykiCzatuService(IWiadomoscRepository wiadomoscRepository, IZnajomiRepository znajomiRepository)

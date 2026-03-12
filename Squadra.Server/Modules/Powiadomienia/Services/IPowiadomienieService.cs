@@ -1,7 +1,8 @@
 ﻿using System.Security.Claims;
-using Squadra.Server.DTO.Powiadomienie;
+using Squadra.Server.Modules.Powiadomienia.DTO;
+using Squadra.Server.Modules.Shared.Services;
 
-namespace Squadra.Server.Services;
+namespace Squadra.Server.Modules.Powiadomienia.Services;
 
 public interface IPowiadomienieService
 {

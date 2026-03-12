@@ -1,0 +1,13 @@
+﻿
+namespace Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
+
+// to jest po prostu get dto? nie, do czegoś jeszcze jest używane
+public record UzytkownikResDto
+(
+    int Id,
+    string Login,
+    string Email,
+    string? NumerTelefonu,
+    DateOnly? DataUrodzenia,
+    string[] Role
+);

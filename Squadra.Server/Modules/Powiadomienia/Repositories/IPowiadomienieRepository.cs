@@ -1,6 +1,6 @@
-﻿using Squadra.Server.DTO.Powiadomienie;
+﻿using Squadra.Server.Modules.Powiadomienia.DTO;
 
-namespace Squadra.Server.Repositories;
+namespace Squadra.Server.Modules.Powiadomienia.Repositories;
 
 public interface IPowiadomienieRepository
 {

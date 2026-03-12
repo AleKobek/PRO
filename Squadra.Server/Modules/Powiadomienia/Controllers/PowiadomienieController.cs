@@ -1,12 +1,12 @@
-﻿﻿using System.Net;
+﻿using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Squadra.Server.DTO.Powiadomienie;
-using Squadra.Server.Models;
-using Squadra.Server.Services;
+using Squadra.Server.Modules.Powiadomienia.DTO;
+using Squadra.Server.Modules.Powiadomienia.Services;
+using Squadra.Server.Modules.Uzytkownicy.Models;
 
-namespace Squadra.Server.Controllers;
+namespace Squadra.Server.Modules.Powiadomienia.Controllers;
 
 [Authorize]
 [Route("api/[controller]")]

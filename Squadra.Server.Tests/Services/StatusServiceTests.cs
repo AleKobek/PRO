@@ -1,7 +1,7 @@
 using Moq;
-using Squadra.Server.DTO.Status;
-using Squadra.Server.Repositories;
-using Squadra.Server.Services;
+using Squadra.Server.Modules.Profile.DTO.Status;
+using Squadra.Server.Modules.Profile.Repositories;
+using Squadra.Server.Modules.Profile.Services;
 using Xunit;
 
 namespace Squadra.Server.Tests.Services;

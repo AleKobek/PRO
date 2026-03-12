@@ -1,9 +1,11 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using Squadra.Server.DTO.Wiadomosc;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Repositories;
+using Squadra.Server.Modules.Shared.Services;
+using Squadra.Server.Modules.Wiadomosci.DTO;
+using Squadra.Server.Modules.Wiadomosci.Repositories;
+using Squadra.Server.Modules.Znajomosci.Repositories;
 
-namespace Squadra.Server.Services;
+namespace Squadra.Server.Modules.Wiadomosci.Services;
 
 public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
     IZnajomiRepository znajomiRepository) : IWiadomoscService

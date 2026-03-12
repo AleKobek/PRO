@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Squadra.Server.Controllers;
-using Squadra.Server.DTO.JezykStopien;
-using Squadra.Server.Services;
+using Squadra.Server.Modules.Profile.Controllers;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
+using Squadra.Server.Modules.Profile.Services;
+using Squadra.Server.Modules.Shared.Services;
 using Xunit;
 
 namespace Squadra.Server.Tests.Controllers;

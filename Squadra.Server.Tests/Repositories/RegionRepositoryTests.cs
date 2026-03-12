@@ -1,10 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Squadra.Server.Context;
-using Squadra.Server.DTO.KrajRegion;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Models;
-using Squadra.Server.Repositories;
+using Squadra.Server.Modules.Profile.DTO.KrajRegion;
+using Squadra.Server.Modules.Profile.Models;
+using Squadra.Server.Modules.Profile.Repositories;
 using Xunit;
 
 namespace Squadra.Server.Tests.Repositories;

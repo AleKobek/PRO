@@ -3,12 +3,16 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Squadra.Server.Controllers;
-using Squadra.Server.DTO.Auth;
-using Squadra.Server.DTO.Profil;
-using Squadra.Server.DTO.Uzytkownik;
-using Squadra.Server.Models;
-using Squadra.Server.Services;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
+using Squadra.Server.Modules.Profile.DTO.KrajRegion;
+using Squadra.Server.Modules.Profile.DTO.Profil;
+using Squadra.Server.Modules.Profile.Services;
+using Squadra.Server.Modules.Shared.Services;
+using Squadra.Server.Modules.Uzytkownicy.Controllers;
+using Squadra.Server.Modules.Uzytkownicy.DTO.Auth;
+using Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
+using Squadra.Server.Modules.Uzytkownicy.Models;
+using Squadra.Server.Modules.Uzytkownicy.Services;
 using Xunit;
 
 namespace Squadra.Server.Tests.Controllers;
@@ -264,10 +268,10 @@ public class AuthControllerTests
 
         var profile = new ProfilGetResDto(
             "testuser",
-            new DTO.KrajRegion.RegionKrajDto(1, "Mazowieckie", 1, "Poland"),
+            new RegionKrajDto(1, "Mazowieckie", 1, "Poland"),
             "he/him",
             "Description",
-            new List<DTO.JezykStopien.JezykOrazStopienDto>(),
+            new List<JezykOrazStopienDto>(),
             System.Text.Encoding.UTF8.GetBytes("avatar"),
             "Online"
         );

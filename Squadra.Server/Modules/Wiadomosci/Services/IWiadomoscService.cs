@@ -1,6 +1,7 @@
-﻿using Squadra.Server.DTO.Wiadomosc;
+﻿using Squadra.Server.Modules.Shared.Services;
+using Squadra.Server.Modules.Wiadomosci.DTO;
 
-namespace Squadra.Server.Services;
+namespace Squadra.Server.Modules.Wiadomosci.Services;
 
 public interface IWiadomoscService
 {

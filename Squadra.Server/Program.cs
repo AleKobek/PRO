@@ -1,16 +1,13 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Squadra;
 using Squadra.Server.Context;
-using Squadra.Server.Models;
 using Squadra.Server.Modules.Powiadomienia;
-using Squadra.Server.Modules.Profil;
-using Squadra.Server.Modules.Uzytkownik;
+using Squadra.Server.Modules.Profile;
+using Squadra.Server.Modules.Uzytkownicy;
+using Squadra.Server.Modules.Uzytkownicy.Models;
 using Squadra.Server.Modules.Wiadomosci;
-using Squadra.Server.Modules.Znajomi;
-using Squadra.Server.Repositories;
-using Squadra.Server.Services;
+using Squadra.Server.Modules.Znajomosci;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,10 +20,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // rejestrujemy nasze moduły
 builder.Services.AddPowiadomieniaModule();
-builder.Services.AddProfilModule();
-builder.Services.AddUzytkownikModule();
+builder.Services.AddProfileModule();
+builder.Services.AddUzytkownicyModule();
 builder.Services.AddWiadomosciModule();
-builder.Services.AddZnajomiModule();
+builder.Services.AddZnajomosciModule();
 
 // ustawiamy Identity
 builder.Services

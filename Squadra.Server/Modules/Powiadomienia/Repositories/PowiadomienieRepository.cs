@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
-using Squadra.Server.DTO.Powiadomienie;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Models;
+using Squadra.Server.Modules.Powiadomienia.DTO;
+using Squadra.Server.Modules.Powiadomienia.Models;
 
-namespace Squadra.Server.Repositories;
+namespace Squadra.Server.Modules.Powiadomienia.Repositories;
 
 public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepository
 {

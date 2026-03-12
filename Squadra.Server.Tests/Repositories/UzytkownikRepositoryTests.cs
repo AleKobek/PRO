@@ -4,11 +4,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Squadra.Server.Context;
-using Squadra.Server.DTO.Profil;
-using Squadra.Server.DTO.Uzytkownik;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Models;
-using Squadra.Server.Repositories;
+using Squadra.Server.Modules.Powiadomienia.Repositories;
+using Squadra.Server.Modules.Profile.Repositories;
+using Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
+using Squadra.Server.Modules.Uzytkownicy.Models;
+using Squadra.Server.Modules.Uzytkownicy.Repositories;
+using Squadra.Server.Modules.Znajomosci.Repositories;
 using Xunit;
 
 namespace Squadra.Server.Tests.Repositories;

@@ -1,4 +1,6 @@
-﻿namespace Squadra.Server.Services;
+﻿using Squadra.Server.Modules.Shared.Services;
+
+namespace Squadra.Server.Modules.Wiadomosci.Services;
 
 public interface IStatystykiCzatuService
 {

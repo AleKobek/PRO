@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Squadra.Server.Modules.Uzytkownicy.Models;
 
-namespace Squadra.Server.Models;
+namespace Squadra.Server.Modules.Powiadomienia.Models;
 
 [Table(nameof(Powiadomienie))]
 public class Powiadomienie

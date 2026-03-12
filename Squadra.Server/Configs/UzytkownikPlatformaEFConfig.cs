@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Squadra.Server.Models;
-using Squadra.Server.Modules.Platforma.Models;
+using Squadra.Server.Modules.Platformy.Models;
+using Squadra.Server.Modules.Uzytkownicy.Models;
 
 namespace Squadra.Server.Configs;
 

@@ -1,8 +1,8 @@
 using Moq;
-using Squadra.Server.DTO.Uzytkownik;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Repositories;
-using Squadra.Server.Services;
+using Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
+using Squadra.Server.Modules.Uzytkownicy.Repositories;
+using Squadra.Server.Modules.Uzytkownicy.Services;
 using Xunit;
 
 namespace Squadra.Server.Tests.Services;

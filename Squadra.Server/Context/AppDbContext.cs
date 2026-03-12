@@ -2,8 +2,12 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Configs;
-using Squadra.Server.Models;
-using Squadra.Server.Modules.Platforma.Models;
+using Squadra.Server.Modules.Platformy.Models;
+using Squadra.Server.Modules.Powiadomienia.Models;
+using Squadra.Server.Modules.Profile.Models;
+using Squadra.Server.Modules.Uzytkownicy.Models;
+using Squadra.Server.Modules.Wiadomosci.Models;
+using Squadra.Server.Modules.Znajomosci.Models;
 
 namespace Squadra.Server.Context;
 

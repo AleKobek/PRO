@@ -29,11 +29,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Modules\Platforma\Controllers\" />
-      <Folder Include="Modules\Platforma\DTO\" />
-      <Folder Include="Modules\Platforma\Repositories\" />
-      <Folder Include="Modules\Platforma\Services\" />
-      <Folder Include="Modules\Uzytkownik\DTO\" />
+      <Folder Include="Modules\Platformy\Controllers\" />
+      <Folder Include="Modules\Platformy\DTO\" />
+      <Folder Include="Modules\Platformy\Services\" />
+      <Folder Include="Modules\Uzytkownicy\DTO\" />
     </ItemGroup>
 
 </Project>

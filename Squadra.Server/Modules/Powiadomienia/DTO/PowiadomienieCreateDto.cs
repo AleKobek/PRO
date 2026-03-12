@@ -1,4 +1,4 @@
-﻿namespace Squadra.Server.DTO.Powiadomienie;
+﻿namespace Squadra.Server.Modules.Powiadomienia.DTO;
 
 public record PowiadomienieCreateDto(
     int IdTypuPowiadomienia, 

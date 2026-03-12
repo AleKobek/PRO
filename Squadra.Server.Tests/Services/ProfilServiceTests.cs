@@ -1,10 +1,11 @@
 using Moq;
-using Squadra.Server.DTO.JezykStopien;
-using Squadra.Server.DTO.Profil;
-using Squadra.Server.DTO.Uzytkownik;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Repositories;
-using Squadra.Server.Services;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
+using Squadra.Server.Modules.Profile.DTO.Profil;
+using Squadra.Server.Modules.Profile.Repositories;
+using Squadra.Server.Modules.Profile.Services;
+using Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
+using Squadra.Server.Modules.Uzytkownicy.Repositories;
 using Xunit;
 
 namespace Squadra.Server.Tests.Services;

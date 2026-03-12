@@ -1,12 +1,17 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using Squadra.Server.DTO.Powiadomienie;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Models;
-using Squadra.Server.Repositories;
+using Squadra.Server.Modules.Powiadomienia.DTO;
+using Squadra.Server.Modules.Powiadomienia.Repositories;
+using Squadra.Server.Modules.Profile.Services;
+using Squadra.Server.Modules.Shared.Services;
+using Squadra.Server.Modules.Uzytkownicy.Models;
+using Squadra.Server.Modules.Uzytkownicy.Services;
+using Squadra.Server.Modules.Znajomosci.Repositories;
+using Squadra.Server.Modules.Znajomosci.Services;
 
-namespace Squadra.Server.Services;
+namespace Squadra.Server.Modules.Powiadomienia.Services;
 
 public class PowiadomienieService(IPowiadomienieRepository powiadomienieRepository,
     UserManager<Uzytkownik> userManager,

@@ -3,10 +3,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Squadra.Server.Controllers;
-using Squadra.Server.DTO.Uzytkownik;
-using Squadra.Server.Models;
-using Squadra.Server.Services;
+using Squadra.Server.Modules.Shared.Services;
+using Squadra.Server.Modules.Uzytkownicy.Controllers;
+using Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
+using Squadra.Server.Modules.Uzytkownicy.Models;
+using Squadra.Server.Modules.Uzytkownicy.Services;
 using Xunit;
 
 namespace Squadra.Server.Tests.Controllers;

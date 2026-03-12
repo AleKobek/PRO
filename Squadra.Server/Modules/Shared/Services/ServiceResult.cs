@@ -1,4 +1,4 @@
-﻿namespace Squadra.Server.Services;
+﻿namespace Squadra.Server.Modules.Shared.Services;
 
 // Reprezentuje pojedynczy błąd:
 //      Message (treść),

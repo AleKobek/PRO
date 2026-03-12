@@ -1,4 +1,4 @@
-﻿namespace Squadra.Server.DTO.Wiadomosc;
+﻿namespace Squadra.Server.Modules.Wiadomosci.DTO;
 
 public record WiadomoscDto(
     int IdNadawcy,

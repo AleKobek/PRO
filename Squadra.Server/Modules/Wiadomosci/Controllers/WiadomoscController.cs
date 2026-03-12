@@ -2,11 +2,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Squadra.Server.DTO.Wiadomosc;
-using Squadra.Server.Models;
-using Squadra.Server.Services;
+using Squadra.Server.Modules.Uzytkownicy.Models;
+using Squadra.Server.Modules.Wiadomosci.DTO;
+using Squadra.Server.Modules.Wiadomosci.Services;
 
-namespace Squadra.Server.Controllers;
+namespace Squadra.Server.Modules.Wiadomosci.Controllers;
 
 [Authorize]
 [Route("api/[controller]")]

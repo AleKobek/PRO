@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
-using Squadra.Server.DTO.Wiadomosc;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Wiadomosci.DTO;
 
-namespace Squadra.Server.Repositories;
+namespace Squadra.Server.Modules.Wiadomosci.Repositories;
 
 public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
 {
