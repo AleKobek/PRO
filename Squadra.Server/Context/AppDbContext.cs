@@ -35,6 +35,7 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
     public DbSet<TypWiadomosci> TypWiadomosci { get; set; } = null!;
     
     public DbSet<Platforma> Platforma { get; set; } = null!;
+    public DbSet<UzytkownikPlatforma> UzytkownikPlatforma { get; set; } = null!;
     
     public AppDbContext(){}
     
