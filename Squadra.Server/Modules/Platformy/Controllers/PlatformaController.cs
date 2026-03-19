@@ -9,13 +9,11 @@ using Squadra.Server.Modules.Uzytkownicy.Models;
 
 namespace Squadra.Server.Modules.Platformy.Controllers;
 
-// zbiorczy dla PlatformaService i UzytkownikPlatformaService, bo oba dotyczą praktycznie tego samego
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class PlatformaController(
     IPlatformaService platformaService,
-    IUzytkownikPlatformaService uzytkownikPlatformaService,
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
     [HttpGet]
@@ -64,7 +62,7 @@ public class PlatformaController(
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
 
-        var result = await uzytkownikPlatformaService.GetPlatformyUzytkownika(idUzytkownika);
+        var result = await platformaService.GetPlatformyUzytkownika(idUzytkownika);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),

@@ -10,8 +10,6 @@ public static class PlatformaModule
         services.AddScoped<IPlatformaRepository, PlatformaRepository>();
         services.AddScoped<IPlatformaService, PlatformaService>();
         
-        services.AddScoped<IUzytkownikPlatformaRepository, UzytkownikPlatformaRepository>();
-        services.AddScoped<IUzytkownikPlatformaService, UzytkownikPlatformaService>();
         return services;
     }
 }

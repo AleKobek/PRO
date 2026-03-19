@@ -1,4 +1,5 @@
 ﻿using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Platformy.DTO;
 using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Platformy.Repositories;
 using Squadra.Server.Modules.Shared.Services;
@@ -23,6 +24,19 @@ public class PlatformaService(IPlatformaRepository platformaRepository) : IPlatf
         catch (NieZnalezionoWBazieException e)
         {
             return ServiceResult<Platforma>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
+    public async Task<ServiceResult<ICollection<PlatformaUzytkownikaDTO>>> GetPlatformyUzytkownika(int idUzytkownika)
+    {
+        try
+        {
+            var platformy = await platformaRepository.GetPlatformyUzytkownika(idUzytkownika);
+            return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.Ok(platformy);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.NotFound(new ErrorItem(e.Message));
         }
     }
 }
