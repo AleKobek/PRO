@@ -64,11 +64,10 @@
 
   /* select - dodatkowe style state */
   #menu #menu-na-pasku select {
-    @apply bg-white border-white text-[30px] w-[160px] h-full p-1;
+    @apply border-x-2 border-black text-[30px] w-fit h-full p-1;
   }
   #menu #menu-na-pasku select:hover { @apply bg-blue-200; }
   #menu #menu-na-pasku select:focus { outline: none; }
-  #menu #menu-na-pasku select option { background-color: white; }
   #menu #menu-na-pasku select option:hover { background-color: #bfdbfe; }
   #menu #menu-na-pasku select option:disabled { color: grey; }
 
