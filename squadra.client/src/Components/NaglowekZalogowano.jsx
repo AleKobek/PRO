@@ -3,6 +3,7 @@ import {NavLink, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import Powiadomienie from "./Powiadomienie";
 import {API_BASE_URL} from "../config/api";
+import SelectStatusowNaNaglowkuKomponent from "./SelectStatusowNaNaglowkuKomponent";
 
 export default function NaglowekZalogowano({
                                            czySaNoweWiadomosci = false,
@@ -306,18 +307,9 @@ export default function NaglowekZalogowano({
                     <NavLink to = '/twojProfil' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Twój profil</NavLink>
                     <NavLink to = '/twojeKonto' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Twoje konto</NavLink>
                 </div>
+                {/* select statusów */}
                 <span className="bg-none">Status:</span>
-                <select
-                    value={aktualnyStatus?.id || ''}
-                    onChange={(e) => {
-                        const id = Number(e.target.value);
-                        przyZmianieStatusu(id);
-                    }}
-                    >
-                    {listaStatusow.map(item =>
-                        <option key = {item.id} value={item.id}>{item.nazwa}</option>
-                    )}
-                </select>
+                <SelectStatusowNaNaglowkuKomponent idAktualnegoStatusu={aktualnyStatus.id} przyZmianieStatusu={przyZmianieStatusu} listaStatusow={listaStatusow} />
                 {/* przycisk powiadomień */}
                 <button
                     onClick={() => ustawPokazPowiadomienia(v => !v)}
