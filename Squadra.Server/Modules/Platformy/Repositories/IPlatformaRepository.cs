@@ -5,5 +5,5 @@ namespace Squadra.Server.Modules.Platformy.Repositories;
 public interface IPlatformaRepository
 {
     public Task<ICollection<Platforma>> GetPlatformy();
-    public Task<Platforma?> GetPlatformaById(int id);
+    public Task<Platforma> GetPlatformaById(int id);
 }
