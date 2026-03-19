@@ -29,7 +29,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Modules\Platformy\Controllers\" />
       <Folder Include="Modules\Uzytkownicy\DTO\" />
       <Folder Include="Modules\WspieraneGry\Controllers\" />
       <Folder Include="Modules\WspieraneGry\DTO\" />

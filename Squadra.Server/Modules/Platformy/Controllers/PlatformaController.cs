@@ -1,0 +1,75 @@
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Squadra.Server.Modules.Platformy.DTO;
+using Squadra.Server.Modules.Platformy.Models;
+using Squadra.Server.Modules.Platformy.Services;
+using Squadra.Server.Modules.Uzytkownicy.Models;
+
+namespace Squadra.Server.Modules.Platformy.Controllers;
+
+// zbiorczy dla PlatformaService i UzytkownikPlatformaService, bo oba dotyczą praktycznie tego samego
+[Authorize]
+[Route("api/[controller]")]
+[ApiController]
+public class PlatformaController(
+    IPlatformaService platformaService,
+    IUzytkownikPlatformaService uzytkownikPlatformaService,
+    UserManager<Uzytkownik> userManager) : ControllerBase
+{
+    [HttpGet]
+    [EndpointSummary("Zwraca dane wszystkich platform")]
+    [ProducesResponseType(typeof(IEnumerable<Platforma>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult<IEnumerable<Platforma>>> GetPlatformy()
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+
+        var result = await platformaService.GetPlatformy();
+        return Ok(result.Value);
+    }
+
+    [HttpGet("{id:int}")]
+    [EndpointSummary("Zwraca dane platformy o podanym id")]
+    [ProducesResponseType(typeof(Platforma), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult<Platforma>> GetPlatformaById(int id)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+
+        var result = await platformaService.GetPlatformaById(id);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            401 => Unauthorized(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+
+    [HttpGet("uzytkownik/{idUzytkownika:int}")]
+    [EndpointSummary("Zwraca dane platform użytkownika o podanym id")]
+    [ProducesResponseType(typeof(IEnumerable<PlatformaUzytkownikaDTO>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult<IEnumerable<PlatformaUzytkownikaDTO>>> GetPlatformyUzytkownika(int idUzytkownika)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+
+        var result = await uzytkownikPlatformaService.GetPlatformyUzytkownika(idUzytkownika);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+}
