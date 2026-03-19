@@ -16,15 +16,19 @@ public class UzytkownikPlatformaRepository(AppDbContext context, IPlatformaRepos
         var platformy = new List<PlatformaUzytkownikaDTO>();
         foreach (var up in platformyUzytkownika)
         {
-            var platforma = await platformaRepository.GetPlatformaById(up.PlatformaId);
-            if (platforma != null)
+            try
             {
+                var platforma = await platformaRepository.GetPlatformaById(up.PlatformaId);
                 platformy.Add(new PlatformaUzytkownikaDTO(
                     up.PlatformaId,
                     platforma.Nazwa,
                     platforma.Logo,
                     up.PseudonimNaPlatformie
                 ));
+            }
+            catch (NieZnalezionoWBazieException)
+            {
+                continue; // jeśli platforma nie istnieje, pomijamy ją
             }
         }
         return platformy;
