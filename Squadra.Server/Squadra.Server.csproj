@@ -32,6 +32,10 @@
       <Folder Include="Modules\Platformy\Controllers\" />
       <Folder Include="Modules\Platformy\Services\" />
       <Folder Include="Modules\Uzytkownicy\DTO\" />
+      <Folder Include="Modules\WspieraneGry\Controllers\" />
+      <Folder Include="Modules\WspieraneGry\DTO\" />
+      <Folder Include="Modules\WspieraneGry\Repositories\" />
+      <Folder Include="Modules\WspieraneGry\Services\" />
     </ItemGroup>
 
 </Project>

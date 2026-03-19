@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Squadra.Server.Modules.WspieraneGry.Models;
 
 namespace Squadra.Server.Modules.Platformy.Models;
 
@@ -16,4 +17,5 @@ public class Platforma
     public byte[] Logo { get; set; } = null!;
     
     public virtual ICollection<UzytkownikPlatforma> UzytkownikPlatformaCollection { get; set; } = null!;
+    public virtual ICollection<GraNaPlatformie> GraNaPlatformieCollection { get; set; } = null!;
 }
