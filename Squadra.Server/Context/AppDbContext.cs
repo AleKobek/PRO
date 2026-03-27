@@ -7,6 +7,7 @@ using Squadra.Server.Modules.Powiadomienia.Models;
 using Squadra.Server.Modules.Profile.Models;
 using Squadra.Server.Modules.Uzytkownicy.Models;
 using Squadra.Server.Modules.Wiadomosci.Models;
+using Squadra.Server.Modules.WspieraneGry.Models;
 using Squadra.Server.Modules.Znajomosci.Models;
 
 namespace Squadra.Server.Context;
@@ -36,9 +37,8 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
     
     public DbSet<Platforma> Platforma { get; set; } = null!;
     public DbSet<UzytkownikPlatforma> UzytkownikPlatforma { get; set; } = null!;
-    
-    public AppDbContext(){}
-    
+    public DbSet<WspieranaGra> WspieranaGra { get; set; } = null!;
+    public DbSet<GraNaPlatformie> GraNaPlatformie { get; set; } = null!;
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
