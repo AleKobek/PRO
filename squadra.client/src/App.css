@@ -98,7 +98,7 @@
   /* Sekcja główna i reszta */
   #glowna {
     min-height: calc(100vh - clamp(56px, 4.2vw, 84px));
-    font-family: Bahnschrift, serif;
+    font-family: 'Epilogue', serif;
     @apply text-[18px] leading-[1.5] p-7;
     background-image: url("../public/img/tło.jpg");
     background-repeat: no-repeat;
@@ -108,20 +108,17 @@
   }
 
   #glowna h1 {
-    @apply text-[60px] text-center;
+    @apply text-[60px] text-center font-epilogue-semi-bold;
     line-height: 1.5;
-    font-family: Georgia, serif;
   }
 
   #glowna h2 {
-    @apply text-[40px] text-center;
+    @apply text-[40px] text-center font-epilogue-semi-bold;
     line-height: 1.5;
-    font-family: Georgia, serif;
   }
 
   #glowna h1, #glowna h2, #glowna h3 {
-    @apply text-center;
-    font-family: Georgia, serif;
+    @apply text-center ;
   }
 
   #glowna button {

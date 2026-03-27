@@ -21,6 +21,7 @@
     theme: {
         extend: {
             fontFamily: {
+                sans: ['Epilogue', 'sans-serif'],
                 orbitron: ['Orbitron', 'sans-serif'],
                 'orbitron-bold': ['Orbitron-Bold', 'sans-serif'],
                 epilogue: ['Epilogue', 'sans-serif'],
