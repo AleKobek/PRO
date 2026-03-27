@@ -152,11 +152,12 @@
     border: groove 10px black;
   }
   #glowna form input, textarea{ @apply text-[20px] px-2 border border-gray-800; }
-  #glowna form label { @apply text-[20px] font-bold; }
+  #glowna form label { @apply text-[20px] font-epilogue-semi-bold; }
   #glowna form #awatar { @apply w-[200px] h-[200px] rounded-full border-[5px] border-black object-cover; }
   #glowna form .wyslij-formularz-przycisk {
     @apply bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105;
   }
+  #glowna form select {@apply p-2 px-3}
   /*#glowna form .zablokowany-przycisk {*/
   /*  @apply bg-gray-400 text-black rounded-md px-3 py-1 my-4 cursor-not-allowed;*/
   /*}*/
@@ -195,7 +196,7 @@
   }
   #glowna .lista-jezykow li .jezyk-na-liscie .nazwa-jezyka { @apply font-bold; }
   /* przycisk Usuń obok elementu */
-  #glowna .lista-jezykow li button { @apply text-[16px] bg-red-900 hover:bg-red-600 text-white rounded px-3 py-1; }
+  #glowna .lista-jezykow li button { @apply text-[16px] bg-red-900 hover:bg-red-600 text-white rounded px-3 py-2; }
 
   /* Przyciski paginacji i etykieta powinny być obok siebie */
   #glowna .lista-jezykow > p,
