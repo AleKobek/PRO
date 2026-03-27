@@ -24,6 +24,11 @@
     font-size: clamp(24px, 2.1vw, 40px);
   }
 
+  #menu .logo {
+    @apply font-orbitron-bold tracking-wider;
+    text-shadow: 3px 2px 6px rgba(0, 0, 150, 0.55);
+  }
+
   /* kontener elementów po prawej */
   #menu #menu-na-pasku {
     @apply list-none m-0 p-0 flex items-center h-full;
