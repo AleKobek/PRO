@@ -1,3 +1,20 @@
+@font-face {
+  font-family: 'Epilogue';
+  src: url('./assets/fonts/Epilogue-Regular.ttf');
+}
+@font-face {
+  font-family: 'Epilogue-SemiBold';
+  src: url('./assets/fonts/Epilogue-SemiBold.ttf');
+}
+@font-face {
+  font-family: 'Orbitron';
+  src: url('./assets/fonts/Orbitron-Regular.ttf');
+}
+@font-face {
+  font-family: 'Orbitron-Bold';
+  src: url('./assets/fonts/Orbitron-Bold.ttf');
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

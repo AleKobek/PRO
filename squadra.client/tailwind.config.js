@@ -19,7 +19,14 @@
         'rounded-full',
     ],
     theme: {
-        extend: {},
+        extend: {
+            fontFamily: {
+                orbitron: ['Orbitron', 'sans-serif'],
+                'orbitron-bold': ['Orbitron-Bold', 'sans-serif'],
+                epilogue: ['Epilogue', 'sans-serif'],
+                'epilogue-semi-bold': ['Epilogue-SemiBold', 'sans-serif'],
+            },
+        },
     },
     plugins: [],
 }
