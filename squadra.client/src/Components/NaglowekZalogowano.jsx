@@ -290,7 +290,7 @@ export default function NaglowekZalogowano({
         <div className ="menu" id = "menu">
             <div className="flex items-center flex-row  gap-3 h-full">
                 <span className="logo">Squadra</span>
-                <img src="/img/gamepad-2.svg" alt="gamepad" className="h-full"/>
+                <img src="/img/gamepad-2.svg" alt="gamepad" className="h-[clamp(28px,3vw,52px)] w-auto" />
             </div>
 
             <div id = "menu-na-pasku">
@@ -301,7 +301,7 @@ export default function NaglowekZalogowano({
                     <NavLink to = '/twoiZnajomi' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja' }>
                         <div className="flex flex-row gap-2 items-center">
                             Znajomi
-                            {czySaNoweWiadomosci ? <img src="/img/koperta.svg" alt="koperta" className="text-red-600 h-9"/> : null}
+                            {czySaNoweWiadomosci ? <img src="/img/koperta.svg" alt="koperta" className="text-red-600 h-[1em] w-auto align-middle"/> : null}
                         </div>
                     </NavLink>
                     <NavLink to = '/twojProfil' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Twój profil</NavLink>
@@ -313,7 +313,7 @@ export default function NaglowekZalogowano({
                 {/* przycisk powiadomień */}
                 <button
                     onClick={() => ustawPokazPowiadomienia(v => !v)}
-                    className={`relative ml-3 w-9 h-9 p-0 border-none flex items-center justify-center cursor-pointer rounded-lg transition-colors ${
+                    className={`relative ml-3 w-[clamp(30px,2.2vw,40px)] h-[clamp(30px,2.2vw,40px)] p-0 border-none flex items-center justify-center cursor-pointer rounded-lg transition-colors ${
                         maPowiadomienia ? 'bg-red-400' : 'bg-transparent'
                     }`}
                     aria-expanded={pokazPowiadomienia}
@@ -323,7 +323,6 @@ export default function NaglowekZalogowano({
                     <img
                         src={maPowiadomienia ? "/img/bell-dot.svg" : "/img/bell.svg"}
                         alt="powiadomienia"
-                        className="w-6 h-6"
                     />
                 </button>
                 <img id = "awatar"
@@ -332,7 +331,9 @@ export default function NaglowekZalogowano({
                      className = "awatar cursor-pointer ml-3"
                      onClick={przyKliknieciuWAwatar}
                 />
-                <button className="text-[20px] text-white bg-red-900 rounded-lg px-3 py-2 mx-2 hover:bg-red-600" onClick={przyWylogowywaniu}>
+                <button
+                    className="text-white bg-red-900 hover:bg-red-600 mx-2 rounded-[clamp(6px,0.55vw,12px)] px-[clamp(8px,0.9vw,14px)] py-[clamp(6px,0.6vw,10px)] text-[clamp(14px,1.05vw,20px)] leading-none"
+                    onClick={przyWylogowywaniu}>
                     Wyloguj
                 </button>
             </div>

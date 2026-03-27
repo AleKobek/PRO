@@ -6,40 +6,52 @@
 @layer components {
   /* Główny pasek menu (odpowiednik podanego SCSS) */
   #menu {
-    @apply sticky top-0 w-full bg-gray-200 text-black px-4 h-[60px] flex items-center justify-between;
-    /* border-bottom: solid blue 10px */
+    @apply sticky top-0 w-full bg-gray-200 text-black px-4 flex items-center justify-between;
     border-bottom: 10px solid blue;
-    font-size: 40px; /* ogólny rozmiar (można override dla poszczególnych elementów) */
+
+    /* desktop responsive */
+    height: clamp(56px, 4.2vw, 84px);
+    font-size: clamp(24px, 2.1vw, 40px);
   }
 
   /* logo po lewej */
-  #menu .logo {
-    @apply pl-2 text-[60px] font-semibold text-black no-underline h-full flex items-center;
-    font-family: Bahnschrift, serif;
+  #menu {
+    @apply sticky top-0 w-full bg-gray-200 text-black px-4 flex items-center justify-between;
+    border-bottom: 10px solid blue;
+
+    /* desktop responsive */
+    height: clamp(56px, 4.2vw, 84px);
+    font-size: clamp(24px, 2.1vw, 40px);
   }
 
   /* kontener elementów po prawej */
   #menu #menu-na-pasku {
-    @apply list-none m-0 p-0 flex items-center  h-full;
-    /* odpowiada: list-style-type:none; font-weight:600; margin:0; padding-left:20px; display:flex; justify-content:space-between; align-items:center; */
-    padding-left: 20px;
+    @apply list-none m-0 p-0 flex items-center h-full;
+    padding-left: clamp(8px, 1.2vw, 20px);
   }
 
   /* nawigacyjne elementy (linki, span, select) */
-  #menu #menu-na-pasku span{
-    /* oryginalnie padding: 10px 10px 24px; tutaj zachowujemy wysokie wyrównanie pionowe przez h-full */
-    border-left: 2px solid #3b82f6; /* blue-500 */
-    @apply inline-flex items-center text-[30px] text-black text-center px-3 h-full;
-  }
-  #menu #menu-na-pasku select{
-    @apply inline-flex items-center text-[30px] text-black text-center px-3 h-full;
-    box-sizing: border-box;
+  #menu #menu-na-pasku span {
+    border-left: 2px solid #3b82f6;
+    @apply inline-flex items-center text-black text-center h-full;
+    font-size: clamp(16px, 1.55vw, 30px);
+    padding-left: clamp(6px, 0.8vw, 12px);
+    padding-right: clamp(6px, 0.8vw, 12px);
   }
 
-  #menu #menu-na-pasku .nawigacja{
-    /* oryginalnie padding: 10px 10px 24px; tutaj zachowujemy wysokie wyrównanie pionowe przez h-full */
-    border-left: 2px solid #3b82f6; /* blue-500 */
-    @apply inline-flex items-center text-[30px] text-black text-center px-3 h-full no-underline;
+  #menu #menu-na-pasku select {
+    @apply inline-flex items-center text-black text-center h-full p-1 border-x-2 border-black;
+    box-sizing: border-box;
+    font-size: clamp(16px, 1.55vw, 30px);
+    width: clamp(110px, 11vw, 180px);
+  }
+
+  #menu #menu-na-pasku .nawigacja {
+    border-left: 2px solid #3b82f6;
+    @apply inline-flex items-center text-black text-center h-full no-underline;
+    font-size: clamp(16px, 1.55vw, 30px);
+    padding-left: clamp(6px, 0.8vw, 12px);
+    padding-right: clamp(6px, 0.8vw, 12px);
   }
 
   #menu #menu-na-pasku .nawigacja-na-pasku {
@@ -64,7 +76,7 @@
 
   /* select - dodatkowe style state */
   #menu #menu-na-pasku select {
-    @apply border-x-2 border-black text-[30px] w-fit h-full p-1;
+    @apply border-x-2 border-black w-fit h-full p-1;
   }
   #menu #menu-na-pasku select:hover { @apply bg-blue-200; }
   #menu #menu-na-pasku select:focus { outline: none; }
@@ -73,12 +85,14 @@
 
   /* awatar w menu na pasku*/
   #menu #menu-na-pasku #awatar {
-    @apply rounded-full border-2 border-black w-[50px] h-[50px] object-cover ml-2; /* w oryginale niekończone wartości; ustawiam 50px podobnie do inline style w JSX */
+    @apply rounded-full border-2 border-black object-cover ml-2;
+    width: clamp(34px, 2.6vw, 50px);
+    height: clamp(34px, 2.6vw, 50px);
   }
 
   /* Sekcja główna i reszta */
   #glowna {
-    min-height: calc(100vh - 60px); /* wysokość ekranu - menu */
+    min-height: calc(100vh - clamp(56px, 4.2vw, 84px));
     font-family: Bahnschrift, serif;
     @apply text-[18px] leading-[1.5] p-7;
     background-image: url("../public/img/tło.jpg");
