@@ -14,11 +14,11 @@ public class WspieranaGraRepository(AppDbContext context) : IWspieranaGraReposit
         return await context.WspieranaGra.ToListAsync();
     }
     
-    public async Task<WspieranaGra> GetWspieranaGraById(int id)
+    public async Task<WspieranaGra> GetWspieranaGra(int id)
     {
         var gra = await context.WspieranaGra.FirstOrDefaultAsync(g => g.Id == id);
         if (gra is null)
-            throw new Exception("Nie znaleziono gry o podanym id.");
+            throw new NieZnalezionoWBazieException("Nie znaleziono gry o podanym id.");
         return gra;
     }
     
