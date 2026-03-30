@@ -8,6 +8,7 @@ using Squadra.Server.Modules.Profile;
 using Squadra.Server.Modules.Uzytkownicy;
 using Squadra.Server.Modules.Uzytkownicy.Models;
 using Squadra.Server.Modules.Wiadomosci;
+using Squadra.Server.Modules.WspieraneGry;
 using Squadra.Server.Modules.Znajomosci;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,7 @@ builder.Services.AddUzytkownicyModule();
 builder.Services.AddWiadomosciModule();
 builder.Services.AddZnajomosciModule();
 builder.Services.AddPlatformaModule();
+builder.Services.AddWspieraneGryModule();
 
 // ustawiamy Identity
 builder.Services
