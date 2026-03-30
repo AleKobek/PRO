@@ -17,4 +17,5 @@ public class GraUzytkownika
     
     [ForeignKey(nameof(UzytkownikId))]
     public virtual Uzytkownik Uzytkownik { get; set; }
+    public virtual ICollection<GraUzytkownikaNaPlatformie> GraUzytkownikaNaPlatformieCollection { get; set; }
 }
