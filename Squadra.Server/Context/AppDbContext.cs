@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Configs;
+using Squadra.Server.Modules.BibliotekaGier.Models;
 using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Powiadomienia.Models;
 using Squadra.Server.Modules.Profile.Models;
@@ -39,6 +40,7 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
     public DbSet<UzytkownikPlatforma> UzytkownikPlatforma { get; set; } = null!;
     public DbSet<WspieranaGra> WspieranaGra { get; set; } = null!;
     public DbSet<GraNaPlatformie> GraNaPlatformie { get; set; } = null!;
+    public DbSet<GraUzytkownika> GraUzytkownika { get; set; } = null!;
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

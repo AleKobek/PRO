@@ -29,6 +29,10 @@
     </ItemGroup>
 
     <ItemGroup>
+      <Folder Include="Modules\BibliotekaGier\Controllers\" />
+      <Folder Include="Modules\BibliotekaGier\DTO\" />
+      <Folder Include="Modules\BibliotekaGier\Repositories\" />
+      <Folder Include="Modules\BibliotekaGier\Services\" />
       <Folder Include="Modules\Uzytkownicy\DTO\" />
     </ItemGroup>
 
