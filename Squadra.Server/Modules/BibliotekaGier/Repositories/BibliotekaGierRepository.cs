@@ -2,6 +2,7 @@
 using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.BibliotekaGier.DTO;
+using Squadra.Server.Modules.Platformy.DTO;
 
 namespace Squadra.Server.Modules.BibliotekaGier.Repositories;
 
@@ -28,7 +29,8 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
                     x.Gra.Gatunek,
                     0, // na razie nie mamy statystyk, więc dajemy 0
                     x.Gra.GraNaPlatformieCollection
-                        .Select(gp => gp.Platforma.Logo) // SELECT logo z platform
+                        .Select(gp => 
+                            new PlatformaWBiblioteceGierDTO(gp.Platforma.Id, gp.Platforma.Nazwa, gp.Platforma.Logo))
                         .ToList()
                 )
             ).ToListAsync();
