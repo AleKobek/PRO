@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
+using Squadra.Server.Modules.BibliotekaGier;
 using Squadra.Server.Modules.Platformy;
 using Squadra.Server.Modules.Powiadomienia;
 using Squadra.Server.Modules.Profile;
@@ -28,6 +29,7 @@ builder.Services.AddWiadomosciModule();
 builder.Services.AddZnajomosciModule();
 builder.Services.AddPlatformaModule();
 builder.Services.AddWspieraneGryModule();
+builder.Services.AddBibliotekaGierModule();
 
 // ustawiamy Identity
 builder.Services
