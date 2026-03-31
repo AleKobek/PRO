@@ -9,4 +9,5 @@ public class Statystyka
     
     public virtual Kategoria Kategoria { get; set; }
     public virtual Rola Rola { get; set; }
+    public virtual ICollection<StatystykaUzytkownika> StatystykaUzytkownikaCollection { get; set; }
 }

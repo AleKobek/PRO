@@ -4,6 +4,7 @@ using Squadra.Server.Modules.BibliotekaGier.Models;
 using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Powiadomienia.Models;
 using Squadra.Server.Modules.Profile.Models;
+using Squadra.Server.Modules.Statystyki.Models;
 using Squadra.Server.Modules.Wiadomosci.Models;
 using Squadra.Server.Modules.Znajomosci.Models;
 
@@ -31,4 +32,5 @@ public class Uzytkownik : IdentityUser<int>
     public virtual ICollection<Wiadomosc> WiadomosciNadaneCollection { get; set; } = null!;
     public virtual ICollection<UzytkownikPlatforma> UzytkownikPlatformaCollection { get; set; } = null!;
     public virtual ICollection<GraUzytkownika> GraUzytkownikaCollection { get; set; } = null!;
+    public virtual ICollection<StatystykaUzytkownika> StatystykaUzytkownikaCollection { get; set; } = null!;
 }

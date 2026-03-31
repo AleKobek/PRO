@@ -46,6 +46,7 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
     public DbSet<Kategoria> Kategoria { get; set; } = null!;
     public DbSet<Rola> Rola { get; set; } = null!;
     public DbSet<Statystyka> Statystyka { get; set; } = null!;
+    public DbSet<StatystykaUzytkownika> StatystykaUzytkownika { get; set; } = null!;
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
