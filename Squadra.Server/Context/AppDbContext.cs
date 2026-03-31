@@ -44,6 +44,7 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
     public DbSet<GraUzytkownika> GraUzytkownika { get; set; } = null!;
     public DbSet<GraUzytkownikaNaPlatformie> GraUzytkownikaNaPlatformie { get; set; } = null!;
     public DbSet<Kategoria> Kategoria { get; set; } = null!;
+    public DbSet<Rola> Rola { get; set; } = null!;
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

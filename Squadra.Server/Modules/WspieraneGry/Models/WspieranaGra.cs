@@ -23,4 +23,5 @@ public class WspieranaGra
     public virtual ICollection<GraNaPlatformie> GraNaPlatformieCollection { get; set; } = null!;
     public virtual ICollection<GraUzytkownika> GraUzytkownikaCollection { get; set; } = null!;
     public virtual ICollection<Kategoria> KategoriaCollection { get; set; } = null!;
+    public virtual ICollection<Rola> RolaCollection { get; set; } = null!;
 }
