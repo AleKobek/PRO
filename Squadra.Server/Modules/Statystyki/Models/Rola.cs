@@ -9,4 +9,5 @@ public class Rola
     public int IdGry { get; set; }
     
     public virtual WspieranaGra Gra { get; set; } = null!;
+    public virtual ICollection<Statystyka> StatystykaCollection { get; set; } = null!;
 }
