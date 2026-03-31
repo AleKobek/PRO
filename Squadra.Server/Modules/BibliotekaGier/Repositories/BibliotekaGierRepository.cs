@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
+using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.BibliotekaGier.DTO;
 
 namespace Squadra.Server.Modules.BibliotekaGier.Repositories;
@@ -8,6 +9,11 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
 {
     public async Task<ICollection<GraWBiblioteceDTO>> PodajGryWBiblioteceUzytkownika(int idUzytkownika)
     {
+        
+        var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
+        if (uzytkownik is null)
+            throw new NieZnalezionoWBazieException("Użytkownik o id " + idUzytkownika + " nie istnieje.");
+        
         // tutaj spróbuję z LINQ, nie mam siły zmieniać wszędzie
          var gryUzytkownika = context.GraUzytkownika
             .Where(x => x.UzytkownikId == idUzytkownika)
