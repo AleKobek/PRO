@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Squadra.Server.Modules.BibliotekaGier.Models;
+using Squadra.Server.Modules.Statystyki.Models;
 
 namespace Squadra.Server.Modules.WspieraneGry.Models;
 
@@ -21,4 +22,5 @@ public class WspieranaGra
     
     public virtual ICollection<GraNaPlatformie> GraNaPlatformieCollection { get; set; } = null!;
     public virtual ICollection<GraUzytkownika> GraUzytkownikaCollection { get; set; } = null!;
+    public virtual ICollection<Kategoria> KategoriaCollection { get; set; } = null!;
 }
