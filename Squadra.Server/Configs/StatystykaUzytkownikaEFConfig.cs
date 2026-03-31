@@ -14,6 +14,7 @@ public class StatystykaUzytkownikaEFConfiguration :IEntityTypeConfiguration<Stat
         
         builder
             .Property(x => x.Wartosc)
+            .HasMaxLength(20)
             .IsRequired();
         
         builder
