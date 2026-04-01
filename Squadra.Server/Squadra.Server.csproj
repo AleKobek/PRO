@@ -30,8 +30,6 @@
 
     <ItemGroup>
       <Folder Include="Modules\Statystyki\Controllers\" />
-      <Folder Include="Modules\Statystyki\DTO\" />
-      <Folder Include="Modules\Statystyki\Repositories\" />
       <Folder Include="Modules\Statystyki\Services\" />
       <Folder Include="Modules\Uzytkownicy\DTO\" />
     </ItemGroup>
