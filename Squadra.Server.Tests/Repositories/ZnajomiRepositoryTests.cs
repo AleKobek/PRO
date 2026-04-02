@@ -2,11 +2,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Moq;
 using Squadra.Server.Context;
-using Squadra.Server.DTO.JezykStopien;
-using Squadra.Server.DTO.Profil;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Models;
-using Squadra.Server.Repositories;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
+using Squadra.Server.Modules.Profile.DTO.Profil;
+using Squadra.Server.Modules.Profile.Repositories;
+using Squadra.Server.Modules.Uzytkownicy.Models;
+using Squadra.Server.Modules.Wiadomosci.Repositories;
+using Squadra.Server.Modules.Znajomosci.Models;
+using Squadra.Server.Modules.Znajomosci.Repositories;
 using Xunit;
 
 namespace Squadra.Server.Tests.Repositories;
@@ -72,14 +75,19 @@ public class ZnajomiRepositoryTests : IDisposable
     public async Task GetZnajomiUzytkownika_ReturnsUserFriends()
     {
         // Arrange
-        var userId = 1;
-        var profile2 = new ProfilGetResDto("User2", null, null, null, new List<JezykOrazStopienDto>(), null, "Active");
-        var profile3 = new ProfilGetResDto("User3", null, null, null, new List<JezykOrazStopienDto>(), null, "Active");
-        
-        _mockProfilRepository.Setup(r => r.GetProfilUzytkownika(2))
-            .ReturnsAsync(profile2);
-        _mockProfilRepository.Setup(r => r.GetProfilUzytkownika(3))
-            .ReturnsAsync(profile3);
+        var userId =1;
+
+        // Potrzebne przez GetZnajomiUzytkownika: sprawdzenie istnienia użytkownika w tabeli Uzytkownik if (!await _context.Uzytkownik.AnyAsync(u => u.Id ==1))
+        {
+            _context.Uzytkownik.AddRange(
+                new Uzytkownik { Id =1, UserName = "user1", Email = "eeee.eee@eeee.eee", NormalizedEmail = "eeee.eee@eeee.eee", NormalizedUserName = "user1"},
+                new Uzytkownik { Id =2, UserName = "user2", Email = "eeee.eee@eee2e.eee", NormalizedEmail = "eeee.eee@eee2e.eee", NormalizedUserName = "user2"},
+                new Uzytkownik { Id =3, UserName = "user3", Email = "eeee.eee@eeee.e2e", NormalizedEmail = "eeee.eee@eeee.e2e", NormalizedUserName = "user3" },
+                new Uzytkownik { Id =4, UserName = "user4", Email = "eeee.eee@eee1e.eee", NormalizedEmail = "eeee.eee@eee1e.eee", NormalizedUserName = "user4"},
+                new Uzytkownik { Id =5, UserName = "user5", Email = "eeee.eee@e1eee.eee", NormalizedEmail = "eeee.eee@e1eee.eee", NormalizedUserName = "user5"}
+            );
+            await _context.SaveChangesAsync();
+        }
 
         // Act
         var result = await _repository.GetZnajomiUzytkownika(userId);
@@ -87,13 +95,19 @@ public class ZnajomiRepositoryTests : IDisposable
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        Assert.Contains(result, p => p.Pseudonim == "User2");
-        Assert.Contains(result, p => p.Pseudonim == "User3");
+        Assert.Contains(result, z => z.IdUzytkownika2 ==2);
+        Assert.Contains(result, z => z.IdUzytkownika2 ==3);
     }
 
     [Fact]
     public async Task GetZnajomiUzytkownika_WithNoFriends_ReturnsEmptyList()
     {
+        // Arrange
+        _context.Uzytkownik.AddRange(
+            new Uzytkownik { Id = 999, UserName = "user1", Email = "eeee.eee@eeee.eee", NormalizedEmail = "eeee.eee@eeee.eee", NormalizedUserName = "user1"}
+        );
+        await _context.SaveChangesAsync();
+        
         // Act
         var result = await _repository.GetZnajomiUzytkownika(999);
 

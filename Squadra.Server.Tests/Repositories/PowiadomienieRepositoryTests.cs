@@ -1,12 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using Moq;
 using Squadra.Server.Context;
-using Squadra.Server.DTO.JezykStopien;
-using Squadra.Server.DTO.Powiadomienie;
-using Squadra.Server.DTO.Profil;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Models;
-using Squadra.Server.Repositories;
+using Squadra.Server.Modules.Powiadomienia.DTO;
+using Squadra.Server.Modules.Powiadomienia.Models;
+using Squadra.Server.Modules.Powiadomienia.Repositories;
 using Xunit;
 
 namespace Squadra.Server.Tests.Repositories;
@@ -14,7 +11,6 @@ namespace Squadra.Server.Tests.Repositories;
 public class PowiadomienieRepositoryTests : IDisposable
 {
     private readonly AppDbContext _context;
-    private readonly Mock<IProfilRepository> _mockProfilRepository;
     private readonly PowiadomienieRepository _repository;
 
     public PowiadomienieRepositoryTests()
@@ -24,10 +20,8 @@ public class PowiadomienieRepositoryTests : IDisposable
             .Options;
 
         _context = new AppDbContext(options);
-        _mockProfilRepository = new Mock<IProfilRepository>();
-        _repository = new PowiadomienieRepository(_context, _mockProfilRepository.Object);
+        _repository = new PowiadomienieRepository(_context);
 
-        // Seed test data
         SeedTestData();
     }
 
@@ -93,16 +87,13 @@ public class PowiadomienieRepositoryTests : IDisposable
         Assert.Equal(1, result.IdTypuPowiadomienia);
         Assert.Equal("System message", result.Tresc);
         Assert.Null(result.IdPowiazanegoObiektu);
+        Assert.Null(result.NazwaPowiazanegoObiektu);
+        Assert.Matches(@"^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}$", result.DataWyslania);
     }
 
     [Fact]
-    public async Task GetPowiadomienie_FriendInvitation_ReturnsWithProfileInfo()
+    public async Task GetPowiadomienie_FriendInvitation_ReturnsWithRelatedObjectInfo()
     {
-        // Arrange
-        var profile = new ProfilGetResDto("User2", null, null, null, new List<JezykOrazStopienDto>(), null, "Active");
-        _mockProfilRepository.Setup(r => r.GetProfilUzytkownika(2))
-            .ReturnsAsync(profile);
-
         // Act
         var result = await _repository.GetPowiadomienie(2);
 
@@ -112,6 +103,8 @@ public class PowiadomienieRepositoryTests : IDisposable
         Assert.Equal(2, result.IdTypuPowiadomienia);
         Assert.Equal(2, result.IdPowiazanegoObiektu);
         Assert.Equal("User2", result.NazwaPowiazanegoObiektu);
+        Assert.Null(result.Tresc);
+        Assert.Matches(@"^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}$", result.DataWyslania);
     }
 
     [Fact]
@@ -123,19 +116,16 @@ public class PowiadomienieRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task GetPowiadomieniaUzytkownika_ReturnsUserNotifications()
+    public async Task GetPowiadomieniaUzytkownika_ReturnsUserNotificationsSortedDescending()
     {
-        // Arrange
-        var profile2 = new ProfilGetResDto("User2", null, null, null, new List<JezykOrazStopienDto>(), null, "Active");
-        _mockProfilRepository.Setup(r => r.GetProfilUzytkownika(2))
-            .ReturnsAsync(profile2);
-
         // Act
         var result = await _repository.GetPowiadomieniaUzytkownika(1);
 
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
+        Assert.Equal(1, result.First().Id);
+        Assert.Equal(2, result.Last().Id);
     }
 
     [Fact]
@@ -199,9 +189,6 @@ public class PowiadomienieRepositoryTests : IDisposable
     public async Task DeletePowiadomieniaUzytkownika_RemovesAllUserNotifications()
     {
         // Arrange
-        var profile2 = new ProfilGetResDto("User2", null, null, null, new List<JezykOrazStopienDto>(), null, "Active");
-        _mockProfilRepository.Setup(r => r.GetProfilUzytkownika(2))
-            .ReturnsAsync(profile2);
 
         var initialCount = await _context.Powiadomienie.CountAsync(p => p.UzytkownikId == 1);
         Assert.Equal(2, initialCount);

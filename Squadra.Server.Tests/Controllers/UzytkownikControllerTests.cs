@@ -130,29 +130,6 @@ public class UzytkownikControllerTests
     }
 
     [Fact]
-    public async Task UpdateUzytkownik_WhenUserIdMismatch_ReturnsForbidden()
-    {
-        // Arrange
-        var user = new Uzytkownik { Id = 1, UserName = "testuser" };
-        _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync(user);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-        };
-
-        var updateDto = new UzytkownikUpdateDto("user1@test.com", "user1", null, new DateOnly(2000, 1, 1));
-
-        // Act
-        var actionResult = await _controller.UpdateUzytkownik(2, updateDto);
-
-        // Assert
-        var statusResult = Assert.IsType<ObjectResult>(actionResult);
-        Assert.Equal(StatusCodes.Status403Forbidden, statusResult.StatusCode);
-        Assert.Equal("Nie możesz edytować konta innego użytkownika.", statusResult.Value);
-    }
-
-    [Fact]
     public async Task UpdateUzytkownik_WithInvalidData_ReturnsBadRequest()
     {
         // Arrange

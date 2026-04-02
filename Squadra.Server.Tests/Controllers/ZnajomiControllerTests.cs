@@ -3,12 +3,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using Squadra.Server.Controllers;
-using Squadra.Server.DTO.JezykStopien;
-using Squadra.Server.DTO.KrajRegion;
-using Squadra.Server.DTO.Profil;
-using Squadra.Server.Models;
-using Squadra.Server.Services;
+using Squadra.Server.Modules.Powiadomienia.DTO;
+using Squadra.Server.Modules.Powiadomienia.Services;
+using Squadra.Server.Modules.Profile.Services;
+using Squadra.Server.Modules.Shared.Services;
+using Squadra.Server.Modules.Uzytkownicy.Models;
+using Squadra.Server.Modules.Znajomosci.Controllers;
+using Squadra.Server.Modules.Znajomosci.DTO;
+using Squadra.Server.Modules.Znajomosci.Services;
 using Xunit;
 
 namespace Squadra.Server.Tests.Controllers;
@@ -27,9 +29,10 @@ public class ZnajomiControllerTests
         _mockPowiadomienieService = new Mock<IPowiadomienieService>();
         _mockUserManager = MockUserManager<Uzytkownik>();
         _mockProfilService = new Mock<IProfilService>();
+
         _controller = new ZnajomiController(
-            _mockZnajomiService.Object, 
-            _mockPowiadomienieService.Object, 
+            _mockZnajomiService.Object,
+            _mockPowiadomienieService.Object,
             _mockUserManager.Object,
             _mockProfilService.Object);
     }
@@ -37,95 +40,75 @@ public class ZnajomiControllerTests
     private static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
     {
         var store = new Mock<IUserStore<TUser>>();
-        return new Mock<UserManager<TUser>>(store.Object, null, null, null, null, null, null, null, null);
+        return new Mock<UserManager<TUser>>(
+            store.Object, null!, null!, null!, null!, null!, null!, null!, null!);
+    }
+
+    private void SetUserInHttpContext()
+    {
+        _controller.ControllerContext = new ControllerContext
+        {
+            HttpContext = new DefaultHttpContext
+            {
+                User = new ClaimsPrincipal(new ClaimsIdentity())
+            }
+        };
     }
 
     [Fact]
-    public async Task GetZnajomi_ReturnsOkWithFriendsList()
+    public async Task GetZnajomiDoListy_ReturnsOkWithFriendsList()
     {
-        // Arrange
         var user = new Uzytkownik { Id = 1, UserName = "testuser" };
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(user);
-        _controller.ControllerContext = new ControllerContext
+        SetUserInHttpContext();
+
+        ICollection<ZnajomyDoListyDto> friends = new List<ZnajomyDoListyDto>
         {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
+            new(2, "Friend1", Array.Empty<byte>(), DateTime.UtcNow.AddMinutes(-5), "Online", true),
+            new(3, "Friend2", Array.Empty<byte>(), DateTime.UtcNow.AddMinutes(-15), "Offline", false)
         };
 
-        ICollection<ProfilGetResDto> friends = new List<ProfilGetResDto>
-        {
-            new ProfilGetResDto(
-                "Friend1",
-                new RegionKrajDto(1, "Mazowieckie", 1, "Poland"),
-                "he/him",
-                "Description 1",
-                new List<JezykOrazStopienDto>(),
-                null,
-                "Online"
-            ),
-            new ProfilGetResDto(
-                "Friend2",
-                new RegionKrajDto(2, "Śląskie", 1, "Poland"),
-                "she/her",
-                "Description 2",
-                new List<JezykOrazStopienDto>(),
-                null,
-                "Offline"
-            )
-        };
-        var result = ServiceResult<ICollection<ProfilGetResDto>>.Ok(friends);
-        _mockZnajomiService.Setup(s => s.GetZnajomiUzytkownika(user.Id))
-            .ReturnsAsync(result);
+        _mockZnajomiService
+            .Setup(s => s.GetZnajomiDoListyUzytkownika(user.Id))
+            .ReturnsAsync(ServiceResult<ICollection<ZnajomyDoListyDto>>.Ok(friends));
 
-        // Act
-        var actionResult = await _controller.GetZnajomi();
+        var actionResult = await _controller.GetZnajomiDoListy();
 
-        // Assert
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-        var returnedFriends = Assert.IsAssignableFrom<IEnumerable<ProfilGetResDto>>(okResult.Value);
-        Assert.Equal(2, returnedFriends.Count());
+        var returnedFriends = Assert.IsAssignableFrom<ICollection<ZnajomyDoListyDto>>(okResult.Value);
+        Assert.Equal(2, returnedFriends.Count);
     }
 
     [Fact]
-    public async Task GetZnajomi_WhenUserNotAuthenticated_ReturnsUnauthorized()
+    public async Task GetZnajomiDoListy_WhenUserNotAuthenticated_ReturnsUnauthorized()
     {
-        // Arrange
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync((Uzytkownik?)null);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-        };
+        SetUserInHttpContext();
 
-        // Act
-        var actionResult = await _controller.GetZnajomi();
+        var actionResult = await _controller.GetZnajomiDoListy();
 
-        // Assert
         var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(actionResult.Result);
         Assert.Equal("Nie jesteś zalogowany.", unauthorizedResult.Value);
     }
 
     [Fact]
-    public async Task GetZnajomi_WhenNoFriendsFound_ReturnsNotFound()
+    public async Task GetZnajomiDoListy_WhenNoFriendsFound_ReturnsNotFound()
     {
-        // Arrange
         var user = new Uzytkownik { Id = 1, UserName = "testuser" };
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(user);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-        };
+        SetUserInHttpContext();
 
-        var result = ServiceResult<ICollection<ProfilGetResDto>>.Fail(404, 
-            new[] { new ErrorItem("No friends found", "userId") });
-        _mockZnajomiService.Setup(s => s.GetZnajomiUzytkownika(user.Id))
-            .ReturnsAsync(result);
+        _mockZnajomiService
+            .Setup(s => s.GetZnajomiDoListyUzytkownika(user.Id))
+            .ReturnsAsync(ServiceResult<ICollection<ZnajomyDoListyDto>>.Fail(
+                404,
+                new[] { new ErrorItem("No friends found", "userId") }));
 
-        // Act
-        var actionResult = await _controller.GetZnajomi();
+        var actionResult = await _controller.GetZnajomiDoListy();
 
-        // Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
         Assert.Equal("No friends found", notFoundResult.Value);
     }
@@ -133,59 +116,42 @@ public class ZnajomiControllerTests
     [Fact]
     public async Task DeleteZnajomego_WithValidId_ReturnsNoContent()
     {
-        // Arrange
         var user = new Uzytkownik { Id = 1, UserName = "testuser" };
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(user);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-        };
+        SetUserInHttpContext();
 
-        var deleteResult = ServiceResult<bool>.Ok(true, 204);
         _mockZnajomiService.Setup(s => s.DeleteZnajomosc(user.Id, 2))
-            .ReturnsAsync(deleteResult);
+            .ReturnsAsync(ServiceResult<bool>.Ok(true, 204));
 
-        var friendProfile = new ProfilGetResDto(
-            "Friend1",
-            new RegionKrajDto(1, "Mazowieckie", 1, "Poland"),
-            "he/him",
-            "Description",
-            new List<JezykOrazStopienDto>(),
-            null,
-            "Online"
-        );
-        var profilResult = ServiceResult<ProfilGetResDto>.Ok(friendProfile);
-        _mockProfilService.Setup(s => s.GetProfil(2))
-            .ReturnsAsync(profilResult);
+        _mockProfilService.Setup(s => s.GetProfil(user.Id))
+            .ReturnsAsync(ServiceResult<Squadra.Server.Modules.Profile.DTO.Profil.ProfilGetResDto>.Ok(
+                new Squadra.Server.Modules.Profile.DTO.Profil.ProfilGetResDto(
+                    "Tester",
+                    null,
+                    null,
+                    null,
+                    new List<Squadra.Server.Modules.Profile.DTO.JezykStopien.JezykOrazStopienDto>(),
+                    null,
+                    "Online")));
 
-        var notificationResult = ServiceResult<bool>.Ok(true, 204);
-        _mockPowiadomienieService.Setup(s => s.CreatePowiadomienie(It.IsAny<DTO.Powiadomienie.PowiadomienieCreateDto>()))
-            .ReturnsAsync(notificationResult);
+        _mockPowiadomienieService.Setup(s => s.CreatePowiadomienie(It.IsAny<PowiadomienieCreateDto>()))
+            .ReturnsAsync(ServiceResult<bool>.Ok(true, 204));
 
-        // Act
         var actionResult = await _controller.DeleteZnajomego(2);
 
-        // Assert
-        var noContentResult = Assert.IsType<NoContentResult>(actionResult.Result);
-        Assert.Equal(204, noContentResult.StatusCode);
+        Assert.IsType<NoContentResult>(actionResult.Result);
     }
 
     [Fact]
     public async Task DeleteZnajomego_WhenUserNotAuthenticated_ReturnsUnauthorized()
     {
-        // Arrange
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync((Uzytkownik?)null);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-        };
+        SetUserInHttpContext();
 
-        // Act
         var actionResult = await _controller.DeleteZnajomego(2);
 
-        // Assert
         var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(actionResult.Result);
         Assert.Equal("Nie jesteś zalogowany.", unauthorizedResult.Value);
     }
@@ -193,24 +159,18 @@ public class ZnajomiControllerTests
     [Fact]
     public async Task DeleteZnajomego_WhenFriendshipNotFound_ReturnsNotFound()
     {
-        // Arrange
         var user = new Uzytkownik { Id = 1, UserName = "testuser" };
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(user);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-        };
+        SetUserInHttpContext();
 
-        var result = ServiceResult<bool>.Fail(404, 
-            new[] { new ErrorItem("Friendship not found", "id") });
         _mockZnajomiService.Setup(s => s.DeleteZnajomosc(user.Id, 999))
-            .ReturnsAsync(result);
+            .ReturnsAsync(ServiceResult<bool>.Fail(
+                404,
+                new[] { new ErrorItem("Friendship not found", "id") }));
 
-        // Act
         var actionResult = await _controller.DeleteZnajomego(999);
 
-        // Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
         Assert.Equal("Friendship not found", notFoundResult.Value);
     }
@@ -218,29 +178,70 @@ public class ZnajomiControllerTests
     [Fact]
     public async Task DeleteZnajomego_WhenProfileNotFound_ReturnsNotFound()
     {
-        // Arrange
         var user = new Uzytkownik { Id = 1, UserName = "testuser" };
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(user);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-        };
+        SetUserInHttpContext();
 
-        var deleteResult = ServiceResult<bool>.Ok(true, 204);
         _mockZnajomiService.Setup(s => s.DeleteZnajomosc(user.Id, 2))
-            .ReturnsAsync(deleteResult);
+            .ReturnsAsync(ServiceResult<bool>.Ok(true, 204));
 
-        var profilResult = ServiceResult<ProfilGetResDto>.Fail(404, 
-            new[] { new ErrorItem("Profile not found", "id") });
-        _mockProfilService.Setup(s => s.GetProfil(2))
-            .ReturnsAsync(profilResult);
+        _mockProfilService.Setup(s => s.GetProfil(user.Id))
+            .ReturnsAsync(ServiceResult<Squadra.Server.Modules.Profile.DTO.Profil.ProfilGetResDto>.Fail(
+                404,
+                new[] { new ErrorItem("Profile not found", "id") }));
 
-        // Act
         var actionResult = await _controller.DeleteZnajomego(2);
 
-        // Assert
         var notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
         Assert.Equal("Profile not found", notFoundResult.Value);
+    }
+
+    [Fact]
+    public async Task ZaktualizujOstatnieOtwarcieCzatu_WithValidId_ReturnsNoContent()
+    {
+        var user = new Uzytkownik { Id = 1, UserName = "testuser" };
+        _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync(user);
+        SetUserInHttpContext();
+
+        _mockZnajomiService.Setup(s => s.ZaktualizujOstatnieOtwarcieCzatu(user.Id, 2))
+            .ReturnsAsync(ServiceResult<bool>.Ok(true, 204));
+
+        var actionResult = await _controller.ZaktualizujOstatnieOtwarcieCzatu(2);
+
+        Assert.IsType<NoContentResult>(actionResult.Result);
+    }
+
+    [Fact]
+    public async Task ZaktualizujOstatnieOtwarcieCzatu_WhenUserNotAuthenticated_ReturnsUnauthorized()
+    {
+        _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync((Uzytkownik?)null);
+        SetUserInHttpContext();
+
+        var actionResult = await _controller.ZaktualizujOstatnieOtwarcieCzatu(2);
+
+        var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(actionResult.Result);
+        Assert.Equal("Nie jesteś zalogowany.", unauthorizedResult.Value);
+    }
+
+    [Fact]
+    public async Task ZaktualizujOstatnieOtwarcieCzatu_WhenFriendshipNotFound_ReturnsNotFound()
+    {
+        var user = new Uzytkownik { Id = 1, UserName = "testuser" };
+        _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync(user);
+        SetUserInHttpContext();
+
+        _mockZnajomiService.Setup(s => s.ZaktualizujOstatnieOtwarcieCzatu(user.Id, 999))
+            .ReturnsAsync(ServiceResult<bool>.Fail(
+                404,
+                new[] { new ErrorItem("Friendship not found", "idZnajomego") }));
+
+        var actionResult = await _controller.ZaktualizujOstatnieOtwarcieCzatu(999);
+
+        var notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
+        Assert.Equal("Friendship not found", notFoundResult.Value);
     }
 }

@@ -1,10 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
-using Squadra.Server.DTO.Wiadomosc;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Models;
-using Squadra.Server.Repositories;
-using Xunit;
+using Squadra.Server.Modules.Wiadomosci.DTO;
+using Squadra.Server.Modules.Wiadomosci.Models;
+using Squadra.Server.Modules.Wiadomosci.Repositories;
 
 namespace Squadra.Server.Tests.Repositories;
 
@@ -22,19 +21,20 @@ public class WiadomoscRepositoryTests : IDisposable
         _context = new AppDbContext(options);
         _repository = new WiadomoscRepository(_context);
 
-        // Seed test data
         SeedTestData();
     }
 
     private void SeedTestData()
     {
+        var now = DateTime.Now;
+
         _context.Wiadomosc.AddRange(
             new Wiadomosc
             {
                 Id = 1,
                 IdNadawcy = 1,
                 IdOdbiorcy = 2,
-                DataWyslania = DateTime.Now.AddHours(-2),
+                DataWyslania = now.AddHours(-2),
                 Tresc = "Hello from user 1",
                 IdTypuWiadomosci = 1
             },
@@ -43,7 +43,7 @@ public class WiadomoscRepositoryTests : IDisposable
                 Id = 2,
                 IdNadawcy = 2,
                 IdOdbiorcy = 1,
-                DataWyslania = DateTime.Now.AddHours(-1),
+                DataWyslania = now.AddHours(-1),
                 Tresc = "Reply from user 2",
                 IdTypuWiadomosci = 1
             },
@@ -52,7 +52,7 @@ public class WiadomoscRepositoryTests : IDisposable
                 Id = 3,
                 IdNadawcy = 1,
                 IdOdbiorcy = 3,
-                DataWyslania = DateTime.Now,
+                DataWyslania = now,
                 Tresc = "Message to user 3",
                 IdTypuWiadomosci = 1
             }
@@ -77,6 +77,7 @@ public class WiadomoscRepositoryTests : IDisposable
         Assert.Equal(1, result.IdNadawcy);
         Assert.Equal(2, result.IdOdbiorcy);
         Assert.Equal("Hello from user 1", result.Tresc);
+        Assert.Matches(@"^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}$", result.DataWyslania);
     }
 
     [Fact]
@@ -88,7 +89,7 @@ public class WiadomoscRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task GetWiadomosci_BetweenTwoUsers_ReturnsConversation()
+    public async Task GetWiadomosci_BetweenTwoUsers_ReturnsConversationSortedAscending()
     {
         // Act
         var result = await _repository.GetWiadomosci(1, 2);
@@ -96,8 +97,10 @@ public class WiadomoscRepositoryTests : IDisposable
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Count);
-        // Verify sorting by date
-        Assert.True(result.First().DataWyslania < result.Last().DataWyslania);
+        Assert.Collection(
+            result,
+            first => Assert.Equal("Hello from user 1", first.Tresc),
+            second => Assert.Equal("Reply from user 2", second.Tresc));
     }
 
     [Fact]
@@ -115,18 +118,20 @@ public class WiadomoscRepositoryTests : IDisposable
     public async Task CreateWiadomosc_WithValidData_ReturnsTrue()
     {
         // Arrange
-        var dto = new WiadomoscCreateDto(3, "New message", 1);
+        var dto = new WiadomoscCreateDto("New message", 1);
         var senderId = 1;
+        var receiverId = 3;
 
         // Act
-        var result = await _repository.CreateWiadomosc(dto, senderId);
+        var result = await _repository.CreateWiadomosc(receiverId, dto, senderId);
 
         // Assert
         Assert.True(result);
         var messages = await _context.Wiadomosc.Where(m => m.Tresc == "New message").ToListAsync();
         Assert.Single(messages);
         Assert.Equal(senderId, messages[0].IdNadawcy);
-        Assert.Equal(3, messages[0].IdOdbiorcy);
+        Assert.Equal(receiverId, messages[0].IdOdbiorcy);
+        Assert.Equal(1, messages[0].IdTypuWiadomosci);
     }
 
     [Fact]
@@ -143,7 +148,7 @@ public class WiadomoscRepositoryTests : IDisposable
         Assert.True(result);
         var remainingMessages = await _repository.GetWiadomosci(userId1, userId2);
         Assert.Empty(remainingMessages);
-        
+
         // Verify message to user 3 is still there
         var messageToUser3 = await _repository.GetWiadomosc(3);
         Assert.NotNull(messageToUser3);

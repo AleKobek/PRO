@@ -2,6 +2,7 @@ using Moq;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Profile.DTO.Profil;
+using Squadra.Server.Modules.Profile.DTO.Status;
 using Squadra.Server.Modules.Profile.Repositories;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
@@ -34,7 +35,8 @@ public class ProfilServiceTests
     public async Task GetProfil_ById_WithValidId_ReturnsOk()
     {
         // Arrange
-        var profileId = 1;
+        var profileId =1;
+
         var expectedProfile = new ProfilGetResDto(
             "TestUser",
             null,
@@ -44,8 +46,17 @@ public class ProfilServiceTests
             null,
             "Online"
         );
+
+        var statusOnline = new StatusDto(1, "Online");
+
         _mockProfilRepository.Setup(r => r.GetProfilUzytkownika(profileId))
             .ReturnsAsync(expectedProfile);
+
+        _mockProfilRepository.Setup(r => r.GetStatusProfilu(profileId))
+            .ReturnsAsync(statusOnline);
+
+        _mockUzytkownikRepository .Setup(r => r.GetOstatniaAktywnoscUzytkownika(profileId))
+            .ReturnsAsync(DateTime.Now);
 
         // Act
         var result = await _service.GetProfil(profileId);
@@ -55,8 +66,13 @@ public class ProfilServiceTests
         Assert.Equal(200, result.StatusCode);
         Assert.NotNull(result.Value);
         Assert.Equal("TestUser", result.Value.Pseudonim);
+        Assert.Equal("Online", result.Value.NazwaStatusu);
+
         _mockProfilRepository.Verify(r => r.GetProfilUzytkownika(profileId), Times.Once);
+        _mockProfilRepository.Verify(r => r.GetStatusProfilu(profileId), Times.Once);
+        _mockUzytkownikRepository.Verify(r => r.GetOstatniaAktywnoscUzytkownika(profileId), Times.Once);
     }
+
 
     [Fact]
     public async Task GetProfil_ById_WithIdLessThanOne_ReturnsNotFound()
