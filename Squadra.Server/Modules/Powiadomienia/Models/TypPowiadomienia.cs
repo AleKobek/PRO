@@ -1,14 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿namespace Squadra.Server.Modules.Powiadomienia.Models;
 
-namespace Squadra.Server.Modules.Powiadomienia.Models;
-
-[Table(nameof(TypPowiadomienia))]
 public class TypPowiadomienia
 {
     public int Id { get; set; }
-    
-    [Required] [StringLength(100)]
     public string Nazwa { get; set; } = null!;
     
     public virtual ICollection<Powiadomienie> PowiadomienieCollection { get; set; } = null!;

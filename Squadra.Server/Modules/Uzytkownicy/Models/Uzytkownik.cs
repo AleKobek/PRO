@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Squadra.Server.Modules.BibliotekaGier.Models;
 using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Powiadomienia.Models;
@@ -15,8 +14,6 @@ public class Uzytkownik : IdentityUser<int>
     public DateOnly? DataUrodzenia { get; set; }
     
     public DateTime? OstatniaAktywnosc { get; set; }
-    
-    [MaxLength(40)]
     public string? LoginNaZewnetrznymSerwisie { get; set; }
     
     public int? IdNaZewnetrznymSerwisie { get; set; }
