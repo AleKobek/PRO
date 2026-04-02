@@ -29,6 +29,24 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         }
     }
     
+    public async Task<ServiceResult<ICollection<CzasRozgrywkiDTO>>> GetGodzinyGraniaUzytkownika(int idUzytkownika)
+    {
+        if (idUzytkownika <= 0)
+        {
+            return ServiceResult<ICollection<CzasRozgrywkiDTO>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator użytkownika: " + idUzytkownika));
+        }
+        
+        try
+        {
+            var result = await statystykiRepository.GetGodzinyGraniaUzytkownika(idUzytkownika);
+            return ServiceResult<ICollection<CzasRozgrywkiDTO>>.Ok(result);
+        }
+        catch (NieZnalezionoWBazieException ex)
+        {
+            return ServiceResult<ICollection<CzasRozgrywkiDTO>>.NotFound(new ErrorItem(ex.Message));
+        }
+    }
+    
     public async Task<ServiceResult<string?>> GetWartoscStatystyki(int idUzytkownika, int idStatystyki)
     {
         if (idUzytkownika <= 0)

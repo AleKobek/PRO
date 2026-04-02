@@ -34,6 +34,25 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         return string.IsNullOrEmpty(godzinyGrania) ? "0" : godzinyGrania;
     }
     
+    //get wszystkie czasy rozgrywek gier danego użytkownika
+    public async Task<ICollection<CzasRozgrywkiDTO>> GetGodzinyGraniaUzytkownika(int idUzytkownika)
+    {
+        
+        var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
+        if (uzytkownik is null)
+            throw new NieZnalezionoWBazieException("Użytkownik o id " + idUzytkownika + " nie istnieje.");
+        
+        return await context.StatystykaUzytkownika
+            .Include(x => x.Statystyka)
+            .ThenInclude(x => x.Kategoria)
+            .Where(x =>
+                x.UzytkownikId == idUzytkownika &&
+                x.Statystyka.Kategoria.CzyToCzasRozgrywki
+                && x.Statystyka.RolaId == null)
+            .Select(x => new CzasRozgrywkiDTO(x.Statystyka.Kategoria.IdGry, x.Wartosc))
+            .ToListAsync();
+    }
+    
     // get wartość danej statystyki danego użytkownika
     public async Task<string?> GetWartoscStatystyki(int idUzytkownika, int idStatystyki)
     {
