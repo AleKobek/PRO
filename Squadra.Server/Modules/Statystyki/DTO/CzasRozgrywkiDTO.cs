@@ -2,5 +2,5 @@
 
 public record CzasRozgrywkiDTO(
     int IdGry,
-    string GodzinyGrania
+    int GodzinyGrania
 );
