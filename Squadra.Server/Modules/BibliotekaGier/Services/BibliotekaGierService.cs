@@ -2,10 +2,13 @@
 using Squadra.Server.Modules.BibliotekaGier.DTO;
 using Squadra.Server.Modules.BibliotekaGier.Repositories;
 using Squadra.Server.Modules.Shared.Services;
+using Squadra.Server.Modules.Statystyki.DTO;
+using Squadra.Server.Modules.Statystyki.Services;
 
 namespace Squadra.Server.Modules.BibliotekaGier.Services;
 
-public class BibliotekaGierService(IBibliotekaGierRepository bibliotekaGierRepository) : IBibliotekaGierService
+public class BibliotekaGierService(IBibliotekaGierRepository bibliotekaGierRepository,
+                                    IStatystykiService statystykiService) : IBibliotekaGierService
 {
     public async Task<ServiceResult<ICollection<GraWBiblioteceDTO>>> PodajGryWBiblioteceUzytkownika(int idUzytkownika)
     {
@@ -14,8 +17,17 @@ public class BibliotekaGierService(IBibliotekaGierRepository bibliotekaGierRepos
             if (idUzytkownika <= 0)
                 return ServiceResult<ICollection<GraWBiblioteceDTO>>.BadRequest(new ErrorItem("Podano nieprawidłowe id uzytkownika: " + idUzytkownika));
             var listaGier = await bibliotekaGierRepository.PodajGryWBiblioteceUzytkownika(idUzytkownika);
-            // tutaj będzie podmiana 0 w godzinach rozgrywki na prawdziwe statystyki, ale to gdy zrobię moduł statystyk
-            return ServiceResult<ICollection<GraWBiblioteceDTO>>.Ok(listaGier);
+            var listaCzasowGierRes = await statystykiService.GetGodzinyGraniaUzytkownika(idUzytkownika);
+            var listaCzasowGier = listaCzasowGierRes.Value ?? new List<CzasRozgrywkiDTO>();
+            // nie wywali wyjątków, bo już sprawdziliśmy, że użytkownik istnieje, ale może zwrócić pustą listę, jeśli użytkownik nie ma żadnych gier w bibliotece.
+            // to jest ok, bo wtedy po prostu zwrócimy pustą listę gier, a nie błąd 404
+            
+            var listaGierDoZwrocenia = listaGier
+                .Select(g => 
+                    g with { GodzinyGrania = listaCzasowGier.FirstOrDefault(x => x.IdGry == g.IdGry)?.GodzinyGrania ?? 0 })
+                .ToList();
+
+            return ServiceResult<ICollection<GraWBiblioteceDTO>>.Ok(listaGierDoZwrocenia);
         }
         catch (NieZnalezionoWBazieException e)
         {
