@@ -36,4 +36,27 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
             ).ToListAsync();
          return await gryUzytkownika;
     }
+    
+    // funkcja wyczyść bibliotekę użytkownika, czyli wszystkie jego dane z tabel: GraUzytkownikaNaPlatformie, GraUzytkownika, StatystykaUzytkownika
+    public async Task<bool> WyczyscBibliotekeUzytkownika(int idUzytkownika)
+    {
+        var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
+        if (uzytkownik is null)
+            throw new NieZnalezionoWBazieException("Użytkownik o id " + idUzytkownika + " nie istnieje.");
+        
+        await using var transaction = await context.Database.BeginTransactionAsync();
+        var gryUzytkownikaNaPlatformie = context.GraUzytkownikaNaPlatformie.Where(x => x.UzytkownikId == idUzytkownika);
+        context.GraUzytkownikaNaPlatformie.RemoveRange(gryUzytkownikaNaPlatformie);
+        
+        var gryUzytkownika = context.GraUzytkownika.Where(x => x.UzytkownikId == idUzytkownika);
+        context.GraUzytkownika.RemoveRange(gryUzytkownika);
+        
+        var statystykiUzytkownika = context.StatystykaUzytkownika.Where(x => x.UzytkownikId == idUzytkownika);
+        context.StatystykaUzytkownika.RemoveRange(statystykiUzytkownika);
+        
+        await transaction.CommitAsync();
+        await context.SaveChangesAsync();
+        
+        return true;
+    }
 }
