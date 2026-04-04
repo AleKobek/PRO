@@ -102,4 +102,15 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
             .ToListAsync();
     }
     
+    public async Task<bool> UsunStatystykiUzytkownika(int idUzytkownika)
+    {
+        var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
+        if (uzytkownik is null)
+            throw new NieZnalezionoWBazieException("Użytkownik o id " + idUzytkownika + " nie istnieje.");
+        
+        var statystykiUzytkownika = context.StatystykaUzytkownika.Where(x => x.UzytkownikId == idUzytkownika);
+        context.StatystykaUzytkownika.RemoveRange(statystykiUzytkownika);
+        await context.SaveChangesAsync();
+        return true;
+    }
 }

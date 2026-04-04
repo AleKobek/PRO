@@ -37,7 +37,7 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
          return await gryUzytkownika;
     }
     
-    // funkcja wyczyść bibliotekę użytkownika, czyli wszystkie jego dane z tabel: GraUzytkownikaNaPlatformie, GraUzytkownika, StatystykaUzytkownika
+    // funkcja wyczyść bibliotekę użytkownika, czyli wszystkie jego dane z tabel: GraUzytkownikaNaPlatformie, GraUzytkownika
     public async Task<bool> WyczyscBibliotekeUzytkownika(int idUzytkownika)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
@@ -50,9 +50,6 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
         
         var gryUzytkownika = context.GraUzytkownika.Where(x => x.UzytkownikId == idUzytkownika);
         context.GraUzytkownika.RemoveRange(gryUzytkownika);
-        
-        var statystykiUzytkownika = context.StatystykaUzytkownika.Where(x => x.UzytkownikId == idUzytkownika);
-        context.StatystykaUzytkownika.RemoveRange(statystykiUzytkownika);
         
         await transaction.CommitAsync();
         await context.SaveChangesAsync();
