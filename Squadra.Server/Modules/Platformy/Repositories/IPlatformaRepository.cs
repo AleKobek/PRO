@@ -8,4 +8,5 @@ public interface IPlatformaRepository
     public Task<ICollection<Platforma>> GetPlatformy();
     public Task<Platforma> GetPlatformaById(int id);
     public Task<ICollection<PlatformaUzytkownikaDTO>> GetPlatformyUzytkownika(int idUzytkownika);
+    public Task<bool> UsunPlatformyUzytkownika(int idUzytkownika);
 }
