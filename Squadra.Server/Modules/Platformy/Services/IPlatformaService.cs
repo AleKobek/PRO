@@ -10,4 +10,5 @@ public interface IPlatformaService
 
     public Task<ServiceResult<Platforma>> GetPlatformaById(int id);
     public Task<ServiceResult<ICollection<PlatformaUzytkownikaDTO>>> GetPlatformyUzytkownika(int idUzytkownika);
+    public Task<ServiceResult<bool>> UsunPlatformyUzytkownika(int idUzytkownika);
 }

@@ -39,4 +39,17 @@ public class PlatformaService(IPlatformaRepository platformaRepository) : IPlatf
             return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.NotFound(new ErrorItem(e.Message));
         }
     }
+    
+    public async Task<ServiceResult<bool>> UsunPlatformyUzytkownika(int idUzytkownika)
+    {
+        try
+        {
+            var wynik = await platformaRepository.UsunPlatformyUzytkownika(idUzytkownika);
+            return ServiceResult<bool>.Ok(wynik);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
 }
