@@ -90,4 +90,22 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
             return ServiceResult<ICollection<StatystykaDTO>>.NotFound(new ErrorItem(ex.Message));
         }
     }
+    
+    public async Task<ServiceResult<bool>> UsunStatystykiUzytkownika(int idUzytkownika)
+    {
+        if (idUzytkownika <= 0)
+        {
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator użytkownika: " + idUzytkownika));
+        }
+        
+        try
+        {
+            var result = await statystykiRepository.UsunStatystykiUzytkownika(idUzytkownika);
+            return ServiceResult<bool>.Ok(result);
+        }
+        catch (NieZnalezionoWBazieException ex)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(ex.Message));
+        }
+    }
 }

@@ -9,4 +9,5 @@ public interface IStatystykiService
     public Task<ServiceResult<ICollection<CzasRozgrywkiDTO>>> GetGodzinyGraniaUzytkownika(int idUzytkownika);
     public Task<ServiceResult<string?>> GetWartoscStatystyki(int idUzytkownika, int idStatystyki);
     public Task<ServiceResult<ICollection<StatystykaDTO>>> GetStatystykiZGry(int idUzytkownika, int idGry);
+    public Task<ServiceResult<bool>> UsunStatystykiUzytkownika(int idUzytkownika);
 }
