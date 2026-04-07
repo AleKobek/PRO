@@ -17,7 +17,7 @@ public class ProfilEFConfig : IEntityTypeConfiguration<Profil>
 
         builder
             .Property(x => x.Zaimki)
-            .HasMaxLength(10);
+            .HasMaxLength(30);
         
         builder
             .Property(x => x.Opis)

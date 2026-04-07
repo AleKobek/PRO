@@ -12,8 +12,8 @@ using Squadra.Server.Context;
 namespace Squadra.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260331173801_Zmiana_typu_kolumny_wartosc_tabeli_StatystykaUzytkownika_na_string")]
-    partial class Zmiana_typu_kolumny_wartosc_tabeli_StatystykaUzytkownika_na_string
+    [Migration("20260407102357_Zmiana_typu_kolumny_wartosc_tabeli_StatystykaUzytkownika_na_string_oraz_chwilowa_zmiana_nazw_kolumn")]
+    partial class Zmiana_typu_kolumny_wartosc_tabeli_StatystykaUzytkownika_na_string_oraz_chwilowa_zmiana_nazw_kolumn
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -376,16 +376,13 @@ namespace Squadra.Server.Migrations
             modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.JezykProfilu", b =>
                 {
                     b.Property<int>("JezykId")
-                        .HasColumnType("int")
-                        .HasColumnName("id_jezyka");
+                        .HasColumnType("int");
 
                     b.Property<int>("UzytkownikId")
-                        .HasColumnType("int")
-                        .HasColumnName("id_uzytkownika");
+                        .HasColumnType("int");
 
                     b.Property<int>("StopienBieglosciId")
-                        .HasColumnType("int")
-                        .HasColumnName("id_stopnia_bieglosci");
+                        .HasColumnType("int");
 
                     b.HasKey("JezykId", "UzytkownikId")
                         .HasName("id_jezyk_uzytkownika");
@@ -446,12 +443,10 @@ namespace Squadra.Server.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<int?>("RegionId")
-                        .HasColumnType("int")
-                        .HasColumnName("id_regionu");
+                        .HasColumnType("int");
 
                     b.Property<int>("StatusId")
-                        .HasColumnType("int")
-                        .HasColumnName("id_statusu");
+                        .HasColumnType("int");
 
                     b.Property<string>("Zaimki")
                         .HasMaxLength(10)
@@ -475,8 +470,7 @@ namespace Squadra.Server.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("KrajId")
-                        .HasColumnType("int")
-                        .HasColumnName("id_kraju");
+                        .HasColumnType("int");
 
                     b.Property<string>("Nazwa")
                         .IsRequired()
@@ -905,12 +899,10 @@ namespace Squadra.Server.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int>("IdNadawcy")
-                        .HasColumnType("int")
-                        .HasColumnName("id_nadawcy");
+                        .HasColumnType("int");
 
                     b.Property<int>("IdOdbiorcy")
-                        .HasColumnType("int")
-                        .HasColumnName("id_odbiorcy");
+                        .HasColumnType("int");
 
                     b.Property<int>("IdTypuWiadomosci")
                         .HasColumnType("int");
@@ -975,12 +967,10 @@ namespace Squadra.Server.Migrations
             modelBuilder.Entity("Squadra.Server.Modules.Znajomosci.Models.Znajomi", b =>
                 {
                     b.Property<int>("IdUzytkownika1")
-                        .HasColumnType("int")
-                        .HasColumnName("id_znajomego_1");
+                        .HasColumnType("int");
 
                     b.Property<int>("IdUzytkownika2")
-                        .HasColumnType("int")
-                        .HasColumnName("id_znajomego_2");
+                        .HasColumnType("int");
 
                     b.Property<DateOnly>("DataNawiazaniaZnajomosci")
                         .HasColumnType("date");
