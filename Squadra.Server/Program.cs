@@ -6,6 +6,7 @@ using Squadra.Server.Modules.BibliotekaGier;
 using Squadra.Server.Modules.Platformy;
 using Squadra.Server.Modules.Powiadomienia;
 using Squadra.Server.Modules.Profile;
+using Squadra.Server.Modules.Statystyki;
 using Squadra.Server.Modules.Uzytkownicy;
 using Squadra.Server.Modules.Uzytkownicy.Models;
 using Squadra.Server.Modules.Wiadomosci;
@@ -30,6 +31,7 @@ builder.Services.AddZnajomosciModule();
 builder.Services.AddPlatformaModule();
 builder.Services.AddWspieraneGryModule();
 builder.Services.AddBibliotekaGierModule();
+builder.Services.AddStatystykiModule();
 
 // ustawiamy Identity
 builder.Services
