@@ -1,6 +1,7 @@
 ﻿using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Statystyki.DTO;
+using Squadra.Server.Modules.Statystyki.Models;
 using Squadra.Server.Modules.Statystyki.Repositories;
 
 namespace Squadra.Server.Modules.Statystyki.Services;
@@ -88,6 +89,27 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         catch (NieZnalezionoWBazieException ex)
         {
             return ServiceResult<ICollection<StatystykaDTO>>.NotFound(new ErrorItem(ex.Message));
+        }
+    }
+    
+    public async Task<ServiceResult<ICollection<StatystykaUzytkownika>>> UpdateStatystykiUzytkownika(int idUzytkownika)
+    {
+        if (idUzytkownika <= 0)
+        {
+            return ServiceResult<ICollection<StatystykaUzytkownika>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator użytkownika: " + idUzytkownika));
+        }
+        
+        try
+        {
+            var result = await statystykiRepository.UpdateStatystykiUzytkownika(idUzytkownika);
+            return ServiceResult<ICollection<StatystykaUzytkownika>>.Ok(result);
+        }
+        catch (NieZnalezionoWBazieException ex)
+        {
+            return ServiceResult<ICollection<StatystykaUzytkownika>>.NotFound(new ErrorItem(ex.Message));
+        }catch(BrakIdNaZewnetrznymSerwisieException e)
+        {
+            return ServiceResult<ICollection<StatystykaUzytkownika>>.BadRequest(new ErrorItem(e.Message));
         }
     }
     
