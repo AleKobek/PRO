@@ -66,7 +66,7 @@ public class PlatformaRepository(AppDbContext context, IConfiguration configurat
              
             await using var cmd = new SqlCommand();
             cmd.Connection = con;
-            cmd.CommandText = "SELECT id_platformy, pseudonim_na_platformie FROM zewnetrzna.UzytkownikPlatforma up WHERE up.id_uzytkownika = @idNaZewnetrzymSerwisie"; 
+            cmd.CommandText = "SELECT id_platformy, pseudonim_na_platformie FROM zewnetrzne.Uzytkownik_Platforma up WHERE up.id_uzytkownika = @idNaZewnetrzymSerwisie"; 
             cmd.Parameters.AddWithValue("idNaZewnetrzymSerwisie", idNaZewnetrzymSerwisie);
             await using var reader = await cmd.ExecuteReaderAsync();
             
