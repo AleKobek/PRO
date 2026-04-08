@@ -13,13 +13,13 @@ public class PlatformaService(IPlatformaRepository platformaRepository) : IPlatf
         return ServiceResult<ICollection<Platforma>>.Ok(await platformaRepository.GetPlatformy());
     }
     
-    public async Task<ServiceResult<Platforma>> GetPlatformaById(int id)
+    public async Task<ServiceResult<Platforma>> GetPlatforma(int id)
     {
         try
         {
             if(id < 1) return ServiceResult<Platforma>.NotFound(new ErrorItem("Platforma o id "+id+" nie istnieje."));
             
-            return ServiceResult<Platforma>.Ok(await platformaRepository.GetPlatformaById(id));
+            return ServiceResult<Platforma>.Ok(await platformaRepository.GetPlatforma(id));
         }
         catch (NieZnalezionoWBazieException e)
         {

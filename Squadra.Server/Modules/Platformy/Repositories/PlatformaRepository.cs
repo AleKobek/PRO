@@ -14,7 +14,7 @@ public class PlatformaRepository(AppDbContext context, IConfiguration configurat
         return await context.Platforma.ToListAsync();
     }
     
-    public async Task<Platforma> GetPlatformaById(int id)
+    public async Task<Platforma> GetPlatforma(int id)
     {
         var platforma = await context.Platforma.FirstOrDefaultAsync(p => p.Id == id);
         if(platforma is null)
@@ -33,7 +33,7 @@ public class PlatformaRepository(AppDbContext context, IConfiguration configurat
         {
             try
             {
-                var platforma = await GetPlatformaById(up.PlatformaId);
+                var platforma = await GetPlatforma(up.PlatformaId);
                 platformy.Add(new PlatformaUzytkownikaDTO(
                     up.PlatformaId,
                     platforma.Nazwa,
@@ -76,7 +76,7 @@ public class PlatformaRepository(AppDbContext context, IConfiguration configurat
             {
                 var platformaId = (int)reader["id_platformy"];
                 var pseudonimNaPlatformie = reader["pseudonim_na_platformie"].ToString() ?? "";
-                var platforma = await GetPlatformaById(platformaId);
+                var platforma = await GetPlatforma(platformaId);
                 // dodajemy do listy do zwrócenia, czyli do listy platform użytkownika, które zwrócimy do frontendu
                 platformyDoZwrocenia.Add(new PlatformaUzytkownikaDTO(
                     platformaId,

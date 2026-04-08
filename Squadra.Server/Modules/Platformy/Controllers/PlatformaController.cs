@@ -35,13 +35,13 @@ public class PlatformaController(
     [ProducesResponseType(typeof(Platforma), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult<Platforma>> GetPlatformaById(int id)
+    public async Task<ActionResult<Platforma>> GetPlatforma(int id)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
 
-        var result = await platformaService.GetPlatformaById(id);
+        var result = await platformaService.GetPlatforma(id);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
