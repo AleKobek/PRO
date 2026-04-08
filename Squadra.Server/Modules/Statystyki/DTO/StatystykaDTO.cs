@@ -4,6 +4,7 @@ public record StatystykaDTO(
     int Id,
     string Nazwa,
     string Wartosc,
+    int? PorownywalnaWartoscLiczbowa,
     int KategoriaId,
     string KategoriaNazwa,
     int? RolaId,

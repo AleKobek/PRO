@@ -96,6 +96,7 @@ public class StatystykiRepository(AppDbContext context, IConfiguration configura
                 x.StatystykaId,
                 x.Statystyka.Nazwa,
                 x.Wartosc,
+                x.PorownywalnaWartoscLiczbowa,
                 x.Statystyka.Kategoria.Id,
                 x.Statystyka.Kategoria.Nazwa,
                 x.Statystyka.RolaId,
@@ -121,7 +122,7 @@ public class StatystykiRepository(AppDbContext context, IConfiguration configura
              
             await using var cmd = new SqlCommand();
             cmd.Connection = con;
-            cmd.CommandText = "SELECT id_statystyki, wartosc FROM zewnetrzne.Statystyka_Uzytkownika su WHERE su.id_uzytkownika = @idNaZewnetrzymSerwisie"; 
+            cmd.CommandText = "SELECT id_statystyki, wartosc, porownywalna_wartosc_liczbowa FROM zewnetrzne.Statystyka_Uzytkownika su WHERE su.id_uzytkownika = @idNaZewnetrzymSerwisie"; 
             cmd.Parameters.AddWithValue("idNaZewnetrzymSerwisie", idNaZewnetrzymSerwisie);
             await using var reader = await cmd.ExecuteReaderAsync();
             
@@ -130,12 +131,14 @@ public class StatystykiRepository(AppDbContext context, IConfiguration configura
             {
                 var statystykaId = (int)reader["id_statystyki"];
                 var wartoscStatystyki = reader["wartosc"].ToString() ?? "";
+                var porownywalnaWartoscLiczbowa = reader["porownywalna_wartosc_liczbowa"] as int?;
                 // dodajemy do listy statystyk użytkownika, które dodamy do bazy danych, czyli do tabeli StatystykaUzytkownika
                 statystyki.Add(new StatystykaUzytkownika
                 {
                     UzytkownikId = idUzytkownika,
                     StatystykaId =  statystykaId,
-                    Wartosc = wartoscStatystyki ?? ""
+                    Wartosc = wartoscStatystyki,
+                    PorownywalnaWartoscLiczbowa = porownywalnaWartoscLiczbowa
                 });
             }
             
