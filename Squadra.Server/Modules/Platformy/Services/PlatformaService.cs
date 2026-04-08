@@ -40,6 +40,23 @@ public class PlatformaService(IPlatformaRepository platformaRepository) : IPlatf
         }
     }
     
+    public async Task<ServiceResult<ICollection<PlatformaUzytkownikaDTO>>> UpdatePlatformyUzytkownika(int idUzytkownika)
+    {
+        try
+        {
+            var platformy = await platformaRepository.UpdatePlatformyUzytkownika(idUzytkownika);
+            return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.Ok(platformy);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.NotFound(new ErrorItem(e.Message));
+        }
+        catch(BrakIdNaZewnetrznymSerwisieException e)
+        {
+            return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.BadRequest(new ErrorItem(e.Message));
+        }
+    }
+    
     public async Task<ServiceResult<bool>> UsunPlatformyUzytkownika(int idUzytkownika)
     {
         try
