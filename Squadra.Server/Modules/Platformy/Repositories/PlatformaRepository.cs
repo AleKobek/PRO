@@ -93,6 +93,8 @@ public class PlatformaRepository(AppDbContext context, IConfiguration configurat
                 });
             }
             
+            con.Close(); // już nam niepotrzebne
+            
             await using var transaction = await context.Database.BeginTransactionAsync();
             
             // usuwamy wszystkie stare wpisy z tabeli UzytkownikPlatforma dla danego idUzytkownika,

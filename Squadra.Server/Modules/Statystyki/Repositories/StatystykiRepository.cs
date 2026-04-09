@@ -142,6 +142,8 @@ public class StatystykiRepository(AppDbContext context, IConfiguration configura
                 });
             }
             
+            con.Close(); // już nam niepotrzebne
+            
             await using var transaction = await context.Database.BeginTransactionAsync();
             
             // usuwamy wszystkie stare wpisy z tabeli StatystykaUzytkownika dla danego idUzytkownika,
