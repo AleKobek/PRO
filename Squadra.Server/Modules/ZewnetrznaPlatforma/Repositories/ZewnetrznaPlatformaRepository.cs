@@ -42,11 +42,6 @@ public class ZewnetrznaPlatformaRepository(IConfiguration configuration) : IZewn
             Console.WriteLine($"SQL Error: {e.Message}");
             throw new BladZewnetrznegoSerwisuException("Błąd podczas pobierania platform użytkownika z zewnętrznego serwisu.");
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-            throw new Exception("Nieoczekiwany błąd podczas pobierania platform użytkownika z zewnętrznego serwisu.");
-        }
     }
     
     public async Task<ICollection<ZewnetrznaStatystykaUzytkownikaDTO>> GetStatystykiUzytkownika(int idNaZewnetrzymSerwisie)
@@ -87,11 +82,6 @@ public class ZewnetrznaPlatformaRepository(IConfiguration configuration) : IZewn
             Console.WriteLine($"SQL Error: {e.Message}");
             throw new BladZewnetrznegoSerwisuException("Błąd podczas pobierania statystyk użytkownika z zewnętrznego serwisu.");
         }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-            throw new Exception("Nieoczekiwany błąd podczas pobierania statystyk użytkownika z zewnętrznego serwisu.");
-        }
     }
 
     public async Task<ICollection<ZewnetrznaGraUzytkownikaDTO>> GetGryUzytkownika(int idNaZewnetrzymSerwisie)
@@ -127,11 +117,6 @@ public class ZewnetrznaPlatformaRepository(IConfiguration configuration) : IZewn
         {
             Console.WriteLine($"SQL Error: {e.Message}");
             throw new BladZewnetrznegoSerwisuException("Błąd podczas pobierania biblioteki gier użytkownika z zewnętrznego serwisu.");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-            throw new Exception("Nieoczekiwany błąd podczas biblioteki gier użytkownika z zewnętrznego serwisu.");
         }
     }
 
@@ -170,11 +155,6 @@ public class ZewnetrznaPlatformaRepository(IConfiguration configuration) : IZewn
         {
             Console.WriteLine($"SQL Error: {e.Message}");
             throw new BladZewnetrznegoSerwisuException("Błąd podczas pobierania biblioteki gier użytkownika z zewnętrznego serwisu.");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-            throw new Exception("Nieoczekiwany błąd podczas biblioteki gier użytkownika z zewnętrznego serwisu.");
         }
     }
 }
