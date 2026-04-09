@@ -1,5 +1,4 @@
-﻿using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Platformy.DTO;
@@ -7,7 +6,7 @@ using Squadra.Server.Modules.Platformy.Models;
 
 namespace Squadra.Server.Modules.Platformy.Repositories;
 
-public class PlatformaRepository(AppDbContext context, IConfiguration configuration) : IPlatformaRepository{
+public class PlatformaRepository(AppDbContext context) : IPlatformaRepository{
     
     public async Task<ICollection<Platforma>> GetPlatformy()
     {
@@ -49,76 +48,26 @@ public class PlatformaRepository(AppDbContext context, IConfiguration configurat
         return platformy;
     }
     
-    // funkcja aktualizująca platformy użytkownika, czyli usuwająca wszystkie stare wpisy z tabeli UzytkownikPlatforma dla danego idUzytkownika i dodająca nowe wpisy, które pobieramy z zewnętrznego serwisu
-    // potrzebujemy to zrobić ręcznie, gdy użytkownik połączy się po raz pierwszy, aby nie musiał czekać do północy
-    public async Task<ICollection<PlatformaUzytkownikaDTO>> UpdatePlatformyUzytkownika(int idUzytkownika)
+    // funkcja aktualizująca platformy użytkownika, czyli usuwająca wszystkie stare wpisy z tabeli UzytkownikPlatforma dla danego idUzytkownika i dodająca nowe wpisy
+    public async Task<bool> UpdatePlatformyUzytkownika(int idUzytkownika, List <UzytkownikPlatforma> nowePlatformy)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
         if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + idUzytkownika + " nie istnieje.");
         
-        var idNaZewnetrzymSerwisie = uzytkownik.IdNaZewnetrznymSerwisie;
-        if (idNaZewnetrzymSerwisie == null) throw new BrakIdNaZewnetrznymSerwisieException("Uzytkownik o id " + idUzytkownika + " nie ma id na zewnętrznym serwisie.");
-
-        try
-        {
-            await using var con = new SqlConnection(configuration["ConnectionStrings:DefaultConnection"]);
-            await con.OpenAsync();
-             
-            await using var cmd = new SqlCommand();
-            cmd.Connection = con;
-            cmd.CommandText = "SELECT id_platformy, pseudonim_na_platformie FROM zewnetrzne.Uzytkownik_Platforma up WHERE up.id_uzytkownika = @idNaZewnetrzymSerwisie"; 
-            cmd.Parameters.AddWithValue("idNaZewnetrzymSerwisie", idNaZewnetrzymSerwisie);
-            await using var reader = await cmd.ExecuteReaderAsync();
-            
-            var platformyDoZwrocenia = new List<PlatformaUzytkownikaDTO>();
-            var platformy = new List<UzytkownikPlatforma>();
-            while (await reader.ReadAsync())
-            {
-                var platformaId = (int)reader["id_platformy"];
-                var pseudonimNaPlatformie = reader["pseudonim_na_platformie"].ToString() ?? "";
-                var platforma = await GetPlatforma(platformaId);
-                // dodajemy do listy do zwrócenia, czyli do listy platform użytkownika, które zwrócimy do frontendu
-                platformyDoZwrocenia.Add(new PlatformaUzytkownikaDTO(
-                    platformaId,
-                    platforma.Nazwa,
-                    platforma.Logo,
-                    pseudonimNaPlatformie 
-                ));
-                // dodajemy do listy platform użytkownika, które dodamy do bazy danych, czyli do tabeli UzytkownikPlatforma
-                platformy.Add(new UzytkownikPlatforma
-                {
-                    UzytkownikId = idUzytkownika,
-                    PlatformaId = platformaId,
-                    PseudonimNaPlatformie = pseudonimNaPlatformie
-                });
-            }
-            
-            con.Close(); // już nam niepotrzebne
+            // tutaj się zaczyna, dostajemy listę
             
             await using var transaction = await context.Database.BeginTransactionAsync();
             
-            // usuwamy wszystkie stare wpisy z tabeli UzytkownikPlatforma dla danego idUzytkownika,
-            // czyli usuwamy wszystkie platformy użytkownika, które mamy w bazie danych, żeby potem dodać nowe, które pobraliśmy z zewnętrznego serwisu
+            // usuwamy wszystkie stare wpisy z tabeli UzytkownikPlatforma dla danego idUzytkownika
             var starePlatformyUzytkownika = await context.UzytkownikPlatforma.Where(up => up.UzytkownikId == idUzytkownika).ToListAsync();
             context.UzytkownikPlatforma.RemoveRange(starePlatformyUzytkownika);
             
-            // dodajemy wszystkie platformy użytkownika do bazy danych, czyli do tabeli UzytkownikPlatforma
-            context.UzytkownikPlatforma.AddRange(platformy);
+            // dodajemy wszystkie platformy użytkownika do bazy danych
+            context.UzytkownikPlatforma.AddRange(nowePlatformy);
             await context.SaveChangesAsync();
             await transaction.CommitAsync();
             
-            return platformyDoZwrocenia;
-            
-        }catch (SqlException e)
-        {
-            Console.WriteLine($"SQL Error: {e.Message}");
-            throw new Exception("Błąd podczas pobierania platform użytkownika z zewnętrznego serwisu.");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-            throw new Exception("Nieoczekiwany błąd podczas pobierania platform użytkownika z zewnętrznego serwisu.");
-        }
+            return true;
     }
     
     // funkcja usuwająca wszystkie platformy użytkownika, czyli wszystkie wpisy z tabeli UzytkownikPlatforma dla danego idUzytkownika

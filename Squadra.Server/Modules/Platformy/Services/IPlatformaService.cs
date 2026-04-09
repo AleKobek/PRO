@@ -10,6 +10,6 @@ public interface IPlatformaService
 
     public Task<ServiceResult<Platforma>> GetPlatforma(int id);
     public Task<ServiceResult<ICollection<PlatformaUzytkownikaDTO>>> GetPlatformyUzytkownika(int idUzytkownika);
-    public Task<ServiceResult<ICollection<PlatformaUzytkownikaDTO>>> UpdatePlatformyUzytkownika(int idUzytkownika);
+    public Task<ServiceResult<bool>> UpdatePlatformyUzytkownika(int idUzytkownika, List<UzytkownikPlatforma> nowePlatformy);
     public Task<ServiceResult<bool>> UsunPlatformyUzytkownika(int idUzytkownika);
 }

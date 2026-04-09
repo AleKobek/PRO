@@ -40,22 +40,22 @@ public class PlatformaService(IPlatformaRepository platformaRepository) : IPlatf
         }
     }
     
-    public async Task<ServiceResult<ICollection<PlatformaUzytkownikaDTO>>> UpdatePlatformyUzytkownika(int idUzytkownika)
+    public async Task<ServiceResult<bool>> UpdatePlatformyUzytkownika(int idUzytkownika, List<UzytkownikPlatforma> nowePlatformy)
     {
         try
         {
             if(idUzytkownika <= 0)
-                return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.BadRequest(new ErrorItem("Podano nieprawidłowe id uzytkownika: " + idUzytkownika));
-            var platformy = await platformaRepository.UpdatePlatformyUzytkownika(idUzytkownika);
-            return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.Ok(platformy);
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id uzytkownika: " + idUzytkownika));
+            var result = await platformaRepository.UpdatePlatformyUzytkownika(idUzytkownika, nowePlatformy);
+            return ServiceResult<bool>.Ok(result);
         }
         catch (NieZnalezionoWBazieException e)
         {
-            return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
         catch(BrakIdNaZewnetrznymSerwisieException e)
         {
-            return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.BadRequest(new ErrorItem(e.Message));
+            return ServiceResult<bool>.BadRequest(new ErrorItem(e.Message));
         }
     }
     
