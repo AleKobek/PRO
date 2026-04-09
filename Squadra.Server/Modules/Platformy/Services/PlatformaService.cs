@@ -44,6 +44,8 @@ public class PlatformaService(IPlatformaRepository platformaRepository) : IPlatf
     {
         try
         {
+            if(idUzytkownika <= 0)
+                return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.BadRequest(new ErrorItem("Podano nieprawidłowe id uzytkownika: " + idUzytkownika));
             var platformy = await platformaRepository.UpdatePlatformyUzytkownika(idUzytkownika);
             return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.Ok(platformy);
         }
