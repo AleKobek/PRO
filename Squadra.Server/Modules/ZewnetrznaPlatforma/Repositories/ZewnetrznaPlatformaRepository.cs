@@ -1,4 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
+using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.ZewnetrznaPlatforma.DTO;
 
 namespace Squadra.Server.Modules.ZewnetrznaPlatforma.Repositories;
@@ -39,7 +40,7 @@ public class ZewnetrznaPlatformaRepository(IConfiguration configuration) : IZewn
         }catch (SqlException e)
         {
             Console.WriteLine($"SQL Error: {e.Message}");
-            throw new Exception("Błąd podczas pobierania platform użytkownika z zewnętrznego serwisu.");
+            throw new BladZewnetrznegoSerwisuException("Błąd podczas pobierania platform użytkownika z zewnętrznego serwisu.");
         }
         catch (Exception e)
         {
@@ -84,7 +85,7 @@ public class ZewnetrznaPlatformaRepository(IConfiguration configuration) : IZewn
         }catch (SqlException e)
         {
             Console.WriteLine($"SQL Error: {e.Message}");
-            throw new Exception("Błąd podczas pobierania statystyk użytkownika z zewnętrznego serwisu.");
+            throw new BladZewnetrznegoSerwisuException("Błąd podczas pobierania statystyk użytkownika z zewnętrznego serwisu.");
         }
         catch (Exception e)
         {
@@ -125,7 +126,7 @@ public class ZewnetrznaPlatformaRepository(IConfiguration configuration) : IZewn
         }catch (SqlException e)
         {
             Console.WriteLine($"SQL Error: {e.Message}");
-            throw new Exception("Błąd podczas pobierania biblioteki gier użytkownika z zewnętrznego serwisu.");
+            throw new BladZewnetrznegoSerwisuException("Błąd podczas pobierania biblioteki gier użytkownika z zewnętrznego serwisu.");
         }
         catch (Exception e)
         {
@@ -168,7 +169,7 @@ public class ZewnetrznaPlatformaRepository(IConfiguration configuration) : IZewn
         }catch (SqlException e)
         {
             Console.WriteLine($"SQL Error: {e.Message}");
-            throw new Exception("Błąd podczas pobierania biblioteki gier użytkownika z zewnętrznego serwisu.");
+            throw new BladZewnetrznegoSerwisuException("Błąd podczas pobierania biblioteki gier użytkownika z zewnętrznego serwisu.");
         }
         catch (Exception e)
         {
