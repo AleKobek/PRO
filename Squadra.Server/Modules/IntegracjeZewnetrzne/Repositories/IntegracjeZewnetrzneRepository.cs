@@ -1,11 +1,11 @@
 ﻿using Microsoft.Data.SqlClient;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Modules.ZewnetrznaPlatforma.DTO;
+using Squadra.Server.Modules.IntegracjeZewnetrzne.DTO;
 
-namespace Squadra.Server.Modules.ZewnetrznaPlatforma.Repositories;
+namespace Squadra.Server.Modules.IntegracjeZewnetrzne.Repositories;
 
 // zastępuje nam zapytania do zewnętrznego serwisu
-public class ZewnetrznaPlatformaRepository(IConfiguration configuration) : IZewnetrznaPlatformaRepository
+public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IIntegracjeZewnetrzneRepository
 {
     public async Task<ICollection<ZewnetrznaPlatformaUzytkownikaDTO>> GetPlatformyUzytkownika(int idNaZewnetrzymSerwisie)
     {

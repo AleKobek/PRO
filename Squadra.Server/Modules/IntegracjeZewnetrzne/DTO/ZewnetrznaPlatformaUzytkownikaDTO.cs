@@ -1,4 +1,4 @@
-﻿namespace Squadra.Server.Modules.ZewnetrznaPlatforma.DTO;
+﻿namespace Squadra.Server.Modules.IntegracjeZewnetrzne.DTO;
 
 public record ZewnetrznaPlatformaUzytkownikaDTO(
     int ZewnetrzneIdUzytkownika,

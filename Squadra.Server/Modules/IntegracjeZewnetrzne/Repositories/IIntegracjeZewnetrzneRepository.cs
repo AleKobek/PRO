@@ -1,8 +1,8 @@
-﻿using Squadra.Server.Modules.ZewnetrznaPlatforma.DTO;
+﻿using Squadra.Server.Modules.IntegracjeZewnetrzne.DTO;
 
-namespace Squadra.Server.Modules.ZewnetrznaPlatforma.Repositories;
+namespace Squadra.Server.Modules.IntegracjeZewnetrzne.Repositories;
 
-public interface IZewnetrznaPlatformaRepository
+public interface IIntegracjeZewnetrzneRepository
 {
     public Task<ICollection<ZewnetrznaPlatformaUzytkownikaDTO>> GetPlatformyUzytkownika(int idNaZewnetrzymSerwisie);
     public Task<ICollection<ZewnetrznaStatystykaUzytkownikaDTO>> GetStatystykiUzytkownika(int idNaZewnetrzymSerwisie);
