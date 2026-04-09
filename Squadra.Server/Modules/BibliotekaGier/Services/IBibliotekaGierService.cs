@@ -6,5 +6,6 @@ namespace Squadra.Server.Modules.BibliotekaGier.Services;
 public interface IBibliotekaGierService
 {
     public Task<ServiceResult<ICollection<GraWBiblioteceDTO>>> PodajGryWBiblioteceUzytkownika(int idUzytkownika);
+    public Task<ServiceResult<bool>> UpdateBibliotekeGierUzytkownika(int idUzytkownika);
     public Task<ServiceResult<bool>> WyczyscBibliotekeUzytkownika(int idUzytkownika);
 }

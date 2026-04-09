@@ -35,6 +35,25 @@ public class BibliotekaGierService(IBibliotekaGierRepository bibliotekaGierRepos
         }
     }
     
+    public async Task<ServiceResult<bool>> UpdateBibliotekeGierUzytkownika(int idUzytkownika)
+    {
+        try
+        {
+            if (idUzytkownika <= 0)
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id uzytkownika: " + idUzytkownika));
+            var wynik = await bibliotekaGierRepository.UpdateBibliotekeGierUzytkownika(idUzytkownika);
+            return ServiceResult<bool>.Ok(wynik);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+        catch(BrakIdNaZewnetrznymSerwisieException e)
+        {
+            return ServiceResult<bool>.BadRequest(new ErrorItem(e.Message));
+        }
+    }
+    
     public async Task<ServiceResult<bool>> WyczyscBibliotekeUzytkownika(int idUzytkownika)
     {
         try
