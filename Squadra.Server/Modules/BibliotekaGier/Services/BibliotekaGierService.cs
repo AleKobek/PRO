@@ -1,5 +1,6 @@
 ﻿using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.BibliotekaGier.DTO;
+using Squadra.Server.Modules.BibliotekaGier.Models;
 using Squadra.Server.Modules.BibliotekaGier.Repositories;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Statystyki.DTO;
@@ -35,13 +36,14 @@ public class BibliotekaGierService(IBibliotekaGierRepository bibliotekaGierRepos
         }
     }
     
-    public async Task<ServiceResult<bool>> UpdateBibliotekeGierUzytkownika(int idUzytkownika)
-    {
+    public async Task<ServiceResult<bool>> UpdateBibliotekeGierUzytkownika(
+        int idUzytkownika, List<GraUzytkownikaNaPlatformie> noweGryNaPlatformie, List<GraUzytkownika> noweGry
+    ){
         try
         {
             if (idUzytkownika <= 0)
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id uzytkownika: " + idUzytkownika));
-            var wynik = await bibliotekaGierRepository.UpdateBibliotekeGierUzytkownika(idUzytkownika);
+            var wynik = await bibliotekaGierRepository.UpdateBibliotekeGierUzytkownika(idUzytkownika, noweGryNaPlatformie, noweGry);
             return ServiceResult<bool>.Ok(wynik);
         }
         catch (NieZnalezionoWBazieException e)
