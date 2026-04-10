@@ -9,6 +9,7 @@ using Squadra.Server.Modules.Platformy.Services;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Statystyki.Models;
 using Squadra.Server.Modules.Statystyki.Services;
+using Squadra.Server.Modules.Uzytkownicy.Services;
 
 namespace Squadra.Server.Modules.IntegracjeZewnetrzne.Services;
 
@@ -17,7 +18,8 @@ public class IntegracjeZewnetrzneService(
     IIntegracjeZewnetrzneRepository integracjeZewnetrzneRepository,
     IStatystykiService statystykiService,
     IBibliotekaGierService bibliotekaGierService,
-    IPlatformaService platformaService) : IIntegracjeZewnetrzneService
+    IPlatformaService platformaService,
+    IUzytkownikService uzytkownikService) : IIntegracjeZewnetrzneService
 {
     
     public async Task<ServiceResult<bool>> ZintegrujKonto(int idUzytkownika, string login, string haslo)
@@ -37,8 +39,9 @@ public class IntegracjeZewnetrzneService(
             var idNaZewnetrznymSerwisie = await integracjeZewnetrzneRepository.SprawdzDaneLogowania(login, zahashowaneHaslo);
             if(idNaZewnetrznymSerwisie == null)
                 return ServiceResult<bool>.Unauthorized(new ErrorItem("Nieprawidłowy login lub hasło dla zewnętrznego serwisu."));
-            uzytkownik.IdNaZewnetrznymSerwisie = idNaZewnetrznymSerwisie;
-            await context.SaveChangesAsync();
+            var result = await uzytkownikService.UpdateIdNaZewnetrznymSerwisie(idUzytkownika, idNaZewnetrznymSerwisie);
+            if (!result.Succeeded)
+                return result;
             return ServiceResult<bool>.Ok(true);
         }
         catch (NieZnalezionoWBazieException e)
@@ -72,8 +75,12 @@ public class IntegracjeZewnetrzneService(
             return wyczyscDaneResult;
         }
         
-        uzytkownik.IdNaZewnetrznymSerwisie = null;
-        await context.SaveChangesAsync();
+        var result = await uzytkownikService.UpdateIdNaZewnetrznymSerwisie(idUzytkownika, idNaZewnetrznymSerwisie);
+        if (!result.Succeeded)
+        {
+            await transakcja.RollbackAsync();
+            return result;
+        }
         
         await transakcja.CommitAsync();
 
