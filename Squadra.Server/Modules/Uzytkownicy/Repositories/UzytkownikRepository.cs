@@ -128,6 +128,15 @@ public class UzytkownikRepository(
         await appDbContext.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> UpdateIdNaZewnetrznymSerwisie(int id, int? idNaZewnetrznymSerwisie)
+    {
+        var uzytkownikDoZmiany = await appDbContext.Uzytkownik.FindAsync(id);
+        if(uzytkownikDoZmiany == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + id + " nie istnieje");
+        uzytkownikDoZmiany.IdNaZewnetrznymSerwisie = idNaZewnetrznymSerwisie;
+        await appDbContext.SaveChangesAsync();
+        return true;
+    }
 
     // lista stringów jest potrzebna do błędów w zmianie hasła, jak jest git zwracamy pustą
     public async Task<List<string>> UpdateHaslo(int idUzytkownika, string stareHaslo, string noweHaslo)
