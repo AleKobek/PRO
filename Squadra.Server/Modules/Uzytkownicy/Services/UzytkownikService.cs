@@ -128,6 +128,21 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
+
+    public async Task<ServiceResult<bool>> UpdateIdNaZewnetrznymSerwisie(int id, int? idNaZewnetrznymSerwisie)
+    {
+        if(id < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Uzytkownik o id " + id + " nie istnieje"));
+        if(idNaZewnetrznymSerwisie is < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id na zewnętrznym serwisie: " + idNaZewnetrznymSerwisie));
+        try
+        {
+            var result = await uzytkownikRepository.UpdateIdNaZewnetrznymSerwisie(id, idNaZewnetrznymSerwisie);
+            return ServiceResult<bool>.Ok(result, 204);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
     
     public async Task<ServiceResult<bool>> DeleteUzytkownik(int id)
     {
