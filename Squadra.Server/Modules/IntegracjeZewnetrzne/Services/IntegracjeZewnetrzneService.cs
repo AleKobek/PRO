@@ -42,6 +42,11 @@ public class IntegracjeZewnetrzneService(
             var result = await uzytkownikService.UpdateIdNaZewnetrznymSerwisie(idUzytkownika, idNaZewnetrznymSerwisie);
             if (!result.Succeeded)
                 return result;
+            
+            var result2 = await UpdateCaleZintegrowaneDaneUzytkownika(idUzytkownika);
+            if (!result2.Succeeded)
+                return result2;
+            
             return ServiceResult<bool>.Ok(true);
         }
         catch (NieZnalezionoWBazieException e)
