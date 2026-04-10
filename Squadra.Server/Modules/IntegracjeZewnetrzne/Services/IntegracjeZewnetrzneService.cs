@@ -1,4 +1,5 @@
-﻿using Squadra.Server.Context;
+﻿using Microsoft.AspNetCore.Identity;
+using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.BibliotekaGier.Models;
 using Squadra.Server.Modules.BibliotekaGier.Services;
@@ -19,8 +20,37 @@ public class IntegracjeZewnetrzneService(
     IPlatformaService platformaService) : IIntegracjeZewnetrzneService
 {
     
-    // będzie jeszcze funkcja łącząca z zewnętrznym serwisem - sprawdzamy w tabeli czy się zgadza login i zahaszowane hasło, zmieniamy
-    // id na pobrane (zwraca przy pomyślnym sprawdzeniu) i wtedy aktualizujemy dane
+    public async Task<ServiceResult<bool>> ZintegrujKonto(int idUzytkownika, string login, string haslo)
+    {
+        var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
+        if (uzytkownik == null)
+            return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono użytkownika o id: " + idUzytkownika));
+        
+        try
+        {
+            // hasło haszujemy, bo w bazie zewnętrznego serwisu jest przechowywane zahashowane, więc musimy zahashować to, co użytkownik nam podał, żeby porównać
+            var hasher = new PasswordHasher<object>();
+            var zahashowaneHaslo = hasher.HashPassword(null!, haslo);
+            // tymczasowe, potem usuwamy. to tylko po to, aby przekopiować do bazy
+            Console.WriteLine("HASŁO - DO PRZEKOPIOWANIA = " + zahashowaneHaslo);
+            
+            var idNaZewnetrznymSerwisie = await integracjeZewnetrzneRepository.SprawdzDaneLogowania(login, zahashowaneHaslo);
+            if(idNaZewnetrznymSerwisie == null)
+                return ServiceResult<bool>.Unauthorized(new ErrorItem("Nieprawidłowy login lub hasło dla zewnętrznego serwisu."));
+            uzytkownik.IdNaZewnetrznymSerwisie = idNaZewnetrznymSerwisie;
+            await context.SaveChangesAsync();
+            return ServiceResult<bool>.Ok(true);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+        catch (BladZewnetrznegoSerwisuException e)
+        {
+            return ServiceResult<bool>.Fail(503,
+                new List<ErrorItem> { new("Błąd podczas komunikacji z zewnętrznym serwisem: " + e.Message) });
+        }
+    }
 
     // czyścimy jego dane z zewnętrznego serwisu oraz jego id na zewnętrznym serwisie
     public async Task<ServiceResult<bool>> PrzerwijIntegracjeUzytkownika(int idUzytkownika)
@@ -49,7 +79,7 @@ public class IntegracjeZewnetrzneService(
 
         return ServiceResult<bool>.Ok(true);
 
-        // przydałoby się jeszcze przejść po drużynach i gildiach i sprawdzić, czy wciąż spełnia kryteria
+        // przydałoby się jeszcze przejść po drużynach i gildiach i wyrzucić go z każdej, która ma wymagania co do statystyk
     }
     
     
