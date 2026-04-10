@@ -7,6 +7,39 @@ namespace Squadra.Server.Modules.IntegracjeZewnetrzne.Repositories;
 // zastępuje nam zapytania do zewnętrznego serwisu
 public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IIntegracjeZewnetrzneRepository
 {
+    
+    public async Task<int?> SprawdzDaneLogowania(string login, string hasloHash)
+    {
+        try
+        {
+            await using var con = new SqlConnection(configuration["ConnectionStrings:DefaultConnection"]);
+            await con.OpenAsync();
+             
+            await using var cmd = new SqlCommand();
+            cmd.Connection = con;
+            cmd.CommandText = "SELECT id FROM zewnetrzne.Konto_Na_Zewnetrznym_Serwisie konto WHERE konto.login = @login AND konto.haslo_hash = @hasloHash"; 
+            cmd.Parameters.AddWithValue("login", login);
+            cmd.Parameters.AddWithValue("hasloHash", hasloHash);
+            await using var reader = await cmd.ExecuteReaderAsync();
+            
+            if (await reader.ReadAsync())
+            {
+                var idNaZewnetrzymSerwisie = (int)reader["id"];
+                con.Close();
+                return idNaZewnetrzymSerwisie;
+            }
+            
+            con.Close();
+
+            return null; // nie znaleziono konta o podanych danych logowania
+            
+        }catch (SqlException e)
+        {
+            Console.WriteLine($"SQL Error: {e.Message}");
+            throw new BladZewnetrznegoSerwisuException("Błąd podczas pobierania danych konta użytkownika z zewnętrznego serwisu.");
+        }
+    }
+    
     public async Task<ICollection<ZewnetrznaPlatformaUzytkownikaDTO>> GetPlatformyUzytkownika(int idNaZewnetrzymSerwisie)
     {
         try
