@@ -107,6 +107,7 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
 
         const znajomi = await fetchJsonAbort(`${API_BASE_URL}/Znajomi`, {signal});
         if(!alive || !Array.isArray(znajomi)) return;
+        znajomi[0] = {...znajomi[0], czySaNoweWiadomosci: false};
         ustawZnajomych(znajomi);
     }
 
