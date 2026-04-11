@@ -79,9 +79,9 @@ public class ProfilService(
         if(id < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Profil o id " + id + " nie istnieje"));
         if(profil.RegionId < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Region o id " + profil.RegionId + " nie istnieje"));
         
-        if(profil.Zaimki is { Length: > 10 })
+        if(profil.Zaimki is { Length: > 30 })
         {
-            bledy.Add(new ErrorItem("Maksymalna długość zaimków wynosi 10 znaków", nameof(profil.Zaimki)));
+            bledy.Add(new ErrorItem("Maksymalna długość zaimków wynosi 30 znaków", nameof(profil.Zaimki)));
         }
 
         if (profil.Opis is { Length: > 100 })
