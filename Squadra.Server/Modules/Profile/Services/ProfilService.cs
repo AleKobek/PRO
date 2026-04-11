@@ -24,7 +24,7 @@ public class ProfilService(
     public async Task<ServiceResult<ProfilGetResDto>> GetProfil(int id)
     {
         try{
-            if (id < 1) return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem("Profil o id " + id + " nie istnieje"));
+            if (id < 1) return ServiceResult<ProfilGetResDto>.BadRequest(new ErrorItem("Nieprawidłowe id profilu: " + id));
             
             var profil = await profilRepository.GetProfilUzytkownika(id);
             
@@ -49,7 +49,7 @@ public class ProfilService(
         {
             if (string.IsNullOrWhiteSpace(login))
             {
-                return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem("Nieprawidłowy login"));
+                return ServiceResult<ProfilGetResDto>.BadRequest(new ErrorItem("Nieprawidłowy login"));
             }
             var uzytkownik = await uzytkownikRepository.GetUzytkownik(login);
             return ServiceResult<ProfilGetResDto>.Ok(await profilRepository.GetProfilUzytkownika(uzytkownik.Id));
@@ -76,8 +76,9 @@ public class ProfilService(
         
         var bledy = new List<ErrorItem>();
         
-        if(id < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Profil o id " + id + " nie istnieje"));
-        if(profil.RegionId < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Region o id " + profil.RegionId + " nie istnieje"));
+        // tutaj zostawiam Not Found, aby nie mieszało się z resztą problemów walidacji
+        if(id < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Profil o id " + id + " nie istnieje"));
+        if(profil.RegionId < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Region o id " + profil.RegionId + " nie istnieje"));
         
         if(profil.Zaimki is { Length: > 30 })
         {
@@ -132,7 +133,7 @@ public class ProfilService(
 
     public async Task<ServiceResult<StatusDto>> GetStatusDoWyswietleniaProfilu(int id)
     {
-        if(id < 1) return ServiceResult<StatusDto>.NotFound(new ErrorItem("Profil o id " + id + " nie istnieje"));
+        if(id < 1) return ServiceResult<StatusDto>.BadRequest(new ErrorItem("Nieprawidłowe id profilu: " + id));
 
         try
         {
@@ -155,10 +156,10 @@ public class ProfilService(
     {
         try{
             if (id < 1)
-                return ServiceResult<StatusDto>.NotFound(new ErrorItem("Profil o id " + id + " nie istnieje"));
+                return ServiceResult<StatusDto>.BadRequest(new ErrorItem("Nieprawidłowe id profilu: " + id));
 
             if (idStatus < 1)
-                return ServiceResult<StatusDto>.NotFound(new ErrorItem("Status o id " + id + " nie istnieje"));
+                return ServiceResult<StatusDto>.BadRequest(new ErrorItem("Nieprawidłowe id statusu: " + idStatus));
 
             return ServiceResult<StatusDto>.Ok(await profilRepository.UpdateStatus(id, idStatus));
             

@@ -16,7 +16,7 @@ public class ZnajomiService(
 
     public async Task<ServiceResult<ICollection<Znajomi>>> GetZnajomiUzytkownika(int id)
     {
-        if(id < 1) return ServiceResult<ICollection<Znajomi>>.NotFound(new ErrorItem("Użytkownik o id " + id + " nie istnieje"));
+        if(id < 1) return ServiceResult<ICollection<Znajomi>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + id));
         
         try
         {
@@ -32,6 +32,7 @@ public class ZnajomiService(
     // daty najnowszej wiadomości między nimi (do sortowania) i informacji, czy są jakieś nowe wiadomości od tego znajomego
     public async Task<ServiceResult<ICollection<ZnajomyDoListyDto>>> GetZnajomiDoListyUzytkownika(int id)
     {
+        if(id < 1) return ServiceResult<ICollection<ZnajomyDoListyDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + id));
         // najpierw z bazy znajomych pobieramy id wszystkich osób, które są w parze z naszym
         ICollection<Znajomi> znajomi = await znajomiRepository.GetZnajomiUzytkownika(id);
         List<ZnajomyDoListyDto> listaDoZwrocenia = new List<ZnajomyDoListyDto>();
@@ -78,8 +79,8 @@ public class ZnajomiService(
     {
         try
         {
-            if (idSprawdzajacego < 1) return ServiceResult<DateTime?>.NotFound(new ErrorItem("Uzytkownik o id " + idSprawdzajacego + " nie istnieje"));
-            if (idZnajomego < 1) return ServiceResult<DateTime?>.NotFound(new ErrorItem("Uzytkownik o id " + idZnajomego + " nie istnieje"));
+            if (idSprawdzajacego < 1) return ServiceResult<DateTime?>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika sprawdzającego: " + idSprawdzajacego));
+            if (idZnajomego < 1) return ServiceResult<DateTime?>.NotFound(new ErrorItem("Nieprawidłowe id znajomego: " + idZnajomego));
             
             return ServiceResult<DateTime?>.Ok(await znajomiRepository.GetDataOstatniegoOtwarciaCzatu(idSprawdzajacego, idZnajomego));
         }
@@ -93,8 +94,8 @@ public class ZnajomiService(
     {
         try
         {
-            if (idUzytkownika1 < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika1 + " nie istnieje"));
-            if (idUzytkownika2 < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika2 + " nie istnieje"));
+            if (idUzytkownika1 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika1));
+            if (idUzytkownika2 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika2));
             
             return ServiceResult<bool>.Ok(await znajomiRepository.CzyJestZnajomosc(idUzytkownika1, idUzytkownika2));
         }
@@ -108,9 +109,9 @@ public class ZnajomiService(
     {
         try
         {
-            if (idUzytkownika1 < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika1 + " nie istnieje"));
-            if (idUzytkownika2 < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika2 + " nie istnieje"));
-            
+            if (idUzytkownika1 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika1));
+            if (idUzytkownika2 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika2));
+
             if(idUzytkownika1 == idUzytkownika2)
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Użytkownik nie może dodać siebie do znajomych"));
             
@@ -137,11 +138,11 @@ public class ZnajomiService(
         try
         {
             if (idUzytkownikaInicjujacego < 1)
-                return ServiceResult<bool>.NotFound(
-                    new ErrorItem("Uzytkownik o id " + idUzytkownikaInicjujacego + " nie istnieje"));
+                return ServiceResult<bool>.BadRequest(
+                    new ErrorItem("Nieprawidłowe id użytkownika inicjującego: " + idUzytkownikaInicjujacego));
             if (idUzytkownika2 < 1)
-                return ServiceResult<bool>.NotFound(
-                    new ErrorItem("Uzytkownik o id " + idUzytkownika2 + " nie istnieje"));
+                return ServiceResult<bool>.BadRequest(
+                    new ErrorItem("Nieprawidłowe id usuwanego znajomego: " + idUzytkownika2));
             
             // historię wiadomości usuwa repozytorium, bo tam jest transakcja
             
@@ -158,8 +159,8 @@ public class ZnajomiService(
     {
         try
         {
-            if (idOtwierajacego < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idOtwierajacego + " nie istnieje"));
-            if (idZnajomego < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idZnajomego + " nie istnieje"));
+            if (idOtwierajacego < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika otwierającego czat: " + idOtwierajacego));
+            if (idZnajomego < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id znajomego: " + idZnajomego));
             
             return ServiceResult<bool>.Ok(await znajomiRepository.ZaktualizujOstatnieOtwarcieCzatu(idOtwierajacego, idZnajomego));
         }

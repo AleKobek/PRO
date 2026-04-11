@@ -16,9 +16,10 @@ public class RegionService(IRegionRepository regionRepository) : IRegionService
     {
         try
         {
-            return id < 1
-                ? ServiceResult<RegionDto>.NotFound(new ErrorItem("Region o id " + id + " nie istnieje")) 
-                : ServiceResult<RegionDto>.Ok(await regionRepository.GetRegion(id));
+            if (id < 1) return ServiceResult<RegionDto>.BadRequest(new ErrorItem("Nieprawidłowe id regionu: " + id));
+            var region = await regionRepository.GetRegion(id);
+            if (region == null) return ServiceResult<RegionDto>.NotFound(new ErrorItem("Region o id " + id + " nie istnieje"));
+            return ServiceResult<RegionDto>.Ok(region);
         }
         catch (NieZnalezionoWBazieException e)
         {
@@ -31,7 +32,7 @@ public class RegionService(IRegionRepository regionRepository) : IRegionService
         try
         {
             return id < 1
-                ? ServiceResult<RegionKrajDto>.NotFound(new ErrorItem("Region o id " + id + " nie istnieje")) 
+                ? ServiceResult<RegionKrajDto>.BadRequest(new ErrorItem("Nieprawidłowe id regionu: " + id)) 
                 // w Ok() value nie może być nullem, dlatego robimy sami
                 : new ServiceResult<RegionKrajDto> {Succeeded = true, StatusCode = 200, Value = await regionRepository.GetRegionIKraj(id)};
         }

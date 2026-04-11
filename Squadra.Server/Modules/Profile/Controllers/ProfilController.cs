@@ -32,6 +32,7 @@ public class ProfilController(
     [EndpointSummary("Zwraca dane profilu o podanym id.")]
     [ProducesResponseType(typeof(ProfilGetResDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<ProfilGetResDto>> GetProfil(int id)
     {
@@ -39,8 +40,12 @@ public class ProfilController(
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
         var result = await profilService.GetProfil(id);
-        if (result.StatusCode == 404) return NotFound(result.Errors[0].Message);
-        return Ok(result.Value);
+        return result.StatusCode switch
+        {
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => Ok(result.Value)
+        };
     }
     
     [HttpPut]
@@ -123,19 +128,25 @@ public class ProfilController(
     [EndpointDescription("Może zwrócić status \"offline\", nieistniejący w bazie, jeżeli właściciel profilu nie " +
                          "miał otwartego okna przeglądarki przez kilka minut lub ma ustawiony status \"niedostępny\".")]
     [ProducesResponseType(typeof(StatusDto),(int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<StatusDto>> GetStatusDoWyswietleniaProfilu(int id)
     {
         var result = await profilService.GetStatusDoWyswietleniaProfilu(id);
-        if(result.StatusCode == 404) return NotFound(result.Errors[0].Message);
-        return Ok(result.Value);
+        return result.StatusCode switch
+        {
+            404 => NotFound(result.Errors[0].Message),
+            400 => BadRequest(result.Errors[0].Message),
+            _ => Ok(result.Value)
+        };
     }
 
     [EndpointSummary("Aktualizuje status profilu zalogowanego użytkownika.")]
     [HttpPut("status")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult> UpdateStatus([FromBody] int idStatus)
     {
         
@@ -145,9 +156,11 @@ public class ProfilController(
         
         var result = await profilService.UpdateStatus(uzytkownik.Id, idStatus);
         
-        if (result.StatusCode == 400)
-                return NotFound(result.Errors[0].Message);
-      
-        return NoContent();
+        return result.StatusCode switch
+        {
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => NoContent()
+        };
     }
 }

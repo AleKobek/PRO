@@ -17,7 +17,7 @@ public class KrajService (IKrajRepository krajRepository) : IKrajService
         try
         {
             return id < 1
-                ? ServiceResult<KrajDto>.NotFound(new ErrorItem("Kraj o id " + id + " nie istnieje"))
+                ? ServiceResult<KrajDto>.BadRequest(new ErrorItem("Nieprawidłowe id kraju: " + id))
                 : ServiceResult<KrajDto>.Ok(await krajRepository.GetKraj(id));
         }
         catch (NieZnalezionoWBazieException e)

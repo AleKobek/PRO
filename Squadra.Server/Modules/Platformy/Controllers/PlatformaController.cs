@@ -34,6 +34,7 @@ public class PlatformaController(
     [EndpointSummary("Zwraca dane platformy o podanym id")]
     [ProducesResponseType(typeof(Platforma), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<Platforma>> GetPlatforma(int id)
     {
@@ -45,6 +46,7 @@ public class PlatformaController(
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
             401 => Unauthorized(result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
@@ -55,6 +57,7 @@ public class PlatformaController(
     [EndpointSummary("Zwraca dane platform użytkownika o podanym id")]
     [ProducesResponseType(typeof(IEnumerable<PlatformaUzytkownikaDTO>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<IEnumerable<PlatformaUzytkownikaDTO>>> GetPlatformyUzytkownika(int idUzytkownika)
     {
@@ -66,6 +69,7 @@ public class PlatformaController(
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };

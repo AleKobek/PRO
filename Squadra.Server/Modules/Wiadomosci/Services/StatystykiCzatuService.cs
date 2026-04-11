@@ -16,11 +16,11 @@ public class StatystykiCzatuService(IWiadomoscRepository wiadomoscRepository, IZ
         {
             // sprawdzamy, czy się wszystko zgadza
             if (idUzytkownika1 < 1)
-                return ServiceResult<DateTime?>.NotFound(
-                    new ErrorItem("Uzytkownik o id " + idUzytkownika1 + " nie istnieje"));
+                return ServiceResult<DateTime?>.BadRequest(
+                    new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika1));
             if (idUzytkownika2 < 1)
-                return ServiceResult<DateTime?>.NotFound(
-                    new ErrorItem("Uzytkownik o id " + idUzytkownika2 + " nie istnieje"));
+                return ServiceResult<DateTime?>.BadRequest(
+                    new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika2));
             if (idUzytkownika1 == idUzytkownika2)
                 return ServiceResult<DateTime?>.BadRequest(
                     new ErrorItem("Nie można pobrać wiadomości między tym samym użytkownikiem"));

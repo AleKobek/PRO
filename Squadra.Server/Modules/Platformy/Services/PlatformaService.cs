@@ -17,7 +17,7 @@ public class PlatformaService(IPlatformaRepository platformaRepository) : IPlatf
     {
         try
         {
-            if(id < 1) return ServiceResult<Platforma>.NotFound(new ErrorItem("Platforma o id "+id+" nie istnieje."));
+            if(id < 1) return ServiceResult<Platforma>.BadRequest(new ErrorItem("Nieprawidłowe id platformy: " + id));
             
             return ServiceResult<Platforma>.Ok(await platformaRepository.GetPlatforma(id));
         }
@@ -31,6 +31,8 @@ public class PlatformaService(IPlatformaRepository platformaRepository) : IPlatf
     {
         try
         {
+            if(idUzytkownika <= 0)
+                return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.BadRequest(new ErrorItem("Podano nieprawidłowe id uzytkownika: " + idUzytkownika));
             var platformy = await platformaRepository.GetPlatformyUzytkownika(idUzytkownika);
             return ServiceResult<ICollection<PlatformaUzytkownikaDTO>>.Ok(platformy);
         }
@@ -63,6 +65,8 @@ public class PlatformaService(IPlatformaRepository platformaRepository) : IPlatf
     {
         try
         {
+            if(idUzytkownika <= 0)
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id uzytkownika: " + idUzytkownika));
             var wynik = await platformaRepository.UsunPlatformyUzytkownika(idUzytkownika);
             return ServiceResult<bool>.Ok(wynik);
         }

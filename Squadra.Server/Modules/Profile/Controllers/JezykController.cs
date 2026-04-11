@@ -24,25 +24,33 @@ public class JezykController(IJezykService jezykService) : ControllerBase
     [HttpGet("{id:int}")]
     [EndpointSummary("Zwraca dane języka o podanym id.")]   
     [ProducesResponseType(typeof(JezykDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<JezykDto?>> GetJezyk(int id)
     {
         var result = await jezykService.GetJezyk(id);
-        if(result.StatusCode == 404)
-            return NotFound(result.Errors[0].Message);;
-        return Ok(result.Value);
+        return result.StatusCode switch
+        {
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => Ok(result.Value)
+        };
     }
 
     [HttpGet("profil/{id:int}")]
     [EndpointSummary("Zwraca dane wszystkich języków profilu o podanym id, wraz z ich stopniami biegłości.")]
     [ProducesResponseType(typeof(IEnumerable<JezykOrazStopienDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<IEnumerable<JezykOrazStopienDto>>> GetJezykiProfilu(int id)
     {
         var result = await jezykService.GetJezykiProfilu(id);
-        if(result.StatusCode == 404)
-            return NotFound(result.Errors[0].Message);;
-        return Ok(result.Value);
+        return result.StatusCode switch
+        {
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => Ok(result.Value)
+        };
     }
 
 }

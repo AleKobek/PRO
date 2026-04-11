@@ -22,6 +22,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
     ) : IPowiadomienieService
 {
     public async Task<ServiceResult<PowiadomienieDto>> GetPowiadomienie(int id, ClaimsPrincipal user) {
+        if(id < 1) return ServiceResult<PowiadomienieDto>.BadRequest(new ErrorItem("Nieprawidłowe id powiadomienia: " + id));
         var powiadomienie = await powiadomienieRepository.GetPowiadomienie(id);
         var uzytkownik = await userManager.GetUserAsync(user);
         if(uzytkownik == null) return ServiceResult<PowiadomienieDto>.Unauthorized(new ErrorItem("Nie jesteś zalogowany"));
@@ -42,11 +43,9 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
     {
         // okolicznościami tworzenia powiadomienia zajmują się inne klasy, tutaj tylko tworzymy
         if (powiadomienie.IdTypuPowiadomienia < 1)
-            return ServiceResult<bool>.NotFound(new ErrorItem("Typ powiadomienia o id " +
-                                                              powiadomienie.IdTypuPowiadomienia + " nie istnieje"));
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowy typ powiadomienia: " + powiadomienie.IdTypuPowiadomienia));
         if (powiadomienie.IdPowiazanegoObiektu < 1)
-            return ServiceResult<bool>.NotFound(new ErrorItem("Obiekt o id " + powiadomienie.IdPowiazanegoObiektu +
-                                                              " nie istnieje w żadnym typie obiektów"));
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id powiązanego obiektu: " + powiadomienie.IdPowiazanegoObiektu));
 
         // sprawdzamy, czy odnosi się do istniejącego obiektu
 
@@ -166,7 +165,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             {
                 // filtrujemy, czy podano login
                 if (loginZaproszonego.IsNullOrEmpty())
-                    return ServiceResult<bool>.NotFound(
+                    return ServiceResult<bool>.BadRequest(
                         new ErrorItem("Nie podano loginu użytkownika, któremu wysyłasz zaproszenie"));
 
                 // pobieramy zapraszanego użytkownika
@@ -211,6 +210,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 
                 // sprawdzamy, czy zapraszajacy nie ma już maksymalnej liczby znajomych
                 var znajomiZapraszajacego = await znajomiService.GetZnajomiUzytkownika(idZapraszajacego);
+                if (!znajomiZapraszajacego.Succeeded)
+                    return ServiceResult<bool>.BadRequest(znajomiZapraszajacego.Errors[0]);
                 if (znajomiZapraszajacego.Value != null && znajomiZapraszajacego.Value.Count >= ZnajomiService.MaxLiczbaZnajomych)
                 {
                     return ServiceResult<bool>.Conflict(
@@ -219,6 +220,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 
                 // sprawdzamy, czy zapraszany nie ma już maksymalnej liczby znajomych
                 var znajomiZapraszanego = await znajomiService.GetZnajomiUzytkownika(idZapraszanego);
+                if (!znajomiZapraszanego.Succeeded)
+                    return ServiceResult<bool>.BadRequest(znajomiZapraszanego.Errors[0]);
                 if (znajomiZapraszanego.Value != null && znajomiZapraszanego.Value.Count >= ZnajomiService.MaxLiczbaZnajomych)
                 {
                     return ServiceResult<bool>.Conflict(

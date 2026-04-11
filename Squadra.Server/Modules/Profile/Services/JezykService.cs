@@ -17,7 +17,7 @@ public class JezykService(IJezykRepository jezykRepository) : IJezykService
         try
         {
             return id < 1
-                ? ServiceResult<JezykDto?>.NotFound(new ErrorItem("Jezyk o id " + id + " nie istnieje"))
+                ? ServiceResult<JezykDto?>.BadRequest(new ErrorItem("Nieprawidłowe id jezyka: " + id))
                 : ServiceResult<JezykDto?>.Ok(await jezykRepository.GetJezyk(id));
         }
         catch (NieZnalezionoWBazieException e)
@@ -30,8 +30,8 @@ public class JezykService(IJezykRepository jezykRepository) : IJezykService
     {
         try{
             return id < 1
-                ? ServiceResult<ICollection<JezykOrazStopienDto>>.NotFound(
-                    new ErrorItem("Jezyk o id " + id + " nie istnieje"))
+                ? ServiceResult<ICollection<JezykOrazStopienDto>>.BadRequest(
+                    new ErrorItem("Nieprawidłowe id profilu: " + id))
                 : ServiceResult<ICollection<JezykOrazStopienDto>>.Ok(await jezykRepository.GetJezykiProfilu(id));
         }catch(NieZnalezionoWBazieException e){
             return ServiceResult<ICollection<JezykOrazStopienDto>>.NotFound(new ErrorItem(e.Message));
@@ -44,8 +44,8 @@ public class JezykService(IJezykRepository jezykRepository) : IJezykService
         try
         {
             return profilId < 1
-                ? ServiceResult<ICollection<JezykOrazStopienDto>>.NotFound(
-                    new ErrorItem("Jezyk o id " + profilId + " nie istnieje"))
+                ? ServiceResult<ICollection<JezykOrazStopienDto>>.BadRequest(
+                    new ErrorItem("Nieprawidłowe id profilu: " + profilId))
                 : ServiceResult<ICollection<JezykOrazStopienDto>>.Ok(
                     await jezykRepository.ZmienJezykiProfilu(profilId, noweJezyki));
         }

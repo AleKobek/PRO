@@ -14,7 +14,7 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
     {
         try
         {
-            if (idWiadomosci < 1) return ServiceResult<WiadomoscDto>.NotFound(new ErrorItem("Wiadomosc o id " + idWiadomosci + " nie istnieje"));
+            if (idWiadomosci < 1) return ServiceResult<WiadomoscDto>.BadRequest(new ErrorItem("Nieprawidłowe id wiadomości: " + idWiadomosci));
             var wiadomosc = await wiadomoscRepository.GetWiadomosc(idWiadomosci);
             if (wiadomosc.IdNadawcy != idObecnegoUzytkownika && wiadomosc.IdOdbiorcy != idObecnegoUzytkownika)
                 return ServiceResult<WiadomoscDto>.Forbidden(new ErrorItem("Brak dostępu do wiadomości o id " + idWiadomosci));
@@ -31,8 +31,8 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
     {
         try
         {
-            if(idUzytkownika1 < 1) return ServiceResult<ICollection<WiadomoscDto>>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika1 + " nie istnieje"));
-            if(idUzytkownika2 < 1) return ServiceResult<ICollection<WiadomoscDto>>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika2 + " nie istnieje"));
+            if(idUzytkownika1 < 1) return ServiceResult<ICollection<WiadomoscDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika1));
+            if(idUzytkownika2 < 1) return ServiceResult<ICollection<WiadomoscDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika2));
             if(idUzytkownika1 == idUzytkownika2) return ServiceResult<ICollection<WiadomoscDto>>.BadRequest(new ErrorItem("Nie można pobrać wiadomości między tym samym użytkownikiem"));
             
             return ServiceResult<ICollection<WiadomoscDto>>.Ok(await wiadomoscRepository.GetWiadomosci(idUzytkownika1, idUzytkownika2));
@@ -71,8 +71,8 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
     {
         try
         {
-            if(idUzytkownika1 < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika1 + " nie istnieje"));
-            if(idUzytkownika2 < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika2 + " nie istnieje"));
+            if(idUzytkownika1 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika1));
+            if(idUzytkownika2 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika2));
             if(idUzytkownika1 == idUzytkownika2) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie można usunąć wiadomości między tym samym użytkownikiem"));
             return ServiceResult<bool>.Ok(await wiadomoscRepository.DeleteWiadomosciUzytkownikow(idUzytkownika1, idUzytkownika2));
         }

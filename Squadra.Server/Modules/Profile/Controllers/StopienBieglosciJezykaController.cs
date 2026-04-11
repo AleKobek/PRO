@@ -23,12 +23,16 @@ public class StopienBieglosciJezykaController(IStopienBieglosciJezykaService sto
     [HttpGet("{id:int}")]
     [EndpointSummary("Zwraca dane stopnia biegłości języka o podanym id.")]
     [ProducesResponseType(typeof(StopienBieglosciJezykaDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<StopienBieglosciJezykaDto?>> GetStopienBieglosciJezyka(int id)
     {
         var result = await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(id);
-        if(result.StatusCode == 404)
-            return NotFound(result.Errors[0].Message);
-        return Ok(result.Value);
+        return result.StatusCode switch
+        {
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => Ok(result.Value)
+        };
     }
 }

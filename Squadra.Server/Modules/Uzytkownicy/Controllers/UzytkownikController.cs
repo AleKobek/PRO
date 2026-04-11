@@ -30,16 +30,19 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
     [Authorize(Roles = "Admin")]
     [EndpointSummary("Zwraca dane użytkownika o podanym id (tylko dla admina)")]
     [ProducesResponseType(typeof(UzytkownikResDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<UzytkownikResDto>> GetUzytkownikById(int id)
     {
         try
         {
             var result = await uzytkownikService.GetUzytkownik(id);
-            if (result.StatusCode == 404)
-                return NotFound(result.Errors[0].Message);
-
-            return Ok(result.Value);
+            return result.StatusCode switch
+            {
+                400 => BadRequest(result.Errors[0].Message),
+                404 => NotFound(result.Errors[0].Message),
+                _ => Ok(result.Value)
+            };
         }
         catch (KeyNotFoundException)
         {
@@ -198,12 +201,13 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
             return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz usunąć konta innego użytkownika.");
         
         var result = await uzytkownikService.DeleteUzytkownik(id);
-        
-        // mamy tylko dwie opcje, albo się udało albo nie znalazło
-        if(result.StatusCode == 404)
-            return NotFound();
-        
-        return NoContent();
+
+        return result.StatusCode switch
+        {
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(),
+            _ => NoContent()
+        };
     }
     
     [Authorize]

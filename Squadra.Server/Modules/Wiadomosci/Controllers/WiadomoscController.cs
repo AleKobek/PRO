@@ -20,6 +20,7 @@ public class WiadomoscController(
     [EndpointSummary("Zwraca wiadomość o podanym id")]
     [ProducesResponseType(typeof(WiadomoscDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult> GetWiadomosc(int id)
@@ -32,6 +33,7 @@ public class WiadomoscController(
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
             403 => StatusCode(StatusCodes.Status403Forbidden, result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
@@ -42,6 +44,7 @@ public class WiadomoscController(
     [EndpointSummary("Pobiera wszystkie wiadomości między zalogowanym użytkownikiem a uzytkownikiem o podanym id")]
     [ProducesResponseType(typeof(IEnumerable<WiadomoscDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult> GetWiadomosci(int idZnajomego)
@@ -53,6 +56,7 @@ public class WiadomoscController(
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
             403 => StatusCode(StatusCodes.Status403Forbidden, result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })

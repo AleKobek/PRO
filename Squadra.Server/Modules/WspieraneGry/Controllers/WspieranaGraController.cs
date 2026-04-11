@@ -39,6 +39,7 @@ public class WspieranaGraController(
     [EndpointSummary("Zwraca wspieraną grę o podanym id")]
     [ProducesResponseType(typeof(WspieranaGra), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult> GetWspieranaGra(int idGry)
@@ -51,6 +52,7 @@ public class WspieranaGraController(
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
@@ -60,8 +62,6 @@ public class WspieranaGraController(
     [EndpointSummary("Zwraca listę wszystkich wspieranych gier z minimalnymi informacjami (id i nazwa)")]
     [ProducesResponseType(typeof(ICollection<WspieranaGra>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult> GetWspieraneGryMinInfo()
     {
         var uzytkownik = await userManager.GetUserAsync(User);
@@ -78,8 +78,6 @@ public class WspieranaGraController(
     [EndpointSummary("Zwraca listę wszystkich wspieranych gier wraz z platformami, na których są dostępne")]
     [ProducesResponseType(typeof(ICollection<GraZPlatformaDTO>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult> GetWspieraneGryZPlatformami()
     {
         var uzytkownik = await userManager.GetUserAsync(User);
@@ -96,6 +94,7 @@ public class WspieranaGraController(
     [EndpointSummary("Zwraca listę platform, na których dostępna jest gra o podanym id")]
     [ProducesResponseType(typeof(ICollection<Platforma>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult> GetPlatformyGry(int idGry)
@@ -108,6 +107,7 @@ public class WspieranaGraController(
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };

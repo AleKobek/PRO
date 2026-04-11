@@ -23,22 +23,32 @@ public class RegionController(IRegionService regionService) : ControllerBase
     [HttpGet("{id:int}")]
     [EndpointSummary("Zwraca dane regionu o podanym id.")]
     [ProducesResponseType(typeof(RegionDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<RegionDto?>> GetRegion(int id)
     {
         var result = await regionService.GetRegion(id);
-        if (result.StatusCode == 404) return NotFound(result.Errors[0].Message);
-        return Ok(result.Value);
+        return result.StatusCode switch
+        {
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => Ok(result.Value)
+        };
     }
 
     [HttpGet("kraj/{id:int}")]
     [EndpointSummary("Zwraca dane wszystkich regionów kraju o podanym id.")]
     [ProducesResponseType(typeof(IEnumerable<RegionDto>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<IEnumerable<RegionDto>>> GetRegionyKraju(int id)
     {
         var result = await regionService.GetRegionyKraju(id);
-        if(result.StatusCode == 404) return NotFound(result.Errors[0].Message);;
-        return Ok(result.Value);
+        return result.StatusCode switch
+        {
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => Ok(result.Value)
+        };
     }
 }

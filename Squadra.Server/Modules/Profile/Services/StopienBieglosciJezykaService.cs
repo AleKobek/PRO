@@ -13,7 +13,7 @@ public class StopienBieglosciJezykaService(IStopienBieglosciJezykaRepository sto
 
     public async Task<ServiceResult<StopienBieglosciJezykaDto?>> GetStopienBieglosciJezyka(int id)
     {
-        if (id < 1) return ServiceResult<StopienBieglosciJezykaDto?>.NotFound(new ErrorItem("Stopien biegłości języka o id " + id + " nie istnieje"));
+        if (id < 1) return ServiceResult<StopienBieglosciJezykaDto?>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator stopnia bieglosci jezyka: " + id));
         return ServiceResult<StopienBieglosciJezykaDto?>.Ok(await stopienBieglosciJezykaRepository.GetStopienBieglosciJezyka(id));
     }
 

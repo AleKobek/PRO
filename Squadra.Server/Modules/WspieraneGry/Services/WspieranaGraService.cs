@@ -19,7 +19,7 @@ public class WspieranaGraService(IWspieranaGraRepository wspieranaGraRepository)
         try
         {
             if (idGry <= 0)
-                return ServiceResult<WspieranaGra>.NotFound(new ErrorItem("Gra o id " + idGry + " nie istnieje."));
+                return ServiceResult<WspieranaGra>.BadRequest(new ErrorItem("Nieprawidłowe id gry: " + idGry));
             return ServiceResult<WspieranaGra>.Ok(await wspieranaGraRepository.GetWspieranaGra(idGry));
         }
         catch (NieZnalezionoWBazieException e)
@@ -43,7 +43,7 @@ public class WspieranaGraService(IWspieranaGraRepository wspieranaGraRepository)
         try
         {
             if (idGry <= 0)
-                return ServiceResult<ICollection<Platforma>>.NotFound(new ErrorItem("Gra o id " + idGry + " nie istnieje."));
+                return ServiceResult<ICollection<Platforma>>.BadRequest(new ErrorItem("Nieprawidłowe id gry: " + idGry));
             return ServiceResult<ICollection<Platforma>>.Ok(await wspieranaGraRepository.GetPlatformyGry(idGry));
         }
         catch (NieZnalezionoWBazieException e)

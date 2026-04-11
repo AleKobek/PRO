@@ -16,14 +16,14 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
     public async Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(int id)
     {
         return id < 1 
-            ? ServiceResult<UzytkownikResDto>.NotFound(new ErrorItem("Uzytkownik o id " + id + " nie istnieje")) 
+            ? ServiceResult<UzytkownikResDto>.BadRequest(new ErrorItem("Niepoprawne id użytkownika: " + id)) 
             : ServiceResult<UzytkownikResDto>.Ok(await uzytkownikRepository.GetUzytkownik(id));
     }
 
     public async Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(string login)
     {
         return string.IsNullOrWhiteSpace(login) 
-            ? ServiceResult<UzytkownikResDto>.NotFound(new ErrorItem("Uzytkownik o podanym loginie nie istnieje")) 
+            ? ServiceResult<UzytkownikResDto>.BadRequest(new ErrorItem("Login nie może być pusty.")) 
             : ServiceResult<UzytkownikResDto>.Ok(await uzytkownikRepository.GetUzytkownik(login));
     }
     
@@ -110,7 +110,7 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
 
     public async Task<ServiceResult<bool>> UpdateHaslo(int idUzytkownika, string stareHaslo, string noweHaslo)
     {
-        if(idUzytkownika < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idUzytkownika + " nie istnieje"));
+        if(idUzytkownika < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Niepoprawne id użytkownika: " + idUzytkownika));
         if (stareHaslo == noweHaslo)
             return ServiceResult<bool>.BadRequest(new ErrorItem("Hasła są takie same"));
 
@@ -146,7 +146,7 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
     
     public async Task<ServiceResult<bool>> DeleteUzytkownik(int id)
     {
-        if(id < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + id + " nie istnieje"));
+        if(id < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Niepoprawne id użytkownika: " + id));
         try
         {
             await uzytkownikRepository.DeleteUzytkownik(id);

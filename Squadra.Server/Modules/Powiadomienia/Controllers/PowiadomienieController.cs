@@ -31,6 +31,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     [EndpointSummary("Zwraca dane powiadomienia o podanym id")]
     [ProducesResponseType(typeof(PowiadomienieDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<PowiadomienieDto>> GetPowiadomienie(int id)
@@ -39,6 +40,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
             401 => Unauthorized(result.Errors[0].Message),
             403 => StatusCode(StatusCodes.Status403Forbidden,result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
