@@ -1,4 +1,4 @@
-﻿import {useEffect, useState} from "react";
+﻿import React, {useEffect, useState} from "react";
 import ListaJezykow from "./ListaJezykow";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
@@ -20,8 +20,8 @@ export default function DaneProfilu({idUzytkownika}) {
     const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState([])
 
     const [ladowanie, ustawLadowanie] = useState(true);
-    
-    
+    const [czyJestBlad, ustawCzyJestBlad] = useState(false);
+
     useEffect(() => {
 
         // czekamy aż się załaduje id użytkownika
@@ -46,6 +46,7 @@ export default function DaneProfilu({idUzytkownika}) {
                         theme: "light",
                         transition: Bounce,
                     });
+                    ustawCzyJestBlad(true);
                     return null;
                 }
                 return await res.json();
@@ -63,6 +64,7 @@ export default function DaneProfilu({idUzytkownika}) {
                     theme: "light",
                     transition: Bounce,
                 });
+                ustawCzyJestBlad(true);
                 return null;
             }
         };
@@ -118,7 +120,10 @@ export default function DaneProfilu({idUzytkownika}) {
         }
         if(listaJezykowUzytkownika.length === 0) podajJezykiIStopnieUzytkownika();
 
-        if(pseudonim || zaimki || opis) ustawLadowanie(false);
+        if(pseudonim || zaimki || opis) {
+            ustawCzyJestBlad(false);
+            ustawLadowanie(false);
+        }
         
         // to funkcja sprzątająca. Odpali się od razu, gdy ten element zniknie, np. użytkownik zmieni stronę
         // albo pod koniec całej funkcji
@@ -129,6 +134,9 @@ export default function DaneProfilu({idUzytkownika}) {
     }, [listaJezykowUzytkownika.length, opis, pseudonim, idUzytkownika, zaimki]);
 
 
+    if(czyJestBlad) return (<div className = "dane-profilu bg-red-500 text-white text-center p-4 rounded-lg shadow-lg">
+        <h1>Wystąpił błąd podczas ładowania danych profilu</h1>
+    </div>)
     if(!idUzytkownika || ladowanie) return(<div className = "dane-profilu" ><p>Ładowanie...</p></div>);
     
     return(<div className = "dane-profilu">

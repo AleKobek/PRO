@@ -118,7 +118,7 @@ import {Bounce, toast} from "react-toastify";
         };
     }, [uzytkownik]);
 
-    if(czyJestBlad) return (<div id = "glowna">
+    if(czyJestBlad) return (<div id="glowna" className="dane-profilu">
         <h1>Wystąpił błąd podczas ładowania danych profilu</h1>
     </div>)
 
