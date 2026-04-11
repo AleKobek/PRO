@@ -85,9 +85,9 @@ public class ProfilService(
             bledy.Add(new ErrorItem("Maksymalna długość zaimków wynosi 30 znaków", nameof(profil.Zaimki)));
         }
 
-        if (profil.Opis is { Length: > 100 })
+        if (profil.Opis is { Length: > 300 })
         {
-            bledy.Add(new ErrorItem("Maksymalna długość opisu wynosi 100 znaków", nameof(profil.Opis)));
+            bledy.Add(new ErrorItem("Maksymalna długość opisu wynosi 300 znaków", nameof(profil.Opis)));
         }
 
         if (profil.Pseudonim.Length > 20)

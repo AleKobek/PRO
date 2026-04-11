@@ -21,7 +21,7 @@ public class ProfilEFConfig : IEntityTypeConfiguration<Profil>
         
         builder
             .Property(x => x.Opis)
-            .HasMaxLength(100);
+            .HasMaxLength(300);
 
         builder
             .Property(x => x.Pseudonim)
