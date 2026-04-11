@@ -72,6 +72,7 @@ import {Bounce, toast} from "react-toastify";
         };
 
         const podajProfil = async () => {
+            try{
             const id = uzytkownik.id;
 
             // podajemy języki profilu
@@ -102,26 +103,12 @@ import {Bounce, toast} from "react-toastify";
                 nazwaStopnia: item.stopien.nazwa,
                 wartoscStopnia: item.stopien.wartosc
             })));
+            }finally {
+                if (alive) ustawLadowanieDanychProfilu(false);
+            }
         };
 
         podajProfil();
-
-        if(czyJestBlad) toast.error('Wystąpił błąd podczas pobierania danych profilu', {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-        });
-
-        if(pseudonim) {
-            ustawLadowanieDanychProfilu(false);
-            ustawCzyJestBlad(false);
-        }
 
         // to funkcja sprzątająca. Odpali się od razu, gdy ten element zniknie, np. użytkownik zmieni stronę
         // albo pod koniec całej funkcji
