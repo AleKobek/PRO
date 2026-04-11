@@ -83,7 +83,20 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
         const fetchJsonAbort = async (url) => {
             try {
                 const res = await fetch(url, { method: 'GET', signal: signal, credentials: "include" });
-                if (!res.ok) return null;
+                if (!res.ok) {
+                    toast.error('Wystąpił błąd podczas pobierania danych znajomych', {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    return null;
+                }
                 return await res.json();
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;

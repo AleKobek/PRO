@@ -38,6 +38,20 @@ export default function CzatZeZnajomymKomponent({
 
             // przerywamy działanie funkcji
             if (!alive) return;
+            if(!data){
+                toast.error('Wystąpił błąd podczas pobierania danych profilu', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                return;
+            }
 
             ustawNaszPseudonim(data.pseudonim ?? "");
             ustawNaszAwatar(data.awatar ?? "");
