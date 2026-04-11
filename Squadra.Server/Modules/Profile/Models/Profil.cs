@@ -14,6 +14,6 @@ public class Profil
     
     public virtual Uzytkownik Uzytkownik { get; set; } = null!;
     public virtual Region? Region { get; set; } = null!;
-    public virtual ICollection<JezykProfilu> JezykUzytkownikaCollection { get; set; } = null!;
+    public virtual ICollection<JezykProfilu> JezykProfiluCollection { get; set; } = null!;
     public virtual Status Status { get; set; } = null!;
 }

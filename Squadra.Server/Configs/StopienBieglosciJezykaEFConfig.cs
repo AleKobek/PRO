@@ -14,15 +14,18 @@ public class StopienBieglosciJezykaEFConfig : IEntityTypeConfiguration<StopienBi
         
         builder
             .Property(x => x.Id)
+            .HasColumnName("id")
             .ValueGeneratedOnAdd();
 
         builder
             .Property(x => x.Nazwa)
+            .HasColumnName("nazwa")
             .HasMaxLength(20)
             .IsRequired();
 
         builder
             .Property(x => x.Wartosc)
+            .HasColumnName("wartosc")
             .IsRequired();
         
         builder.ToTable(nameof(StopienBieglosciJezyka));

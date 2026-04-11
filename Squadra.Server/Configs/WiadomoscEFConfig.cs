@@ -11,12 +11,19 @@ public class WiadomoscEFConfig : IEntityTypeConfiguration<Wiadomosc>
         builder.HasKey(x => x.Id);
         
         builder
+            .Property(x => x.Id)
+            .HasColumnName("id")
+            .ValueGeneratedOnAdd();
+        
+        builder
             .Property(x => x.Tresc)
+            .HasColumnName("tresc")
             .HasMaxLength(1000)
             .IsRequired();
 
         builder
             .Property(x => x.DataWyslania)
+            .HasColumnName("data_wyslania")
             .IsRequired();
 
         builder

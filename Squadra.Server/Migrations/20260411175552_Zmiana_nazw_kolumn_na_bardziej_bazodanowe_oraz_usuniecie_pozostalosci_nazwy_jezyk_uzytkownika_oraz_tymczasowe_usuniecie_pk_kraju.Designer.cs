@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Squadra.Server.Context;
 
@@ -11,9 +12,11 @@ using Squadra.Server.Context;
 namespace Squadra.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260411175552_Zmiana_nazw_kolumn_na_bardziej_bazodanowe_oraz_usuniecie_pozostalosci_nazwy_jezyk_uzytkownika_oraz_tymczasowe_usuniecie_pk_kraju")]
+    partial class Zmiana_nazw_kolumn_na_bardziej_bazodanowe_oraz_usuniecie_pozostalosci_nazwy_jezyk_uzytkownika_oraz_tymczasowe_usuniecie_pk_kraju
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1248,9 +1251,8 @@ namespace Squadra.Server.Migrations
                     b.HasOne("Squadra.Server.Modules.Profile.Models.Kraj", "Kraj")
                         .WithMany("RegionCollection")
                         .HasForeignKey("KrajId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("Region_Kraj");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Kraj");
                 });

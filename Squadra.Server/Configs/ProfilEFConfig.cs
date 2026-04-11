@@ -13,19 +13,23 @@ public class ProfilEFConfig : IEntityTypeConfiguration<Profil>
         
         builder
             .Property(x => x.IdUzytkownika)
+            .HasColumnName("id_uzytkownika")
             .ValueGeneratedNever();
 
         builder
             .Property(x => x.Zaimki)
+            .HasColumnName("zaimki")
             .HasMaxLength(30);
         
         builder
             .Property(x => x.Opis)
+            .HasColumnName("opis")
             .HasMaxLength(300);
 
         builder
             .Property(x => x.Pseudonim)
             .HasMaxLength(20)
+            .HasColumnName("pseudonim")
             .IsRequired();
         
         builder

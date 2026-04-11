@@ -4,14 +4,26 @@ using Squadra.Server.Modules.Profile.Models;
 
 namespace Squadra.Server.Configs;
 
-public class JezykUzytkownikaEFConfig : IEntityTypeConfiguration<JezykProfilu>
+public class JezykProfiluEFConfig : IEntityTypeConfiguration<JezykProfilu>
 {
     public void Configure(EntityTypeBuilder<JezykProfilu> builder)
     {
         
         builder
             .HasKey(x => new {x.JezykId, x.UzytkownikId})
-            .HasName("id_jezyk_uzytkownika");
+            .HasName("id_jezyk_profilu");
+
+        builder
+            .Property(x => x.JezykId)
+            .HasColumnName("id_jezyka");
+        
+        builder
+            .Property(x => x.UzytkownikId)
+            .HasColumnName("id_uzytkownika");
+        
+        builder
+            .Property(x => x.StopienBieglosciId)
+            .HasColumnName("id_stopnia_bieglosci");
         
         builder
             .HasOne(x => x.Jezyk)
@@ -22,16 +34,16 @@ public class JezykUzytkownikaEFConfig : IEntityTypeConfiguration<JezykProfilu>
         
         builder
             .HasOne(x => x.Profil)
-            .WithMany(x => x.JezykUzytkownikaCollection)
+            .WithMany(x => x.JezykProfiluCollection)
             .HasForeignKey(x => x.UzytkownikId)
             .HasConstraintName("JezykProfilu_Profil")
             .OnDelete(DeleteBehavior.Restrict);
         
         builder
             .HasOne(x => x.StopienBieglosciJezyka)
-            .WithMany(x => x.JezykUzytkownikaCollection)
+            .WithMany(x => x.JezykProfiluCollection)
             .HasForeignKey(x => x.StopienBieglosciId)
-            .HasConstraintName("JezykUzytkownika_StopienBieglosci")
+            .HasConstraintName("JezykProfilu_StopienBieglosci")
             .OnDelete(DeleteBehavior.Restrict);
         
         builder.ToTable(nameof(JezykProfilu));

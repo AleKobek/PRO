@@ -13,6 +13,14 @@ public class GraNaPlatformieEFConfig : IEntityTypeConfiguration<GraNaPlatformie>
             .HasName("id_gra_na_platformie");
         
         builder
+            .Property(x => x.IdWspieranejGry)
+            .HasColumnName("id_gry");
+        
+        builder
+            .Property(x => x.IdPlatformy)
+            .HasColumnName("id_platformy");
+        
+        builder
             .HasOne(x => x.WspieranaGra)
             .WithMany(x => x.GraNaPlatformieCollection)
             .HasForeignKey(x => x.IdWspieranejGry)

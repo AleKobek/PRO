@@ -13,10 +13,12 @@ public class RolaEFConfig : IEntityTypeConfiguration<Rola>
 
         builder
             .Property(x => x.Id)
+            .HasColumnName("id")
             .ValueGeneratedNever();
 
         builder
             .Property(x => x.Nazwa)
+            .HasColumnName("nazwa")
             .HasMaxLength(20)
             .IsRequired();
 

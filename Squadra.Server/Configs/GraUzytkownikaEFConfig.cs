@@ -11,6 +11,14 @@ public class GraUzytkownikaEFConfig : IEntityTypeConfiguration<GraUzytkownika>
         builder
             .HasKey(x => new {x.UzytkownikId, x.GraId})
             .HasName("id_gra_uzytkownika");
+        
+        builder
+            .Property(x => x.UzytkownikId)
+            .HasColumnName("id_uzytkownika");
+        
+        builder.Property(x => x.GraId)
+            .HasColumnName("id_gry");
+        
         builder
             .HasOne(x => x.Gra)
             .WithMany(x => x.GraUzytkownikaCollection)

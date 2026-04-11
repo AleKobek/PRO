@@ -12,6 +12,18 @@ public class GraUzytkownikaNaPlatformieEFConfig : IEntityTypeConfiguration<GraUz
         builder
             .HasKey(x => new {x.UzytkownikId, x.GraId, x.PlatformaId})
             .HasName("id_gra_uzytkownika_na_platformie");
+
+        builder
+            .Property(x => x.UzytkownikId)
+            .HasColumnName("id_uzytkownika");
+        
+        builder
+            .Property(x => x.GraId)
+            .HasColumnName("id_gry");
+        
+        builder
+            .Property(x => x.PlatformaId)
+            .HasColumnName("id_platformy");
         
         builder
             .HasOne(x => x.Gra)

@@ -13,21 +13,25 @@ public class KategoriaEFConfig : IEntityTypeConfiguration<Kategoria>
 
         builder
             .Property(x => x.Id)
+            .HasColumnName("id")
             .ValueGeneratedNever();
 
         builder
             .Property(x => x.Nazwa)
+            .HasColumnName("nazwa")
             .HasMaxLength(30)
             .IsRequired();
         
         builder
             .Property(x => x.IdGry)
+            .HasColumnName("id_gry")
             .IsRequired();
         
         builder
-                .Property(x => x.CzyToCzasRozgrywki)
-                .IsRequired()
-                .HasDefaultValue(false);
+            .Property(x => x.CzyToCzasRozgrywki)
+            .HasColumnName("czy_to_czas_rozgrywki")
+            .IsRequired()
+            .HasDefaultValue(false);
         
         builder
             .HasOne(x => x.Gra)

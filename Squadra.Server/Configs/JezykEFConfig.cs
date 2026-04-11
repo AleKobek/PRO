@@ -14,10 +14,12 @@ public class JezykEFConfig : IEntityTypeConfiguration<Jezyk>
         
         builder
             .Property(x => x.Id)
+            .HasColumnName("id")
             .ValueGeneratedOnAdd();
         
         builder
             .Property(x => x.Nazwa)
+            .HasColumnName("nazwa")
             .HasMaxLength(20)
             .IsRequired();
         

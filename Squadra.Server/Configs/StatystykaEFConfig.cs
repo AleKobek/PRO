@@ -13,12 +13,23 @@ public class StatystykaEFConfig : IEntityTypeConfiguration<Statystyka>
 
         builder
             .Property(x => x.Id)
+            .HasColumnName("id")
             .ValueGeneratedNever();
 
         builder
             .Property(x => x.Nazwa)
+            .HasColumnName("nazwa")
             .HasMaxLength(30)
             .IsRequired();
+        
+        builder
+            .Property(x => x.KategoriaId)
+            .HasColumnName("id_kategorii")
+            .IsRequired();
+
+        builder
+            .Property(x => x.RolaId)
+            .HasColumnName("id_roli");
 
         builder
             .HasOne(x => x.Kategoria)

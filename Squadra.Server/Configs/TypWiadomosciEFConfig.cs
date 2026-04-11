@@ -11,7 +11,13 @@ public class TypWiadomosciEFConfig : IEntityTypeConfiguration<TypWiadomosci>
         builder.HasKey(x => x.Id);
         
         builder
+            .Property(x => x.Id)
+            .HasColumnName("id")
+            .ValueGeneratedOnAdd();
+        
+        builder
             .Property(x => x.Nazwa)
+            .HasColumnName("nazwa")
             .HasMaxLength(50)
             .IsRequired();
         

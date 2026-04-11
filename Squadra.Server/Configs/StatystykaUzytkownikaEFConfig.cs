@@ -11,11 +11,23 @@ public class StatystykaUzytkownikaEFConfiguration :IEntityTypeConfiguration<Stat
         builder
             .HasKey(x => new {x.UzytkownikId, x.StatystykaId})
             .HasName("id_statystyka_uzytkownika");
+
+        builder
+            .Property(x => x.UzytkownikId)
+            .HasColumnName("id_uzytkownika");
+
+        builder.Property(x => x.StatystykaId)
+            .HasColumnName("id_statystyki");
         
         builder
             .Property(x => x.Wartosc)
+            .HasColumnName("wartosc")
             .HasMaxLength(20)
             .IsRequired();
+
+        builder
+            .Property(x => x.PorownywalnaWartoscLiczbowa)
+            .HasColumnName("porownywalna_wartosc_liczbowa");
         
         builder
             .HasOne(x => x.Statystyka)

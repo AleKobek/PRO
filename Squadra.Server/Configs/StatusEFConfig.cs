@@ -10,10 +10,17 @@ public class StatusEFConfig : IEntityTypeConfiguration<Status>
     {
         builder
             .HasKey(x => x.Id);
+        
+        builder
+            .Property(x => x.Id)
+            .HasColumnName("id")
+            .ValueGeneratedOnAdd();
 
         builder
             .Property(x => x.Nazwa)
-            .HasMaxLength(20);
+            .HasColumnName("nazwa")
+            .HasMaxLength(20)
+            .IsRequired();
         
         builder.ToTable(nameof(Status));
     }

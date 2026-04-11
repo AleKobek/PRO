@@ -13,18 +13,22 @@ public class PowiadomienieEFConfig : IEntityTypeConfiguration<Powiadomienie>
         
         builder
             .Property(x => x.Id)
+            .HasColumnName("id")
             .ValueGeneratedOnAdd();
 
         builder
             .Property(x => x.DataWyslania)
+            .HasColumnName("data_wyslania")
             .IsRequired();
         
         builder
             .Property(x => x.PowiazanyObiektNazwa)
+            .HasColumnName("nazwa_powiazanego_obiektu")
             .HasMaxLength(30);
 
         builder
             .Property(x => x.Tresc)
+            .HasColumnName("tresc")
             .HasMaxLength(200);
         
         

@@ -13,7 +13,21 @@ public class UzytkownikPlatformaEFConfig : IEntityTypeConfiguration<UzytkownikPl
         builder
             .HasKey(x => new {x.PlatformaId, x.UzytkownikId})
             .HasName("id_uzytkownik_platforma");
+
+        builder
+            .Property(x => x.PlatformaId)
+            .HasColumnName("id_platformy");
         
+        builder
+            .Property(x => x.UzytkownikId)
+            .HasColumnName("id_uzytkownika");
+        
+        builder
+            .Property(x => x.PseudonimNaPlatformie)
+            .HasColumnName("pseudonim_na_platformie")
+            .HasMaxLength(40)
+            .IsRequired();
+
         builder
             .HasOne<Platforma>(x => x.Platforma)
             .WithMany(x => x.UzytkownikPlatformaCollection)
@@ -27,11 +41,6 @@ public class UzytkownikPlatformaEFConfig : IEntityTypeConfiguration<UzytkownikPl
             .HasForeignKey(x => x.UzytkownikId)
             .HasConstraintName("UzytkownikPlatforma_Uzytkownik")
             .OnDelete(DeleteBehavior.Restrict);
-        
-        builder
-            .Property(x => x.PseudonimNaPlatformie)
-            .HasMaxLength(40)
-            .IsRequired();
         
         builder.ToTable(nameof(UzytkownikPlatforma));
     }

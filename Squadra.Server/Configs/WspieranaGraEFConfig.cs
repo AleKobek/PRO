@@ -13,20 +13,24 @@ public class WspieranaGraEFConfig : IEntityTypeConfiguration<WspieranaGra>
 
         builder
             .Property(x => x.Id)
+            .HasColumnName("id")
             .ValueGeneratedNever();
 
         builder
             .Property(x => x.Tytul)
+            .HasColumnName("tytul")
             .HasMaxLength(60)
             .IsRequired();
         
         builder
             .Property(x => x.Wydawca)
+            .HasColumnName("wydawca")
             .HasMaxLength(30)
             .IsRequired();
         
         builder
             .Property(x => x.Gatunek)
+            .HasColumnName("gatunek")
             .HasMaxLength(30)
             .IsRequired();
             

@@ -14,12 +14,14 @@ public class TypPowiadomieniaEFConfig : IEntityTypeConfiguration<TypPowiadomieni
         
         builder
             .Property(x => x.Id)
+            .HasColumnName("id")
             .ValueGeneratedOnAdd();
         
         builder
             .Property(x => x.Nazwa)
-            .IsRequired()
-            .HasMaxLength(100);
+            .HasColumnName("nazwa")
+            .HasMaxLength(100)
+            .IsRequired();
         
         builder.ToTable(nameof(TypPowiadomienia));
     }

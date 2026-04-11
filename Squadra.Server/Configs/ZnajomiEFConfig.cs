@@ -13,6 +13,19 @@ public class ZnajomiEFConfig : IEntityTypeConfiguration<Znajomi>
             .HasName("id_znajomi");
         
         builder
+            .Property(x => x.IdUzytkownika1)
+            .HasColumnName("id_uzytkownika_1");
+        
+        builder
+            .Property(x => x.IdUzytkownika2)
+            .HasColumnName("id_uzytkownika_2");
+        
+        builder
+            .Property(x => x.DataNawiazaniaZnajomosci)
+            .HasColumnName("data_nawiazania_znajomosci")
+            .IsRequired();
+        
+        builder
             .HasOne(x => x.Uzytkownik1)
             .WithMany(x => x.ZnajomiJakoPierwszyCollection)
             .HasForeignKey(x => x.IdUzytkownika1)
