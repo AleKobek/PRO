@@ -12,7 +12,8 @@ public class PlatformaEFConfig : IEntityTypeConfiguration<Platforma>
 
         builder
             .Property(x => x.Id)
-            .HasColumnName("id");
+            .HasColumnName("id")
+            .ValueGeneratedNever();
         
         builder
             .Property(x => x.Nazwa)
