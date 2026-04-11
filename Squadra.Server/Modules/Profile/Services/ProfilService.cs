@@ -110,14 +110,21 @@ public class ProfilService(
     public async Task<ServiceResult<bool>> UpdateAwatar(int id, IFormFile awatar)
     {
         if(awatar.Length == 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowy awatar"));
-        using (var memoryStream = new MemoryStream())
+        try
         {
-            // przenosimy to do memory stream
-            await awatar.CopyToAsync(memoryStream);
-            // przenosimy to do tablicy bajtów, tak jak chcemy to mieć
-            var awatarWBajtach = memoryStream.ToArray();
-            awatarWBajtach = NormalizujAwatar(awatarWBajtach);
-            return ServiceResult<bool>.Ok(await profilRepository.UpdateAwatar(id, awatarWBajtach ?? []),204);
+            using (var memoryStream = new MemoryStream())
+            {
+                // przenosimy to do memory stream
+                await awatar.CopyToAsync(memoryStream);
+                // przenosimy to do tablicy bajtów, tak jak chcemy to mieć
+                var awatarWBajtach = memoryStream.ToArray();
+                awatarWBajtach = NormalizujAwatar(awatarWBajtach);
+                return ServiceResult<bool>.Ok(await profilRepository.UpdateAwatar(id, awatarWBajtach ?? []), 204);
+            }
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return  ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
     public async Task<ServiceResult<StatusDto>> GetStatusZBazyProfilu(int id)
