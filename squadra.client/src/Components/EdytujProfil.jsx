@@ -1,7 +1,6 @@
 ﻿import '../App.css';
 
 import React, {useEffect, useState} from 'react';
-import NaglowekZalogowano from './NaglowekZalogowano';
 import FormularzProfilu from './FormularzProfilu';
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
@@ -23,7 +22,8 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
         // lista języków użytkownika przed zmianami, jej postać to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
     const [staraListaJezykowUzytkownika, ustawStaraListeJezykowUzytkownika] = useState([])
 
-        
+    const [ladowanieDanychProfilu, ustawLadowanieDanychProfilu] = useState(true);
+    const [czyJestBlad, ustawCzyJestBlad] = useState(false);
 
     useEffect(() => {
         if(!uzytkownik) return;
@@ -46,6 +46,7 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
                         theme: "light",
                         transition: Bounce,
                     });
+                    ustawCzyJestBlad(true);
                     return null;
                 }
                 return await res.json();
@@ -65,17 +66,18 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
                     theme: "light",
                     transition: Bounce,
                 });
+                ustawCzyJestBlad(true);
                 return null;
             }
         };
-        
+
         const podajProfil = async () => {
             const id = uzytkownik.id;
 
             // podajemy języki profilu
             const profil = await fetchJsonAbort(`${API_BASE_URL}/Profil/${id}`);
             if(!alive || !profil) return
-            
+
             ustawStaraListeJezykowUzytkownika(Array.isArray(profil.jezyki) ? profil.jezyki : []);
             ustawPseudonim(profil.pseudonim ?? '');
             ustawZaimki(profil.zaimki ?? '');
@@ -84,15 +86,15 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
                 ustawRegion({id: profil.regionIKraj.idRegionu, nazwa: profil.regionIKraj.nazwaRegionu});
             }else {
                 ustawKraj({id: null, nazwa: null});
-                ustawRegion({id: null, nazwa: null});   
+                ustawRegion({id: null, nazwa: null});
             }
             ustawOpis(profil.opis ?? '');
             ustawAwatar(profil.awatar ? "data:image/jpeg;base64,"+profil.awatar : "");
-            
+
 
             const jezyki = await fetchJsonAbort(`${API_BASE_URL}/Jezyk/profil/${id}`);
             if(!alive || !jezyki || !Array.isArray(jezyki)) return;
-            
+
             ustawStaraListeJezykowUzytkownika(jezyki.map(item => ({
                 idJezyka: item.jezyk.id,
                 nazwaJezyka: item.jezyk.nazwa,
@@ -101,8 +103,25 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
                 wartoscStopnia: item.stopien.wartosc
             })));
         };
-        
+
         podajProfil();
+
+        if(czyJestBlad) toast.error('Wystąpił błąd podczas pobierania danych profilu', {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+        });
+
+        if(pseudonim) {
+            ustawLadowanieDanychProfilu(false);
+            ustawCzyJestBlad(false);
+        }
 
         // to funkcja sprzątająca. Odpali się od razu, gdy ten element zniknie, np. użytkownik zmieni stronę
         // albo pod koniec całej funkcji
@@ -112,13 +131,13 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
         };
     }, [uzytkownik]);
 
-    if(ladowanie) return (<>
-            <NaglowekZalogowano/>
-            <div id = "glowna">
+    if(czyJestBlad) return (<div id = "glowna">
+        <h1>Wystąpił błąd podczas ładowania danych profilu</h1>
+    </div>)
+
+    if(ladowanie || ladowanieDanychProfilu) return (<div id = "glowna">
                 <h1>Ładowanie...</h1>
-            </div>
-        </>
-    )
+    </div>)
 
     return (<>
         <div id = "glowna">
@@ -131,18 +150,5 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
             <h2>Edytuj awatar</h2>
             <FormularzAwatara uzytkownik={uzytkownik} staryAwatar={awatar}/>
         </div>
-        <ToastContainer
-            position="top-center"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick={false}
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            transition={Bounce}
-        />
     </>);
 }

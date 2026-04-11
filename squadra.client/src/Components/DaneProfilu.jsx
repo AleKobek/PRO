@@ -18,6 +18,8 @@ export default function DaneProfilu({idUzytkownika}) {
     
     // lista języków użytkownika to {idJezyka, nazwaJezyka, idStopnia, nazwaStopnia}
     const [listaJezykowUzytkownika, ustawListeJezykowUzytkownika] = useState([])
+
+    const [ladowanie, ustawLadowanie] = useState(true);
     
     
     useEffect(() => {
@@ -70,6 +72,7 @@ export default function DaneProfilu({idUzytkownika}) {
 
             // przerywamy działanie funkcji
             if (!alive) return;
+            if (!data) return;
 
             ustawPseudonim(data.pseudonim ?? "");
             ustawZaimki(data.zaimki ?? "");
@@ -114,6 +117,8 @@ export default function DaneProfilu({idUzytkownika}) {
             podajDaneProfilu();
         }
         if(listaJezykowUzytkownika.length === 0) podajJezykiIStopnieUzytkownika();
+
+        if(pseudonim || zaimki || opis) ustawLadowanie(false);
         
         // to funkcja sprzątająca. Odpali się od razu, gdy ten element zniknie, np. użytkownik zmieni stronę
         // albo pod koniec całej funkcji
@@ -124,7 +129,7 @@ export default function DaneProfilu({idUzytkownika}) {
     }, [listaJezykowUzytkownika.length, opis, pseudonim, idUzytkownika, zaimki]);
 
 
-    if(!idUzytkownika) return(<><p>Ładowanie...</p></>);
+    if(!idUzytkownika || ladowanie) return(<div className = "dane-profilu" ><p>Ładowanie...</p></div>);
     
     return(<div className = "dane-profilu">
                                       {/* v dzięki "||" bierze też jak jest pusty string  */}

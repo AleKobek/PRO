@@ -13,6 +13,7 @@ import EdytujKonto from "./Components/EdytujKonto";
 import TwoiZnajomiStrona from "./Components/TwoiZnajomiStrona";
 import ProfilOgolny from "./Components/ProfilOgolny";
 import {useState} from "react";
+import {Bounce, ToastContainer} from "react-toastify";
 
 function App() {
 
@@ -47,11 +48,24 @@ function App() {
               <Route path = "/profil/:idWlascicielaProfilu" element = {<>
                     <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
                     <ProfilOgolny/>
-                </>}></Route>
+              </>}></Route>
               <Route path = "/login" element = {<Logowanie/>}></Route>
               <Route path = "/rejestracja" element = {<Rejestracja/>}></Route>
               <Route path = "*" element = {<Error404/>}></Route>
             </Routes>
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+                transition={Bounce}
+            />
           </BrowserRouter>
         </AuthProvider>
     );
