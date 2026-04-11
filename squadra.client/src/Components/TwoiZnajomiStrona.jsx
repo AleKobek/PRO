@@ -6,6 +6,8 @@ import {API_BASE_URL} from "../config/api";
 import ZnajomyNaLiscieKomponent from "./ZnajomyNaLiscieKomponent";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import CzatZeZnajomymKomponent from "./CzatZeZnajomymKomponent";
+
+const TOAST_CONTAINER_ID = "twoi-znajomi-toast";
 export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
 
     const { uzytkownik, ladowanie } = useAuth();
@@ -182,6 +184,18 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
     const przyWysylaniuZaproszenia = async () => {
         if(czySieWysylaZaproszenie) return;
         ustawCzySieWysylaZaproszenie(true);
+        const toastOptions = {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+            containerId: TOAST_CONTAINER_ID,
+        };
         try {
             const res = await fetch(`${API_BASE_URL}/Powiadomienie/zaproszenie/znajomi`, {
                 method: 'POST',
@@ -197,73 +211,23 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
             if (!res.ok) {
                 switch (res.status) {
                     case 404: {
-                        toast.error('Użytkownik o takim loginie nie istnieje!', {
-                            position: "top-center",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: false,
-                            pauseOnHover: true,
-                            draggable: true,
-                            progress: undefined,
-                            theme: "light",
-                            transition: Bounce,
-                        });
+                        toast.error('Użytkownik o takim loginie nie istnieje!', toastOptions);
                         break;
                     }
                     case 409: { // konflikt, u nas to się dzieje gdy uzytkownik jest już znajomym
-                        toast.error('Ten użytkownik jest już Twoim znajomym!', {
-                            position: "top-center",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: false,
-                            pauseOnHover: true,
-                            draggable: true,
-                            progress: undefined,
-                            theme: "light",
-                            transition: Bounce,
-                        });
+                        toast.error('Ten użytkownik jest już Twoim znajomym!', toastOptions);
                         break;
                     }
                     default: {
-                        toast.error(`Nie można wysłać zaproszenia: ${body || 'Nieznany błąd.'}`, {
-                            position: "top-center",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: false,
-                            pauseOnHover: true,
-                            draggable: true,
-                            progress: undefined,
-                            theme: "light",
-                            transition: Bounce,
-                        });
+                        toast.error(`Nie można wysłać zaproszenia: ${body || 'Nieznany błąd.'}`, toastOptions);
                     }
                 }
                 return;
             }
-            toast.success("Pomyślnie wysłano zaproszenie!", {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.success("Pomyślnie wysłano zaproszenie!", toastOptions);
         } catch (err) {
             console.error('Błąd wysyłania zaproszenia:', err);
-            toast.error('Wystąpił błąd podczas wysyłania zaproszenia. Spróbuj ponownie później.', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Wystąpił błąd podczas wysyłania zaproszenia. Spróbuj ponownie później.', toastOptions);
         }finally {
             ustawCzySieWysylaZaproszenie(false);
         }
@@ -324,6 +288,7 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
         {/* overlay dodaj znajomego, renderujemy na wierzchu tej samej strony */}
         {pokazDodajZnajomego && <PanelDodajZnajomego/>}
         <ToastContainer
+            containerId={TOAST_CONTAINER_ID}
             position="top-center"
             autoClose={5000}
             hideProgressBar={false}
