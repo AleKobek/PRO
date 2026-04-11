@@ -95,24 +95,24 @@ export default function Logowanie() {
                 <h3 className="success-widomosc">{location.state?.message}</h3>
                 <form id = "form" name="formularz-logowania">
                     <label>
-                        <div>E-mail lub nazwa użytkownika</div>
+                        <div className="my-2 w-full">E-mail lub nazwa użytkownika</div>
                         <input
                             type="text"
                             value={loginLubEmail}
                             onChange={(e) => ustawLoginLubEmail(e.target.value)}
-                            placeholder="jan.kowalski@example.com"
+                            placeholder="jan.kowal@example.com"
                             autoComplete="username"
                             
                         />
                     </label>
 
                     <br/><label>
-                        <div>Hasło</div>
+                        <div className="my-2">Hasło</div>
                         <input
                             type="password"
                             value={haslo}
                             onChange={(e) => ustawHaslo(e.target.value)}
-                            placeholder="••••••••"
+                            placeholder="• • • • • • • •"
                             autoComplete="current-password"
                             style={{ width: "100%", padding: 8 }}
                         />
@@ -121,6 +121,7 @@ export default function Logowanie() {
                     <br/><label> Zapamiętaj mnie
                     <input
                     type="checkbox"
+                    className="ml-3"
                     onChange={(e) => ustawZapamietajMnie(e.target.checked)}
                     /></label><br/><br/>
                     
