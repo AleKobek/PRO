@@ -240,7 +240,7 @@ export default function FormularzProfilu({
         <input 
             type="text" 
             id = "zaimki" name ="zaimki" 
-            maxLength={10} 
+            maxLength={30}
             value={zaimki} 
             onChange={(e)=>ustawZaimki(e.target.value)}>
         </input></label><br/>
