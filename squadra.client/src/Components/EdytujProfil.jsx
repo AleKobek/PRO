@@ -6,7 +6,7 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import FormularzAwatara from "./FormularzAwatara";
 import {API_BASE_URL} from "../config/api";
-import {Bounce, toast, ToastContainer} from "react-toastify";
+import {Bounce, toast} from "react-toastify";
     export default function EdytujProfil() {
 
     const navigate = useNavigate();

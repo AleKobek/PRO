@@ -5,7 +5,7 @@ import DaneProfilu from './DaneProfilu';
 import {useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import {API_BASE_URL} from "../config/api";
-import {Bounce, toast, ToastContainer} from "react-toastify";
+import {Bounce, toast} from "react-toastify";
 export default function ProfilOgolny() {
 
     const navigate = useNavigate();
@@ -254,18 +254,5 @@ export default function ProfilOgolny() {
             <PrzyciskPodProfilem/>
         </div>
         {pokazUsunZnajomego && <PanelUsunZnajomego/>}
-        <ToastContainer
-            position="top-center"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick={false}
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            transition={Bounce}
-        />
     </>);
 }

@@ -4,7 +4,7 @@ import React, {useEffect} from 'react';
 import DaneProfilu from './DaneProfilu';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
-import {Bounce, toast, ToastContainer} from "react-toastify";
+import {Bounce, toast} from "react-toastify";
 export default function TwojProfil() {
     
     const navigate = useNavigate();
@@ -40,18 +40,5 @@ export default function TwojProfil() {
             <DaneProfilu idUzytkownika={uzytkownik.id}></DaneProfilu>
             <button className={"przycisk-nawigacji"} onClick={() => navigate('/edytujProfil')}>Edytuj profil</button>
         </div>
-        <ToastContainer
-            position="top-center"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick={false}
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-            transition={Bounce}
-        />
     </>);
 }
