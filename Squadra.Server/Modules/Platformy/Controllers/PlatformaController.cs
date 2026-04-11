@@ -27,7 +27,9 @@ public class PlatformaController(
             return Unauthorized("Nie jesteś zalogowany.");
 
         var result = await platformaService.GetPlatformy();
-        return Ok(result.Value);
+        return result.StatusCode == 200
+            ? Ok(result.Value)
+            : StatusCode(result.StatusCode, new { errors = result.Errors });
     }
 
     [HttpGet("{id:int}")]

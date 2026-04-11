@@ -23,7 +23,9 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
     public async Task<ActionResult<IEnumerable<UzytkownikResDto>>> GetUzytkownicy()
     {
         var result = await uzytkownikService.GetUzytkownicy();
-        return Ok(result.Value);
+        return result.StatusCode == 200
+            ? Ok(result.Value)
+            : StatusCode(result.StatusCode, new { errors = result.Errors });
     }
 
     [HttpGet("{id:int}")]
@@ -39,9 +41,10 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
             var result = await uzytkownikService.GetUzytkownik(id);
             return result.StatusCode switch
             {
+                200 => Ok(result.Value),
                 400 => BadRequest(result.Errors[0].Message),
                 404 => NotFound(result.Errors[0].Message),
-                _ => Ok(result.Value)
+                _ => StatusCode(result.StatusCode, new { errors = result.Errors })
             };
         }
         catch (KeyNotFoundException)
@@ -67,7 +70,9 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
             if (result.StatusCode == 404)
                 return NotFound(result.Errors[0].Message);
 
-            return Ok(result.Value);
+            return result.StatusCode == 200
+                ? Ok(result.Value)
+                : StatusCode(result.StatusCode, new { errors = result.Errors });
         }
         catch (KeyNotFoundException)
         {
@@ -204,9 +209,10 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
 
         return result.StatusCode switch
         {
+            204 => NoContent(),
             400 => BadRequest(result.Errors[0].Message),
             404 => NotFound(),
-            _ => NoContent()
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
     

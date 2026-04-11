@@ -30,9 +30,10 @@ public class RegionController(IRegionService regionService) : ControllerBase
         var result = await regionService.GetRegion(id);
         return result.StatusCode switch
         {
+            200 => Ok(result.Value),
             400 => BadRequest(result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
-            _ => Ok(result.Value)
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
 
@@ -46,9 +47,10 @@ public class RegionController(IRegionService regionService) : ControllerBase
         var result = await regionService.GetRegionyKraju(id);
         return result.StatusCode switch
         {
+            200 => Ok(result.Value),
             400 => BadRequest(result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
-            _ => Ok(result.Value)
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
 }

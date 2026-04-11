@@ -32,7 +32,9 @@ public class ZnajomiController(IZnajomiService znajomiService,
             return Unauthorized("Nie jesteś zalogowany.");
         var result = await znajomiService.GetZnajomiDoListyUzytkownika(uzytkownik.Id);
         if (result.StatusCode == 404) return NotFound(result.Errors[0].Message);
-        return Ok(result.Value);
+        return result.StatusCode == 200
+            ? Ok(result.Value)
+            : StatusCode(result.StatusCode, new { errors = result.Errors });
     }
     
     [HttpGet("czyZnajomosc/{idZnajomego:int}")]
@@ -50,7 +52,9 @@ public class ZnajomiController(IZnajomiService znajomiService,
         
         if(result.StatusCode == 404) return NotFound(result.Errors[0].Message);
         
-        return Ok(result.Value);
+        return result.StatusCode == 200
+            ? Ok(result.Value)
+            : StatusCode(result.StatusCode, new { errors = result.Errors });
     }
     
     [HttpDelete("{idUsuwanego:int}")]
@@ -106,6 +110,8 @@ public class ZnajomiController(IZnajomiService znajomiService,
         
         if(result.StatusCode == 404) return NotFound(result.Errors[0].Message);
         
-        return NoContent();
+        return result.StatusCode == 204
+            ? NoContent()
+            : StatusCode(result.StatusCode, new { errors = result.Errors });
     }
 }

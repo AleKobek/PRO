@@ -24,7 +24,9 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
         var result = await powiadomienieService.GetPowiadomieniaUzytkownika(uzytkownik.Id);
-        return Ok(result.Value);
+        return result.StatusCode == 200
+            ? Ok(result.Value)
+            : StatusCode(result.StatusCode, new { errors = result.Errors });
     }
 
     [HttpGet("{id:int}")]

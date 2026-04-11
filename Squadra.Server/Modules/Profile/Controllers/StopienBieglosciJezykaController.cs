@@ -17,7 +17,9 @@ public class StopienBieglosciJezykaController(IStopienBieglosciJezykaService sto
     public async Task<ActionResult<IEnumerable<StopienBieglosciJezykaDto>>> GetStopienBieglosciJezyka()
     {
         var result = await stopienBieglosciJezykaService.GetStopnieBieglosciJezyka();
-        return Ok(result.Value);
+        return result.StatusCode == 200
+            ? Ok(result.Value)
+            : StatusCode(result.StatusCode, new { errors = result.Errors });
     }
 
     [HttpGet("{id:int}")]
@@ -30,9 +32,10 @@ public class StopienBieglosciJezykaController(IStopienBieglosciJezykaService sto
         var result = await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(id);
         return result.StatusCode switch
         {
+            200 => Ok(result.Value),
             400 => BadRequest(result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
-            _ => Ok(result.Value)
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
 }

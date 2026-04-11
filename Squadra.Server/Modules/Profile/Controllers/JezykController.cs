@@ -18,7 +18,9 @@ public class JezykController(IJezykService jezykService) : ControllerBase
     public async Task<ActionResult<IEnumerable<JezykDto>>> GetJezyki()
     {
         var result = await jezykService.GetJezyki();
-        return Ok(result.Value);
+        return result.StatusCode == 200
+            ? Ok(result.Value)
+            : StatusCode(result.StatusCode, new { errors = result.Errors });
     }
     
     [HttpGet("{id:int}")]

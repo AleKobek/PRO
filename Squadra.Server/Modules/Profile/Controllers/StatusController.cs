@@ -17,7 +17,9 @@ public class StatusController(IStatusService statusService) : ControllerBase
     public async Task<ActionResult<IEnumerable<StatusDto>>> GetStatusy()
     {
         var result = await statusService.GetStatusy();
-        return Ok(result.Value);
+        return result.StatusCode == 200
+            ? Ok(result.Value)
+            : StatusCode(result.StatusCode, new { errors = result.Errors });
     }
 
     [HttpGet("{id:int}")]
@@ -30,6 +32,8 @@ public class StatusController(IStatusService statusService) : ControllerBase
         var result = await statusService.GetStatus(id);
         if (result.StatusCode == 404)
             return NotFound(result.Errors[0].Message);
-        return Ok(result.Value);
+        return result.StatusCode == 200
+            ? Ok(result.Value)
+            : StatusCode(result.StatusCode, new { errors = result.Errors });
     }
 }

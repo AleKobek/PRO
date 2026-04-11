@@ -17,7 +17,9 @@ public class KrajController(IKrajService krajService) : ControllerBase
     public async Task<ActionResult<IEnumerable<KrajDto>>> GetKraje()
     {
         var result = await krajService.GetKraje();
-        return Ok(result.Value);
+        return result.StatusCode == 200
+            ? Ok(result.Value)
+            : StatusCode(result.StatusCode, new { errors = result.Errors });
     }
     
     [HttpGet("{id:int}")]
