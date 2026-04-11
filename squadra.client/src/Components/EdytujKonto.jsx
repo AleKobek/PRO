@@ -251,7 +251,7 @@ export default function EdytujKonto() {
                     bladNumeruTelefonu={bladNumeruTelefonu}
                     bladDatyUrodzenia={bladDatyUrodzenia}
                 />
-                <input className="wyslij-formularz-przycisk" type = "button" value = "Zapisz" onClick={przyWysylaniuZmianyKonta} disabled={czyZablokowaneWyslijKonta}/>
+                <input className={czyZablokowaneWyslijKonta ? "zablokowany-przycisk" :"wyslij-formularz-przycisk"} type = "button" value = "Zapisz" onClick={przyWysylaniuZmianyKonta} disabled={czyZablokowaneWyslijKonta}/>
                 <span id = "error-zapisz" className="error-wiadomosc">{bladOgolnyKonta}</span><br/>
             </form>
             <br></br>
