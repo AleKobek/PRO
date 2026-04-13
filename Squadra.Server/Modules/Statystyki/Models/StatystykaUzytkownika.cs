@@ -7,7 +7,7 @@ public class StatystykaUzytkownika
     public int UzytkownikId { get; set; }
     public int StatystykaId { get; set; }
     public string Wartosc { get; set; }
-    public int? PorownywalnaWartoscLiczbowa { get; set; }
+    public double? PorownywalnaWartoscLiczbowa { get; set; }
     
     public virtual Statystyka Statystyka { get; set; }
     public virtual Uzytkownik Uzytkownik { get; set; }
