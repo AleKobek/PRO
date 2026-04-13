@@ -19,7 +19,7 @@ public class KategoriaEFConfig : IEntityTypeConfiguration<Kategoria>
         builder
             .Property(x => x.Nazwa)
             .HasColumnName("nazwa")
-            .HasMaxLength(30)
+            .HasMaxLength(50)
             .IsRequired();
         
         builder

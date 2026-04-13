@@ -22,7 +22,7 @@ public class StatystykaUzytkownikaEFConfiguration :IEntityTypeConfiguration<Stat
         builder
             .Property(x => x.Wartosc)
             .HasColumnName("wartosc")
-            .HasMaxLength(20)
+            .HasMaxLength(40)
             .IsRequired();
 
         builder
