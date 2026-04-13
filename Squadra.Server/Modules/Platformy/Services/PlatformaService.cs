@@ -1,4 +1,7 @@
-﻿using Squadra.Server.Exceptions;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Jpeg;
+using SixLabors.ImageSharp.Processing;
+using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Platformy.DTO;
 using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Platformy.Repositories;
@@ -75,4 +78,13 @@ public class PlatformaService(IPlatformaRepository platformaRepository) : IPlatf
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
+    
+    public async Task<ServiceResult<bool>> CreatePlatforma(int id, string nazwa, IFormFile logo)
+    {
+        if (string.IsNullOrEmpty(nazwa))
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Nazwa platformy nie może być pusta."));
+        var result = await platformaRepository.CreatePlatforma(id, nazwa, await WspolneFunkcje.NormalizujObraz(logo));
+        return ServiceResult<bool>.Created(result);
+    }
+    
 }

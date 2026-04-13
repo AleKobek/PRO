@@ -12,4 +12,5 @@ public interface IPlatformaService
     public Task<ServiceResult<ICollection<PlatformaUzytkownikaDTO>>> GetPlatformyUzytkownika(int idUzytkownika);
     public Task<ServiceResult<bool>> UpdatePlatformyUzytkownika(int idUzytkownika, List<UzytkownikPlatforma> nowePlatformy);
     public Task<ServiceResult<bool>> UsunPlatformyUzytkownika(int idUzytkownika);
+    public Task<ServiceResult<bool>> CreatePlatforma(int id, string nazwa, IFormFile logo);
 }

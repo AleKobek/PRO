@@ -82,4 +82,17 @@ public class PlatformaRepository(AppDbContext context) : IPlatformaRepository{
         await context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> CreatePlatforma(int id, string nazwa, byte[] logo)
+    {
+        var platforma = new Platforma
+        {
+            Id = id,
+            Nazwa = nazwa,
+            Logo = logo
+        };
+        context.Platforma.Add(platforma);
+        await context.SaveChangesAsync();
+        return true;
+    }
 }

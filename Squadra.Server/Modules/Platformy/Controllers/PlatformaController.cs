@@ -76,4 +76,19 @@ public class PlatformaController(
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
+
+    [HttpPost("{id:int}")]
+    [EndpointSummary("Tworzy nową platformę")]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> CreatePlatforma(int id, string nazwa, IFormFile logo)
+    {
+        var result = await platformaService.CreatePlatforma(id, nazwa, logo);
+        return result.StatusCode switch
+        {
+            201 => CreatedAtAction(nameof(GetPlatforma), new { id }, null),
+            400 => BadRequest(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
 }
