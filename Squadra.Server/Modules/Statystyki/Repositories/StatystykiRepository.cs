@@ -27,7 +27,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
             .Where(x =>
                 x.UzytkownikId == idUzytkownika &&
                 x.Statystyka.Kategoria.IdGry == idGry &&
-                x.Statystyka.Kategoria.CzyToCzasRozgrywki
+                x.Statystyka.CzyToCzasRozgrywki
                 && x.Statystyka.RolaId == null)
             .Select(x => x.Wartosc)
             .FirstOrDefaultAsync();
@@ -48,7 +48,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
             .ThenInclude(x => x.Kategoria)
             .Where(x =>
                 x.UzytkownikId == idUzytkownika &&
-                x.Statystyka.Kategoria.CzyToCzasRozgrywki
+                x.Statystyka.CzyToCzasRozgrywki
                 && x.Statystyka.RolaId == null)
             .Select(x => new CzasRozgrywkiDTO(x.Statystyka.Kategoria.IdGry, int.Parse(x.Wartosc)))
             .ToListAsync();

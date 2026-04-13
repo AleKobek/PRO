@@ -28,12 +28,6 @@ public class KategoriaEFConfig : IEntityTypeConfiguration<Kategoria>
             .IsRequired();
         
         builder
-            .Property(x => x.CzyToCzasRozgrywki)
-            .HasColumnName("czy_to_czas_rozgrywki")
-            .IsRequired()
-            .HasDefaultValue(false);
-        
-        builder
             .HasOne(x => x.Gra)
             .WithMany(x => x.KategoriaCollection)
             .HasForeignKey(x => x.IdGry)

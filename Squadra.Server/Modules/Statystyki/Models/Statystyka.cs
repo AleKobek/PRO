@@ -6,6 +6,7 @@ public class Statystyka
     public string Nazwa { get; set; }
     public int KategoriaId { get; set; }
     public int? RolaId { get; set; }
+    public bool CzyToCzasRozgrywki { get; set; }
     
     public virtual Kategoria Kategoria { get; set; }
     public virtual Rola? Rola { get; set; }

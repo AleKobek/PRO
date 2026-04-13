@@ -30,6 +30,12 @@ public class StatystykaEFConfig : IEntityTypeConfiguration<Statystyka>
         builder
             .Property(x => x.RolaId)
             .HasColumnName("id_roli");
+        
+        builder
+            .Property(x => x.CzyToCzasRozgrywki)
+            .HasColumnName("czy_to_czas_rozgrywki")
+            .IsRequired()
+            .HasDefaultValue(false);
 
         builder
             .HasOne(x => x.Kategoria)
