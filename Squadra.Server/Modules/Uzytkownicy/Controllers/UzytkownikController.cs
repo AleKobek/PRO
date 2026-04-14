@@ -13,7 +13,9 @@ namespace Squadra.Server.Modules.Uzytkownicy.Controllers;
 [Route("api/[controller]")]
 [ApiController]
 [Authorize]
-public class UzytkownikController(IUzytkownikService uzytkownikService,
+public class UzytkownikController(
+    IUzytkownikService uzytkownikService, 
+    IUsunKontoService usunKontoService,
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
     [HttpGet("wszyscy")]
@@ -188,12 +190,12 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
     
     [HttpDelete("{id:int}")]
     [Authorize]
-    [EndpointSummary("Usuwa użytkownika o podanym id")]
+    [EndpointSummary("Usuwa konto użytkownika o podanym id")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-    public async Task<IActionResult> DeleteUzytkownik(int id)
+    public async Task<IActionResult> DeleteKonto(int id)
     {
         
         // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
@@ -205,13 +207,13 @@ public class UzytkownikController(IUzytkownikService uzytkownikService,
         if (uzytkownik.Id != id)
             return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz usunąć konta innego użytkownika.");
         
-        var result = await uzytkownikService.DeleteUzytkownik(id);
+        var result = await usunKontoService.UsunKonto(id);
 
         return result.StatusCode switch
         {
             204 => NoContent(),
             400 => BadRequest(result.Errors[0].Message),
-            404 => NotFound(),
+            404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }

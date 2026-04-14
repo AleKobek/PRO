@@ -175,8 +175,6 @@ public class UzytkownikRepository(
         // zaczynamy transakcję
         await using var transaction = await appDbContext.Database.BeginTransactionAsync();
         await profilRepository.DeleteProfil(id); // usuwamy jego profil
-        await powiadomienieRepository.DeletePowiadomieniaUzytkownika(id); // usuwamy jego powiadomienia
-        await znajomiRepository.DeleteZnajomosciUzytkownika(id); // usuwamy jego znajomości
         await userManager.DeleteAsync(uzytkownik); // usuwamy użytkownika
         // kończymy transakcję
         await transaction.CommitAsync();
