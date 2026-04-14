@@ -65,6 +65,19 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         
     }
 
+    public async Task<ServiceResult<bool>> DeletePowiadomieniaUzytkownika(int idUzytkownika)
+    {
+        if(idUzytkownika < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika));
+        // sprawdzamy, czy taki użytkownik istnieje
+        
+        var uzytkownik = await uzytkownikService.GetUzytkownik(idUzytkownika);
+        if (uzytkownik.StatusCode != 200)
+            return ServiceResult<bool>.NotFound(uzytkownik.Errors[0]);
+        
+        // jak tu dochodzimy, wszystko jest git
+        return ServiceResult<bool>.NoContent(await powiadomienieRepository.DeletePowiadomieniaUzytkownika(idUzytkownika));
+    }
+
         // robimy rozpatrzenie odpowiedzi na powiadomienie. Jeżeli jest to drugie, to reagujemy inaczej niż w przypadku reszty (na ten moment), bo wymagana jest akcja
         // jeżeli to typ "zaproszenie do znajomych", czyZaakceptowane nie jest null
 
