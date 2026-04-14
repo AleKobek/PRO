@@ -71,23 +71,30 @@ public class IntegracjeZewnetrzneService(
         if (idNaZewnetrznymSerwisie == null)
             return ServiceResult<bool>.BadRequest(new ErrorItem("Użytkownik o id: " + idUzytkownika + " nie jest połączony z zewnętrznym serwisem."));
         
-        var transakcja = await context.Database.BeginTransactionAsync();
+        // Jeśli transakcja już istnieje (np. z UsunKonto), nie otwieramy nowej
+        var czyToNowaTransakcja = context.Database.CurrentTransaction == null;
+        var transakcja = czyToNowaTransakcja 
+            ? await context.Database.BeginTransactionAsync() 
+            : null;
 
         var wyczyscDaneResult = await WyczyscCaleZintegrowaneDaneUzytkownika(idUzytkownika);
         if (!wyczyscDaneResult.Succeeded)
         {
-            await transakcja.RollbackAsync();
+            if (czyToNowaTransakcja)
+                await transakcja!.RollbackAsync();
             return wyczyscDaneResult;
         }
         
         var result = await uzytkownikService.UpdateIdNaZewnetrznymSerwisie(idUzytkownika, idNaZewnetrznymSerwisie);
         if (!result.Succeeded)
         {
-            await transakcja.RollbackAsync();
+            if (czyToNowaTransakcja)
+                await transakcja!.RollbackAsync();
             return result;
         }
         
-        await transakcja.CommitAsync();
+        if (czyToNowaTransakcja)
+            await transakcja!.CommitAsync();
 
         return ServiceResult<bool>.Ok(true);
 
@@ -136,31 +143,37 @@ public class IntegracjeZewnetrzneService(
     
     private async Task<ServiceResult<bool>> WyczyscCaleZintegrowaneDaneUzytkownika(int idUzytkownika)
     {
-        
-        var transakcja = await context.Database.BeginTransactionAsync();
+        var czyToNowaTransakcja = context.Database.CurrentTransaction == null;
+        var transakcja = czyToNowaTransakcja 
+            ? await context.Database.BeginTransactionAsync() 
+            : null;
         
         var wyczyscBibliotekeResult = await bibliotekaGierService.WyczyscBibliotekeUzytkownika(idUzytkownika);
         if (!wyczyscBibliotekeResult.Succeeded)
         {
-            await transakcja.RollbackAsync();
+            if (czyToNowaTransakcja)
+                await transakcja!.RollbackAsync();
             return wyczyscBibliotekeResult;
         }
 
         var wyczyscPlatformyResult = await platformaService.UsunPlatformyUzytkownika(idUzytkownika);
         if (!wyczyscPlatformyResult.Succeeded)
         {
-            await transakcja.RollbackAsync();
+            if (czyToNowaTransakcja)
+                await transakcja!.RollbackAsync();
             return wyczyscPlatformyResult;
         }
 
         var wyczyscStatystykiResult = await statystykiService.UsunStatystykiUzytkownika(idUzytkownika);
         if (!wyczyscStatystykiResult.Succeeded)
         {
-            await transakcja.RollbackAsync();
+            if (czyToNowaTransakcja)
+                await transakcja!.RollbackAsync();
             return wyczyscStatystykiResult;
         }
         
-        await transakcja.CommitAsync();
+        if (czyToNowaTransakcja)
+            await transakcja!.CommitAsync();
 
         return ServiceResult<bool>.Ok(true);
     }
