@@ -172,12 +172,8 @@ public class UzytkownikRepository(
     {
         var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
         if(uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + id + " nie istnieje");
-        // zaczynamy transakcję
-        await using var transaction = await appDbContext.Database.BeginTransactionAsync();
-        await profilRepository.DeleteProfil(id); // usuwamy jego profil
-        await userManager.DeleteAsync(uzytkownik); // usuwamy użytkownika
-        // kończymy transakcję
-        await transaction.CommitAsync();
+
+        await userManager.DeleteAsync(uzytkownik); 
         await appDbContext.SaveChangesAsync();
     }
     

@@ -1,12 +1,19 @@
 ﻿using System.Text.RegularExpressions;
+using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Profile.Repositories;
+using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
 using Squadra.Server.Modules.Uzytkownicy.Repositories;
 
 namespace Squadra.Server.Modules.Uzytkownicy.Services;
 
-public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUzytkownikService
+public class UzytkownikService(
+    IUzytkownikRepository uzytkownikRepository,
+    IProfilService profilService,
+    IProfilRepository profilRepository,
+    AppDbContext context) : IUzytkownikService
 {
     public async Task<ServiceResult<ICollection<UzytkownikResDto>>> GetUzytkownicy()
     {
@@ -149,6 +156,10 @@ public class UzytkownikService(IUzytkownikRepository uzytkownikRepository) : IUz
         if(id < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Niepoprawne id użytkownika: " + id));
         try
         {
+            // nie trzeba tworzyć transakcji, bo jest ona w usuwaniu konta
+            var result = await profilService.DeleteProfil(id);
+            if (!result.Succeeded) return result;
+            
             await uzytkownikRepository.DeleteUzytkownik(id);
         }catch(NieZnalezionoWBazieException e){
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
