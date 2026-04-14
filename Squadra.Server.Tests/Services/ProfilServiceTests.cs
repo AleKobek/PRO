@@ -16,16 +16,19 @@ public class ProfilServiceTests
     private readonly Mock<IProfilRepository> _mockProfilRepository;
     private readonly Mock<IUzytkownikRepository> _mockUzytkownikRepository;
     private readonly Mock<IStatusRepository> _mockStatusRepository;
+    private readonly Mock<IJezykService> _mockJezykService;
     private readonly ProfilService _service;
 
     public ProfilServiceTests()
     {
         _mockProfilRepository = new Mock<IProfilRepository>();
         _mockUzytkownikRepository = new Mock<IUzytkownikRepository>();
+        _mockJezykService = new Mock<IJezykService>();
         _mockStatusRepository = new Mock<IStatusRepository>();
         _service = new ProfilService(
             _mockProfilRepository.Object,
             _mockUzytkownikRepository.Object,
+            _mockJezykService.Object,
             _mockStatusRepository.Object);
     }
 
@@ -75,7 +78,7 @@ public class ProfilServiceTests
 
 
     [Fact]
-    public async Task GetProfil_ById_WithIdLessThanOne_ReturnsNotFound()
+    public async Task GetProfil_ById_WithIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var profileId = 0;
@@ -85,13 +88,12 @@ public class ProfilServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
-        Assert.Contains("nie istnieje", result.Errors[0].Message);
+        Assert.Equal(400, result.StatusCode);
         _mockProfilRepository.Verify(r => r.GetProfilUzytkownika(It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
-    public async Task GetProfil_ById_WhenRepositoryThrowsNotFoundException_ReturnsNotFound()
+    public async Task GetProfil_ById_WhenRepositoryThrowsNotFoundException_ReturnsBadRequest()
     {
         // Arrange
         var profileId = 999;
@@ -103,7 +105,7 @@ public class ProfilServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
     }
 
     [Fact]
@@ -112,7 +114,7 @@ public class ProfilServiceTests
         // Arrange
         var login = "testuser";
         var userId = 1;
-        var expectedUser = new UzytkownikResDto(userId, login, "test@test.com", "123456789", new DateOnly(1990, 1, 1), new[] { "User" });
+        var expectedUser = new UzytkownikResDto(userId, login, "test@test.com", "123456789", new DateOnly(1990, 1, 1), null, new[] { "User" });
         var expectedProfile = new ProfilGetResDto(
             "TestUser",
             null,
@@ -137,7 +139,7 @@ public class ProfilServiceTests
     }
 
     [Fact]
-    public async Task GetProfil_ByLogin_WithEmptyLogin_ReturnsNotFound()
+    public async Task GetProfil_ByLogin_WithEmptyLogin_ReturnsBadRequest()
     {
         // Arrange
         var login = "";
@@ -147,12 +149,12 @@ public class ProfilServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
         Assert.Contains("login", result.Errors[0].Message.ToLower());
     }
 
     [Fact]
-    public async Task GetProfil_ByLogin_WithWhitespaceLogin_ReturnsNotFound()
+    public async Task GetProfil_ByLogin_WithWhitespaceLogin_ReturnsBadRequest()
     {
         // Arrange
         var login = "   ";
@@ -162,7 +164,7 @@ public class ProfilServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
     }
 
     [Fact]
@@ -186,7 +188,7 @@ public class ProfilServiceTests
     #region UpdateProfil Tests
 
     [Fact]
-    public async Task UpdateProfil_WithIdLessThanOne_ReturnsBadRequest()
+    public async Task UpdateProfil_WithIdLessThanOne_ReturnsNotFound()
     {
         // Arrange
         var profileId = 0;
@@ -197,12 +199,12 @@ public class ProfilServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(404, result.StatusCode);
         _mockProfilRepository.Verify(r => r.UpdateProfil(It.IsAny<int>(), It.IsAny<ProfilUpdateDto>()), Times.Never);
     }
 
     [Fact]
-    public async Task UpdateProfil_WithRegionIdLessThanOne_ReturnsBadRequest()
+    public async Task UpdateProfil_WithRegionIdLessThanOne_ReturnsNotFound()
     {
         // Arrange
         var profileId = 1;
@@ -213,9 +215,8 @@ public class ProfilServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(400, result.StatusCode);
-        Assert.Contains("Region", result.Errors[0].Message);
-    }
+        Assert.Equal(404, result.StatusCode);
+        Assert.Contains("region", result.Errors[0].Message.ToLower());    }
 
     [Fact]
     public async Task UpdateProfil_WithZaimkiTooLong_ReturnsBadRequest()

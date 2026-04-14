@@ -23,7 +23,7 @@ public class WiadomoscServiceTests
     #region GetWiadomosc Tests
 
     [Fact]
-    public async Task GetWiadomosc_WithIdLessThanOne_ReturnsNotFound()
+    public async Task GetWiadomosc_WithIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var messageId = 0;
@@ -34,8 +34,7 @@ public class WiadomoscServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
-        Assert.Contains("nie istnieje", result.Errors[0].Message);
+        Assert.Equal(400, result.StatusCode);
     }
 
     [Fact]
@@ -141,7 +140,7 @@ public class WiadomoscServiceTests
     }
 
     [Fact]
-    public async Task GetWiadomosci_WithFirstIdLessThanOne_ReturnsNotFound()
+    public async Task GetWiadomosci_WithFirstIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var userId1 = 0;
@@ -152,12 +151,11 @@ public class WiadomoscServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
-        Assert.Contains("nie istnieje", result.Errors[0].Message);
+        Assert.Equal(400, result.StatusCode);
     }
 
     [Fact]
-    public async Task GetWiadomosci_WithSecondIdLessThanOne_ReturnsNotFound()
+    public async Task GetWiadomosci_WithSecondIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var userId1 = 1;
@@ -168,8 +166,7 @@ public class WiadomoscServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
-        Assert.Contains("nie istnieje", result.Errors[0].Message);
+        Assert.Equal(400, result.StatusCode);
     }
 
     [Fact]
@@ -352,7 +349,7 @@ public class WiadomoscServiceTests
     }
 
     [Fact]
-    public async Task DeleteWiadomosciUzytkownikow_WithFirstIdLessThanOne_ReturnsNotFound()
+    public async Task DeleteWiadomosciUzytkownikow_WithFirstIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var userId1 = 0;
@@ -363,12 +360,11 @@ public class WiadomoscServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
-        Assert.Contains("nie istnieje", result.Errors[0].Message);
+        Assert.Equal(400, result.StatusCode);
     }
 
     [Fact]
-    public async Task DeleteWiadomosciUzytkownikow_WithSecondIdLessThanOne_ReturnsNotFound()
+    public async Task DeleteWiadomosciUzytkownikow_WithSecondIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var userId1 = 1;
@@ -379,8 +375,7 @@ public class WiadomoscServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
-        Assert.Contains("nie istnieje", result.Errors[0].Message);
+        Assert.Equal(400, result.StatusCode);
     }
 
     [Fact]

@@ -1,5 +1,6 @@
 using Moq;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
 using Squadra.Server.Modules.Uzytkownicy.Repositories;
 using Squadra.Server.Modules.Uzytkownicy.Services;
@@ -10,12 +11,14 @@ namespace Squadra.Server.Tests.Services;
 public class UzytkownikServiceTests
 {
     private readonly Mock<IUzytkownikRepository> _mockRepository;
+    private readonly Mock<IProfilService> _mockProfilService;
     private readonly UzytkownikService _service;
 
     public UzytkownikServiceTests()
     {
         _mockRepository = new Mock<IUzytkownikRepository>();
-        _service = new UzytkownikService(_mockRepository.Object);
+        _mockProfilService = new Mock<IProfilService>();
+        _service = new UzytkownikService(_mockRepository.Object, _mockProfilService.Object);
     }
 
     #region GetUzytkownik Tests
@@ -25,7 +28,7 @@ public class UzytkownikServiceTests
     {
         // Arrange
         var userId = 5;
-        var expectedUser = new UzytkownikResDto(userId, "testuser", "test@example.com", "123456789", new DateOnly(1990, 1, 1), new[] { "User" });
+        var expectedUser = new UzytkownikResDto(userId, "testuser", "test@example.com", "123456789", new DateOnly(1990, 1, 1), null, new[] { "User" });
         _mockRepository.Setup(r => r.GetUzytkownik(userId))
             .ReturnsAsync(expectedUser);
 
@@ -59,7 +62,7 @@ public class UzytkownikServiceTests
     {
         // Arrange
         var login = "testuser";
-        var expectedUser = new UzytkownikResDto(1, login, "test@example.com", "123456789", new DateOnly(1990, 1, 1), new[] { "User" });
+        var expectedUser = new UzytkownikResDto(1, login, "test@example.com", "123456789", new DateOnly(1990, 1, 1), null, new[] { "User" });
         _mockRepository.Setup(r => r.GetUzytkownik(login))
             .ReturnsAsync(expectedUser);
 

@@ -54,12 +54,12 @@ public class ZnajomiServiceTests
     [Theory]
     [InlineData(0)]
     [InlineData(-5)]
-    public async Task GetZnajomiUzytkownika_WithInvalidId_ReturnsNotFound(int userId)
+    public async Task GetZnajomiUzytkownika_WithInvalidId_ReturnsBadRequest(int userId)
     {
         var result = await _service.GetZnajomiUzytkownika(userId);
 
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
         _mockRepository.Verify(r => r.GetZnajomiUzytkownika(It.IsAny<int>()), Times.Never);
     }
 
@@ -138,12 +138,12 @@ public class ZnajomiServiceTests
     [Theory]
     [InlineData(0, 2)]
     [InlineData(1, 0)]
-    public async Task CreateZnajomosc_WithInvalidIds_ReturnsNotFound(int userId1, int userId2)
+    public async Task CreateZnajomosc_WithInvalidIds_ReturnsBadRequestd(int userId1, int userId2)
     {
         var result = await _service.CreateZnajomosc(userId1, userId2);
 
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
     }
 
     [Fact]

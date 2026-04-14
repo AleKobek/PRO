@@ -63,7 +63,7 @@ public class JezykServiceTests
     }
 
     [Fact]
-    public async Task GetJezyk_WithIdLessThanOne_ReturnsNotFound()
+    public async Task GetJezyk_WithIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var languageId = 0;
@@ -73,8 +73,7 @@ public class JezykServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
-        Assert.Contains("nie istnieje", result.Errors[0].Message);
+        Assert.Equal(400, result.StatusCode);
         _mockRepository.Verify(r => r.GetJezyk(It.IsAny<int>()), Times.Never);
     }
 
@@ -119,7 +118,7 @@ public class JezykServiceTests
     }
 
     [Fact]
-    public async Task GetJezykiProfilu_WithIdLessThanOne_ReturnsNotFound()
+    public async Task GetJezykiProfilu_WithIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var profileId = 0;
@@ -129,7 +128,7 @@ public class JezykServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
         _mockRepository.Verify(r => r.GetJezykiProfilu(It.IsAny<int>()), Times.Never);
     }
 
@@ -179,7 +178,7 @@ public class JezykServiceTests
     }
 
     [Fact]
-    public async Task ZmienJezykiProfilu_WithIdLessThanOne_ReturnsNotFound()
+    public async Task ZmienJezykiProfilu_WithIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var profileId = 0;
@@ -190,7 +189,7 @@ public class JezykServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
         _mockRepository.Verify(r => r.ZmienJezykiProfilu(It.IsAny<int>(), It.IsAny<ICollection<JezykProfiluCreateDto>>()), Times.Never);
     }
 

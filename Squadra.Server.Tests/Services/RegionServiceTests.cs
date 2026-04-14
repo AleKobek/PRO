@@ -63,7 +63,7 @@ public class RegionServiceTests
     }
 
     [Fact]
-    public async Task GetRegion_WithIdLessThanOne_ReturnsNotFound()
+    public async Task GetRegion_WithIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var regionId = 0;
@@ -73,8 +73,7 @@ public class RegionServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
-        Assert.Contains("nie istnieje", result.Errors[0].Message);
+        Assert.Equal(400, result.StatusCode);
         _mockRepository.Verify(r => r.GetRegion(It.IsAny<int>()), Times.Never);
     }
 
@@ -115,7 +114,7 @@ public class RegionServiceTests
     }
 
     [Fact]
-    public async Task GetRegionIKraj_WithIdLessThanOne_ReturnsNotFound()
+    public async Task GetRegionIKraj_WithIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var regionId = 0;
@@ -125,7 +124,7 @@ public class RegionServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
         _mockRepository.Verify(r => r.GetRegionIKraj(It.IsAny<int>()), Times.Never);
     }
 

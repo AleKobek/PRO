@@ -217,7 +217,7 @@ public class PowiadomienieServiceTests
     #region CreatePowiadomienie Tests
 
     [Fact]
-    public async Task CreatePowiadomienie_WithInvalidNotificationType_ReturnsNotFound()
+    public async Task CreatePowiadomienie_WithInvalidNotificationType_ReturnsBadRequest()
     {
         // Arrange
         var dto = PowiadomienieCreateDto(0, 1, 2, "TestUser", "Test");
@@ -227,12 +227,12 @@ public class PowiadomienieServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
         Assert.Contains("Typ powiadomienia", result.Errors[0].Message);
     }
 
     [Fact]
-    public async Task CreatePowiadomienie_WithInvalidRelatedObjectId_ReturnsNotFound()
+    public async Task CreatePowiadomienie_WithInvalidRelatedObjectId_ReturnsBadRequest()
     {
         // Arrange
         var dto = PowiadomienieCreateDto(2, 1, 0, "TestUser", "Test");
@@ -242,7 +242,7 @@ public class PowiadomienieServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
         Assert.Contains("Obiekt", result.Errors[0].Message);
     }
 
@@ -269,7 +269,7 @@ public class PowiadomienieServiceTests
     {
         // Arrange
         var dto = PowiadomienieCreateDto(2, 1, 2, "TestUser", "Test");
-        var userDto = new UzytkownikResDto(2, "testuser", "test@test.com", "123456789", new DateOnly(1990, 1, 1), new[] { "User" });
+        var userDto = new UzytkownikResDto(2, "testuser", "test@test.com", "123456789", new DateOnly(1990, 1, 1), null, new[] { "User" });
         var userResult = ServiceResult<UzytkownikResDto>.Ok(userDto);
         
         _mockUzytkownikService.Setup(s => s.GetUzytkownik(2))
@@ -308,7 +308,7 @@ public class PowiadomienieServiceTests
     #region WyslijZaproszenieDoZnajomych Tests
 
     [Fact]
-    public async Task WyslijZaproszenieDoZnajomych_WithEmptyLogin_ReturnsNotFound()
+    public async Task WyslijZaproszenieDoZnajomych_WithEmptyLogin_ReturnsBadRequest()
     {
         // Arrange
         var inviterId = 1;
@@ -319,7 +319,7 @@ public class PowiadomienieServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
         Assert.Contains("login", result.Errors[0].Message.ToLower());
     }
 

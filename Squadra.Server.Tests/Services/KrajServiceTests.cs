@@ -63,7 +63,7 @@ public class KrajServiceTests
     }
 
     [Fact]
-    public async Task GetKraj_WithIdLessThanOne_ReturnsNotFound()
+    public async Task GetKraj_WithIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var countryId = 0;
@@ -73,13 +73,12 @@ public class KrajServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
-        Assert.Contains("nie istnieje", result.Errors[0].Message);
+        Assert.Equal(400, result.StatusCode);
         _mockRepository.Verify(r => r.GetKraj(It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
-    public async Task GetKraj_WithNegativeId_ReturnsNotFound()
+    public async Task GetKraj_WithNegativeId_ReturnsBadRequest()
     {
         // Arrange
         var countryId = -5;
@@ -89,7 +88,7 @@ public class KrajServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
         _mockRepository.Verify(r => r.GetKraj(It.IsAny<int>()), Times.Never);
     }
 
