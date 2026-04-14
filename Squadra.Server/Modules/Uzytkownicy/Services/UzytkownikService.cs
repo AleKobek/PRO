@@ -11,9 +11,7 @@ namespace Squadra.Server.Modules.Uzytkownicy.Services;
 
 public class UzytkownikService(
     IUzytkownikRepository uzytkownikRepository,
-    IProfilService profilService,
-    IProfilRepository profilRepository,
-    AppDbContext context) : IUzytkownikService
+    IProfilService profilService) : IUzytkownikService
 {
     public async Task<ServiceResult<ICollection<UzytkownikResDto>>> GetUzytkownicy()
     {
