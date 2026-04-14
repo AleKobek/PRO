@@ -255,6 +255,55 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
         </>
     )
 
+    if(znajomi.length===0) return (<>
+        <div id = "glowna" className="!p-0 !m-0">
+            {/* znajomi */}
+            <div className="flex flex-col py-4 h-full">
+                <h1>Twoi znajomi</h1>
+                {/* dodaj znajomego */}
+                <div className="flex flex-col items-center py-4">
+                    <button
+                        onClick={() => ustawPokazDodajZnajomego(v => !v)}
+                        className="bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
+                        aria-expanded={pokazDodajZnajomego}
+                        aria-controls="panel-dodaj-znajomego"
+                    >
+                        Dodaj znajomego
+                    </button>
+                </div>
+                {/* lista znajomych */}
+                <div className="border-t-2 border-gray-400">
+                    {znajomi.length===0
+                        ? <p className="p-4 font-light text-gray-700 text-center">
+                            Lista znajomych jest pusta. <br/> Użyj przycisku "dodaj znajomego", aby to zmienić!
+                        </p>
+                        : <ul className="overflow-y-auto">
+                            {znajomi.map((znajomy) => (
+                                <ZnajomyNaLiscieKomponent key={znajomy.idZnajomego} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} przyWyborzeZnajomego={przyWyborzeZnajomego}/>
+                            ))}
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+        {/* overlay dodaj znajomego, renderujemy na wierzchu tej samej strony */}
+        {pokazDodajZnajomego && <PanelDodajZnajomego/>}
+        <ToastContainer
+            containerId={TOAST_CONTAINER_ID}
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />
+    </>);
+
     return (<>
         <div id = "glowna" className="!p-0 !m-0">
             <div className="grid grid-cols-3 h-f">
@@ -274,16 +323,11 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
                     </div>
                     {/* lista znajomych */}
                     <div className="border-t-2 border-gray-400">
-                        {znajomi.length===0
-                            ? <p className="p-4 font-light text-gray-700 text-center">
-                                Lista znajomych jest pusta. <br/> Użyj przycisku "dodaj znajomego", aby to zmienić!
-                            </p>
-                            : <ul className="overflow-y-auto">
-                                {znajomi.map((znajomy) => (
-                                    <ZnajomyNaLiscieKomponent key={znajomy.idZnajomego} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} przyWyborzeZnajomego={przyWyborzeZnajomego}/>
-                                ))}
-                            </ul>
-                        }
+                        <ul className="overflow-y-auto">
+                            {znajomi.map((znajomy) => (
+                                <ZnajomyNaLiscieKomponent key={znajomy.idZnajomego} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} przyWyborzeZnajomego={przyWyborzeZnajomego}/>
+                            ))}
+                        </ul>
                     </div>
                 </div>
                 {/* czat */}
