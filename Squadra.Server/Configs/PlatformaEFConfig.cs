@@ -23,6 +23,7 @@ public class PlatformaEFConfig : IEntityTypeConfiguration<Platforma>
         
         builder
             .Property(x => x.Logo)
+            .HasColumnType("varbinary(max)")
             .HasColumnName("logo")
             .IsRequired();
         
