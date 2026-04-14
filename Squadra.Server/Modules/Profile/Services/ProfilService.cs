@@ -2,6 +2,7 @@
 using SixLabors.ImageSharp.Formats.Jpeg;
 using SixLabors.ImageSharp.Processing;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.DTO.Status;
 using Squadra.Server.Modules.Profile.Repositories;
@@ -13,6 +14,7 @@ namespace Squadra.Server.Modules.Profile.Services;
 public class ProfilService(
     IProfilRepository profilRepository, 
     IUzytkownikRepository uzytkownikRepository,
+    IJezykService jezykService,
     IStatusRepository statusRepository) : IProfilService
 {
     
@@ -120,6 +122,24 @@ public class ProfilService(
             return  ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
+    
+    public async Task<ServiceResult<bool>> DeleteProfil(int id)
+    {
+        if(id < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id profilu: " + id));
+        try
+        {
+            // nie trzeba tworzyć transakcji, bo jest ona przy usuwaniu konta, a nie usuwamy profilu w innych sytuacjach
+            var result = await jezykService.ZmienJezykiProfilu(id, new List<JezykProfiluCreateDto>());
+            if(result.StatusCode == 404) return ServiceResult<bool>.NotFound(result.Errors[0]);
+            await profilRepository.DeleteProfil(id);
+            return ServiceResult<bool>.Ok(true, 204);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
     public async Task<ServiceResult<StatusDto>> GetStatusZBazyProfilu(int id)
     {
         try{
