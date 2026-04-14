@@ -81,7 +81,7 @@ public class PlatformaController(
     [EndpointSummary("Tworzy nową platformę")]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    public async Task<IActionResult> CreatePlatforma(int id, string nazwa, IFormFile logo)
+    public async Task<IActionResult> CreatePlatforma(int id, [FromForm] string nazwa, [FromForm] IFormFile logo)
     {
         var result = await platformaService.CreatePlatforma(id, nazwa, logo);
         return result.StatusCode switch
