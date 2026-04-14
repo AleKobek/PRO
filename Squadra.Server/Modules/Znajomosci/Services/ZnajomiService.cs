@@ -154,6 +154,23 @@ public class ZnajomiService(
         }
     }
     
+    public async Task<ServiceResult<bool>> DeleteZnajomosciUzytkownika(int idUzytkownika)
+    {
+        try
+        {
+            if (idUzytkownika < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika));
+            
+            var res = await profilService.GetProfil(idUzytkownika); // jeżeli użytkownik nie istnieje, to profil też nie
+            if(!res.Succeeded) return ServiceResult<bool>.NotFound(res.Errors[0]);
+            
+            return ServiceResult<bool>.NoContent(await znajomiRepository.DeleteZnajomosciUzytkownika(idUzytkownika));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
     // aktualizujemy datę ostatniego otwarcia czatu między dwoma użytkownikami, gdy użytkownik otworzy czat
     public async Task<ServiceResult<bool>> ZaktualizujOstatnieOtwarcieCzatu(int idOtwierajacego, int idZnajomego)
     {

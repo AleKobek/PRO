@@ -12,5 +12,6 @@ public interface IZnajomiService
     public Task<ServiceResult<bool>> CzyJestZnajomosc(int idUzytkownika1, int idUzytkownika2);
     public Task<ServiceResult<bool>> CreateZnajomosc(int idUzytkownika1, int idUzytkownika2);
     public Task<ServiceResult<bool>> DeleteZnajomosc(int idUzytkownikaInicjujacego, int idUzytkownika2);
+    public Task<ServiceResult<bool>> DeleteZnajomosciUzytkownika(int idUzytkownika);
     public Task<ServiceResult<bool>> ZaktualizujOstatnieOtwarcieCzatu(int idOtwierajacego, int idZnajomego);
 }
