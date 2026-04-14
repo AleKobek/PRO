@@ -38,6 +38,7 @@ public class UzytkownikRepository(
                 uzytkownik.Email ?? string.Empty,
                 uzytkownik.PhoneNumber,
                 uzytkownik.DataUrodzenia,
+                uzytkownik.IdNaZewnetrznymSerwisie,
                 role
             ));
         }
@@ -53,7 +54,7 @@ public class UzytkownikRepository(
         var role = (await userManager.GetRolesAsync(uzytkownik)).ToArray();
 
         
-        return new UzytkownikResDto(uzytkownik.Id, uzytkownik.UserName ?? string.Empty, uzytkownik.Email ?? string.Empty, uzytkownik.PhoneNumber, uzytkownik.DataUrodzenia, role);
+        return new UzytkownikResDto(uzytkownik.Id, uzytkownik.UserName ?? string.Empty, uzytkownik.Email ?? string.Empty, uzytkownik.PhoneNumber, uzytkownik.DataUrodzenia, uzytkownik.IdNaZewnetrznymSerwisie, role);
     }
 
     public async Task<UzytkownikResDto> GetUzytkownik(string login)
@@ -64,7 +65,7 @@ public class UzytkownikRepository(
 
         var role = (await userManager.GetRolesAsync(uzytkownik)).ToArray();
         
-        return new UzytkownikResDto(uzytkownik.Id, uzytkownik.UserName ?? string.Empty, uzytkownik.Email ?? string.Empty, uzytkownik.PhoneNumber, uzytkownik.DataUrodzenia, role);
+        return new UzytkownikResDto(uzytkownik.Id, uzytkownik.UserName ?? string.Empty, uzytkownik.Email ?? string.Empty, uzytkownik.PhoneNumber, uzytkownik.DataUrodzenia, uzytkownik.IdNaZewnetrznymSerwisie, role);
     }
 
     public async Task<DateTime?> GetOstatniaAktywnoscUzytkownika(int id)

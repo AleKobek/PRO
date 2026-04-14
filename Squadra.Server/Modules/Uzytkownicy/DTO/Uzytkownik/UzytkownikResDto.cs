@@ -9,5 +9,6 @@ public record UzytkownikResDto
     string Email,
     string? NumerTelefonu,
     DateOnly? DataUrodzenia,
+    int? IdNaZewnetrznymSerwisie,
     string[] Role
 );
