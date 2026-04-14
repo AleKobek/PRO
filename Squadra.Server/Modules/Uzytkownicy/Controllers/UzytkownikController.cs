@@ -188,24 +188,46 @@ public class UzytkownikController(
     }
     
     
-    [HttpDelete("{id:int}")]
+    [HttpDelete]
     [Authorize]
-    [EndpointSummary("Usuwa konto użytkownika o podanym id")]
+    [EndpointSummary("Usuwa konto zalogowanego użytkownika")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-    public async Task<IActionResult> DeleteKonto(int id)
+    public async Task<IActionResult> DeleteKonto()
     {
         
         // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await usunKontoService.UsunKonto(uzytkownik.Id);
 
-        // porównujemy id, jeżeli ktoś próbuje zedytować nie swój 
-        if (uzytkownik.Id != id)
-            return StatusCode(StatusCodes.Status403Forbidden, "Nie możesz usunąć konta innego użytkownika.");
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpDelete("{id:int}")]
+    [Authorize (Roles = "Admin")]
+    [EndpointSummary("Usuwa konto użytkownika o podanym id - tylko dla admina")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    public async Task<IActionResult> DeleteKontoAdmin(int id)
+    {
+        
+        // User to ClaimsPrincipal, który ASP.NET Core wypełnia na podstawie cookie (tu Identity cookie)
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
         
         var result = await usunKontoService.UsunKonto(id);
 
