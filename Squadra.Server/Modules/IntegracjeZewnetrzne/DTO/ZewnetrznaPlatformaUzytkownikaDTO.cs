@@ -2,5 +2,4 @@
 
 public record ZewnetrznaPlatformaUzytkownikaDTO(
     int ZewnetrzneIdUzytkownika,
-    int PlatformaId,
-    string PseudonimNaPlatformie);
+    int PlatformaId);

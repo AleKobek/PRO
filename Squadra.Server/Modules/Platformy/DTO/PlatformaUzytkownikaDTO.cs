@@ -3,6 +3,5 @@
 public record PlatformaUzytkownikaDTO(
     int IdPlatformy,
     string Nazwa,
-    byte[] Logo,
-    string PseudonimNaPlatformie
+    byte[] Logo
 );

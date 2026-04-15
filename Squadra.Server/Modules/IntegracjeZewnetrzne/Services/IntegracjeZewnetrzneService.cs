@@ -214,8 +214,8 @@ public class IntegracjeZewnetrzneService(
             var zewnetrznePlatformy = await integracjeZewnetrzneRepository.GetPlatformyUzytkownika(idNaZewnetrznymSerwisie);
             var platformy = zewnetrznePlatformy.Select(p => new UzytkownikPlatforma
             {
+                UzytkownikId = idUzytkownika,
                 PlatformaId = p.PlatformaId,
-                PseudonimNaPlatformie = p.PseudonimNaPlatformie
             }).ToList();
 
             var wynik = await platformaService.UpdatePlatformyUzytkownika(idUzytkownika, platformy);

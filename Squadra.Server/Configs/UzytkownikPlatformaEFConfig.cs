@@ -22,11 +22,6 @@ public class UzytkownikPlatformaEFConfig : IEntityTypeConfiguration<UzytkownikPl
             .Property(x => x.UzytkownikId)
             .HasColumnName("id_uzytkownika");
         
-        builder
-            .Property(x => x.PseudonimNaPlatformie)
-            .HasColumnName("pseudonim_na_platformie")
-            .HasMaxLength(40)
-            .IsRequired();
 
         builder
             .HasOne<Platforma>(x => x.Platforma)

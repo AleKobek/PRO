@@ -36,8 +36,7 @@ public class PlatformaRepository(AppDbContext context) : IPlatformaRepository{
                 platformy.Add(new PlatformaUzytkownikaDTO(
                     up.PlatformaId,
                     platforma.Nazwa,
-                    platforma.Logo,
-                    up.PseudonimNaPlatformie
+                    platforma.Logo
                 ));
             }
             catch (NieZnalezionoWBazieException)

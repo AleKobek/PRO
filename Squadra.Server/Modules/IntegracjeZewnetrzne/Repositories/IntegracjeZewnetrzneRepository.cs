@@ -50,7 +50,7 @@ public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IInt
              
             await using var cmd = new SqlCommand();
             cmd.Connection = con;
-            cmd.CommandText = "SELECT id_platformy, pseudonim_na_platformie FROM zewnetrzne.Uzytkownik_Platforma up " +
+            cmd.CommandText = "SELECT id_platformy FROM zewnetrzne.Uzytkownik_Platforma up " +
                               "WHERE up.id_uzytkownika = @idNaZewnetrzymSerwisie AND up.id_platformy IN (SELECT id FROM Platforma)"; 
             cmd.Parameters.AddWithValue("idNaZewnetrzymSerwisie", idNaZewnetrzymSerwisie);
             await using var reader = await cmd.ExecuteReaderAsync();
@@ -59,12 +59,10 @@ public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IInt
             while (await reader.ReadAsync())
             {
                 var platformaId = (int)reader["id_platformy"];
-                var pseudonimNaPlatformie = reader["pseudonim_na_platformie"].ToString() ?? "";
                 // dodajemy do listy platform użytkownika, które zwrócimy serwisowi
                 platformy.Add(new ZewnetrznaPlatformaUzytkownikaDTO(
                         idNaZewnetrzymSerwisie, 
-                        platformaId, 
-                        pseudonimNaPlatformie
+                        platformaId
                 ));
             }
             
