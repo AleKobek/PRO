@@ -134,13 +134,13 @@ public class UzytkownikService(
         }
     }
 
-    public async Task<ServiceResult<bool>> UpdateIdNaZewnetrznymSerwisie(int id, int? idNaZewnetrznymSerwisie)
+    public async Task<ServiceResult<bool>> UpdateDaneKontaNaZewnetrznymSerwisie(int id, int? idNaZewnetrznymSerwisie, string? loginNaZewnetrznymSerwisie)
     {
         if(id < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Uzytkownik o id " + id + " nie istnieje"));
         if(idNaZewnetrznymSerwisie is < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id na zewnętrznym serwisie: " + idNaZewnetrznymSerwisie));
         try
         {
-            var result = await uzytkownikRepository.UpdateIdNaZewnetrznymSerwisie(id, idNaZewnetrznymSerwisie);
+            var result = await uzytkownikRepository.UpdateDaneKontaNaZewnetrznymSerwisie(id, idNaZewnetrznymSerwisie, loginNaZewnetrznymSerwisie);
             return ServiceResult<bool>.Ok(result, 204);
         }
         catch (NieZnalezionoWBazieException e)

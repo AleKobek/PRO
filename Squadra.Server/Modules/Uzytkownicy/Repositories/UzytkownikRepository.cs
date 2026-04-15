@@ -130,11 +130,12 @@ public class UzytkownikRepository(
         return true;
     }
     
-    public async Task<bool> UpdateIdNaZewnetrznymSerwisie(int id, int? idNaZewnetrznymSerwisie)
+    public async Task<bool> UpdateDaneKontaNaZewnetrznymSerwisie(int id, int? idNaZewnetrznymSerwisie, string? loginNaZewnetrznymSerwisie)
     {
         var uzytkownikDoZmiany = await appDbContext.Uzytkownik.FindAsync(id);
         if(uzytkownikDoZmiany == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + id + " nie istnieje");
         uzytkownikDoZmiany.IdNaZewnetrznymSerwisie = idNaZewnetrznymSerwisie;
+        uzytkownikDoZmiany.LoginNaZewnetrznymSerwisie = loginNaZewnetrznymSerwisie;
         await appDbContext.SaveChangesAsync();
         return true;
     }

@@ -36,10 +36,10 @@ public class IntegracjeZewnetrzneService(
             // tymczasowe, potem usuwamy. to tylko po to, aby przekopiować do bazy
             Console.WriteLine("HASŁO - DO PRZEKOPIOWANIA = " + zahashowaneHaslo);
             
-            var idNaZewnetrznymSerwisie = await integracjeZewnetrzneRepository.SprawdzDaneLogowania(login, zahashowaneHaslo);
-            if(idNaZewnetrznymSerwisie == null)
+            var daneKonta = await integracjeZewnetrzneRepository.SprawdzDaneLogowania(login, zahashowaneHaslo);
+            if(daneKonta == null)
                 return ServiceResult<bool>.Unauthorized(new ErrorItem("Nieprawidłowy login lub hasło dla zewnętrznego serwisu."));
-            var result = await uzytkownikService.UpdateIdNaZewnetrznymSerwisie(idUzytkownika, idNaZewnetrznymSerwisie);
+            var result = await uzytkownikService.UpdateDaneKontaNaZewnetrznymSerwisie(idUzytkownika, daneKonta.id, daneKonta.login);
             if (!result.Succeeded)
                 return result;
             
@@ -85,7 +85,7 @@ public class IntegracjeZewnetrzneService(
             return wyczyscDaneResult;
         }
         
-        var result = await uzytkownikService.UpdateIdNaZewnetrznymSerwisie(idUzytkownika, idNaZewnetrznymSerwisie);
+        var result = await uzytkownikService.UpdateDaneKontaNaZewnetrznymSerwisie(idUzytkownika, null, null);
         if (!result.Succeeded)
         {
             if (czyToNowaTransakcja)

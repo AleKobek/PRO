@@ -15,8 +15,7 @@ public interface IUzytkownikService
     public Task<ServiceResult<bool>> UpdateUzytkownik(int id, UzytkownikUpdateDto dto);
 
     public Task<ServiceResult<bool>> UpdateHaslo(int idUzytkownika, string stareHaslo, string noweHaslo);
-    public Task<ServiceResult<bool>> UpdateIdNaZewnetrznymSerwisie(int id, int? idNaZewnetrznymSerwisie);
-
+    public Task<ServiceResult<bool>> UpdateDaneKontaNaZewnetrznymSerwisie(int id, int? idNaZewnetrznymSerwisie, string? loginNaZewnetrznymSerwisie);
     public Task<ServiceResult<bool>> DeleteUzytkownik(int id);
 
 }

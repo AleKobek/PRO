@@ -8,7 +8,7 @@ namespace Squadra.Server.Modules.IntegracjeZewnetrzne.Repositories;
 public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IIntegracjeZewnetrzneRepository
 {
     
-    public async Task<int?> SprawdzDaneLogowania(string login, string hasloHash)
+    public async Task<DaneZewnetrznegoKontaDTO?> SprawdzDaneLogowania(string login, string hasloHash)
     {
         try
         {
@@ -17,7 +17,7 @@ public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IInt
              
             await using var cmd = new SqlCommand();
             cmd.Connection = con;
-            cmd.CommandText = "SELECT id FROM zewnetrzne.Konto_Na_Zewnetrznym_Serwisie konto WHERE konto.login = @login AND konto.haslo_hash = @hasloHash"; 
+            cmd.CommandText = "SELECT id, login FROM zewnetrzne.Konto_Na_Zewnetrznym_Serwisie konto WHERE konto.login = @login AND konto.haslo_hash = @hasloHash"; 
             cmd.Parameters.AddWithValue("login", login);
             cmd.Parameters.AddWithValue("hasloHash", hasloHash);
             await using var reader = await cmd.ExecuteReaderAsync();
@@ -25,8 +25,9 @@ public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IInt
             if (await reader.ReadAsync())
             {
                 var idNaZewnetrzymSerwisie = (int)reader["id"];
+                var loginNaZewnetrznymSerwisie = reader["login"].ToString() ?? "";
                 con.Close();
-                return idNaZewnetrzymSerwisie;
+                return new DaneZewnetrznegoKontaDTO(idNaZewnetrzymSerwisie, loginNaZewnetrznymSerwisie);
             }
             
             con.Close();

@@ -17,8 +17,8 @@ public interface IUzytkownikRepository
     public Task<DateTime?> GetOstatniaAktywnoscUzytkownika(int id);
 
     public Task<List<string>> UpdateHaslo(int idUzytkownika, string stareHaslo, string noweHaslo);
-    public Task<bool> UpdateIdNaZewnetrznymSerwisie(int id, int? idNaZewnetrznymSerwisie);
 
+    public Task<bool> UpdateDaneKontaNaZewnetrznymSerwisie(int id, int? idNaZewnetrznymSerwisie, string? loginNaZewnetrznymSerwisie);
     public Task DeleteUzytkownik(int id);
     
     Task<bool> CzyLoginIstnieje(int? id, string login);
