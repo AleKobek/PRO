@@ -35,6 +35,6 @@ public class WspieranaGraEFConfig : IEntityTypeConfiguration<WspieranaGra>
             .IsRequired();
             
         
-        builder.ToTable("WspieranaGra");
+        builder.ToTable("Wspierana_gra");
     }
 }

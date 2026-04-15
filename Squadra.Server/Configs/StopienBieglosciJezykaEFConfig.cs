@@ -28,6 +28,6 @@ public class StopienBieglosciJezykaEFConfig : IEntityTypeConfiguration<StopienBi
             .HasColumnName("wartosc")
             .IsRequired();
         
-        builder.ToTable(nameof(StopienBieglosciJezyka));
+        builder.ToTable("Stopien_bieglosci_jezyka");
     }
 }

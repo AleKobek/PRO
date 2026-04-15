@@ -23,6 +23,6 @@ public class TypPowiadomieniaEFConfig : IEntityTypeConfiguration<TypPowiadomieni
             .HasMaxLength(100)
             .IsRequired();
         
-        builder.ToTable(nameof(TypPowiadomienia));
+        builder.ToTable("Typ_powiadomienia");
     }
 }

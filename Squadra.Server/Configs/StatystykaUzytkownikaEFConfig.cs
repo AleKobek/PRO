@@ -43,6 +43,6 @@ public class StatystykaUzytkownikaEFConfiguration :IEntityTypeConfiguration<Stat
             .HasConstraintName("StatystykaUzytkownika_Uzytkownik")
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.ToTable("StatystykaUzytkownika");
+        builder.ToTable("Statystyka_uzytkownika");
     }
 }

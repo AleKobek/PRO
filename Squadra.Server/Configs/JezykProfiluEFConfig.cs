@@ -46,6 +46,6 @@ public class JezykProfiluEFConfig : IEntityTypeConfiguration<JezykProfilu>
             .HasConstraintName("JezykProfilu_StopienBieglosci")
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.ToTable(nameof(JezykProfilu));
+        builder.ToTable("Jezyk_profilu");
     }
 }

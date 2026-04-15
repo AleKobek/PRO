@@ -33,6 +33,6 @@ public class GraUzytkownikaEFConfig : IEntityTypeConfiguration<GraUzytkownika>
             .HasConstraintName("GraUzytkownika_Uzytkownik")
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.ToTable("GraUzytkownika");
+        builder.ToTable("Gra_uzytkownika");
     }
 }

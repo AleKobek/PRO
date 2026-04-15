@@ -34,6 +34,6 @@ public class GraNaPlatformieEFConfig : IEntityTypeConfiguration<GraNaPlatformie>
             .HasConstraintName("GraNaPlatformie_Platforma")
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.ToTable("GraNaPlatformie");
+        builder.ToTable("Gra_na_platformie");
     }
 }

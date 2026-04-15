@@ -21,6 +21,6 @@ public class TypWiadomosciEFConfig : IEntityTypeConfiguration<TypWiadomosci>
             .HasMaxLength(50)
             .IsRequired();
         
-        builder.ToTable(nameof(TypWiadomosci));
+        builder.ToTable("Typ_wiadomosci");
     }
 }

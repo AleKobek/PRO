@@ -131,7 +131,7 @@ public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IInt
             await using var cmd = new SqlCommand();
             cmd.Connection = con;
             cmd.CommandText = "SELECT id_wspieranej_gry FROM zewnetrzne.Gra_Uzytkownika su " +
-                              "WHERE su.id_uzytkownika = @idNaZewnetrzymSerwisie AND su.id_wspieranej_gry IN (SELECT id FROM WspieranaGra)"; 
+                              "WHERE su.id_uzytkownika = @idNaZewnetrzymSerwisie AND su.id_wspieranej_gry IN (SELECT id FROM Wspierana_gra)"; 
             cmd.Parameters.AddWithValue("idNaZewnetrzymSerwisie", idNaZewnetrzymSerwisie);
             await using var reader = await cmd.ExecuteReaderAsync();
             
@@ -168,7 +168,7 @@ public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IInt
             cmd.Connection = con;
             cmd.CommandText = "SELECT id_platformy, id_wspieranej_gry FROM zewnetrzne.Gra_Uzytkownika_Na_Platformie su WHERE " +
                               "su.id_uzytkownika = @idNaZewnetrzymSerwisie AND " +
-                              "su.id_wspieranej_gry IN (SELECT id FROM WspieranaGra) AND " +
+                              "su.id_wspieranej_gry IN (SELECT id FROM Wspierana_gra) AND " +
                               "su.id_platformy IN (SELECT id FROM Platforma)"; 
             cmd.Parameters.AddWithValue("idNaZewnetrzymSerwisie", idNaZewnetrzymSerwisie);
             await using var reader = await cmd.ExecuteReaderAsync();

@@ -42,6 +42,6 @@ public class UzytkownikPlatformaEFConfig : IEntityTypeConfiguration<UzytkownikPl
             .HasConstraintName("UzytkownikPlatforma_Uzytkownik")
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.ToTable(nameof(UzytkownikPlatforma));
+        builder.ToTable("Uzytkownik_platforma");
     }
 }

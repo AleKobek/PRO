@@ -39,6 +39,6 @@ public class GraUzytkownikaNaPlatformieEFConfig : IEntityTypeConfiguration<GraUz
             .HasConstraintName("GraUzytkownikaNaPlatformie_Platforma")
             .OnDelete(DeleteBehavior.Restrict);
         
-        builder.ToTable("GraUzytkownikaNaPlatformie");
+        builder.ToTable("Gra_uzytkownika_na_platformie");
     }
 }
