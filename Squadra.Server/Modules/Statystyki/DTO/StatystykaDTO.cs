@@ -3,7 +3,7 @@
 public record StatystykaDTO(
     int Id,
     string Nazwa,
-    string Wartosc,
+    string? Wartosc,
     double? PorownywalnaWartoscLiczbowa,
     int KategoriaId,
     string KategoriaNazwa,

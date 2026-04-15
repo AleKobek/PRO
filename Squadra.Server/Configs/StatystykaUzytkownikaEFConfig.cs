@@ -22,9 +22,8 @@ public class StatystykaUzytkownikaEFConfiguration :IEntityTypeConfiguration<Stat
         builder
             .Property(x => x.Wartosc)
             .HasColumnName("wartosc")
-            .HasMaxLength(40)
-            .IsRequired();
-
+            .HasMaxLength(40);
+        
         builder
             .Property(x => x.PorownywalnaWartoscLiczbowa)
             .HasColumnName("porownywalna_wartosc_liczbowa");
