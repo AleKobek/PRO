@@ -37,7 +37,12 @@ public class UzytkownikEFConfig : IEntityTypeConfiguration<Uzytkownik>
 
         builder
             .Property(x => x.LoginNaZewnetrznymSerwisie)
+            .HasColumnName("login_na_zewnetrznym_serwisie")
             .HasMaxLength(40);
+        
+        builder
+            .Property(x => x.IdNaZewnetrznymSerwisie)
+            .HasColumnName("id_na_zewnetrznym_serwisie");
 
         builder
             .Property(x => x.PhoneNumber)
