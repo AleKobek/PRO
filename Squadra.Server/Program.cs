@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
 using Squadra.Server.Modules.BibliotekaGier;
+using Squadra.Server.Modules.IntegracjeZewnetrzne;
 using Squadra.Server.Modules.Platformy;
 using Squadra.Server.Modules.Powiadomienia;
 using Squadra.Server.Modules.Profile;
@@ -32,6 +33,7 @@ builder.Services.AddPlatformaModule();
 builder.Services.AddWspieraneGryModule();
 builder.Services.AddBibliotekaGierModule();
 builder.Services.AddStatystykiModule();
+builder.Services.AddIntegracjeZewnetrzneModule();
 
 // ustawiamy Identity
 builder.Services
