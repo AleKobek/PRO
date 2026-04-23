@@ -8,7 +8,7 @@ namespace Squadra.Server.Modules.IntegracjeZewnetrzne.Repositories;
 public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IIntegracjeZewnetrzneRepository
 {
     
-    public async Task<DaneZewnetrznegoKontaDTO?> SprawdzDaneLogowania(string login, string hasloHash)
+    public async Task<DaneZewnetrznegoKontaDTO?> ZwrocDaneKonta(string login)
     {
         try
         {
@@ -17,17 +17,16 @@ public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IInt
              
             await using var cmd = new SqlCommand();
             cmd.Connection = con;
-            cmd.CommandText = "SELECT id, login FROM zewnetrzne.Konto_Na_Zewnetrznym_Serwisie konto WHERE konto.login = @login AND konto.haslo_hash = @hasloHash"; 
+            cmd.CommandText = "SELECT id, haslo_hash FROM zewnetrzne.Konto_Na_Zewnetrznym_Serwisie konto WHERE konto.login = @login;"; 
             cmd.Parameters.AddWithValue("login", login);
-            cmd.Parameters.AddWithValue("hasloHash", hasloHash);
             await using var reader = await cmd.ExecuteReaderAsync();
             
             if (await reader.ReadAsync())
             {
                 var idNaZewnetrzymSerwisie = (int)reader["id"];
-                var loginNaZewnetrznymSerwisie = reader["login"].ToString() ?? "";
+                var hasloHash = reader["haslo_hash"].ToString() ?? "";
                 con.Close();
-                return new DaneZewnetrznegoKontaDTO(idNaZewnetrzymSerwisie, loginNaZewnetrznymSerwisie);
+                return new DaneZewnetrznegoKontaDTO(idNaZewnetrzymSerwisie, hasloHash);
             }
             
             con.Close();
@@ -128,15 +127,15 @@ public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IInt
             // pobierany gry w bibliotece
             await using var cmd = new SqlCommand();
             cmd.Connection = con;
-            cmd.CommandText = "SELECT id_wspieranej_gry FROM zewnetrzne.Gra_Uzytkownika su " +
-                              "WHERE su.id_uzytkownika = @idNaZewnetrzymSerwisie AND su.id_wspieranej_gry IN (SELECT id FROM Wspierana_gra)"; 
+            cmd.CommandText = "SELECT id_gry FROM zewnetrzne.Gra_Uzytkownika su " +
+                              "WHERE su.id_uzytkownika = @idNaZewnetrzymSerwisie AND su.id_gry IN (SELECT id FROM Wspierana_gra)"; 
             cmd.Parameters.AddWithValue("idNaZewnetrzymSerwisie", idNaZewnetrzymSerwisie);
             await using var reader = await cmd.ExecuteReaderAsync();
             
             var gry = new List<ZewnetrznaGraUzytkownikaDTO>();
             while (await reader.ReadAsync())
             {
-                var idGry = (int)reader["id_wspieranej_gry"];
+                var idGry = (int)reader["id_gry"];
                 gry.Add(new ZewnetrznaGraUzytkownikaDTO
                 (
                     idNaZewnetrzymSerwisie,
@@ -164,9 +163,9 @@ public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IInt
             
             await using var cmd = new SqlCommand();
             cmd.Connection = con;
-            cmd.CommandText = "SELECT id_platformy, id_wspieranej_gry FROM zewnetrzne.Gra_Uzytkownika_Na_Platformie su WHERE " +
+            cmd.CommandText = "SELECT id_platformy, id_gry FROM zewnetrzne.Gra_Uzytkownika_Na_Platformie su WHERE " +
                               "su.id_uzytkownika = @idNaZewnetrzymSerwisie AND " +
-                              "su.id_wspieranej_gry IN (SELECT id FROM Wspierana_gra) AND " +
+                              "su.id_gry IN (SELECT id FROM Wspierana_gra) AND " +
                               "su.id_platformy IN (SELECT id FROM Platforma)"; 
             cmd.Parameters.AddWithValue("idNaZewnetrzymSerwisie", idNaZewnetrzymSerwisie);
             await using var reader = await cmd.ExecuteReaderAsync();
@@ -175,7 +174,7 @@ public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IInt
             while (await reader.ReadAsync())
             {
                 var idPlatformy = (int)reader["id_platformy"];
-                var idGry = (int)reader["id_wspieranej_gry"];
+                var idGry = (int)reader["id_gry"];
                 // dodajemy do listy gier na platformie użytkownika, które dodamy do bazy danych, czyli do tabeli GraUzytkownikaNaPlatformie
                 gryNaPlatformie.Add(new ZewnetrznaGraUzytkownikaNaPlatformieDTO
                 (

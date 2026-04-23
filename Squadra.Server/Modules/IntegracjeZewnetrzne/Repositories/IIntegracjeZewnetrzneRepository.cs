@@ -4,7 +4,7 @@ namespace Squadra.Server.Modules.IntegracjeZewnetrzne.Repositories;
 
 public interface IIntegracjeZewnetrzneRepository
 {
-    public Task<DaneZewnetrznegoKontaDTO?> SprawdzDaneLogowania(string login, string hasloHash);
+    public  Task<DaneZewnetrznegoKontaDTO?> ZwrocDaneKonta(string login);
     public Task<ICollection<ZewnetrznaPlatformaUzytkownikaDTO>> GetPlatformyUzytkownika(int idNaZewnetrzymSerwisie);
     public Task<ICollection<ZewnetrznaStatystykaUzytkownikaDTO>> GetStatystykiUzytkownika(int idNaZewnetrzymSerwisie);
     public Task<ICollection<ZewnetrznaGraUzytkownikaDTO>> GetGryUzytkownika(int idNaZewnetrzymSerwisie);

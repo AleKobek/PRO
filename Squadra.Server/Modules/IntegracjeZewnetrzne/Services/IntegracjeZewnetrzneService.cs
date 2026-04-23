@@ -27,19 +27,19 @@ public class IntegracjeZewnetrzneService(
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
         if (uzytkownik == null)
             return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono użytkownika o id: " + idUzytkownika));
-        
+        if(uzytkownik.IdNaZewnetrznymSerwisie != null)
+           return ServiceResult<bool>.BadRequest(new ErrorItem("Użytkownik o id: " + idUzytkownika + " jest już połączony z zewnętrznym serwisem. Przerwij integrację, aby połączyć inne konto."));
         try
         {
-            // hasło haszujemy, bo w bazie zewnętrznego serwisu jest przechowywane zahashowane, więc musimy zahashować to, co użytkownik nam podał, żeby porównać
             var hasher = new PasswordHasher<object>();
-            var zahashowaneHaslo = hasher.HashPassword(null!, haslo);
-            // tymczasowe, potem usuwamy. to tylko po to, aby przekopiować do bazy
-            Console.WriteLine("HASŁO - DO PRZEKOPIOWANIA = " + zahashowaneHaslo);
-            
-            var daneKonta = await integracjeZewnetrzneRepository.SprawdzDaneLogowania(login, zahashowaneHaslo);
+            var daneKonta = await integracjeZewnetrzneRepository.ZwrocDaneKonta(login.ToLower());
             if(daneKonta == null)
                 return ServiceResult<bool>.Unauthorized(new ErrorItem("Nieprawidłowy login lub hasło dla zewnętrznego serwisu."));
-            var result = await uzytkownikService.UpdateDaneKontaNaZewnetrznymSerwisie(idUzytkownika, daneKonta.id, daneKonta.login);
+            var hasloZewnetrznegoSerwisu = daneKonta.HasloHash;
+            var weryfikacjaHasla = hasher.VerifyHashedPassword(null!, hasloZewnetrznegoSerwisu, haslo);
+            if (weryfikacjaHasla == PasswordVerificationResult.Failed)
+                return ServiceResult<bool>.Unauthorized(new ErrorItem("Nieprawidłowy login lub hasło dla zewnętrznego serwisu."));
+            var result = await uzytkownikService.UpdateDaneKontaNaZewnetrznymSerwisie(idUzytkownika, daneKonta.Id, login);
             if (!result.Succeeded)
                 return result;
             
@@ -182,19 +182,19 @@ public class IntegracjeZewnetrzneService(
     {
         try
         {
+            var zewnetrzneGry = await integracjeZewnetrzneRepository.GetGryUzytkownika(idNaZewnetrznymSerwisie);
+            var gry = zewnetrzneGry.Select(g => new GraUzytkownika
+            {
+                GraId = g.IdGry,
+                UzytkownikId = idUzytkownika
+            }).ToList();
+            
             var zewnetrzneGryNaPlatformie =
                 await integracjeZewnetrzneRepository.GetGryUzytkownikaNaPlatformie(idNaZewnetrznymSerwisie);
             var gryNaPlatformie = zewnetrzneGryNaPlatformie.Select(g => new GraUzytkownikaNaPlatformie
             {
                 GraId = g.IdGry,
                 PlatformaId = g.IdPlatformy
-            }).ToList();
-
-            var zewnetrzneGry = await integracjeZewnetrzneRepository.GetGryUzytkownika(idNaZewnetrznymSerwisie);
-            var gry = zewnetrzneGry.Select(g => new GraUzytkownika
-            {
-                GraId = g.IdGry,
-                UzytkownikId = idUzytkownika
             }).ToList();
 
             var wynik = await bibliotekaGierService.UpdateBibliotekeGierUzytkownika(idUzytkownika, gryNaPlatformie,
