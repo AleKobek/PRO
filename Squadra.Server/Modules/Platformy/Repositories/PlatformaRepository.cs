@@ -53,10 +53,6 @@ public class PlatformaRepository(AppDbContext context) : IPlatformaRepository{
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
         if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + idUzytkownika + " nie istnieje.");
         
-            // tutaj się zaczyna, dostajemy listę
-            
-            await using var transaction = await context.Database.BeginTransactionAsync();
-            
             // usuwamy wszystkie stare wpisy z tabeli UzytkownikPlatforma dla danego idUzytkownika
             var starePlatformyUzytkownika = await context.UzytkownikPlatforma.Where(up => up.UzytkownikId == idUzytkownika).ToListAsync();
             context.UzytkownikPlatforma.RemoveRange(starePlatformyUzytkownika);
@@ -64,7 +60,6 @@ public class PlatformaRepository(AppDbContext context) : IPlatformaRepository{
             // dodajemy wszystkie platformy użytkownika do bazy danych
             context.UzytkownikPlatforma.AddRange(nowePlatformy);
             await context.SaveChangesAsync();
-            await transaction.CommitAsync();
             
             return true;
     }

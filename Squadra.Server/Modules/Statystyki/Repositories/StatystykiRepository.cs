@@ -111,7 +111,6 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
         if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + idUzytkownika + " nie istnieje.");
         
-        await using var transaction = await context.Database.BeginTransactionAsync();
         
         // usuwamy wszystkie stare wpisy z tabeli StatystykaUzytkownika dla danego idUzytkownika
         var stareStatystykiUzytkownika = await context.StatystykaUzytkownika.Where(up => up.UzytkownikId == idUzytkownika).ToListAsync();
@@ -120,8 +119,6 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         // dodajemy wszystkie nowe statystyki użytkownika do bazy danych
         context.StatystykaUzytkownika.AddRange(noweStatystyki);
         await context.SaveChangesAsync();
-        
-        await transaction.CommitAsync();
         
         return true;
             

@@ -43,8 +43,6 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
         if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + idUzytkownika + " nie istnieje.");
         
-        await using var transaction = await context.Database.BeginTransactionAsync();
-        
         // usuwamy wszystkie stare wpisy z tabel GraUzytkownikaNaPlatformie i GraUzytkownika dla danego idUzytkownika, aby potem dodać nowe
         
         // najpierw usuwamy gry na platformie
@@ -58,14 +56,18 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
         
         // dodajemy nowe gry użytkownika do bazy danych
         context.GraUzytkownika.AddRange(noweGry);
+        await context.SaveChangesAsync();
+        
+        foreach (var gra in noweGryNaPlatformie)
+        {
+            gra.UzytkownikId = idUzytkownika;
+        }
         
         // potem dodajemy nowe gry na platformie
         context.GraUzytkownikaNaPlatformie.AddRange(noweGryNaPlatformie);
         
         
         await context.SaveChangesAsync();
-        
-        await transaction.CommitAsync();
         
         return true;
     }
