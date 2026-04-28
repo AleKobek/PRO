@@ -50,7 +50,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
                 x.UzytkownikId == idUzytkownika &&
                 x.Statystyka.CzyToCzasRozgrywki
                 && x.Statystyka.RolaId == null)
-            .Select(x => new CzasRozgrywkiDTO(x.Statystyka.Kategoria.IdGry, int.Parse(x.Wartosc)))
+            .Select(x => new CzasRozgrywkiDTO(x.Statystyka.Kategoria.IdGry, (int)Math.Floor(x.PorownywalnaWartoscLiczbowa ?? 0)))
             .ToListAsync();
     }
     
