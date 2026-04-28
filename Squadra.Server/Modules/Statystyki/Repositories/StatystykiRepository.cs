@@ -91,6 +91,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
             .Where(x =>
                 x.UzytkownikId == idUzytkownika &&
                 x.Statystyka.Kategoria.IdGry == idGry)
+            .OrderBy(x => x.StatystykaId)
             .Select(x=> new StatystykaDTO(
                 x.StatystykaId,
                 x.Statystyka.Nazwa,
