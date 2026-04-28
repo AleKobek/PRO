@@ -20,8 +20,6 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
          var gryUzytkownika = context.GraUzytkownika
             .Where(x => x.UzytkownikId == idUzytkownika)
             .Include(x => x.Gra)
-            .ThenInclude(g => g.GraNaPlatformieCollection)
-            .ThenInclude(gp => gp.Platforma)
             .Select(
                 // dzięki tym include możemy iść po tych wirtualnych obiektach, a nie musimy robić dodatkowych zapytań do bazy
                 x => new GraWBiblioteceDTO(
@@ -29,9 +27,10 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
                     x.Gra.Tytul,
                     x.Gra.Gatunek,
                     0, // na razie nie mamy statystyk, więc dajemy 0
-                    x.Gra.GraNaPlatformieCollection
-                        .Select(gp => 
-                            new PlatformaWBiblioteceGierDTO(gp.Platforma.Id, gp.Platforma.Nazwa, gp.Platforma.Logo))
+                    context.GraUzytkownikaNaPlatformie
+                        .Where(gup => gup.UzytkownikId == idUzytkownika && gup.GraId == x.GraId)
+                        .Include(gup => gup.Platforma)
+                        .Select(gup => new PlatformaWBiblioteceGierDTO(gup.Platforma.Id, gup.Platforma.Nazwa, gup.Platforma.Logo))
                         .ToList()
                 )
             ).ToListAsync();
