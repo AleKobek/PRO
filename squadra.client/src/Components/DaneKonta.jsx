@@ -114,7 +114,7 @@ export default function DaneKonta({uzytkownik}) {
                 <li key = {platforma.idPlatformy} className="flex items-center gap-5 mx-4">
                     <img
                         src={"data:image/jpeg;base64," + platforma.logo}
-                        alt="awatar"
+                        alt="logo"
                         className="h-20 w-20 my-3 rounded-full border-4 border-black"
                     />
                     <span className="font-bold">{platforma.nazwa}</span>
