@@ -78,14 +78,12 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
         if (uzytkownik is null)
             throw new NieZnalezionoWBazieException("Użytkownik o id " + idUzytkownika + " nie istnieje.");
         
-        await using var transaction = await context.Database.BeginTransactionAsync();
         var gryUzytkownikaNaPlatformie = context.GraUzytkownikaNaPlatformie.Where(x => x.UzytkownikId == idUzytkownika);
         context.GraUzytkownikaNaPlatformie.RemoveRange(gryUzytkownikaNaPlatformie);
         
         var gryUzytkownika = context.GraUzytkownika.Where(x => x.UzytkownikId == idUzytkownika);
         context.GraUzytkownika.RemoveRange(gryUzytkownika);
         
-        await transaction.CommitAsync();
         await context.SaveChangesAsync();
         
         return true;

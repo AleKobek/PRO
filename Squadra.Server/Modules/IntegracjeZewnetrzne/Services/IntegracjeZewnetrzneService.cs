@@ -143,38 +143,24 @@ public class IntegracjeZewnetrzneService(
     
     private async Task<ServiceResult<bool>> WyczyscCaleZintegrowaneDaneUzytkownika(int idUzytkownika)
     {
-        var czyToNowaTransakcja = context.Database.CurrentTransaction == null;
-        var transakcja = czyToNowaTransakcja 
-            ? await context.Database.BeginTransactionAsync() 
-            : null;
-        
         var wyczyscBibliotekeResult = await bibliotekaGierService.WyczyscBibliotekeUzytkownika(idUzytkownika);
         if (!wyczyscBibliotekeResult.Succeeded)
         {
-            if (czyToNowaTransakcja)
-                await transakcja!.RollbackAsync();
             return wyczyscBibliotekeResult;
         }
 
         var wyczyscPlatformyResult = await platformaService.UsunPlatformyUzytkownika(idUzytkownika);
         if (!wyczyscPlatformyResult.Succeeded)
         {
-            if (czyToNowaTransakcja)
-                await transakcja!.RollbackAsync();
             return wyczyscPlatformyResult;
         }
 
         var wyczyscStatystykiResult = await statystykiService.UsunStatystykiUzytkownika(idUzytkownika);
         if (!wyczyscStatystykiResult.Succeeded)
         {
-            if (czyToNowaTransakcja)
-                await transakcja!.RollbackAsync();
             return wyczyscStatystykiResult;
         }
         
-        if (czyToNowaTransakcja)
-            await transakcja!.CommitAsync();
-
         return ServiceResult<bool>.Ok(true);
     }
     
