@@ -10,5 +10,6 @@ public record UzytkownikResDto
     string? NumerTelefonu,
     DateOnly? DataUrodzenia,
     int? IdNaZewnetrznymSerwisie,
+    string? LoginNaZewnetrznymSerwisie,
     string[] Role
 );
