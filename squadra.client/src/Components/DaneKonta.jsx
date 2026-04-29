@@ -1,4 +1,4 @@
-﻿import {useEffect, useState} from "react";
+﻿import React, {Fragment, useEffect, useState} from "react";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
 
@@ -11,6 +11,7 @@ export default function DaneKonta({uzytkownik}) {
     const [numerTelefonu, ustawNumerTelefonu] = useState("");
     // {id, nazwa}
     const [dataUrodzenia, ustawDateUrodzenia] = useState(null);
+    const [platformy, ustawPlatformy] = useState([]);
 
     useEffect(() => {
 
@@ -43,7 +44,7 @@ export default function DaneKonta({uzytkownik}) {
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;
                 console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania danych profilu', {
+                toast.error('Wystąpił błąd podczas pobierania danych konta', {
                     position: "top-center",
                     autoClose: 5000,
                     hideProgressBar: false,
@@ -59,8 +60,8 @@ export default function DaneKonta({uzytkownik}) {
         };
 
         const podajDaneKonta = async () => {
-            const idUzytkownika = uzytkownik.id;
             const data = await fetchJsonAbort(`${API_BASE_URL}/Uzytkownik/`);
+            const platformy =  await fetchJsonAbort(`${API_BASE_URL}/Platforma/uzytkownik/${uzytkownik.id}`);
 
             // przerywamy działanie funkcji
             if (!alive) return;
@@ -69,6 +70,7 @@ export default function DaneKonta({uzytkownik}) {
             ustawEmail(data.email ?? "");
             ustawNumerTelefonu(data.numerTelefonu ?? "");
             ustawDateUrodzenia(data.dataUrodzenia ?? null);
+            ustawPlatformy(platformy ?? []);
         };
 
         if(!login && !email) {
@@ -86,22 +88,38 @@ export default function DaneKonta({uzytkownik}) {
 
     if(!uzytkownik || !uzytkownik.id) return(<><p>Ładowanie...</p></>);
 
-    return(<div className = "dane-konta">
-        <label>
-            Login:
-            <p id = "login" className= "pole-w-danych-konta">{login}</p>
-        </label>
-        <label>
-            Email:
-            <p id= "email" className= "pole-w-danych-konta">{email}</p>
-        </label>
-        <label>
-            Data urodzenia:
-            <p id = "data-urodzenia" className= "pole-w-danych-konta">{dataUrodzenia ? dataUrodzenia : "Nie określono"}</p>
-        </label>
-        <label>
-            Numer telefonu:
-            <p id = "numer-telefonu" className= "pole-w-danych-konta">{numerTelefonu ? numerTelefonu : "Nie podano"}</p>
-        </label>
+    return(<div className="w-full flex flex-col items-center justify-center">
+        <div className = "dane-konta">
+            <label>
+                Login:
+                <p id = "login" className= "pole-w-danych-konta">{login}</p>
+            </label>
+            <label>
+                Email:
+                <p id= "email" className= "pole-w-danych-konta">{email}</p>
+            </label>
+            <label>
+                Data urodzenia:
+                <p id = "data-urodzenia" className= "pole-w-danych-konta">{dataUrodzenia ? dataUrodzenia : "Nie określono"}</p>
+            </label>
+            <label>
+                Numer telefonu:
+                <p id = "numer-telefonu" className= "pole-w-danych-konta">{numerTelefonu ? numerTelefonu : "Nie podano"}</p>
+            </label>
+        </div>
+        {/*  tutaj będzie lista platform, mapujemy jak w innych listach */}
+        <h3>Platformy</h3>
+        <ul className="items-center justify-center flex-col gap-9 mb-6 border-2 border-black rounded-lg">
+            {platformy.map((platforma) => (
+                <li key = {platforma.idPlatformy} className="flex items-center gap-5 mx-4">
+                    <img
+                        src={"data:image/jpeg;base64," + platforma.logo}
+                        alt="awatar"
+                        className="h-20 w-20 my-3 rounded-full border-4 border-black"
+                    />
+                    <span className="font-bold">{platforma.nazwa}</span>
+                </li>
+            ))}
+        </ul>
     </div>)
 }
