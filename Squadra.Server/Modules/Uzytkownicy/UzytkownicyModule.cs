@@ -10,6 +10,8 @@ public static class UzytkownicyModule
         services.AddScoped<IUzytkownikService, UzytkownikService>();
         services.AddScoped<IUzytkownikRepository, UzytkownikRepository>();
         
+        services.AddScoped<IUsunKontoService, UsunKontoService>();
+        
         return services;
     }
 }
