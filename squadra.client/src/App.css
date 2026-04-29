@@ -117,6 +117,11 @@
     line-height: 1.5;
   }
 
+  #glowna h3 {
+    @apply text-[25px] text-center font-epilogue-semi-bold;
+    line-height: 1.5;
+  }
+
   #glowna h1, #glowna h2, #glowna h3 {
     @apply text-center ;
   }
