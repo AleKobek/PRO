@@ -48,25 +48,25 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         }
     }
     
-    public async Task<ServiceResult<string?>> GetWartoscStatystyki(int idUzytkownika, int idStatystyki)
+    public async Task<ServiceResult<WartoscStatystykiDTO?>> GetWartoscStatystyki(int idUzytkownika, int idStatystyki)
     {
         if (idUzytkownika <= 0)
         {
-            return ServiceResult<string?>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator użytkownika: " + idUzytkownika));
+            return ServiceResult<WartoscStatystykiDTO?>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator użytkownika: " + idUzytkownika));
         }
         if (idStatystyki <= 0)
         {
-            return ServiceResult<string?>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki: " + idStatystyki));
+            return ServiceResult<WartoscStatystykiDTO?>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki: " + idStatystyki));
         }
         
         try
         {
             var result = await statystykiRepository.GetWartoscStatystyki(idUzytkownika, idStatystyki);
-            return ServiceResult<string?>.Ok(result);
+            return ServiceResult<WartoscStatystykiDTO?>.Ok(result);
         }
         catch (NieZnalezionoWBazieException ex)
         {
-            return ServiceResult<string?>.NotFound(new ErrorItem(ex.Message));
+            return ServiceResult<WartoscStatystykiDTO?>.NotFound(new ErrorItem(ex.Message));
         }
     }
     

@@ -55,7 +55,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
     }
     
     // get wartość danej statystyki danego użytkownika
-    public async Task<string?> GetWartoscStatystyki(int idUzytkownika, int idStatystyki)
+    public async Task<WartoscStatystykiDTO?> GetWartoscStatystyki(int idUzytkownika, int idStatystyki)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
         if (uzytkownik is null)
@@ -67,7 +67,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         
         return await context.StatystykaUzytkownika
             .Where(x => x.StatystykaId == idStatystyki && x.UzytkownikId == idUzytkownika)
-            .Select(x => x.Wartosc)
+            .Select(x => new WartoscStatystykiDTO(x.StatystykaId, x.Wartosc, x.PorownywalnaWartoscLiczbowa))
             .FirstOrDefaultAsync();
     }
 
