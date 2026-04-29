@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.BibliotekaGier.Models;
@@ -29,6 +30,8 @@ public class IntegracjeZewnetrzneService(
             return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono użytkownika o id: " + idUzytkownika));
         if(uzytkownik.IdNaZewnetrznymSerwisie != null)
            return ServiceResult<bool>.BadRequest(new ErrorItem("Użytkownik o id: " + idUzytkownika + " jest już połączony z zewnętrznym serwisem. Przerwij integrację, aby połączyć inne konto."));
+        if(await context.Uzytkownik.AnyAsync(x => x.LoginNaZewnetrznymSerwisie != null && x.LoginNaZewnetrznymSerwisie.Equals(login.ToLower())))
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Podany login jest już połączony z innym użytkownikiem."));
         try
         {
             var hasher = new PasswordHasher<object>();
