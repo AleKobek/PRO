@@ -7,6 +7,7 @@ import {useAuth} from "../Context/AuthContext";
 import FormularzKonta from "./FormularzKonta";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
+import EdytujIntegracjeWKoncieKomponent from "./EdytujIntegracjeWKoncieKomponent";
 export default function EdytujKonto() {
 
     const navigate = useNavigate();
@@ -23,7 +24,10 @@ export default function EdytujKonto() {
     
     const [dataUrodzenia, ustawDateUrodzenia] = useState("");
     const [staraDataUrodzenia, ustawStaraDateUrodzenia] = useState("");
-    
+
+    const [zewnetrzneId, ustawZewnetrzneId] = useState(null);
+    const [zewnetrznyLogin, ustawZewnetrznyLogin] = useState("");
+
     const[bladLoginu, ustawBladLoginu] = useState("");
     const[bladEmaila, ustawBladEmaila] = useState("");
     const[bladNumeruTelefonu, ustawBladNumeruTelefonu] = useState("");
@@ -78,6 +82,9 @@ export default function EdytujKonto() {
             
             ustawStaraDateUrodzenia(data.dataUrodzenia ?? "");
             ustawDateUrodzenia(data.dataUrodzenia ?? "");
+
+            ustawZewnetrzneId(data.idNaZewnetrznymSerwisie);
+            ustawZewnetrznyLogin(data.loginNaZewnetrznymSerwisie);
         };
 
         if(!login && !staryEmail) {
@@ -232,7 +239,7 @@ export default function EdytujKonto() {
     )
 
     return (<>
-        <div id = "glowna">
+        <div id = "glowna" className="flex flex-col items-center justify-center">
             <h1>Edytuj konto</h1>
             <button className={"przycisk-nawigacji"} onClick={() => {navigate('/twojeKonto')}}>Powrót do konta</button>
             <br/><br/>
@@ -280,6 +287,8 @@ export default function EdytujKonto() {
                     <span id = "error-ogolny-hasla" className="error-wiadomosc">{bladOgolnyHasla}</span><br/>
                 </form>
             </div>
+            <h3>Zewnętrzny serwis</h3>
+            <EdytujIntegracjeWKoncieKomponent zewnetrzneId={zewnetrzneId} ustawZewnetrzneId={ustawZewnetrzneId} zewnetrznyLogin={zewnetrznyLogin} ustawZewnetrznyLogin={ustawZewnetrznyLogin} />
         </div>
     </>);
 }
