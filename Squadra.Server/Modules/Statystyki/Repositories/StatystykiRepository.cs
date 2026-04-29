@@ -136,4 +136,16 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         await context.SaveChangesAsync();
         return true;
     }
+    
+    public bool CzySpelniaWymagania(ICollection<WartoscStatystykiDTO> wymagania, ICollection<WartoscStatystykiDTO> statystykiDoSprawdzenia) {
+        foreach (var w in wymagania)
+        {
+            var statystyka = statystykiDoSprawdzenia.FirstOrDefault(s => s.IdStatystyki == w.IdStatystyki);
+            if (statystyka == null || statystyka.PorownywalnaWartoscLiczbowa < w.PorownywalnaWartoscLiczbowa)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 }

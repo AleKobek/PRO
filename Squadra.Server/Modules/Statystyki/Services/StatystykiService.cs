@@ -130,4 +130,18 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
             return ServiceResult<bool>.NotFound(new ErrorItem(ex.Message));
         }
     }
+
+    public ServiceResult<bool> CzySpelniaWymagania(ICollection<WartoscStatystykiDTO> wymagania, ICollection<WartoscStatystykiDTO> statystykiDoSprawdzenia)
+    {
+        var czySaBledneIdentyfikatoryWWymaganiach = wymagania.Any(x => x.IdStatystyki <= 0);
+        if (czySaBledneIdentyfikatoryWWymaganiach){
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki w wymaganiach."));
+        }
+        var czySaBledneIdentyfikatoryWStatystykachDoSprawdzenia = statystykiDoSprawdzenia.Any(x => x.IdStatystyki <= 0);
+        if (czySaBledneIdentyfikatoryWStatystykachDoSprawdzenia){
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki w statystykach do sprawdzenia ."));
+        }
+        var result = statystykiRepository.CzySpelniaWymagania(wymagania, statystykiDoSprawdzenia);
+        return ServiceResult<bool>.Ok(result);
+    }
 }
