@@ -43,6 +43,7 @@ export default function FormularzProfilu({
     const [region, ustawRegion] = useState({});
     // przychodzi w postaci {idRegionu, nazwaRegionu, idKraju, nazwaKraju}
     const [opis, ustawOpis] = useState("");
+    const [czyRegionSync, ustawCzyRegionSync] = useState(false); // flaga dla synchronizacji
 
     // SYNC tylko gdy props się zmienia
     useEffect(() => {
@@ -52,8 +53,20 @@ export default function FormularzProfilu({
         ustawOpis(staryOpis ?? "");
 
         ustawKraj(staryKraj && typeof staryKraj === "object" ? staryKraj : {});
-        ustawRegion(staryRegion && typeof staryRegion === "object" ? staryRegion : {});
-    }, [staraListaJezykowUzytkownika, staryPseudonim, stareZaimki, staryOpis, staryKraj, staryRegion]);
+        // Nie ustawiamy regionu tutaj - zrobimy to w następnym efekcie
+    }, [staraListaJezykowUzytkownika, staryPseudonim, stareZaimki, staryOpis, staryKraj]);
+
+    // Ustaw region DOPIERO PO pobraniu regionów z bazy
+    useEffect(() => {
+        if (listaRegionowZBazy.length > 0 && staryRegion && typeof staryRegion === "object" && staryRegion.id && !czyRegionSync) {
+            // Sprawdź czy region z props istnieje na liście
+            const znalezionoRegion = listaRegionowZBazy.find(r => r.id === staryRegion.id);
+            if (znalezionoRegion) {
+                ustawRegion(znalezionoRegion);
+                ustawCzyRegionSync(true); // flaga że już został ustawiony
+            }
+        }
+    }, [listaRegionowZBazy, staryRegion, czyRegionSync]);
 
 
 
@@ -186,10 +199,10 @@ export default function FormularzProfilu({
 
     // jeśli zmieni się lista dostępnych regionów, a wybrany region nie będzie już pasował, to go odznaczamy
     useEffect(() => {
-        if (region?.id && !regionyDoWyboru.some(r => r.id === region.id)) {
+        if (czyRegionSync && region?.id && !regionyDoWyboru.some(r => r.id === region.id)) {
             ustawRegion({});
         }
-    }, [regionyDoWyboru, region?.id]);
+    }, [regionyDoWyboru, region?.id, czyRegionSync]);
 
     /**
      * porównujemy czy użytkownik coś zmienił w swoich listach języków
@@ -223,7 +236,8 @@ export default function FormularzProfilu({
                 pseudonim.trim().length === 0) // pseudonim nie może być pusty       ( (reszta jest opcjonalna)
         }, [pseudonim, staryPseudonim, zaimki, stareZaimki, region?.id, staryRegion?.id, opis, staryOpis, czyListyJezykoweTakieSame]);
     
-    
+
+
     
     return(<form id = "form" name= "formularz-profilu">
         <label>Pseudonim<br/>
