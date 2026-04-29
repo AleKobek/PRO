@@ -1,10 +1,11 @@
-﻿using Squadra.Server.Modules.Shared.Services;
+﻿using Squadra.Server.Modules.IntegracjeZewnetrzne.DTO;
+using Squadra.Server.Modules.Shared.Services;
 
 namespace Squadra.Server.Modules.IntegracjeZewnetrzne.Services;
 
 public interface IIntegracjeZewnetrzneService
 {
-    public Task<ServiceResult<bool>> ZintegrujKonto(int idUzytkownika, string login, string haslo);
+    public Task<ServiceResult<ZintegrujKontoRes>> ZintegrujKonto(int idUzytkownika, string login, string haslo);
     public Task<ServiceResult<bool>> PrzerwijIntegracjeUzytkownika(int idUzytkownika);
     public Task<ServiceResult<bool>> UpdateCaleZintegrowaneDaneUzytkownika(int idUzytkownika);
 }

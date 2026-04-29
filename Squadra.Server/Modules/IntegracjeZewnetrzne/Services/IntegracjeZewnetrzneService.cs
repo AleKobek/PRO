@@ -4,6 +4,7 @@ using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.BibliotekaGier.Models;
 using Squadra.Server.Modules.BibliotekaGier.Services;
+using Squadra.Server.Modules.IntegracjeZewnetrzne.DTO;
 using Squadra.Server.Modules.IntegracjeZewnetrzne.Repositories;
 using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Platformy.Services;
@@ -23,42 +24,42 @@ public class IntegracjeZewnetrzneService(
     IUzytkownikService uzytkownikService) : IIntegracjeZewnetrzneService
 {
     
-    public async Task<ServiceResult<bool>> ZintegrujKonto(int idUzytkownika, string login, string haslo)
+    public async Task<ServiceResult<ZintegrujKontoRes>> ZintegrujKonto(int idUzytkownika, string login, string haslo)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
         if (uzytkownik == null)
-            return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono użytkownika o id: " + idUzytkownika));
+            return ServiceResult<ZintegrujKontoRes>.NotFound(new ErrorItem("Nie znaleziono użytkownika o id: " + idUzytkownika));
         if(uzytkownik.IdNaZewnetrznymSerwisie != null)
-           return ServiceResult<bool>.BadRequest(new ErrorItem("Użytkownik o id: " + idUzytkownika + " jest już połączony z zewnętrznym serwisem. Przerwij integrację, aby połączyć inne konto."));
+           return ServiceResult<ZintegrujKontoRes>.BadRequest(new ErrorItem("Użytkownik o id: " + idUzytkownika + " jest już połączony z zewnętrznym serwisem. Przerwij integrację, aby połączyć inne konto."));
         if(await context.Uzytkownik.AnyAsync(x => x.LoginNaZewnetrznymSerwisie != null && x.LoginNaZewnetrznymSerwisie.Equals(login.ToLower())))
-            return ServiceResult<bool>.BadRequest(new ErrorItem("Podany login jest już połączony z innym użytkownikiem."));
+            return ServiceResult<ZintegrujKontoRes>.BadRequest(new ErrorItem("Podany login jest już połączony z innym użytkownikiem."));
         try
         {
             var hasher = new PasswordHasher<object>();
             var daneKonta = await integracjeZewnetrzneRepository.ZwrocDaneKonta(login.ToLower());
             if(daneKonta == null)
-                return ServiceResult<bool>.Unauthorized(new ErrorItem("Nieprawidłowy login lub hasło dla zewnętrznego serwisu."));
+                return ServiceResult<ZintegrujKontoRes>.Unauthorized(new ErrorItem("Nieprawidłowy login lub hasło dla zewnętrznego serwisu."));
             var hasloZewnetrznegoSerwisu = daneKonta.HasloHash;
             var weryfikacjaHasla = hasher.VerifyHashedPassword(null!, hasloZewnetrznegoSerwisu, haslo);
             if (weryfikacjaHasla == PasswordVerificationResult.Failed)
-                return ServiceResult<bool>.Unauthorized(new ErrorItem("Nieprawidłowy login lub hasło dla zewnętrznego serwisu."));
+                return ServiceResult<ZintegrujKontoRes>.Unauthorized(new ErrorItem("Nieprawidłowy login lub hasło dla zewnętrznego serwisu."));
             var result = await uzytkownikService.UpdateDaneKontaNaZewnetrznymSerwisie(idUzytkownika, daneKonta.Id, login);
             if (!result.Succeeded)
-                return result;
+                return ServiceResult<ZintegrujKontoRes>.Fail(result.StatusCode, result.Errors);
             
             var result2 = await UpdateCaleZintegrowaneDaneUzytkownika(idUzytkownika);
             if (!result2.Succeeded)
-                return result2;
+                return ServiceResult<ZintegrujKontoRes>.Fail(result2.StatusCode, result2.Errors);
             
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult<ZintegrujKontoRes>.Ok(new ZintegrujKontoRes(daneKonta.Id, login));
         }
         catch (NieZnalezionoWBazieException e)
         {
-            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<ZintegrujKontoRes>.NotFound(new ErrorItem(e.Message));
         }
         catch (BladZewnetrznegoSerwisuException e)
         {
-            return ServiceResult<bool>.Fail(503,
+            return ServiceResult<ZintegrujKontoRes>.Fail(503,
                 new List<ErrorItem> { new("Błąd podczas komunikacji z zewnętrznym serwisem: " + e.Message) });
         }
     }
