@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Squadra.Server.Modules.IntegracjeZewnetrzne.DTO;
 using Squadra.Server.Modules.IntegracjeZewnetrzne.Services;
 using Squadra.Server.Modules.Uzytkownicy.Models;
 
@@ -16,13 +17,13 @@ public class IntegracjeZewnetrzneController(
     [HttpPost]
     [EndpointSummary("Łączy konto uzytkownika z zewnętrznym serwisem na podstawie loginu i hasła")]
     [EndpointDescription("W przypadku sukcesu zewnętrzne id użytkownika jest ustawione na id z tamtego serwisu")]
-    public async Task<IActionResult> ZintegrujKonto(string login, string haslo)
+    public async Task<IActionResult> ZintegrujKonto([FromBody] ZintegrujKontoReq req)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
 
-        var result = await integracjeZewnetrzneService.ZintegrujKonto(uzytkownik.Id, login, haslo);
+        var result = await integracjeZewnetrzneService.ZintegrujKonto(uzytkownik.Id, req.login, req.haslo);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
