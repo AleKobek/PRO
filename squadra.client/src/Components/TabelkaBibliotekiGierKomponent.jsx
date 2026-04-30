@@ -12,6 +12,7 @@ export default function TabelkaBibliotekiGierKomponent({idUzytkownika}) {
 
     const [statystykiGry, ustawStatystykiGry] = useState([]);
     const [idWybranejGry, ustawIdWybranejGry] = useState(null);
+    const [tytulWybranejGry, ustawTytulWybranejGry] = useState("");
 
     useEffect(() => {
 
@@ -132,8 +133,9 @@ export default function TabelkaBibliotekiGierKomponent({idUzytkownika}) {
 
     }
 
-    const przyKliknieciuSzczegoly = async (idGry) => {
+    const przyKliknieciuSzczegoly = async (idGry, tytulGry) => {
         await pobierzStatystykiGry(idGry);
+        ustawTytulWybranejGry(tytulGry)
         ustawPokazPanelStatystyk(true);
     }
 
@@ -149,7 +151,8 @@ export default function TabelkaBibliotekiGierKomponent({idUzytkownika}) {
                     <button onClick={() => ustawPokazPanelStatystyk(false)} className="cursor-pointer">Zamknij</button>
                 </div>
                 <div className="flex flex-col">
-                    <h2 className="text-2xl font-bold mb-4">Statystyki gier</h2>
+                    <h2 className="text-2xl font-bold mb-4">Statystyki dla gry</h2>
+                    <h3>{tytulWybranejGry}</h3>
                     <p>Brak statystyk dla tej gry.</p>
                 </div>
             </div>);
@@ -164,7 +167,8 @@ export default function TabelkaBibliotekiGierKomponent({idUzytkownika}) {
                 <button onClick={() => ustawPokazPanelStatystyk(false)} className="cursor-pointer">Zamknij</button>
             </div>
             <div className="flex flex-col">
-                <h2 className="text-2xl font-bold mb-4">Statystyki gier</h2>
+                <h2 className="text-2xl font-bold">Statystyki dla gry:</h2>
+                <h3 className="mb-4 text-gray-700">{tytulWybranejGry}</h3>
             {/*  wyświetlamy statystyki jako tabelka, dzieląc na kategorie  */}
             {
                 statystykiGry.map((kategoria) => (
@@ -238,7 +242,7 @@ export default function TabelkaBibliotekiGierKomponent({idUzytkownika}) {
                                 <td className="items-center border border-gray-600">
                                     <button
                                         className="text-white bg-blue-900 block mx-auto text-[10px] px-2 py-1 hover:bg-blue-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
-                                        onClick={() => przyKliknieciuSzczegoly(gra.idGry)}
+                                        onClick={() => przyKliknieciuSzczegoly(gra.idGry, gra.tytul)}
                                     >Szczegóły</button>
                                 </td>
                             </tr>
