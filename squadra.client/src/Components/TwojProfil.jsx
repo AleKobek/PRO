@@ -5,6 +5,7 @@ import DaneProfilu from './DaneProfilu';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
+import TabelkaBibliotekiGierKomponent from "./TabelkaBibliotekiGierKomponent";
 export default function TwojProfil() {
     
     const navigate = useNavigate();
@@ -39,6 +40,8 @@ export default function TwojProfil() {
         <div id = "glowna">
             <DaneProfilu idUzytkownika={uzytkownik.id}></DaneProfilu>
             <button className={"przycisk-nawigacji"} onClick={() => navigate('/edytujProfil')}>Edytuj profil</button>
+            <h2 className="mt-10">Biblioteka gier</h2>
+            <TabelkaBibliotekiGierKomponent idUzytkownika={uzytkownik.id}/>
         </div>
         <ToastContainer
             position="top-center"
