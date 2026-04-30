@@ -6,6 +6,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
+import TabelkaBibliotekiGierKomponent from "./TabelkaBibliotekiGierKomponent";
 export default function ProfilOgolny() {
 
     const navigate = useNavigate();
@@ -252,6 +253,7 @@ export default function ProfilOgolny() {
             <h1>Profil użytkownika</h1>
             <DaneProfilu idUzytkownika={parseInt(idWlascicielaProfilu)}></DaneProfilu>
             <PrzyciskPodProfilem/>
+            <TabelkaBibliotekiGierKomponent idUzytkownika={parseInt(idWlascicielaProfilu)}/>
         </div>
         {pokazUsunZnajomego && <PanelUsunZnajomego/>}
     </>);
