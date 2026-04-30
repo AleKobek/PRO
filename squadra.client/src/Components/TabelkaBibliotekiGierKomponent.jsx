@@ -194,65 +194,63 @@ export default function TabelkaBibliotekiGierKomponent({idUzytkownika}) {
 
 
     return (<div>
-        <div className="overflow-x-auto overflow-y-auto h-full border-4 border-gray-600 rounded-lg shadow-lg">
-            <div className="w-full">
-                {/* nagłówek */}
-                <div className="hidden md:grid grid-cols-10 gap-4 font-semibold border-b-2 border-gray-600 px-2 py-2 text-2xl text-gray-800">
-                    <div className="border-r-2 border-gray-600 col-span-3 text-center">Tytuł</div>
-                    <div className="border-r-2 border-gray-600 col-span-2 text-center">Gatunek</div>
-                    <div className="border-r-2 border-gray-600 col-span-2 text-center">Czas rozgrywki</div>
-                    <div className="flex justify-center border-r-2 border-gray-600 col-span-2 text-center">Platformy</div>
-                    <div className="col-span-1 "></div>
-                </div>
+            {Array.isArray(bibliotekaGier) && bibliotekaGier.length > 0 ? (
+                <table className="overflow-x-auto overflow-y-auto h-full w-full border-4 border-gray-600 rounded-lg shadow-lg">
+                    <tbody>
+                    <tr className="font-semibold border border-gray-600 text-4xl text-gray-800">
+                        <th className="border border-gray-600 text-center" style={{width: "40%"}}>Tytuł</th>
+                        <th className="border border-gray-600 text-center">Gatunek</th>
+                        <th className="border border-gray-600 text-center text-2xl" style={{width: "10%"}}>Czas rozgrywki</th>
+                        <th className="border border-gray-600 text-center">Platformy</th>
+                        <th style={{width: "7%"}}></th>
+                    </tr>
+                    </tbody>
+                    {bibliotekaGier.map((gra) => {
+                        if (!gra || typeof gra !== 'object') return null;
 
-                {/* wiersze */}
-                <div>
-                    {Array.isArray(bibliotekaGier) && bibliotekaGier.length > 0 ? (
-                        bibliotekaGier.map((gra, index) => {
-                            if (!gra || typeof gra !== 'object') return null;
+                        const tytul = gra.tytul;
+                        const gatunek = gra.gatunek;
+                        const godzinyGrania = Number(gra.godzinyGrania) || 0;
+                        const platformy = gra.platformy ?? [];
+                        const key = gra.idGry;
 
-                            const tytul = gra.tytul;
-                            const gatunek = gra.gatunek;
-                            const godzinyGrania = Number(gra.godzinyGrania) || 0;
-                            const platformy = gra.platformy ?? [];
-                            const key = gra.idGry;
+                        return (
+                            <tr key={key} className="items-center border border-gray-600 px-2 text-xl">
+                                <td className="font-semibold text-gray-900 text-center border border-gray-600">{tytul || "-"}</td>
+                                <td className="text-gray-900 text-center border border-gray-600">{gatunek || "-"}</td>
+                                <td className="text-gray-900 text-center border border-gray-600">{godzinyGrania}</td>
+                                <td className="flex gap-2 items-center justify-center border-gray-600">
+                                    {Array.isArray(platformy) && platformy.map((platforma) => {
+                                        const pKey = platforma?.idPlatformy;
+                                        if (platforma?.logo) {
+                                            const src = typeof platforma.logo === 'string'
+                                                ? (platforma.logo.startsWith('data:') ? platforma.logo : "data:image/jpeg;base64," + platforma.logo)
+                                                : undefined;
+                                            return src ? (
+                                                <img key={pKey} src={src} alt={platforma?.nazwa ?? "logo"} className="h-10 w-10 my-1 rounded-full border-2 border-black" />
+                                            ) : (
+                                                <div key={pKey} className="h-10 w-10 flex items-center justify-center bg-gray-200 rounded-full border-2 border-black text-xs">{platforma?.nazwa ?? "?"}</div>
+                                            );
+                                        }
+                                        return (<div key={pKey} className="h-10 w-10 flex items-center justify-center bg-gray-200 rounded-full border-2 border-black text-xs">{platforma?.nazwa ?? "?"}</div>);
+                                    })}
+                                </td>
+                                <td className="items-center border border-gray-600">
+                                    <button
+                                        className="text-white bg-blue-900 block mx-auto text-[10px] px-2 py-1 hover:bg-blue-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
+                                        onClick={() => przyKliknieciuSzczegoly(gra.idGry)}
+                                    >Szczegóły</button>
+                                </td>
+                            </tr>
 
-                            return (
-                                <div key={key} className="grid grid-cols-10 gap-4 items-center border-b border-gray-600 px-2  text-lg border-x-2">
-                                    <div className="font-medium text-gray-900 text-center border-r-2 border-gray-600 col-span-3">{tytul || "-"}</div>
-                                    <div className="text-gray-500 text-center border-r-2 border-gray-600 col-span-2">{gatunek || "-"}</div>
-                                    <div className="text-gray-500 text-center border-r-2 border-gray-600 col-span-2">{godzinyGrania}</div>
-                                    <div className="flex gap-2 items-center justify-center border-r-2 border-gray-600 col-span-2">
-                                        {Array.isArray(platformy) && platformy.map((platforma) => {
-                                            const pKey = platforma?.idPlatformy;
-                                            if (platforma?.logo) {
-                                                const src = typeof platforma.logo === 'string'
-                                                    ? (platforma.logo.startsWith('data:') ? platforma.logo : "data:image/jpeg;base64," + platforma.logo)
-                                                    : undefined;
-                                                return src ? (
-                                                    <img key={pKey} src={src} alt={platforma?.nazwa ?? "logo"} className="h-10 w-10 my-1 rounded-full border-2 border-black" />
-                                                ) : (
-                                                    <div key={pKey} className="h-10 w-10 flex items-center justify-center bg-gray-200 rounded-full border-2 border-black text-xs">{platforma?.nazwa ?? "?"}</div>
-                                                );
-                                            }
-                                            return (<div key={pKey} className="h-10 w-10 flex items-center justify-center bg-gray-200 rounded-full border-2 border-black text-xs">{platforma?.nazwa ?? "?"}</div>);
-                                        })}
-                                    </div>
-                                    <div className="flex justify-center col-span-1">
-                                        <button
-                                            className="text-white bg-blue-900 block mx-auto text-[10px] px-2 py-1 hover:bg-blue-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
-                                            onClick={() => przyKliknieciuSzczegoly(gra.idGry)}
-                                        >Szczegóły</button>
-                                    </div>
-                                </div>
-                            );
-                        })
-                    ) : (
-                        <div className="p-4 text-center text-gray-500">Brak gier w bibliotece</div>
-                    )}
-                </div>
-            </div>
-        </div>
+                        );
+                    })
+                }
+                </table>
+            ) : (
+                <div className="p-4 text-center text-gray-800">Brak gier w bibliotece</div>
+            )}
+
         {pokazPanelStatystyk && <PanelStatystyk />}
     </div>);
 }
