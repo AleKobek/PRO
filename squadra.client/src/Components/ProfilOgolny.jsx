@@ -253,6 +253,7 @@ export default function ProfilOgolny() {
             <h1>Profil użytkownika</h1>
             <DaneProfilu idUzytkownika={parseInt(idWlascicielaProfilu)}></DaneProfilu>
             <PrzyciskPodProfilem/>
+            <h2 className="mt-10">Biblioteka gier</h2>
             <TabelkaBibliotekiGierKomponent idUzytkownika={parseInt(idWlascicielaProfilu)}/>
         </div>
         {pokazUsunZnajomego && <PanelUsunZnajomego/>}
