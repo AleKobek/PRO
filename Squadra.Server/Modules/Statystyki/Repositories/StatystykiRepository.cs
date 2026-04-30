@@ -72,7 +72,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
     }
 
     // get statystyki danego użytkownika dla danej gry
-    public async Task<ICollection<StatystykaDTO>> GetStatystykiZGry(int idUzytkownika, int idGry)
+    public async Task<ICollection<StatystykiDoTabelkiDTO>> GetStatystykiZGry(int idUzytkownika, int idGry)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
         if (uzytkownik is null)
@@ -82,7 +82,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         if (gra is null)
             throw new NieZnalezionoWBazieException("Gra o id " + idGry + " nie istnieje.");
         
-        return await context.StatystykaUzytkownika
+        var statystyki = await context.StatystykaUzytkownika
             .Include(x => x.Statystyka)
             .ThenInclude(s => s.Kategoria)
             // można zrobić include parę razy i cofać się do początku, then include wchodzi głębiej
@@ -103,6 +103,12 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
                 x.Statystyka.RolaId == null ? null : x.Statystyka.Rola.Nazwa
             ))
             .ToListAsync();
+        var kategorie = statystyki.Select(s => new { s.KategoriaId, s.KategoriaNazwa }).Distinct().ToList();
+        return kategorie.Select(k => new StatystykiDoTabelkiDTO(
+            k.KategoriaId,
+            k.KategoriaNazwa,
+            statystyki.Where(s => s.KategoriaId == k.KategoriaId).ToList()
+        )).ToList();
     }
     
     // funkcja aktualizująca statystyki użytkownika, czyli usuwająca wszystkie stare wpisy z tabeli StatystykaUzytkownika dla danego idUzytkownika i dodająca nowe wpisy, które pobieramy z zewnętrznego serwisu

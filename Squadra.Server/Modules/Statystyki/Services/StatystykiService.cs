@@ -70,25 +70,25 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         }
     }
     
-    public async Task<ServiceResult<ICollection<StatystykaDTO>>> GetStatystykiZGry(int idUzytkownika, int idGry)
+    public async Task<ServiceResult<ICollection<StatystykiDoTabelkiDTO>>> GetStatystykiZGry(int idUzytkownika, int idGry)
     {
         if (idUzytkownika <= 0)
         {
-            return ServiceResult<ICollection<StatystykaDTO>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator użytkownika: " + idUzytkownika));
+            return ServiceResult<ICollection<StatystykiDoTabelkiDTO>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator użytkownika: " + idUzytkownika));
         }
         if (idGry <= 0)
         {
-            return ServiceResult<ICollection<StatystykaDTO>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator gry: " + idGry));
+            return ServiceResult<ICollection<StatystykiDoTabelkiDTO>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator gry: " + idGry));
         }
         
         try
         {
             var result = await statystykiRepository.GetStatystykiZGry(idUzytkownika, idGry);
-            return ServiceResult<ICollection<StatystykaDTO>>.Ok(result);
+            return ServiceResult<ICollection<StatystykiDoTabelkiDTO>>.Ok(result);
         }
         catch (NieZnalezionoWBazieException ex)
         {
-            return ServiceResult<ICollection<StatystykaDTO>>.NotFound(new ErrorItem(ex.Message));
+            return ServiceResult<ICollection<StatystykiDoTabelkiDTO>>.NotFound(new ErrorItem(ex.Message));
         }
     }
     
