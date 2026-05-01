@@ -42,7 +42,7 @@ public class ZnajomiService(
             var idZnajomego = uzytkownik.IdUzytkownika1 == id ? uzytkownik.IdUzytkownika2 : uzytkownik.IdUzytkownika1;
             
             // bierzemy profil znajomego, potrzebujemy z niego pseudonim, awatar i nazwę statusu
-            var profilRes = await profilService.GetProfil(idZnajomego);
+            var profilRes = await profilService.GetProfilMinInfo(idZnajomego);
             
             var profil = profilRes.Value;
             
