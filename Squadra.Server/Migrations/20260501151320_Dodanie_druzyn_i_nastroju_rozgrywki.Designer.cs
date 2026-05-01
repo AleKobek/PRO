@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Squadra.Server.Context;
 
@@ -11,9 +12,11 @@ using Squadra.Server.Context;
 namespace Squadra.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260501151320_Dodanie_druzyn_i_nastroju_rozgrywki")]
+    partial class Dodanie_druzyn_i_nastroju_rozgrywki
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1258,10 +1261,8 @@ namespace Squadra.Server.Migrations
                         .HasConstraintName("Druzyna_Nastroj_Rozgrywki");
 
                     b.HasOne("Squadra.Server.Modules.Platformy.Models.Platforma", "Platforma")
-                        .WithMany("DruzynaCollection")
-                        .HasForeignKey("PlatformaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("Druzyna_Platforma");
+                        .WithMany("Druzyny")
+                        .HasForeignKey("PlatformaId");
 
                     b.HasOne("Squadra.Server.Modules.Profile.Models.Jezyk", "WymaganyJezyk")
                         .WithMany("DruzynaCollection")
@@ -1270,10 +1271,8 @@ namespace Squadra.Server.Migrations
                         .HasConstraintName("Druzyna_Wymagany_Jezyk");
 
                     b.HasOne("Squadra.Server.Modules.Profile.Models.StopienBieglosciJezyka", "WymaganyStopienBieglosciJezyka")
-                        .WithMany("DruzynaCollection")
-                        .HasForeignKey("WymaganyStopienBieglosciJezykaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .HasConstraintName("Druzyna_Wymagany_Stopien_Bieglosci_Jezyka");
+                        .WithMany("Druzyny")
+                        .HasForeignKey("WymaganyStopienBieglosciJezykaId");
 
                     b.Navigation("Gra");
 
@@ -1546,7 +1545,7 @@ namespace Squadra.Server.Migrations
 
             modelBuilder.Entity("Squadra.Server.Modules.Platformy.Models.Platforma", b =>
                 {
-                    b.Navigation("DruzynaCollection");
+                    b.Navigation("Druzyny");
 
                     b.Navigation("GraNaPlatformieCollection");
 
@@ -1589,7 +1588,7 @@ namespace Squadra.Server.Migrations
 
             modelBuilder.Entity("Squadra.Server.Modules.Profile.Models.StopienBieglosciJezyka", b =>
                 {
-                    b.Navigation("DruzynaCollection");
+                    b.Navigation("Druzyny");
 
                     b.Navigation("JezykProfiluCollection");
                 });

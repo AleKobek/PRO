@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Squadra.Server.Modules.BibliotekaGier.Models;
+using Squadra.Server.Modules.Drużyny.Models;
 using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Powiadomienia.Models;
 using Squadra.Server.Modules.Profile.Models;
@@ -30,4 +31,5 @@ public class Uzytkownik : IdentityUser<int>
     public virtual ICollection<UzytkownikPlatforma> UzytkownikPlatformaCollection { get; set; } = null!;
     public virtual ICollection<GraUzytkownika> GraUzytkownikaCollection { get; set; } = null!;
     public virtual ICollection<StatystykaUzytkownika> StatystykaUzytkownikaCollection { get; set; } = null!;
+    public virtual ICollection<Druzyna> DowodzoneDruzynyCollection { get; set; } = null!;
 }
