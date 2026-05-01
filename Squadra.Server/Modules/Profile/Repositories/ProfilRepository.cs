@@ -55,6 +55,17 @@ public class ProfilRepository(AppDbContext appDbContext,
         
         return new ProfilGetResDto(profil.Pseudonim, region, profil.Zaimki, profil.Opis, jezykiUzytkownika, profil.Awatar, status.Nazwa);
     }
+    
+    public async Task<ProfilMinInfoDto> GetProfilMinInfo(int id)
+    {
+        var profil = await appDbContext.Profil.FindAsync(id);
+        
+        if(profil == null) throw new NieZnalezionoWBazieException("Profil o id " + id + " nie istnieje");
+        
+        var status = await statusRepository.GetStatus(profil.StatusId) ?? statusRepository.GetStatusOffline();
+        
+        return new ProfilMinInfoDto(profil.IdUzytkownika, profil.Pseudonim, profil.Awatar, status.Nazwa);
+    }
 
     // bez awatara!
     public async Task<bool> UpdateProfil(int id, ProfilUpdateDto profil)

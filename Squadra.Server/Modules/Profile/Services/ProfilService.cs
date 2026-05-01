@@ -61,6 +61,20 @@ public class ProfilService(
             return ServiceResult<ProfilGetResDto>.NotFound(new ErrorItem(e.Message));
         }
     }
+
+    public async Task<ServiceResult<ProfilMinInfoDto>> GetProfilMinInfo(int id)
+    {
+        if(id < 1) return ServiceResult<ProfilMinInfoDto>.BadRequest(new ErrorItem("Nieprawidłowe id profilu: " + id));
+        try
+        {            
+            return ServiceResult<ProfilMinInfoDto>.Ok(await profilRepository.GetProfilMinInfo(id));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<ProfilMinInfoDto>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
     
     
     public async Task<ServiceResult<bool>> UpdateProfil(int id, ProfilUpdateDto profil)
