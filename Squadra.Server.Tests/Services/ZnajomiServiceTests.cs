@@ -176,11 +176,11 @@ public class ZnajomiServiceTests
     [Theory]
     [InlineData(0, 2)]
     [InlineData(1, -1)]
-    public async Task DeleteZnajomosc_WithInvalidIds_ReturnsNotFound(int userId1, int userId2)
+    public async Task DeleteZnajomosc_WithInvalidIds_ReturnsBadRequest(int userId1, int userId2)
     {
         var result = await _service.DeleteZnajomosc(userId1, userId2);
 
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
     }
 }

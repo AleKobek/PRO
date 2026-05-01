@@ -39,8 +39,8 @@ public class UzytkownikControllerTests
         // Arrange
         var users = new List<UzytkownikResDto>
         {
-            new UzytkownikResDto(1, "user1", "user1@test.com", null, null, null, new string[] { "User" }),
-            new UzytkownikResDto(2, "user2", "user2@test.com", null, null, null, new string[] { "User" })
+            new UzytkownikResDto(1, "user1", "user1@test.com", null, null, null, null, new string[] { "User" }),
+            new UzytkownikResDto(2, "user2", "user2@test.com", null, null, null, null, new string[] { "User" })
         };
         var result = ServiceResult<ICollection<UzytkownikResDto>>.Ok(users);
         _mockUzytkownikService.Setup(s => s.GetUzytkownicy()).ReturnsAsync(result);
@@ -58,7 +58,7 @@ public class UzytkownikControllerTests
     public async Task GetUzytkownikById_WithValidId_ReturnsOkWithUser()
     {
         // Arrange
-        var user = new UzytkownikResDto(1, "user1", "user1@test.com", null, null, null, new string[] { "User" });
+        var user = new UzytkownikResDto(1, "user1", "user1@test.com", null, null, null, null, new string[] { "User" });
         var result = ServiceResult<UzytkownikResDto>.Ok(user);
         _mockUzytkownikService.Setup(s => s.GetUzytkownik(1)).ReturnsAsync(result);
 

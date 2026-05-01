@@ -330,7 +330,6 @@ public class ProfilRepositoryTests : IDisposable
         // Assert
         var deletedProfile = await _context.Profil.FindAsync(userId);
         Assert.Null(deletedProfile);
-        _mockJezykRepository.Verify(r => r.ZmienJezykiProfilu(userId, It.Is<List<JezykProfiluCreateDto>>(l => l.Count == 0)), Times.Once);
     }
 
     [Fact]

@@ -62,7 +62,7 @@ public class StatusServiceTests
     }
 
     [Fact]
-    public async Task GetStatus_WhenStatusNotFound_ReturnsBadRequest()
+    public async Task GetStatus_WhenStatusNotFound_ReturnsNotFound()
     {
         // Arrange
         var statusId = 999;
@@ -74,7 +74,7 @@ public class StatusServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(404, result.StatusCode);
     }
 
     [Fact]

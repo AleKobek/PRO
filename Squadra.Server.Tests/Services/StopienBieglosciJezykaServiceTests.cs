@@ -80,7 +80,7 @@ public class StopienBieglosciJezykaServiceTests
     }
 
     [Fact]
-    public async Task GetStopienBieglosciJezyka_WithNegativeId_ReturnsNotFound()
+    public async Task GetStopienBieglosciJezyka_WithNegativeId_ReturnsBadRequest()
     {
         // Arrange
         var levelId = -5;
@@ -90,7 +90,7 @@ public class StopienBieglosciJezykaServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        Assert.Equal(400, result.StatusCode);
         _mockRepository.Verify(r => r.GetStopienBieglosciJezyka(It.IsAny<int>()), Times.Never);
     }
 }

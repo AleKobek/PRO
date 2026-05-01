@@ -228,7 +228,7 @@ public class PowiadomienieServiceTests
         // Assert
         Assert.False(result.Succeeded);
         Assert.Equal(400, result.StatusCode);
-        Assert.Contains("Typ powiadomienia", result.Errors[0].Message);
+        Assert.Contains("typ powiadomienia", result.Errors[0].Message);
     }
 
     [Fact]
@@ -243,7 +243,7 @@ public class PowiadomienieServiceTests
         // Assert
         Assert.False(result.Succeeded);
         Assert.Equal(400, result.StatusCode);
-        Assert.Contains("Obiekt", result.Errors[0].Message);
+        Assert.Contains("obiekt", result.Errors[0].Message);
     }
 
     [Fact]
@@ -269,7 +269,7 @@ public class PowiadomienieServiceTests
     {
         // Arrange
         var dto = PowiadomienieCreateDto(2, 1, 2, "TestUser", "Test");
-        var userDto = new UzytkownikResDto(2, "testuser", "test@test.com", "123456789", new DateOnly(1990, 1, 1), null, new[] { "User" });
+        var userDto = new UzytkownikResDto(2, "testuser", "test@test.com", "123456789", new DateOnly(1990, 1, 1), null, null, new[] { "User" });
         var userResult = ServiceResult<UzytkownikResDto>.Ok(userDto);
         
         _mockUzytkownikService.Setup(s => s.GetUzytkownik(2))

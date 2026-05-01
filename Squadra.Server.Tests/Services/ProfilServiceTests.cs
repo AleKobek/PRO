@@ -93,7 +93,7 @@ public class ProfilServiceTests
     }
 
     [Fact]
-    public async Task GetProfil_ById_WhenRepositoryThrowsNotFoundException_ReturnsBadRequest()
+    public async Task GetProfil_ById_WhenRepositoryThrowsNotFoundException_ReturnsNotFound()
     {
         // Arrange
         var profileId = 999;
@@ -105,7 +105,7 @@ public class ProfilServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(400, result.StatusCode);
+        Assert.Equal(404, result.StatusCode);
     }
 
     [Fact]
@@ -114,7 +114,7 @@ public class ProfilServiceTests
         // Arrange
         var login = "testuser";
         var userId = 1;
-        var expectedUser = new UzytkownikResDto(userId, login, "test@test.com", "123456789", new DateOnly(1990, 1, 1), null, new[] { "User" });
+        var expectedUser = new UzytkownikResDto(userId, login, "test@test.com", "123456789", new DateOnly(1990, 1, 1), null, null, new[] { "User" });
         var expectedProfile = new ProfilGetResDto(
             "TestUser",
             null,
@@ -223,7 +223,7 @@ public class ProfilServiceTests
     {
         // Arrange
         var profileId = 1;
-        var dto = new ProfilUpdateDto(1, "they/them/extremely/long", "Test description", new List<JezykProfiluCreateDto>(), "TestUser");
+        var dto = new ProfilUpdateDto(1, "they/them/extremely/long/yaaaaaaaaaaaaaaaaay", "Test description", new List<JezykProfiluCreateDto>(), "TestUser");
 
         // Act
         var result = await _service.UpdateProfil(profileId, dto);
@@ -239,7 +239,7 @@ public class ProfilServiceTests
     {
         // Arrange
         var profileId = 1;
-        var longDescription = new string('a', 101); // 101 characters
+        var longDescription = new string('a', 10001); // 10001 characters
         var dto = new ProfilUpdateDto(1, "they/them", longDescription, new List<JezykProfiluCreateDto>(), "TestUser");
 
         // Act

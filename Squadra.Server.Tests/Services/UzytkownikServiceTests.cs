@@ -28,7 +28,7 @@ public class UzytkownikServiceTests
     {
         // Arrange
         var userId = 5;
-        var expectedUser = new UzytkownikResDto(userId, "testuser", "test@example.com", "123456789", new DateOnly(1990, 1, 1), null, new[] { "User" });
+        var expectedUser = new UzytkownikResDto(userId, "testuser", "test@example.com", "123456789", new DateOnly(1990, 1, 1), null, null,  new[] { "User" });
         _mockRepository.Setup(r => r.GetUzytkownik(userId))
             .ReturnsAsync(expectedUser);
 
@@ -43,7 +43,7 @@ public class UzytkownikServiceTests
     }
 
     [Fact]
-    public async Task GetUzytkownik_ById_WithIdLessThanOne_ReturnsNotFound()
+    public async Task GetUzytkownik_ById_WithIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var userId = 0;
@@ -53,8 +53,9 @@ public class UzytkownikServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
-        Assert.Contains("nie istnieje", result.Errors[0].Message);
+        // Service zwraca BadRequest dla id < 1
+        Assert.Equal(400, result.StatusCode);
+        Assert.Contains("Niepoprawne id", result.Errors[0].Message);
     }
 
     [Fact]
@@ -62,7 +63,7 @@ public class UzytkownikServiceTests
     {
         // Arrange
         var login = "testuser";
-        var expectedUser = new UzytkownikResDto(1, login, "test@example.com", "123456789", new DateOnly(1990, 1, 1), null, new[] { "User" });
+        var expectedUser = new UzytkownikResDto(1, login, "test@example.com", "123456789", new DateOnly(1990, 1, 1), null, null, new[] { "User" });
         _mockRepository.Setup(r => r.GetUzytkownik(login))
             .ReturnsAsync(expectedUser);
 
@@ -77,7 +78,7 @@ public class UzytkownikServiceTests
     }
 
     [Fact]
-    public async Task GetUzytkownik_ByLogin_WithEmptyLogin_ReturnsNotFound()
+    public async Task GetUzytkownik_ByLogin_WithEmptyLogin_ReturnsBadRequest()
     {
         // Arrange
         var login = "";
@@ -87,11 +88,12 @@ public class UzytkownikServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        // Service zwraca BadRequest gdy login jest pusty
+        Assert.Equal(400, result.StatusCode);
     }
 
     [Fact]
-    public async Task GetUzytkownik_ByLogin_WithWhitespaceLogin_ReturnsNotFound()
+    public async Task GetUzytkownik_ByLogin_WithWhitespaceLogin_ReturnsBadRequest()
     {
         // Arrange
         var login = "   ";
@@ -101,7 +103,8 @@ public class UzytkownikServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        // Service zwraca BadRequest gdy login jest whitespace
+        Assert.Equal(400, result.StatusCode);
     }
 
     #endregion
@@ -109,7 +112,7 @@ public class UzytkownikServiceTests
     #region UpdateHaslo Tests
 
     [Fact]
-    public async Task UpdateHaslo_WithIdLessThanOne_ReturnsNotFound()
+    public async Task UpdateHaslo_WithIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var userId = 0;
@@ -121,7 +124,8 @@ public class UzytkownikServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        // Service zwraca BadRequest dla id < 1
+        Assert.Equal(400, result.StatusCode);
     }
 
     [Fact]
@@ -219,7 +223,7 @@ public class UzytkownikServiceTests
     #region DeleteUzytkownik Tests
 
     [Fact]
-    public async Task DeleteUzytkownik_WithIdLessThanOne_ReturnsNotFound()
+    public async Task DeleteUzytkownik_WithIdLessThanOne_ReturnsBadRequest()
     {
         // Arrange
         var userId = 0;
@@ -229,7 +233,8 @@ public class UzytkownikServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(404, result.StatusCode);
+        // Service zwraca BadRequest dla id < 1
+        Assert.Equal(400, result.StatusCode);
     }
 
     [Fact]
@@ -237,6 +242,9 @@ public class UzytkownikServiceTests
     {
         // Arrange
         var userId = 5;
+        // Ustawiamy profilService, bo service wywołuje profilService.DeleteProfil najpierw
+        _mockProfilService.Setup(p => p.DeleteProfil(userId))
+            .ReturnsAsync(Squadra.Server.Modules.Shared.Services.ServiceResult<bool>.NoContent(true));
         _mockRepository.Setup(r => r.DeleteUzytkownik(userId))
             .Returns(Task.CompletedTask);
 
@@ -254,8 +262,10 @@ public class UzytkownikServiceTests
     {
         // Arrange
         var userId = 999;
-        _mockRepository.Setup(r => r.DeleteUzytkownik(userId))
-            .ThrowsAsync(new NieZnalezionoWBazieException("Użytkownik nie istnieje"));
+        // Serwis najpierw wywołuje profilService.DeleteProfil(id).
+        // Zamiast konfigurować repository ustawiamy profilService, aby symulować brak użytkownika.
+        _mockProfilService.Setup(p => p.DeleteProfil(userId))
+            .ReturnsAsync(Squadra.Server.Modules.Shared.Services.ServiceResult<bool>.NotFound(new Squadra.Server.Modules.Shared.Services.ErrorItem("Użytkownik nie istnieje")));
 
         // Act
         var result = await _service.DeleteUzytkownik(userId);

@@ -213,15 +213,15 @@ public class ProfilControllerTests
     }
 
     [Fact]
-    public async Task UpdateStatus_WhenStatusNotFound_ReturnsNotFound()
+    public async Task UpdateStatus_WhenStatusNotFound_ReturnsBadRequest()
     {
         var user = new Uzytkownik { Id = 1, UserName = "testuser" };
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
-        _mockProfilService.Setup(s => s.UpdateStatus(1, 999)).ReturnsAsync(ServiceResult<StatusDto>.Fail(400, new[] { new ErrorItem("Status not found", "idStatus") }));
+        _mockProfilService.Setup(s => s.UpdateStatus(1, 999)).ReturnsAsync(ServiceResult<StatusDto>.Fail(400, new[] { new ErrorItem("Incorrect status id", "idStatus") }));
 
         var actionResult = await _controller.UpdateStatus(999);
 
-        var notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult);
-        Assert.Equal("Status not found", notFoundResult.Value);
+        var notFoundResult = Assert.IsType<BadRequestObjectResult>(actionResult);
+        Assert.Equal("Incorrect status id", notFoundResult.Value);
     }
 }
