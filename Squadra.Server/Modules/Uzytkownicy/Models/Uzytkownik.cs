@@ -32,4 +32,6 @@ public class Uzytkownik : IdentityUser<int>
     public virtual ICollection<GraUzytkownika> GraUzytkownikaCollection { get; set; } = null!;
     public virtual ICollection<StatystykaUzytkownika> StatystykaUzytkownikaCollection { get; set; } = null!;
     public virtual ICollection<Druzyna> DowodzoneDruzynyCollection { get; set; } = null!;
+    public virtual ICollection<MiejsceWDruzynie> MiejsceWDruzynieCollection { get; set; } = new List<MiejsceWDruzynie>();
+
 }

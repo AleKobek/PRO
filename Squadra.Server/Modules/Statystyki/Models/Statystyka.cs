@@ -1,4 +1,6 @@
-﻿namespace Squadra.Server.Modules.Statystyki.Models;
+﻿using Squadra.Server.Modules.Drużyny.Models;
+
+namespace Squadra.Server.Modules.Statystyki.Models;
 
 public class Statystyka
 {
@@ -10,5 +12,6 @@ public class Statystyka
     
     public virtual Kategoria Kategoria { get; set; }
     public virtual Rola? Rola { get; set; }
-    public virtual ICollection<StatystykaUzytkownika> StatystykaUzytkownikaCollection { get; set; }
+    public virtual ICollection<StatystykaUzytkownika> StatystykaUzytkownikaCollection { get; set; } = new List<StatystykaUzytkownika>();
+    public virtual ICollection<MiejsceWDruzynie> MiejsceWDruzynieCollection { get; set; } = new List<MiejsceWDruzynie>();
 }

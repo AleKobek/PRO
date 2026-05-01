@@ -1,4 +1,5 @@
-﻿using Squadra.Server.Modules.WspieraneGry.Models;
+﻿using Squadra.Server.Modules.Drużyny.Models;
+using Squadra.Server.Modules.WspieraneGry.Models;
 
 namespace Squadra.Server.Modules.Statystyki.Models;
 
@@ -10,4 +11,5 @@ public class Rola
     
     public virtual WspieranaGra Gra { get; set; } = null!;
     public virtual ICollection<Statystyka> StatystykaCollection { get; set; } = null!;
+    public virtual ICollection<MiejsceWDruzynie> MiejsceWDruzynieCollection { get; set; } = new List<MiejsceWDruzynie>();
 }

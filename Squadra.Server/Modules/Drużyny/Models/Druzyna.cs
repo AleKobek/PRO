@@ -26,4 +26,5 @@ public class Druzyna
     public virtual Jezyk WymaganyJezyk { get; set; } = null!;
     public virtual StopienBieglosciJezyka WymaganyStopienBieglosciJezyka { get; set; } = null!;
     public virtual Platforma Platforma { get; set; } = null!;
+    public virtual ICollection<MiejsceWDruzynie> MiejsceWDruzynieCollection { get; set; } = new List<MiejsceWDruzynie>();
 }
