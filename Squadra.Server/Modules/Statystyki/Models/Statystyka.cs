@@ -14,4 +14,5 @@ public class Statystyka
     public virtual Rola? Rola { get; set; }
     public virtual ICollection<StatystykaUzytkownika> StatystykaUzytkownikaCollection { get; set; } = new List<StatystykaUzytkownika>();
     public virtual ICollection<MiejsceWDruzynie> MiejsceWDruzynieCollection { get; set; } = new List<MiejsceWDruzynie>();
+    public virtual ICollection<WymaganaStatystykaDruzyny> WymaganaStatystykaDruzynyCollection { get; set; } = new List<WymaganaStatystykaDruzyny>();
 }
