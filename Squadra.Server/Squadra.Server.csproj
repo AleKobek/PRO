@@ -30,8 +30,6 @@
 
     <ItemGroup>
       <Folder Include="Modules\Drużyny\Controllers\" />
-      <Folder Include="Modules\Drużyny\DTO\" />
-      <Folder Include="Modules\Drużyny\Services\" />
       <Folder Include="Modules\Uzytkownicy\DTO\" />
       <Folder Include="Modules\IntegracjeZewnetrzne\Repositories\" />
     </ItemGroup>
