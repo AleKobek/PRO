@@ -33,6 +33,15 @@ public class MiejsceWDruzynieEFConfig : IEntityTypeConfiguration<MiejsceWDruzyni
             .HasColumnName("id_statystyki");
         
         builder
+            .Property(x => x.WartoscStatystyki)
+            .HasColumnName("wartosc_statystyki")
+            .HasMaxLength(20);
+        
+        builder
+            .Property(x => x.WartoscLiczbowaStatystyki)
+            .HasColumnName("wartosc_liczbowa_statystyki");
+        
+        builder
             .HasOne(m => m.Druzyna)
             .WithMany(d => d.MiejsceWDruzynieCollection)
             .HasForeignKey(m => m.DruzynaId)

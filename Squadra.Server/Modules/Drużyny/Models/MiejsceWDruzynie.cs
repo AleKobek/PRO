@@ -10,6 +10,8 @@ public class MiejsceWDruzynie
     public int? UzytkownikId { get; set; }
     public int? RolaId { get; set; }
     public int? StatystykaId { get; set; }
+    public string? WartoscStatystyki { get; set; }
+    public double? WartoscLiczbowaStatystyki { get; set; }
     
     public virtual Druzyna Druzyna { get; set; } = null!;
     public virtual Uzytkownik? Uzytkownik { get; set; }
