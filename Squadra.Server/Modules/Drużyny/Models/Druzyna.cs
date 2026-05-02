@@ -13,7 +13,7 @@ public class Druzyna
     public int KapitanId { get; set; }
     public bool CzyPubliczna { get; set; }
     public string? Opis { get; set; }
-    public int? NastrojRozgrywkiId { get; set; }
+    public int NastrojRozgrywkiId { get; set; }
     public int? WymaganyJezykId { get; set; }
     public int? WymaganyStopienBieglosciJezykaId { get; set; }
     public bool Czy18Plus { get; set; }

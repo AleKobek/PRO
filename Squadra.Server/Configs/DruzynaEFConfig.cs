@@ -44,7 +44,9 @@ public class DruzynaEFConfig : IEntityTypeConfiguration<Druzyna>
         
         builder
             .Property(x => x.NastrojRozgrywkiId)
-            .HasColumnName("id_nastroju_rozgrywki");
+            .HasColumnName("id_nastroju_rozgrywki")
+            .HasDefaultValue(1)
+            .IsRequired();
         
         builder
             .Property(x => x.WymaganyJezykId)
