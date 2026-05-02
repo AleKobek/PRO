@@ -156,4 +156,24 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         }
         return true;
     }
+    
+    public async Task<ICollection<WymaganieDruzynyDoWyswietleniaDto>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny)
+    {
+        var druzyna = await context.Druzyna.FindAsync(idDruzyny);
+        if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
+
+        var wymaganiaDruzyny = await context.WymaganaStatystykaDruzyny
+            .Where(m => m.DruzynaId == idDruzyny)
+            .Include(x => x.Statystyka)
+            .ThenInclude(s => s.Rola)
+            .Select(x => new WymaganieDruzynyDoWyswietleniaDto(
+                x.StatystykaId,
+                x.Statystyka.RolaId == null
+                    ? null
+                    : $"{x.Statystyka.Nazwa}({x.Statystyka.Rola.Nazwa})",
+                x.Wartosc ?? "brak"
+            )).ToListAsync();
+        
+        return wymaganiaDruzyny;
+    }
 }

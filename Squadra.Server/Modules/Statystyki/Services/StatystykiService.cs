@@ -144,4 +144,22 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         var result = statystykiRepository.CzySpelniaWymagania(wymagania, statystykiDoSprawdzenia);
         return ServiceResult<bool>.Ok(result);
     }
+    
+        public async Task<ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny)
+        {
+            if (idDruzyny <= 0)
+            {
+                return ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator drużyny: " + idDruzyny));
+            }
+            
+            try
+            {
+                var result = await statystykiRepository.GetWymaganiaDruzynyDoWyswietlenia(idDruzyny);
+                return ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>.Ok(result);
+            }
+            catch (NieZnalezionoWBazieException ex)
+            {
+                return ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>.NotFound(new ErrorItem(ex.Message));
+            }
+        }
 }
