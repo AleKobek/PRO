@@ -32,6 +32,20 @@ public class UzytkownikService(
             : ServiceResult<UzytkownikResDto>.Ok(await uzytkownikRepository.GetUzytkownik(login));
     }
     
+    public async Task<ServiceResult<DateTime?>> GetOstatniaAktywnoscUzytkownika(int id)
+    {
+        if(id < 1) return ServiceResult<DateTime?>.BadRequest(new ErrorItem("Niepoprawne id użytkownika: " + id));
+        try
+        {
+            var ostatniaAktywnosc = await uzytkownikRepository.GetOstatniaAktywnoscUzytkownika(id);
+            return ServiceResult<DateTime?>.Ok(ostatniaAktywnosc);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<DateTime?>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
     public async Task<ServiceResult<bool>> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
     {
         /*

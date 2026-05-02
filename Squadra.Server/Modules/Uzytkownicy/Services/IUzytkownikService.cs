@@ -9,7 +9,7 @@ public interface IUzytkownikService
     public Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(int id);
 
     public Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(string login);
-
+    public Task<ServiceResult<DateTime?>> GetOstatniaAktywnoscUzytkownika(int id);
     Task<ServiceResult<bool>> CreateUzytkownik(UzytkownikCreateDto uzytkownik);
 
     public Task<ServiceResult<bool>> UpdateUzytkownik(int id, UzytkownikUpdateDto dto);
