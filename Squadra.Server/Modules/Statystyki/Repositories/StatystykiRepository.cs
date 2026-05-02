@@ -9,6 +9,13 @@ namespace Squadra.Server.Modules.Statystyki.Repositories;
 public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
 {
     
+    public async Task<Statystyka> GetStatystyka(int idStatystyki)
+    {
+        var statystyka = await context.Statystyka.FindAsync(idStatystyki);
+        if (statystyka == null) throw new NieZnalezionoWBazieException("Nie znaleziono statystyki o id " + idStatystyki);
+        return statystyka;
+    }
+    
     // get godziny grania danego użytkownika dla danej gry
     public async Task<string> GetGodzinyGrania(int idUzytkownika, int idGry)
     {

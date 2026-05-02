@@ -8,6 +8,23 @@ namespace Squadra.Server.Modules.Statystyki.Services;
 
 public class StatystykiService(IStatystykiRepository statystykiRepository) : IStatystykiService
 {
+    public async Task<ServiceResult<Statystyka>> GetStatystyka(int idStatystyki)
+    {
+        if (idStatystyki <= 0)
+        {
+            return ServiceResult<Statystyka>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki: " + idStatystyki));
+        }
+        
+        try
+        {
+            var result = await statystykiRepository.GetStatystyka(idStatystyki);
+            return ServiceResult<Statystyka>.Ok(result);
+        }
+        catch (NieZnalezionoWBazieException ex)
+        {
+            return ServiceResult<Statystyka>.NotFound(new ErrorItem(ex.Message));
+        }
+    }
     public async Task<ServiceResult<string>> GetGodzinyGrania(int idUzytkownika, int idGry)
     {
         if (idUzytkownika <= 0)
