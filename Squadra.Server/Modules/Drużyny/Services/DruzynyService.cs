@@ -1,6 +1,7 @@
 ﻿using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Repositories;
+using Squadra.Server.Modules.Platformy.Services;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
@@ -17,7 +18,8 @@ public class DruzynyService(
     IProfilService profilService,
     IJezykService jezykService,
     IStopienBieglosciJezykaService stopienBieglosciJezykaService,
-    IStatystykiService statystykiService
+    IStatystykiService statystykiService,
+    IPlatformaService platformaService
     ) : IDruzynyService
 {
     public async Task<ServiceResult<DruzynaDoTabelkiDto>> GetDruzynaDoTabelki(int idDruzyny)
@@ -74,15 +76,19 @@ public class DruzynyService(
         if(idDruzyny <= 0) return ServiceResult<DruzynaSzczegolyDto>.BadRequest(new ErrorItem("Id drużyny musi być większe od 0"));
         var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
         
+        // pobieramy grę, żeby mieć jej tytuł
         var graRes = await wspieranaGraService.GetWspieranaGra(druzyna.GraId);
         if (!graRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(graRes.StatusCode, graRes.Errors);
         
+        // pobieramy członków drużyny
         var czlonkowieDruzynyRes = await GetCzlonkowieDruzyny(idDruzyny);
         if (!czlonkowieDruzynyRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(czlonkowieDruzynyRes.StatusCode, czlonkowieDruzynyRes.Errors);
         var czlonkowieDruzyny = czlonkowieDruzynyRes.Value ?? new List<MiejsceWDruzynieSzczegolyDto>();
         
+        // pobieramy nastrój rozgrywki
         var nastrojRozgrywki = await druzynyRepository.GetNastrojRozgrywki(druzyna.NastrojRozgrywkiId);
         
+        // pobieramy wymageny język i stopień biegłości, żeby mieć ich nazwy
         var jezykRes = druzyna.WymaganyJezykId != null 
             ? await jezykService.GetJezyk(druzyna.WymaganyJezykId ?? 0) // już odfiltrowaliśmy drużyny bez WymaganyJezykId, więc możemy bezpiecznie użyć ?? 0
             : null;
@@ -100,9 +106,22 @@ public class DruzynyService(
             ? $"{jezykRes.Value.Nazwa} - {stopienBieglosciRes.Value.Nazwa}" // już odfiltrowaliśmy drużyny bez WymaganyJezykId i WymaganyStopienBieglosciJezykaId, więc możemy bezpiecznie użyć .Value
             : jezykRes.Value?.Nazwa; 
         
+        // pobieramy wymagania drużyny
         var wymaganiaRes = await statystykiService.GetWymaganiaDruzynyDoWyswietlenia(idDruzyny);
         if (!wymaganiaRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(wymaganiaRes.StatusCode, wymaganiaRes.Errors);
         
+        // pobieramy platformę, żeby mieć jej nazwę i logo
+        string? nazwaPlatformy = null;
+        byte[]? logoPlatformy = null;
+        if (druzyna.PlatformaId != null)
+        {
+            var platformaRes = await platformaService.GetPlatforma(druzyna.PlatformaId ?? 0); // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć ?? 0
+            if (!platformaRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(platformaRes.StatusCode, platformaRes.Errors);
+            nazwaPlatformy = platformaRes.Value.Nazwa; // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć .Value
+            logoPlatformy = platformaRes.Value.Logo;
+        }
+       
+        // składamy wszystko do kupy i zwracamy szczegóły drużyny
         return ServiceResult<DruzynaSzczegolyDto>.Ok(new DruzynaSzczegolyDto(
             druzyna.Nazwa,
             graRes.Value.Tytul, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
@@ -112,7 +131,11 @@ public class DruzynyService(
                 .Select(x => new MiejsceWDruzynieSzczegolyDto(x.Czlonek, x.Rola, x.Wymaganie, x.CzyKapitan))
                 .ToList(),
             jezykIStopienBiegłosci,
-            wymaganiaRes.Value // już się upewniliśmy, że wymaganiaRes.Value nie jest null, więc można bezpiecznie użyć .Value
+            wymaganiaRes.Value, // już się upewniliśmy, że wymaganiaRes.Value nie jest null, więc można bezpiecznie użyć .Value
+            druzyna.CzyPubliczna,
+            druzyna.Czy18Plus,
+            nazwaPlatformy,
+            logoPlatformy
         ));
     }
     

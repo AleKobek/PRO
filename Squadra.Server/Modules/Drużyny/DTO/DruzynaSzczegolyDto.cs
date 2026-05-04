@@ -9,5 +9,9 @@ public record DruzynaSzczegolyDto(
     string? NastrojRozgrywki,
     ICollection<MiejsceWDruzynieSzczegolyDto> Czlonkowie,
     string? WymaganyJezykIStopienBiegłosci,
-    ICollection<WymaganieDruzynyDoWyswietleniaDto> WymaganiaDoWypisania
+    ICollection<WymaganieDruzynyDoWyswietleniaDto> WymaganiaDoWypisania,
+    bool CzyPubliczna,
+    bool Czy18Plus,
+    string? NazwaPlatformy,
+    byte[]? LogoPlatformy
 );
