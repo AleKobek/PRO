@@ -47,7 +47,7 @@ public class DruzynyService(
                 _ => $"{minutyOdOstatniejAktywnosciKapitana / (60 * 24)} dni temu"
             };
 
-            var czlonkowieDruzynyRes = await GetCzlonkowieDruzyny(idDruzyny);
+            var czlonkowieDruzynyRes = await GetCzlonkowieDruzynyDoWyswietlenia(idDruzyny);
             if (!czlonkowieDruzynyRes.Succeeded) return ServiceResult<DruzynaDoTabelkiDto>.Fail(czlonkowieDruzynyRes.StatusCode, czlonkowieDruzynyRes.Errors);
             var czlonkowieDruzyny = czlonkowieDruzynyRes.Value ?? new List<MiejsceWDruzynieSzczegolyDto>();
 
@@ -81,7 +81,7 @@ public class DruzynyService(
         if (!graRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(graRes.StatusCode, graRes.Errors);
         
         // pobieramy członków drużyny
-        var czlonkowieDruzynyRes = await GetCzlonkowieDruzyny(idDruzyny);
+        var czlonkowieDruzynyRes = await GetCzlonkowieDruzynyDoWyswietlenia(idDruzyny);
         if (!czlonkowieDruzynyRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(czlonkowieDruzynyRes.StatusCode, czlonkowieDruzynyRes.Errors);
         var czlonkowieDruzyny = czlonkowieDruzynyRes.Value ?? new List<MiejsceWDruzynieSzczegolyDto>();
         
@@ -139,7 +139,7 @@ public class DruzynyService(
         ));
     }
     
-    public async Task<ServiceResult<ICollection<MiejsceWDruzynieSzczegolyDto>>> GetCzlonkowieDruzyny(int idDruzyny)
+    public async Task<ServiceResult<ICollection<MiejsceWDruzynieSzczegolyDto>>> GetCzlonkowieDruzynyDoWyswietlenia(int idDruzyny)
     {
         if(idDruzyny <= 0) return ServiceResult<ICollection<MiejsceWDruzynieSzczegolyDto>>.BadRequest(new ErrorItem("Id drużyny musi być większe od 0"));
         var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
