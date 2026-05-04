@@ -52,6 +52,7 @@ public class AppDbContext : IdentityDbContext<Uzytkownik, IdentityRole<int>, int
     public DbSet<NastrojRozgrywki> NastrojRozgrywki { get; set; } = null!;
     public DbSet<MiejsceWDruzynie> MiejsceWDruzynie { get; set; } = null!;
     public DbSet<WymaganaStatystykaDruzyny> WymaganaStatystykaDruzyny { get; set; } = null!;
+    public DbSet<Ranga> Ranga { get; set; } = null!;
     
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

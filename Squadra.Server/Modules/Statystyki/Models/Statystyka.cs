@@ -15,4 +15,5 @@ public class Statystyka
     public virtual ICollection<StatystykaUzytkownika> StatystykaUzytkownikaCollection { get; set; } = new List<StatystykaUzytkownika>();
     public virtual ICollection<MiejsceWDruzynie> MiejsceWDruzynieCollection { get; set; } = new List<MiejsceWDruzynie>();
     public virtual ICollection<WymaganaStatystykaDruzyny> WymaganaStatystykaDruzynyCollection { get; set; } = new List<WymaganaStatystykaDruzyny>();
+    public virtual ICollection<Ranga> RangaCollection { get; set; } = new List<Ranga>();
 }
