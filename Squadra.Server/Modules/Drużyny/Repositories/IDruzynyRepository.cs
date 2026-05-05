@@ -6,5 +6,6 @@ public interface IDruzynyRepository
 {
     public Task<Druzyna> GetDruzyna(int idDruzyny);
     public Task<ICollection<MiejsceWDruzynie>> GetMiejscaWDruzynie(int idDruzyny);
+    public Task<ICollection<NastrojRozgrywki>> GetNastrojeRozgrywki();
     public Task<NastrojRozgrywki> GetNastrojRozgrywki(int idNastroju);
 }

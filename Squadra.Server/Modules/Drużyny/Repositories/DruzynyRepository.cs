@@ -28,6 +28,11 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
         return miejscaWDruzynie;
     }
     
+    public async Task<ICollection<NastrojRozgrywki>> GetNastrojeRozgrywki()
+    {
+        return await context.NastrojRozgrywki.ToListAsync();
+    }
+    
     public async Task<NastrojRozgrywki> GetNastrojRozgrywki(int idNastroju)
     {
         var nastroj = await context.NastrojRozgrywki.FindAsync(idNastroju);
