@@ -2,6 +2,7 @@
 using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Drużyny.Models;
+using Squadra.Server.Modules.Statystyki.Models;
 
 namespace Squadra.Server.Modules.Drużyny.Repositories;
 
@@ -38,5 +39,10 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
         var nastroj = await context.NastrojRozgrywki.FindAsync(idNastroju);
         if (nastroj == null) throw new NieZnalezionoWBazieException("Nie znaleziono nastroju o id " + idNastroju);
         return nastroj;
+    }
+    
+    public async Task<ICollection<Rola>> GetRole()
+    {
+        return await context.Rola.ToListAsync();
     }
 }
