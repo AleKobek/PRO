@@ -100,7 +100,7 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         
         try
         {
-            var result = await statystykiRepository.GetStatystykiZGry(idUzytkownika, idGry);
+            var result = await statystykiRepository.GetStatystykiUzytkownikaZGry(idUzytkownika, idGry);
             return ServiceResult<ICollection<StatystykiDoTabelkiDTO>>.Ok(result);
         }
         catch (NieZnalezionoWBazieException ex)
@@ -180,13 +180,12 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         }
     }
 
-    public async Task<ServiceResult<StatystykiDoFormularzaDto>> GetStatystykiDoFormularza(int idUzytkownika, int idGry)
+    public async Task<ServiceResult<StatystykiDoFormularzaDto>> GetStatystykiDoFormularza(int idGry)
     {
         if(idGry <= 0) return ServiceResult<StatystykiDoFormularzaDto>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator gry: " + idGry));
-        if(idUzytkownika <= 0) return ServiceResult<StatystykiDoFormularzaDto>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator użytkownika: " + idUzytkownika));
         try
         {            
-            var result = await statystykiRepository.GetStatystykiDoFormularza(idUzytkownika, idGry);
+            var result = await statystykiRepository.GetStatystykiDoFormularza(idGry);
             return ServiceResult<StatystykiDoFormularzaDto>.Ok(result);
         }
         catch (NieZnalezionoWBazieException e)

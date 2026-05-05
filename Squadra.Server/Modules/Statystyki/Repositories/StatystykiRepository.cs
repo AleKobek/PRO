@@ -79,7 +79,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
     }
 
     // get statystyki danego użytkownika dla danej gry
-    public async Task<ICollection<StatystykiDoTabelkiDTO>> GetStatystykiZGry(int idUzytkownika, int idGry)
+    public async Task<ICollection<StatystykiDoTabelkiDTO>> GetStatystykiUzytkownikaZGry(int idUzytkownika, int idGry)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
         if (uzytkownik is null)
@@ -118,6 +118,18 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
             k.KategoriaNazwa,
             statystyki.Where(s => s.KategoriaId == k.KategoriaId).ToList()
         )).ToList();
+    }
+    
+    public async Task<ICollection<Statystyka>> GetStatystykiZGry(int idGry)
+    {
+        var gra = await context.WspieranaGra.FindAsync(idGry);
+        if (gra is null)
+            throw new NieZnalezionoWBazieException("Gra o id " + idGry + " nie istnieje.");
+        
+        return await context.Statystyka
+            .Include(s => s.Kategoria)
+            .Where(s => s.Kategoria.IdGry == idGry)
+            .ToListAsync();
     }
     
     // funkcja aktualizująca statystyki użytkownika, czyli usuwająca wszystkie stare wpisy z tabeli StatystykaUzytkownika dla danego idUzytkownika i dodająca nowe wpisy, które pobieramy z zewnętrznego serwisu
@@ -231,12 +243,11 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
     }
     
     // funkcja do zwracania statystyk do formularza. musimy oddzielić rangi od reszty statystyk, bo je się wyświetla inaczej
-    public async Task<StatystykiDoFormularzaDto> GetStatystykiDoFormularza(int idUzytkownika, int idGry)
+    public async Task<StatystykiDoFormularzaDto> GetStatystykiDoFormularza(int idGry)
     {
-        var statystyki = await GetStatystykiZGry(idUzytkownika, idGry);
+        var statystyki = await GetStatystykiZGry(idGry);
         var rangi = await GetRangiGry(idGry);
         var statystykiBezRang = statystyki
-            .SelectMany(s => s.Statystyki) // spłaszczamy listę statystyk, nie dzielimy ich na kategori
             // All zwraca true, jeśli wszystkie elementy spełniają warunek.
             // tutaj sprawdzamy, czy statystyka nie jest rangą, czyli czy nie ma rangi o takim samym id statystyki
             .Where(s => rangi.All(r => r.IdStatystyki != s.Id)) 
