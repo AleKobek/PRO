@@ -183,4 +183,68 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         
         return wymaganiaDruzyny;
     }
+    
+    public async Task<ICollection<Ranga>> GetRangiStatystyki(int idStatystyki)
+    {
+        var ranga = await context.Ranga.Where(x => x.StatystykaId == idStatystyki).ToListAsync();
+        if (ranga.Count == 0) throw new NieZnalezionoWBazieException("Nie znaleziono rang statystyki o id " + idStatystyki);
+        
+        return ranga;
+    }
+    
+    public async Task<string?> GetNazwaRangi(int idStatystyki, int wartoscLiczbowa)
+    {
+        var statystyka = await context.Statystyka.FindAsync(idStatystyki);
+        if (statystyka == null) throw new NieZnalezionoWBazieException("Nie znaleziono statystyki o id " + idStatystyki);
+        var ranga = await context.Ranga.Where(x => x.StatystykaId == idStatystyki && x.WartoscLiczbowa <= wartoscLiczbowa).OrderByDescending(x => x.WartoscLiczbowa).FirstOrDefaultAsync();
+        // jeżeli ranga jest null, to statystyka nie jest rangą. To posłuży nam do sprawdzenia, czy to ranga
+        return ranga?.Nazwa;
+    }
+    
+    public async Task<RangiStatystykiDto> GetRangiStatystykiDto(int idStatystyki)
+    {
+        var rangi = await context.Ranga.Where(x => x.StatystykaId == idStatystyki).ToListAsync();
+        if (rangi.Count == 0) throw new NieZnalezionoWBazieException("Nie znaleziono rang statystyki o id " + idStatystyki);
+        
+        return new RangiStatystykiDto(idStatystyki, rangi.Select(r => new RangaWDtoRangiStatystykiDto(r.Nazwa, r.WartoscLiczbowa)).ToList());
+    }
+
+    public async Task<ICollection<RangiStatystykiDto>> GetRangiGry(int idGry)
+    {
+        var rangi = await context.Ranga
+            .Include(r => r.Statystyka)
+            .ThenInclude(s => s.Kategoria)
+            .Where(r => r.Statystyka.Kategoria.IdGry == idGry)
+            .ToListAsync();
+        
+        var statystykiZRangami = rangi.Select(r => r.Statystyka).Distinct().ToList();
+        var statystykiDoZwrocenia = new List<RangiStatystykiDto>();
+        foreach (var statystyka in statystykiZRangami)
+        {
+            var rangiDlaStatystyki = rangi
+                .Where(r => r.StatystykaId == statystyka.Id)
+                .Select(r => new RangaWDtoRangiStatystykiDto(r.Nazwa, r.WartoscLiczbowa))
+                .ToList();
+            statystykiDoZwrocenia.Add(new RangiStatystykiDto(statystyka.Id, rangiDlaStatystyki));
+        }
+        return statystykiDoZwrocenia;
+    }
+    
+    // funkcja do zwracania statystyk do formularza. musimy oddzielić rangi od reszty statystyk, bo je się wyświetla inaczej
+    public async Task<StatystykiDoFormularzaDto> GetStatystykiDoFormularza(int idUzytkownika, int idGry)
+    {
+        var statystyki = await GetStatystykiZGry(idUzytkownika, idGry);
+        var rangi = await GetRangiGry(idGry);
+        var statystykiBezRang = statystyki
+            .SelectMany(s => s.Statystyki) // spłaszczamy listę statystyk, nie dzielimy ich na kategori
+            // All zwraca true, jeśli wszystkie elementy spełniają warunek.
+            // tutaj sprawdzamy, czy statystyka nie jest rangą, czyli czy nie ma rangi o takim samym id statystyki
+            .Where(s => rangi.All(r => r.IdStatystyki != s.Id)) 
+            .Select(s => new StatystykaDoFormularzaNieBedacaRangaDto(
+                s.Id,
+                s.Nazwa
+            ))
+            .ToList();
+        return new StatystykiDoFormularzaDto(statystykiBezRang, rangi);
+    }
 }

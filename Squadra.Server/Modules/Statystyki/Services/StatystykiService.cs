@@ -162,21 +162,36 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         return ServiceResult<bool>.Ok(result);
     }
     
-        public async Task<ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny)
+    public async Task<ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny)
+    {
+        if (idDruzyny <= 0)
         {
-            if (idDruzyny <= 0)
-            {
-                return ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator drużyny: " + idDruzyny));
-            }
-            
-            try
-            {
-                var result = await statystykiRepository.GetWymaganiaDruzynyDoWyswietlenia(idDruzyny);
-                return ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>.Ok(result);
-            }
-            catch (NieZnalezionoWBazieException ex)
-            {
-                return ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>.NotFound(new ErrorItem(ex.Message));
-            }
+            return ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator drużyny: " + idDruzyny));
         }
+        
+        try
+        {
+            var result = await statystykiRepository.GetWymaganiaDruzynyDoWyswietlenia(idDruzyny);
+            return ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>.Ok(result);
+        }
+        catch (NieZnalezionoWBazieException ex)
+        {
+            return ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>.NotFound(new ErrorItem(ex.Message));
+        }
+    }
+
+    public async Task<ServiceResult<StatystykiDoFormularzaDto>> GetStatystykiDoFormularza(int idUzytkownika, int idGry)
+    {
+        if(idGry <= 0) return ServiceResult<StatystykiDoFormularzaDto>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator gry: " + idGry));
+        if(idUzytkownika <= 0) return ServiceResult<StatystykiDoFormularzaDto>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator użytkownika: " + idUzytkownika));
+        try
+        {            
+            var result = await statystykiRepository.GetStatystykiDoFormularza(idUzytkownika, idGry);
+            return ServiceResult<StatystykiDoFormularzaDto>.Ok(result);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<StatystykiDoFormularzaDto>.NotFound(new ErrorItem(e.Message));
+        }
+    }
 }

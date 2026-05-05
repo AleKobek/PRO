@@ -14,4 +14,5 @@ public interface IStatystykiRepository
     public Task<bool> UsunStatystykiUzytkownika(int idUzytkownika);
     public bool CzySpelniaWymagania(ICollection<WartoscStatystykiDTO> wymagania, ICollection<WartoscStatystykiDTO> statystykiDoSprawdzenia);
     public Task<ICollection<WymaganieDruzynyDoWyswietleniaDto>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny);
+    public Task<StatystykiDoFormularzaDto> GetStatystykiDoFormularza(int idUzytkownika, int idGry);
 }
