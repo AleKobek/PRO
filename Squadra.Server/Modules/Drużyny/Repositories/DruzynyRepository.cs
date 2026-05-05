@@ -41,8 +41,8 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
         return nastroj;
     }
     
-    public async Task<ICollection<Rola>> GetRole()
+    public async Task<ICollection<Rola>> GetRoleGry(int idGry)
     {
-        return await context.Rola.ToListAsync();
+        return await context.Rola.Where(r => r.IdGry == idGry).ToListAsync();
     }
 }
