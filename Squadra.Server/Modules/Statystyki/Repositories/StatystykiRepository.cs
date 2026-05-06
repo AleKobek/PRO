@@ -99,7 +99,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
                 x.UzytkownikId == idUzytkownika &&
                 x.Statystyka.Kategoria.IdGry == idGry)
             .OrderBy(x => x.StatystykaId)
-            .Select(x=> new StatystykaDTO(
+            .Select(x=> new StatystykaUzytkownikaDTO(
                 x.StatystykaId,
                 x.Statystyka.RolaId == null 
                     ? x.StatystykaId == 11 ? x.Statystyka.Nazwa + " (otwarta rywalizacja)" : x.Statystyka.Nazwa 

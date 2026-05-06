@@ -8,21 +8,21 @@ namespace Squadra.Server.Modules.Statystyki.Services;
 
 public class StatystykiService(IStatystykiRepository statystykiRepository) : IStatystykiService
 {
-    public async Task<ServiceResult<Statystyka>> GetStatystyka(int idStatystyki)
+    public async Task<ServiceResult<StatystykaDTO>> GetStatystyka(int idStatystyki)
     {
         if (idStatystyki <= 0)
         {
-            return ServiceResult<Statystyka>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki: " + idStatystyki));
+            return ServiceResult<StatystykaDTO>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki: " + idStatystyki));
         }
         
         try
         {
             var result = await statystykiRepository.GetStatystyka(idStatystyki);
-            return ServiceResult<Statystyka>.Ok(result);
+            return ServiceResult<StatystykaDTO>.Ok(new StatystykaDTO(idStatystyki, result.Nazwa, result.KategoriaId, result.RolaId, result.CzyToCzasRozgrywki));
         }
         catch (NieZnalezionoWBazieException ex)
         {
-            return ServiceResult<Statystyka>.NotFound(new ErrorItem(ex.Message));
+            return ServiceResult<StatystykaDTO>.NotFound(new ErrorItem(ex.Message));
         }
     }
     public async Task<ServiceResult<string>> GetGodzinyGrania(int idUzytkownika, int idGry)

@@ -3,5 +3,5 @@
 public record StatystykiDoTabelkiDTO(
     int IdKategorii,
     string NazwaKategorii,
-    ICollection<StatystykaDTO> Statystyki
+    ICollection<StatystykaUzytkownikaDTO> Statystyki
 );

@@ -6,7 +6,7 @@ namespace Squadra.Server.Modules.Statystyki.Services;
 
 public interface IStatystykiService
 {
-    public Task<ServiceResult<Statystyka>> GetStatystyka(int idStatystyki);
+    public Task<ServiceResult<StatystykaDTO>> GetStatystyka(int idStatystyki);
     public Task<ServiceResult<string>> GetGodzinyGrania(int idUzytkownika, int idGry);
     public Task<ServiceResult<ICollection<CzasRozgrywkiDTO>>> GetGodzinyGraniaUzytkownika(int idUzytkownika);
     public Task<ServiceResult<WartoscStatystykiDTO?>> GetWartoscStatystyki(int idUzytkownika, int idStatystyki);

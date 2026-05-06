@@ -17,7 +17,7 @@ public class StatystykiController(
 {
     [HttpGet("{idUzytkownika:int}/{idGry:int}")] // to GET, więc oba w ścieżce
     [EndpointSummary("Pobiera wszystkie statystyki użytkownika o podanym id związane z grą o podanym id")]
-    [ProducesResponseType(typeof(ICollection<StatystykaDTO>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ICollection<StatystykaUzytkownikaDTO>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
