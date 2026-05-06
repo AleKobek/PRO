@@ -1,6 +1,6 @@
 ﻿using Squadra.Server.Modules.Drużyny.Models;
 using Squadra.Server.Modules.Platformy.Models;
-using Squadra.Server.Modules.Profile.Models;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Statystyki.Models;
 
 namespace Squadra.Server.Modules.Drużyny.DTO;
@@ -8,7 +8,7 @@ namespace Squadra.Server.Modules.Drużyny.DTO;
 public record DaneDoFormularzaDruzynyBezStatystykDto(
     ICollection<NastrojRozgrywki> NastrojeRozgrywki,
     ICollection<Platforma> Platformy,
-    ICollection<Jezyk> Jezyki,
-    ICollection<StopienBieglosciJezyka> StopnieBieglosciJezyka,
+    ICollection<JezykDto> Jezyki,
+    ICollection<StopienBieglosciJezykaDto> StopnieBieglosciJezyka,
     ICollection<Rola> Role
 );
