@@ -296,7 +296,7 @@ export default function NaglowekZalogowano({
             <div id = "menu-na-pasku">
                 <div className="nawigacja-na-pasku">
                     {/* na razie wszystkie prowadzą do profilu, bo nie ma reszty */}
-                    <NavLink to = '/twojProfil' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Drużyny</NavLink>
+                    <NavLink to = '/twojeDruzyny' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Drużyny</NavLink>
                     <NavLink to = '/twojProfil' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Gildie</NavLink>
                     <NavLink to = '/twoiZnajomi' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja' }>
                         <div className="flex flex-row gap-2 items-center">

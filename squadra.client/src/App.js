@@ -14,6 +14,7 @@ import TwoiZnajomiStrona from "./Components/TwoiZnajomiStrona";
 import ProfilOgolny from "./Components/ProfilOgolny";
 import {useState} from "react";
 import {Bounce, ToastContainer} from "react-toastify";
+import TwojeDruzyny from "./Components/TwojeDruzyny";
 
 function App() {
 
@@ -49,6 +50,10 @@ function App() {
                     <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
                     <ProfilOgolny/>
               </>}></Route>
+                <Route path = "/twojeDruzyny" element = {<>
+                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
+                    <TwojeDruzyny/>
+                </>}></Route>
               <Route path = "/login" element = {<Logowanie/>}></Route>
               <Route path = "/rejestracja" element = {<Rejestracja/>}></Route>
               <Route path = "*" element = {<Error404/>}></Route>
