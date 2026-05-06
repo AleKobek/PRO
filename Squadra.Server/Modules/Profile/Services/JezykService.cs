@@ -1,5 +1,6 @@
 ﻿using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
+using Squadra.Server.Modules.Profile.Models;
 using Squadra.Server.Modules.Profile.Repositories;
 using Squadra.Server.Modules.Shared.Services;
 
@@ -7,22 +8,22 @@ namespace Squadra.Server.Modules.Profile.Services;
 
 public class JezykService(IJezykRepository jezykRepository) : IJezykService
 {
-    public async Task<ServiceResult<ICollection<JezykDto>>> GetJezyki()
+    public async Task<ServiceResult<ICollection<Jezyk>>> GetJezyki()
     {
-        return ServiceResult<ICollection<JezykDto>>.Ok(await jezykRepository.GetJezyki());
+        return ServiceResult<ICollection<Jezyk>>.Ok(await jezykRepository.GetJezyki());
     }
 
-    public async Task<ServiceResult<JezykDto?>> GetJezyk(int id)
+    public async Task<ServiceResult<Jezyk>> GetJezyk(int id)
     {
         try
         {
             return id < 1
-                ? ServiceResult<JezykDto?>.BadRequest(new ErrorItem("Nieprawidłowe id jezyka: " + id))
-                : ServiceResult<JezykDto?>.Ok(await jezykRepository.GetJezyk(id));
+                ? ServiceResult<Jezyk>.BadRequest(new ErrorItem("Nieprawidłowe id jezyka: " + id))
+                : ServiceResult<Jezyk>.Ok(await jezykRepository.GetJezyk(id));
         }
         catch (NieZnalezionoWBazieException e)
         {
-            return ServiceResult<JezykDto?>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<Jezyk>.NotFound(new ErrorItem(e.Message));
         }
     }
 

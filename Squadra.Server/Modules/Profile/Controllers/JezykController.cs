@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
+using Squadra.Server.Modules.Profile.Models;
 using Squadra.Server.Modules.Profile.Services;
 
 namespace Squadra.Server.Modules.Profile.Controllers;
@@ -14,8 +15,8 @@ public class JezykController(IJezykService jezykService) : ControllerBase
 
     [HttpGet]
     [EndpointSummary("Zwraca dane wszystkich języków w bazie.")]
-    [ProducesResponseType(typeof(IEnumerable<JezykDto>), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<IEnumerable<JezykDto>>> GetJezyki()
+    [ProducesResponseType(typeof(IEnumerable<Jezyk>), (int)HttpStatusCode.OK)]
+    public async Task<ActionResult<IEnumerable<Jezyk>>> GetJezyki()
     {
         var result = await jezykService.GetJezyki();
         return result.StatusCode == 200
@@ -25,10 +26,10 @@ public class JezykController(IJezykService jezykService) : ControllerBase
     
     [HttpGet("{id:int}")]
     [EndpointSummary("Zwraca dane języka o podanym id.")]   
-    [ProducesResponseType(typeof(JezykDto), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(Jezyk), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult<JezykDto?>> GetJezyk(int id)
+    public async Task<ActionResult<Jezyk>> GetJezyk(int id)
     {
         var result = await jezykService.GetJezyk(id);
         return result.StatusCode switch

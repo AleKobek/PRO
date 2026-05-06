@@ -80,29 +80,32 @@ public class ZnajomiServiceTests
     public async Task GetZnajomiDoListyUzytkownika_WithValidId_ReturnsOk()
     {
         var userId = 1;
+        var znajomiId = 2;
         var znajomi = new List<Znajomi>
         {
             new()
             {
                 IdUzytkownika1 = userId,
-                IdUzytkownika2 = 2,
+                IdUzytkownika2 = znajomiId,
                 OstatnieOtwarcieCzatuUzytkownika1 = DateTime.UtcNow.AddHours(-2)
             }
         };
 
         _mockRepository.Setup(r => r.GetZnajomiUzytkownika(userId)).ReturnsAsync(znajomi);
 
+        var profilMinInfoDto = new Modules.Profile.DTO.Profil.ProfilMinInfoDto(
+            znajomiId, "Znajomy", null, "Online");
+
         _mockProfilService
-            .Setup(s => s.GetProfil(2))
-            .ReturnsAsync(ServiceResult<Modules.Profile.DTO.Profil.ProfilGetResDto>.Ok(
-                new Modules.Profile.DTO.Profil.ProfilGetResDto("Znajomy", null, null, null, new List<Modules.Profile.DTO.JezykStopien.JezykOrazStopienDto>(), null, "Online")));
+            .Setup(s => s.GetProfilMinInfo(znajomiId))
+            .ReturnsAsync(ServiceResult<Modules.Profile.DTO.Profil.ProfilMinInfoDto>.Ok(profilMinInfoDto));
 
         _mockStatystykiCzatuService
-            .Setup(s => s.GetDataNajnowszejWiadomosci(userId, 2))
+            .Setup(s => s.GetDataNajnowszejWiadomosci(userId, znajomiId))
             .ReturnsAsync(ServiceResult<DateTime?>.Ok(DateTime.UtcNow.AddMinutes(-5)));
 
         _mockStatystykiCzatuService
-            .Setup(s => s.CzySaNoweWiadomosciOdZnajomego(userId, 2))
+            .Setup(s => s.CzySaNoweWiadomosciOdZnajomego(userId, znajomiId))
             .ReturnsAsync(ServiceResult<bool>.Ok(true));
 
         var result = await _service.GetZnajomiDoListyUzytkownika(userId);
