@@ -177,5 +177,31 @@ public class DruzynyService(
 
         return ServiceResult<ICollection<MiejsceWDruzynieSzczegolyDto>>.Ok(czlonkowieDoZwrocenia);
     }
+    
+    // funkcja przekazująca do frontu dane potrzebne do formularza drużyny
+    // potrzebujemy: listę nastrojów rozgrywki, listę platform, listę języków wraz ze stopniami biegłości języka, listę ról, listę statystyk
+    public async Task<ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>> GetDaneDoFormularzaDruzynyZeStatystykami(int idGry, int idUzytkownika)
+    {
+        var nastroje = await druzynyRepository.GetNastrojeRozgrywki();
+        
+        var platformyRes = await wspieranaGraService.GetPlatformyGryUzytkownika(idGry, idUzytkownika);
+        if (!platformyRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(platformyRes.StatusCode, platformyRes.Errors);
+        
+        var jezykiOrazStopnieRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
+        if (!jezykiOrazStopnieRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(jezykiOrazStopnieRes.StatusCode, jezykiOrazStopnieRes.Errors);
+        
+        var role = await druzynyRepository.GetRoleGry(idGry);
+        
+        var statystykiRes = await statystykiService.GetStatystykiDoFormularza(idGry);
+        if (!statystykiRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(statystykiRes.StatusCode, statystykiRes.Errors);
+        
+        return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Ok(new DaneDoFormularzaDruzynyZeStatystykamiDto(
+            nastroje,
+            platformyRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+            jezykiOrazStopnieRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+            role,
+            statystykiRes.Value // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+        ));
+    }
 
 }
