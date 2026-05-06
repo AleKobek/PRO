@@ -1,7 +1,6 @@
 ﻿using Squadra.Server.Modules.Drużyny.Models;
 using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
-using Squadra.Server.Modules.Statystyki.Models;
 
 namespace Squadra.Server.Modules.Drużyny.DTO;
 
@@ -10,5 +9,5 @@ public record DaneDoFormularzaDruzynyBezStatystykDto(
     ICollection<Platforma> Platformy,
     ICollection<JezykDto> Jezyki,
     ICollection<StopienBieglosciJezykaDto> StopnieBieglosciJezyka,
-    ICollection<Rola> Role
+    ICollection<RolaDto> Role
 );

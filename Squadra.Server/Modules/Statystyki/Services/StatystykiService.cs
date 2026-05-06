@@ -1,4 +1,5 @@
 ﻿using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Statystyki.DTO;
 using Squadra.Server.Modules.Statystyki.Models;
@@ -177,6 +178,24 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         catch (NieZnalezionoWBazieException ex)
         {
             return ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>.NotFound(new ErrorItem(ex.Message));
+        }
+    }
+    
+    public async Task<ServiceResult<ICollection<RolaDto>>> GetRoleGry(int idGry)
+    {
+        if (idGry <= 0)
+        {
+            return ServiceResult<ICollection<RolaDto>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator gry: " + idGry));
+        }
+        
+        try
+        {
+            var result = await statystykiRepository.GetRoleGry(idGry);
+            return ServiceResult<ICollection<RolaDto>>.Ok(result.Select(x => new RolaDto(x.Id, x.Nazwa, idGry)).ToList());
+        }
+        catch (NieZnalezionoWBazieException ex)
+        {
+            return ServiceResult<ICollection<RolaDto>>.NotFound(new ErrorItem(ex.Message));
         }
     }
 

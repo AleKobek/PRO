@@ -242,6 +242,11 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         return statystykiDoZwrocenia;
     }
     
+    public async Task<ICollection<Rola>> GetRoleGry(int idGry)
+    {
+        return await context.Rola.Where(r => r.IdGry == idGry).ToListAsync();
+    }
+    
     // funkcja do zwracania statystyk do formularza. musimy oddzielić rangi od reszty statystyk, bo je się wyświetla inaczej
     public async Task<StatystykiDoFormularzaDto> GetStatystykiDoFormularza(int idGry)
     {

@@ -197,7 +197,8 @@ public class DruzynyService(
         var jezykiOrazStopnieRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
         if (!jezykiOrazStopnieRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(jezykiOrazStopnieRes.StatusCode, jezykiOrazStopnieRes.Errors);
         
-        var role = await druzynyRepository.GetRoleGry(idGry);
+        var roleRes = await statystykiService.GetRoleGry(idGry);
+        if (!roleRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(roleRes.StatusCode, roleRes.Errors);
         
         var statystykiRes = await statystykiService.GetStatystykiDoFormularza(idGry);
         if (!statystykiRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(statystykiRes.StatusCode, statystykiRes.Errors);
@@ -206,7 +207,7 @@ public class DruzynyService(
             nastroje,
             platformyRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             jezykiOrazStopnieRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
-            role,
+            roleRes.Value, // podobnie co wyżej i niżej
             statystykiRes.Value // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
         ));
     }
@@ -228,7 +229,8 @@ public class DruzynyService(
         var stopnieRes = await stopienBieglosciJezykaService.GetStopnieBieglosciJezyka();
         if (!stopnieRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(stopnieRes.StatusCode, stopnieRes.Errors);
         
-        var role = await druzynyRepository.GetRoleGry(idGry);
+        var roleRes = await statystykiService.GetRoleGry(idGry);
+        if (!roleRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(roleRes.StatusCode, roleRes.Errors);
 
         return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Ok(
             new DaneDoFormularzaDruzynyBezStatystykDto(
@@ -236,7 +238,7 @@ public class DruzynyService(
                 platformyRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
                 jezykiRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
                 stopnieRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
-                role
+                roleRes.Value // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             )
         );
     }
