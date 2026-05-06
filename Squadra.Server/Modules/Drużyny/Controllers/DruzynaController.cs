@@ -15,7 +15,7 @@ public class DruzynaController(IDruzynyService druzynyService) : ControllerBase
      [ProducesResponseType(typeof(DruzynaDoTabelkiDto), 200)]
      [ProducesResponseType(400)]
      [ProducesResponseType(404)]
-    public async Task<ActionResult> GetDruzynaDoTabelki(int idDruzyny)
+    public async Task<ActionResult<DruzynaDoTabelkiDto>> GetDruzynaDoTabelki(int idDruzyny)
     {
         
         var result = await druzynyService.GetDruzynaDoTabelki(idDruzyny);
@@ -33,7 +33,7 @@ public class DruzynaController(IDruzynyService druzynyService) : ControllerBase
     [ProducesResponseType(typeof(DruzynaSzczegolyDto), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public async Task<ActionResult> GetDruzynaSzczegoly(int idDruzyny)
+    public async Task<ActionResult<DruzynaSzczegolyDto>> GetDruzynaSzczegoly(int idDruzyny)
     {
         var result = await druzynyService.PodajSzczegolyDruzyny(idDruzyny);
         return result.StatusCode switch
@@ -50,7 +50,7 @@ public class DruzynaController(IDruzynyService druzynyService) : ControllerBase
     [ProducesResponseType(typeof(DaneDoFormularzaDruzynyZeStatystykamiDto), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public async Task<ActionResult> GetDaneDoFormularzaDruzynyZeStatystykami(int idUzytkownika, int idGry)
+    public async Task<ActionResult<DaneDoFormularzaDruzynyZeStatystykamiDto>> GetDaneDoFormularzaDruzynyZeStatystykami(int idUzytkownika, int idGry)
     {
         var result = await druzynyService.GetDaneDoFormularzaDruzynyZeStatystykami(idGry, idUzytkownika);
         return result.StatusCode switch
@@ -68,7 +68,7 @@ public class DruzynaController(IDruzynyService druzynyService) : ControllerBase
      [ProducesResponseType(typeof(DaneDoFormularzaDruzynyBezStatystykDto), 200)]
      [ProducesResponseType(400)]
      [ProducesResponseType(404)]
-     public async Task<ActionResult> GetDaneDoFormularzaDruzynyBezStatystyk(int idGry)
+     public async Task<ActionResult<DaneDoFormularzaDruzynyBezStatystykDto>> GetDaneDoFormularzaDruzynyBezStatystyk(int idGry)
     {
         var result = await druzynyService.GetDaneDoFormularzaDruzynyBezStatystyk(idGry);
         return result.StatusCode switch
