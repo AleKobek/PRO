@@ -27,7 +27,7 @@ public class StatystykiController(
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
         
-        var result = await statystykiService.GetStatystykiZGry(idUzytkownika, idGry);
+        var result = await statystykiService.GetStatystykiUzytkownikaZGry(idUzytkownika, idGry);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),

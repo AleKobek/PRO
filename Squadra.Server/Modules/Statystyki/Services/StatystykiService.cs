@@ -88,7 +88,7 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         }
     }
     
-    public async Task<ServiceResult<ICollection<StatystykiDoTabelkiDTO>>> GetStatystykiZGry(int idUzytkownika, int idGry)
+    public async Task<ServiceResult<ICollection<StatystykiDoTabelkiDTO>>> GetStatystykiUzytkownikaZGry(int idUzytkownika, int idGry)
     {
         if (idUzytkownika <= 0)
         {
