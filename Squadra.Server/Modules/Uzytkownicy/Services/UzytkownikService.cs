@@ -20,16 +20,30 @@ public class UzytkownikService(
 
     public async Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(int id)
     {
-        return id < 1 
-            ? ServiceResult<UzytkownikResDto>.BadRequest(new ErrorItem("Niepoprawne id użytkownika: " + id)) 
-            : ServiceResult<UzytkownikResDto>.Ok(await uzytkownikRepository.GetUzytkownik(id));
+        try
+        {
+            return id < 1
+                ? ServiceResult<UzytkownikResDto>.BadRequest(new ErrorItem("Niepoprawne id użytkownika: " + id))
+                : ServiceResult<UzytkownikResDto>.Ok(await uzytkownikRepository.GetUzytkownik(id));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<UzytkownikResDto>.NotFound(new ErrorItem(e.Message));
+        }
     }
 
     public async Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(string login)
     {
-        return string.IsNullOrWhiteSpace(login) 
-            ? ServiceResult<UzytkownikResDto>.BadRequest(new ErrorItem("Login nie może być pusty.")) 
-            : ServiceResult<UzytkownikResDto>.Ok(await uzytkownikRepository.GetUzytkownik(login));
+        try
+        {
+            return string.IsNullOrWhiteSpace(login)
+                ? ServiceResult<UzytkownikResDto>.BadRequest(new ErrorItem("Login nie może być pusty."))
+                : ServiceResult<UzytkownikResDto>.Ok(await uzytkownikRepository.GetUzytkownik(login));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<UzytkownikResDto>.NotFound(new ErrorItem(e.Message));
+        }
     }
     
     public async Task<ServiceResult<DateTime?>> GetOstatniaAktywnoscUzytkownika(int id)
