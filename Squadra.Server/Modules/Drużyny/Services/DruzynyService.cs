@@ -204,7 +204,7 @@ public class DruzynyService(
         if (!statystykiRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(statystykiRes.StatusCode, statystykiRes.Errors);
         
         return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Ok(new DaneDoFormularzaDruzynyZeStatystykamiDto(
-            nastroje,
+            nastroje.Select(x => new NastrojRozgrywkiDto(x.Id, x.Nazwa)).ToList(),
             platformyRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             jezykiOrazStopnieRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             roleRes.Value, // podobnie co wyżej i niżej
@@ -234,7 +234,7 @@ public class DruzynyService(
 
         return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Ok(
             new DaneDoFormularzaDruzynyBezStatystykDto(
-                nastroje,
+                nastroje.Select(x => new NastrojRozgrywkiDto(x.Id, x.Nazwa)).ToList(),
                 platformyRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
                 jezykiRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
                 stopnieRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value

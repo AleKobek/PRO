@@ -1,5 +1,4 @@
 ﻿using Squadra.Server.Modules.Drużyny.Models;
-using Squadra.Server.Modules.Statystyki.Models;
 
 namespace Squadra.Server.Modules.Drużyny.Repositories;
 
