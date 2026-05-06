@@ -1,6 +1,5 @@
 using Moq;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
-using Squadra.Server.Modules.Profile.Models;
 using Squadra.Server.Modules.Profile.Repositories;
 using Squadra.Server.Modules.Profile.Services;
 using Xunit;
@@ -22,13 +21,13 @@ public class StopienBieglosciJezykaServiceTests
     public async Task GetStopnieBieglosciJezyka_ReturnsOkWithProficiencyLevelsList()
     {
         // Arrange
-        var expectedLevels = new List<StopienBieglosciJezyka>
+        var expectedLevels = new List<StopienBieglosciJezykaDto>
         {
-                new StopienBieglosciJezyka { Id = 1, Nazwa = "Beginner", Wartosc = 1},
-                new StopienBieglosciJezyka { Id = 2, Nazwa = "Elementary", Wartosc = 2 },
-                new StopienBieglosciJezyka { Id = 3, Nazwa = "Intermediate", Wartosc = 3},
-                new StopienBieglosciJezyka { Id = 4, Nazwa = "Advanced", Wartosc = 4},
-                new StopienBieglosciJezyka { Id = 5, Nazwa = "Native", Wartosc = 5}
+            new StopienBieglosciJezykaDto(1, "Beginner", 1),
+            new StopienBieglosciJezykaDto(2, "Intermediate", 2),
+            new StopienBieglosciJezykaDto(3, "Advanced", 3),
+            new StopienBieglosciJezykaDto(4, "Fluent", 4),
+            new StopienBieglosciJezykaDto(5, "Native", 5)
         };
         _mockRepository.Setup(r => r.GetStopnieBieglosciJezyka())
             .ReturnsAsync(expectedLevels);
@@ -49,7 +48,7 @@ public class StopienBieglosciJezykaServiceTests
     {
         // Arrange
         var levelId = 3;
-        var expectedLevel = new StopienBieglosciJezyka { Id = levelId, Nazwa = "Advanced", Wartosc = 4};
+        var expectedLevel = new StopienBieglosciJezykaDto(levelId, "Advanced", 3);
         _mockRepository.Setup(r => r.GetStopienBieglosciJezyka(levelId))
             .ReturnsAsync(expectedLevel);
 

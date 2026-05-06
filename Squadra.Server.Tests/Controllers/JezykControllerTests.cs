@@ -87,11 +87,11 @@ public class JezykControllerTests
         {
             new JezykOrazStopienDto(
                 new Jezyk {Id = 1, Nazwa = "English"},
-                new StopienBieglosciJezyka { Id = 3, Nazwa = "Advanced", Wartosc = 3 }
+                new StopienBieglosciJezykaDto(3, "Advanced", 3)
             ),
             new JezykOrazStopienDto(
                 new Jezyk {Id = 1, Nazwa = "English"},
-                new StopienBieglosciJezyka{Id = 5, Nazwa = "Native", Wartosc = 5}
+                new StopienBieglosciJezykaDto(5, "Native", 5)
             )
         };
         var result = ServiceResult<ICollection<JezykOrazStopienDto>>.Ok(languages);

@@ -101,8 +101,8 @@ public class JezykServiceTests
         var profileId = 1;
         var expectedLanguages = new List<JezykOrazStopienDto>
         {
-            new JezykOrazStopienDto( new Jezyk { Id = 1, Nazwa ="English" }, new StopienBieglosciJezyka { Id = 3, Nazwa = "Advanced", Wartosc = 3 }),
-            new JezykOrazStopienDto( new Jezyk { Id = 2, Nazwa ="Polish" }, new StopienBieglosciJezyka { Id = 5, Nazwa = "Native", Wartosc = 5 })
+            new JezykOrazStopienDto( new Jezyk { Id = 1, Nazwa ="English" }, new StopienBieglosciJezykaDto(3, "Advanced", 3)),
+            new JezykOrazStopienDto( new Jezyk { Id = 2, Nazwa ="Polish" }, new StopienBieglosciJezykaDto(5, "Native", 5))
         };
         _mockRepository.Setup(r => r.GetJezykiProfilu(profileId))
             .ReturnsAsync(expectedLanguages);
@@ -161,8 +161,8 @@ public class JezykServiceTests
         };
         var expectedResult = new List<JezykOrazStopienDto>
         {
-            new JezykOrazStopienDto( new Jezyk { Id = 1, Nazwa ="English" }, new StopienBieglosciJezyka { Id = 3, Nazwa = "Advanced", Wartosc = 3 }),
-            new JezykOrazStopienDto( new Jezyk { Id = 2, Nazwa ="Polish" }, new StopienBieglosciJezyka { Id = 5, Nazwa = "Native", Wartosc = 5 })
+            new JezykOrazStopienDto( new Jezyk { Id = 1, Nazwa ="English" }, new StopienBieglosciJezykaDto(3, "Advanced", 3)),
+            new JezykOrazStopienDto( new Jezyk { Id = 2, Nazwa ="Polish" }, new StopienBieglosciJezykaDto(5, "Native", 5))
         };
         _mockRepository.Setup(r => r.ZmienJezykiProfilu(profileId, newLanguages))
             .ReturnsAsync(expectedResult);

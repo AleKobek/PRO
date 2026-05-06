@@ -28,11 +28,11 @@ public class JezykRepository(
         ICollection<JezykOrazStopienDto> jezykiDoZwrocenia = new List<JezykOrazStopienDto>();
         ICollection<JezykProfilu> jezykiUzytkownika = await appDbContext.JezykProfilu.Where(x => x.UzytkownikId == id).ToListAsync();
         ICollection<Jezyk> jezyki = await GetJezyki();
-        ICollection<StopienBieglosciJezyka> stopnieBieglosci = await stopienBieglosciJezykaRepository.GetStopnieBieglosciJezyka();
+        ICollection<StopienBieglosciJezykaDto> stopnieBieglosci = await stopienBieglosciJezykaRepository.GetStopnieBieglosciJezyka();
         foreach (var var in jezykiUzytkownika)
         {
             Jezyk? jezyk = jezyki.FirstOrDefault(x => x.Id == var.JezykId);
-            StopienBieglosciJezyka? stopienBieglosci = stopnieBieglosci.FirstOrDefault(x => x.Id == var.StopienBieglosciId);
+            StopienBieglosciJezykaDto? stopienBieglosci = stopnieBieglosci.FirstOrDefault(x => x.Id == var.StopienBieglosciId);
             if(jezyk != null &&  stopienBieglosci != null)
             {
                 jezykiDoZwrocenia.Add(new JezykOrazStopienDto(

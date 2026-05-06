@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Squadra.Server.Modules.Profile.Models;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Profile.Services;
 
 namespace Squadra.Server.Modules.Profile.Controllers;
@@ -13,8 +13,8 @@ public class StopienBieglosciJezykaController(IStopienBieglosciJezykaService sto
 {
     [HttpGet]
     [EndpointSummary("Zwraca dane wszystich stopni biegłości języka w bazie.")]
-    [ProducesResponseType(typeof(IEnumerable<StopienBieglosciJezyka>), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<IEnumerable<StopienBieglosciJezyka>>> GetStopienBieglosciJezyka()
+    [ProducesResponseType(typeof(IEnumerable<StopienBieglosciJezykaDto>), (int)HttpStatusCode.OK)]
+    public async Task<ActionResult<IEnumerable<StopienBieglosciJezykaDto>>> GetStopienBieglosciJezyka()
     {
         var result = await stopienBieglosciJezykaService.GetStopnieBieglosciJezyka();
         return result.StatusCode == 200
@@ -24,10 +24,10 @@ public class StopienBieglosciJezykaController(IStopienBieglosciJezykaService sto
 
     [HttpGet("{id:int}")]
     [EndpointSummary("Zwraca dane stopnia biegłości języka o podanym id.")]
-    [ProducesResponseType(typeof(StopienBieglosciJezyka), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(StopienBieglosciJezykaDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult<StopienBieglosciJezyka?>> GetStopienBieglosciJezyka(int id)
+    public async Task<ActionResult<StopienBieglosciJezykaDto?>> GetStopienBieglosciJezyka(int id)
     {
         var result = await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(id);
         return result.StatusCode switch

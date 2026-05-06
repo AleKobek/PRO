@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Squadra.Server.Modules.Profile.Controllers;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
-using Squadra.Server.Modules.Profile.Models;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
 using Xunit;
@@ -24,15 +23,15 @@ public class StopienBieglosciJezykaControllerTests
     public async Task GetStopienBieglosciJezyka_ReturnsOkWithProficiencyLevelList()
     {
         // Arrange
-        ICollection<StopienBieglosciJezyka> proficiencyLevels = new List<StopienBieglosciJezyka>
+        ICollection<StopienBieglosciJezykaDto> proficiencyLevels = new List<StopienBieglosciJezykaDto>
         {
-            new StopienBieglosciJezyka { Id = 1, Nazwa = "Beginner", Wartosc = 1},
-            new StopienBieglosciJezyka { Id = 2, Nazwa = "Elementary", Wartosc = 2 },
-            new StopienBieglosciJezyka { Id = 3, Nazwa = "Intermediate", Wartosc = 3},
-            new StopienBieglosciJezyka { Id = 4, Nazwa = "Advanced", Wartosc = 4},
-            new StopienBieglosciJezyka { Id = 5, Nazwa = "Native", Wartosc = 5}
+            new StopienBieglosciJezykaDto(1, "Beginner", 1),
+            new StopienBieglosciJezykaDto(2, "Elementary", 2),
+            new StopienBieglosciJezykaDto(3, "Intermediate", 3),
+            new StopienBieglosciJezykaDto(4, "Advanced", 4),
+            new StopienBieglosciJezykaDto(5, "Native", 5)
         };
-        var result = ServiceResult<ICollection<StopienBieglosciJezyka>>.Ok(proficiencyLevels);
+        var result = ServiceResult<ICollection<StopienBieglosciJezykaDto>>.Ok(proficiencyLevels);
         _mockStopienBieglosciJezykaService.Setup(s => s.GetStopnieBieglosciJezyka())
             .ReturnsAsync(result);
 
@@ -41,7 +40,7 @@ public class StopienBieglosciJezykaControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-        var returnedLevels = Assert.IsAssignableFrom<IEnumerable<StopienBieglosciJezyka>>(okResult.Value);
+        var returnedLevels = Assert.IsAssignableFrom<IEnumerable<StopienBieglosciJezykaDto>>(okResult.Value);
         Assert.Equal(5, returnedLevels.Count());
     }
 
@@ -49,8 +48,8 @@ public class StopienBieglosciJezykaControllerTests
     public async Task GetStopienBieglosciJezyka_WithValidId_ReturnsOkWithProficiencyLevel()
     {
         // Arrange
-        var proficiencyLevelDto = new StopienBieglosciJezyka { Id = 3, Nazwa = "Intermediate", Wartosc = 3};
-        var result = ServiceResult<StopienBieglosciJezyka?>.Ok(proficiencyLevelDto);
+        var proficiencyLevelDto = new StopienBieglosciJezykaDto(3, "Intermediate", 3);
+        var result = ServiceResult<StopienBieglosciJezykaDto?>.Ok(proficiencyLevelDto);
         _mockStopienBieglosciJezykaService.Setup(s => s.GetStopienBieglosciJezyka(3))
             .ReturnsAsync(result);
 
@@ -59,7 +58,7 @@ public class StopienBieglosciJezykaControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-        var returnedLevel = Assert.IsType<StopienBieglosciJezyka>(okResult.Value);
+        var returnedLevel = Assert.IsType<StopienBieglosciJezykaDto>(okResult.Value);
         Assert.Equal("Intermediate", returnedLevel.Nazwa);
     }
 
@@ -67,7 +66,7 @@ public class StopienBieglosciJezykaControllerTests
     public async Task GetStopienBieglosciJezyka_WithInvalidId_ReturnsNotFound()
     {
         // Arrange
-        var result = ServiceResult<StopienBieglosciJezyka>.Fail(404, 
+        var result = ServiceResult<StopienBieglosciJezykaDto?>.Fail(404, 
             new[] { new ErrorItem("Proficiency level not found", "id") });
         _mockStopienBieglosciJezykaService.Setup(s => s.GetStopienBieglosciJezyka(999))
             .ReturnsAsync(result);
@@ -84,8 +83,8 @@ public class StopienBieglosciJezykaControllerTests
     public async Task GetStopienBieglosciJezyka_EmptyList_ReturnsOkWithEmptyCollection()
     {
         // Arrange
-        ICollection<StopienBieglosciJezyka> emptyList = new List<StopienBieglosciJezyka>();
-        var result = ServiceResult<ICollection<StopienBieglosciJezyka>>.Ok(emptyList);
+        ICollection<StopienBieglosciJezykaDto> emptyList = new List<StopienBieglosciJezykaDto>();
+        var result = ServiceResult<ICollection<StopienBieglosciJezykaDto>>.Ok(emptyList);
         _mockStopienBieglosciJezykaService.Setup(s => s.GetStopnieBieglosciJezyka())
             .ReturnsAsync(result);
 
@@ -94,7 +93,7 @@ public class StopienBieglosciJezykaControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-        var returnedLevels = Assert.IsAssignableFrom<IEnumerable<StopienBieglosciJezyka>>(okResult.Value);
+        var returnedLevels = Assert.IsAssignableFrom<IEnumerable<StopienBieglosciJezykaDto>>(okResult.Value);
         Assert.Empty(returnedLevels);
     }
 }

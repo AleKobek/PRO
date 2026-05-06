@@ -93,10 +93,10 @@ public class JezykRepositoryTests : IDisposable
     public async Task GetJezykiProfilu_WithValidUserId_ReturnsUserLanguages()
     {
         // Arrange
-        var stopnieBieglosci = new List<StopienBieglosciJezyka>
+        var stopnieBieglosci = new List<StopienBieglosciJezykaDto>
         {
-            new StopienBieglosciJezyka {Id = 3, Nazwa = "Advanced", Wartosc = 3},
-            new StopienBieglosciJezyka {Id = 5, Nazwa = "Native", Wartosc = 5}
+            new StopienBieglosciJezykaDto(3, "Advanced", 3),
+            new StopienBieglosciJezykaDto(5, "Native", 5)
         };
         _mockStopienRepository.Setup(r => r.GetStopnieBieglosciJezyka())
             .ReturnsAsync(stopnieBieglosci);
@@ -116,7 +116,7 @@ public class JezykRepositoryTests : IDisposable
     {
         // Arrange
         _mockStopienRepository.Setup(r => r.GetStopnieBieglosciJezyka())
-            .ReturnsAsync(new List<StopienBieglosciJezyka>());
+            .ReturnsAsync(new List<StopienBieglosciJezykaDto>());
 
         // Act
         var result = await _repository.GetJezykiProfilu(2);
@@ -134,9 +134,9 @@ public class JezykRepositoryTests : IDisposable
         {
             new JezykProfiluCreateDto(3, 2) // German, Intermediate
         };
-        var stopnieBieglosci = new List<StopienBieglosciJezyka>
+        var stopnieBieglosci = new List<StopienBieglosciJezykaDto>
         {
-            new StopienBieglosciJezyka {Id = 2, Nazwa = "Intermediate", Wartosc = 2}
+            new StopienBieglosciJezykaDto(2, "Intermediate", 2)
         };
         _mockStopienRepository.Setup(r => r.GetStopnieBieglosciJezyka())
             .ReturnsAsync(stopnieBieglosci);
@@ -172,7 +172,7 @@ public class JezykRepositoryTests : IDisposable
         // Arrange
         var noweJezyki = new List<JezykProfiluCreateDto>();
         _mockStopienRepository.Setup(r => r.GetStopnieBieglosciJezyka())
-            .ReturnsAsync(new List<StopienBieglosciJezyka>());
+            .ReturnsAsync(new List<StopienBieglosciJezykaDto>());
 
         // Act
         var result = await _repository.ZmienJezykiProfilu(1, noweJezyki);

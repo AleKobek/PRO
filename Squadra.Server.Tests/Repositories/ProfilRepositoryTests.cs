@@ -109,7 +109,7 @@ public class ProfilRepositoryTests : IDisposable
         {
             new JezykOrazStopienDto(
                 new Jezyk {Id = 1, Nazwa = "English"},
-                new StopienBieglosciJezyka {Id = 3, Nazwa = "Advanced", Wartosc = 3})
+                new StopienBieglosciJezykaDto(3, "Advanced", 3))
         };
         var regionKraj = new RegionKrajDto(1, "Mazowieckie", 1, "Poland");
         var status = new StatusDto(1, "Online");

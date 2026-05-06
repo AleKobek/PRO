@@ -5,6 +5,6 @@ namespace Squadra.Server.Modules.Profile.DTO.JezykStopien;
 public record JezykOrazStopienDto
 (
     Jezyk Jezyk,
-    StopienBieglosciJezyka Stopien
+    StopienBieglosciJezykaDto Stopien
 );
 
