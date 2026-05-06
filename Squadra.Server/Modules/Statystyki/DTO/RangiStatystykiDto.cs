@@ -2,6 +2,7 @@
 
 public record RangiStatystykiDto(
     int IdStatystyki,
+    string NazwaStatystyki,
     ICollection<RangaWDtoRangiStatystykiDto> Rangi
 );
 

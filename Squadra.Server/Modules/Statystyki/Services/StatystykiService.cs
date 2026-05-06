@@ -199,13 +199,27 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         }
     }
 
-    public async Task<ServiceResult<StatystykiDoFormularzaDto>> GetStatystykiDoFormularza(int idGry)
+    // funkcja do zwracania statystyk do formularza. musimy oddzielić rangi od reszty statystyk, bo je się wyświetla inaczej
+    public async Task<ServiceResult<StatystykiDoFormularzaDto>> GetStatystykiDoFormularza(int idGry, int idUzytkownika)
     {
         if(idGry <= 0) return ServiceResult<StatystykiDoFormularzaDto>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator gry: " + idGry));
         try
         {            
-            var result = await statystykiRepository.GetStatystykiDoFormularza(idGry);
-            return ServiceResult<StatystykiDoFormularzaDto>.Ok(result);
+            var statystyki = await statystykiRepository.GetStatystykiZGry(idGry);
+            var rangi = await statystykiRepository.GetMniejszeLubRowneRangiGryUzytkownika(idGry, idUzytkownika);
+            var statystykiBezRang = statystyki
+                // All zwraca true, jeśli wszystkie elementy spełniają warunek.
+                // tutaj sprawdzamy, czy statystyka nie jest rangą, czyli czy nie ma rangi o takim samym id statystyki
+                .Where(s => rangi.All(r => r.IdStatystyki != s.Id))
+                .OrderBy(s => s.Id)
+                .Select(s => new StatystykaDoFormularzaNieBedacaRangaDto(
+                    s.Id,
+                    s.RolaId == null
+                        ? $"{s.Kategoria.Nazwa}: {s.Nazwa}"
+                        : $"{s.Kategoria.Nazwa}: {s.Nazwa}({s.Rola.Nazwa})"
+                ))
+                .ToList();
+            return ServiceResult<StatystykiDoFormularzaDto>.Ok(new StatystykiDoFormularzaDto(statystykiBezRang, rangi));
         }
         catch (NieZnalezionoWBazieException e)
         {

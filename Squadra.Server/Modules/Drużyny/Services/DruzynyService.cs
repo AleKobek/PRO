@@ -200,7 +200,7 @@ public class DruzynyService(
         var roleRes = await statystykiService.GetRoleGry(idGry);
         if (!roleRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(roleRes.StatusCode, roleRes.Errors);
         
-        var statystykiRes = await statystykiService.GetStatystykiDoFormularza(idGry);
+        var statystykiRes = await statystykiService.GetStatystykiDoFormularza(idGry, idUzytkownika);
         if (!statystykiRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(statystykiRes.StatusCode, statystykiRes.Errors);
         
         return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Ok(new DaneDoFormularzaDruzynyZeStatystykamiDto(

@@ -17,5 +17,5 @@ public interface IStatystykiService
     public ServiceResult<bool> CzySpelniaWymagania(ICollection<WartoscStatystykiDTO> wymagania, ICollection<WartoscStatystykiDTO> statystykiDoSprawdzenia);
     public Task<ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny);
     public Task<ServiceResult<ICollection<RolaDto>>> GetRoleGry(int idGry);
-    public Task<ServiceResult<StatystykiDoFormularzaDto>> GetStatystykiDoFormularza(int idGry);
+    public Task<ServiceResult<StatystykiDoFormularzaDto>> GetStatystykiDoFormularza(int idGry, int idUzytkownika);
 }

@@ -11,11 +11,12 @@ public interface IStatystykiRepository
     public Task<WartoscStatystykiDTO?> GetWartoscStatystyki(int idUzytkownika, int idStatystyki);
     public Task<ICollection<StatystykiDoTabelkiDTO>> GetStatystykiUzytkownikaZGry(int idUzytkownika, int idGry);
     public Task<ICollection<Statystyka>> GetStatystykiZGry(int idGry);
+
+    public Task<ICollection<RangiStatystykiDto>> GetMniejszeLubRowneRangiGryUzytkownika(int idGry, int idUzytkownika);
     public Task<bool> UpdateStatystykiUzytkownika(int idUzytkownika, List<StatystykaUzytkownika> noweStatystyki);
     public Task<bool> UsunStatystykiUzytkownika(int idUzytkownika);
     public bool CzySpelniaWymagania(ICollection<WartoscStatystykiDTO> wymagania, ICollection<WartoscStatystykiDTO> statystykiDoSprawdzenia);
     public Task<ICollection<WymaganieDruzynyDoWyswietleniaDto>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny);
     public Task<ICollection<RangiStatystykiDto>> GetRangiGry(int idGry);
     public Task<ICollection<Rola>> GetRoleGry(int idGry);
-    public Task<StatystykiDoFormularzaDto> GetStatystykiDoFormularza(int idGry);
 }
