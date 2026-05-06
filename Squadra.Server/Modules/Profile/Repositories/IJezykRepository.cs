@@ -13,4 +13,5 @@ public interface IJezykRepository
 
     public Task<ICollection<JezykOrazStopienDto>> ZmienJezykiProfilu(int profilId, ICollection<JezykProfiluCreateDto> noweJezyki);
 
+    public Task<ICollection<JezykOrazRowneLubNizszeStopnieDto>> GetJezykiProfiluZeStopniamiRownymiLubNizszymi(int id);
 }

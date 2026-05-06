@@ -70,5 +70,29 @@ public class JezykRepository(
         
         return await GetJezykiProfilu(profilId);
     }
-    
+    // funkcja zwracająca języki użytkownika ze stopniami o równej lub niższej wartości względem tej które on posiada dla danego języka
+    public async Task<ICollection<JezykOrazRowneLubNizszeStopnieDto>> GetJezykiProfiluZeStopniamiRownymiLubNizszymi(int id)
+    {
+        ICollection<JezykOrazRowneLubNizszeStopnieDto> jezykiDoZwrocenia = new List<JezykOrazRowneLubNizszeStopnieDto>();
+        ICollection<JezykProfilu> jezykiUzytkownika = await appDbContext.JezykProfilu.Where(x => x.UzytkownikId == id).ToListAsync();
+        ICollection<Jezyk> jezyki = await GetJezyki();
+        ICollection<StopienBieglosciJezyka> stopnieBieglosci = await stopienBieglosciJezykaRepository.GetStopnieBieglosciJezyka();
+        
+        foreach (var var in jezykiUzytkownika)
+        {
+            Jezyk? jezyk = jezyki.FirstOrDefault(x => x.Id == var.JezykId);
+            StopienBieglosciJezyka? stopienBieglosci = stopnieBieglosci.FirstOrDefault(x => x.Id == var.StopienBieglosciId);
+            if (jezyk != null && stopienBieglosci != null)
+            {
+                // Pobieramy wszystkie stopnie o równej lub niższej wartości względem posiadanego przez użytkownika
+                var rowneLubNizszeStopnie = stopnieBieglosci.Where(s => s.Wartosc <= stopienBieglosci.Wartosc).ToList();
+                jezykiDoZwrocenia.Add(new JezykOrazRowneLubNizszeStopnieDto(
+                    jezyk,
+                    rowneLubNizszeStopnie
+                ));
+            }
+        }
+        
+        return jezykiDoZwrocenia;
+    }
 }

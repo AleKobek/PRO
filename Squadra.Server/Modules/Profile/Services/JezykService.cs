@@ -56,4 +56,18 @@ public class JezykService(IJezykRepository jezykRepository) : IJezykService
         }
     }
 
+    public async Task<ServiceResult<ICollection<JezykOrazRowneLubNizszeStopnieDto>>> GetJezykiProfiluZRownymiLubNizszymiStopniami(int id)
+    {
+        try
+        {
+            return id < 1
+                ? ServiceResult<ICollection<JezykOrazRowneLubNizszeStopnieDto>>.BadRequest(new ErrorItem("Nieprawidłowe id profilu: " + id))
+                : ServiceResult<ICollection<JezykOrazRowneLubNizszeStopnieDto>>.Ok(
+                    await jezykRepository.GetJezykiProfiluZeStopniamiRownymiLubNizszymi(id));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<ICollection<JezykOrazRowneLubNizszeStopnieDto>>.NotFound(new ErrorItem(e.Message));
+        }
+    }
 }
