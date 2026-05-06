@@ -82,7 +82,9 @@ public class DruzynyService(
             if (!druzynaDoTabelkiRes.Succeeded) return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Fail(druzynaDoTabelkiRes.StatusCode, druzynaDoTabelkiRes.Errors);
             druzynyDoTabelki.Add(druzynaDoTabelkiRes.Value); // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
         }
-
+        druzynyDoTabelki = druzynyDoTabelki
+            .OrderBy(x => x.MinutyOdOstatniejAktywnosciKapitana)
+            .ToList();        
         return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Ok(druzynyDoTabelki);
     }
     
