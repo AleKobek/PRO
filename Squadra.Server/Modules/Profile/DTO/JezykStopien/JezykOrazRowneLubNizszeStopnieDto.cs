@@ -3,6 +3,6 @@
 namespace Squadra.Server.Modules.Profile.DTO.JezykStopien;
 
 public record JezykOrazRowneLubNizszeStopnieDto(
-    Jezyk Jezyk,
-    ICollection<StopienBieglosciJezyka> Stopnie
+    JezykDto Jezyk,
+    ICollection<StopienBieglosciJezykaDto> Stopnie
 );
