@@ -204,4 +204,29 @@ public class DruzynyService(
         ));
     }
 
+    // funkcja zwracająca dane do formularza bez statystyk, nie spersonalizowane
+    public async Task<ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>> GetDaneDoFormularzaDruzynyBezStatystyk(int idGry)
+    {
+        var nastroje = await druzynyRepository.GetNastrojeRozgrywki();
+        var platformyRes = await wspieranaGraService.GetPlatformyGry(idGry);
+        if (!platformyRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(platformyRes.StatusCode, platformyRes.Errors);
+        
+        var jezykiRes = await jezykService.GetJezyki();
+        if (!jezykiRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(jezykiRes.StatusCode, jezykiRes.Errors);
+        
+        var stopnieRes = await stopienBieglosciJezykaService.GetStopnieBieglosciJezyka();
+        if (!stopnieRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(stopnieRes.StatusCode, stopnieRes.Errors);
+        
+        var role = await druzynyRepository.GetRoleGry(idGry);
+
+        return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Ok(
+            new DaneDoFormularzaDruzynyBezStatystykDto(
+                nastroje,
+                platformyRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+                jezykiRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+                stopnieRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+                role
+            )
+        );
+    }
 }
