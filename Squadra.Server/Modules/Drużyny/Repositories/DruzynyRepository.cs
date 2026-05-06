@@ -16,6 +16,16 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
         return druzyna;
     }
     
+    public async Task<ICollection<Druzyna>> GetDruzynyUzytkownika(int idUzytkownika)
+    {
+        var miejscaWDruzynie = await context.MiejsceWDruzynie
+            .Where(m => m.UzytkownikId == idUzytkownika)
+            .Include(m => m.Druzyna)
+            .ToListAsync();
+
+        return miejscaWDruzynie.Select(m => m.Druzyna).ToList();
+    }
+    
     public async Task<ICollection<MiejsceWDruzynie>> GetMiejscaWDruzynie(int idDruzyny)
     {
         var druzyna = await context.Druzyna.FindAsync(idDruzyny);

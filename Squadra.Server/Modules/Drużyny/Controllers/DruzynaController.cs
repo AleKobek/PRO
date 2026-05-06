@@ -10,15 +10,15 @@ namespace Squadra.Server.Modules.Drużyny.Controllers;
 [ApiController]
 public class DruzynaController(IDruzynyService druzynyService) : ControllerBase
 {
-     [HttpGet("tabelka/{idDruzyny:int}")]
-     [EndpointSummary("Zwraca dane drużyny potrzebne do wyświetlenia jej w tabelce.")]
-     [ProducesResponseType(typeof(DruzynaDoTabelkiDto), 200)]
-     [ProducesResponseType(400)]
-     [ProducesResponseType(404)]
-    public async Task<ActionResult<DruzynaDoTabelkiDto>> GetDruzynaDoTabelki(int idDruzyny)
+     
+    [HttpGet("tabelka/{idUzytkownika:int}")]
+    [EndpointSummary("Zwraca wszystkie drużyny użytkownika, w formacie potrzebnym do wyświetlenia ich w tabelce na stronie głównej.")]
+    [ProducesResponseType(typeof(ICollection<DruzynaDoTabelkiDto>), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<ICollection<DruzynaDoTabelkiDto>>> GetWszystkieDruzynyUzytkownikaDoTabelki(int idUzytkownika)
     {
-        
-        var result = await druzynyService.GetDruzynaDoTabelki(idDruzyny);
+        var result = await druzynyService.GetWszystkieDruzynyUzytkownikaDoTabelki(idUzytkownika);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),

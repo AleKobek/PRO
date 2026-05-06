@@ -22,7 +22,7 @@ public class DruzynyService(
     IPlatformaService platformaService
     ) : IDruzynyService
 {
-    public async Task<ServiceResult<DruzynaDoTabelkiDto>> GetDruzynaDoTabelki(int idDruzyny)
+    private async Task<ServiceResult<DruzynaDoTabelkiDto>> GetDruzynaDoTabelki(int idDruzyny)
     {
         try
         {
@@ -69,6 +69,21 @@ public class DruzynyService(
         {
             return ServiceResult<DruzynaDoTabelkiDto>.NotFound(new ErrorItem(e.Message));
         }
+    }
+    
+    public async Task<ServiceResult<ICollection<DruzynaDoTabelkiDto>>> GetWszystkieDruzynyUzytkownikaDoTabelki(int idUzytkownika)
+    {
+        if(idUzytkownika <= 0) return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.BadRequest(new ErrorItem("Id użytkownika musi być większe od 0"));
+        var druzyny = await druzynyRepository.GetDruzynyUzytkownika(idUzytkownika);
+        var druzynyDoTabelki = new List<DruzynaDoTabelkiDto>();
+        foreach (var druzyna in druzyny)
+        {
+            var druzynaDoTabelkiRes = await GetDruzynaDoTabelki(druzyna.Id);
+            if (!druzynaDoTabelkiRes.Succeeded) return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Fail(druzynaDoTabelkiRes.StatusCode, druzynaDoTabelkiRes.Errors);
+            druzynyDoTabelki.Add(druzynaDoTabelkiRes.Value); // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+        }
+
+        return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Ok(druzynyDoTabelki);
     }
     
     public async Task<ServiceResult<DruzynaSzczegolyDto>> PodajSzczegolyDruzyny(int idDruzyny)
