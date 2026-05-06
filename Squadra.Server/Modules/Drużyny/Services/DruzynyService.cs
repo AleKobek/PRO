@@ -182,6 +182,13 @@ public class DruzynyService(
     // potrzebujemy: listę nastrojów rozgrywki, listę platform, listę języków wraz ze stopniami biegłości języka, listę ról, listę statystyk
     public async Task<ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>> GetDaneDoFormularzaDruzynyZeStatystykami(int idGry, int idUzytkownika)
     {
+        // sprawdzamy, czy podane dane są okej
+        var graRes = await wspieranaGraService.GetWspieranaGra(idGry);
+        if (!graRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(graRes.StatusCode, graRes.Errors);
+        
+        var uzytkownikRes = await uzytkownikService.GetUzytkownik(idUzytkownika);
+        if (!uzytkownikRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(uzytkownikRes.StatusCode, uzytkownikRes.Errors);
+        
         var nastroje = await druzynyRepository.GetNastrojeRozgrywki();
         
         var platformyRes = await wspieranaGraService.GetPlatformyGryUzytkownika(idGry, idUzytkownika);
@@ -207,6 +214,10 @@ public class DruzynyService(
     // funkcja zwracająca dane do formularza bez statystyk, nie spersonalizowane
     public async Task<ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>> GetDaneDoFormularzaDruzynyBezStatystyk(int idGry)
     {
+        // sprawdzamy, czy podane id jest okej
+        var graRes = await wspieranaGraService.GetWspieranaGra(idGry);
+        if (!graRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(graRes.StatusCode, graRes.Errors);
+        
         var nastroje = await druzynyRepository.GetNastrojeRozgrywki();
         var platformyRes = await wspieranaGraService.GetPlatformyGry(idGry);
         if (!platformyRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(platformyRes.StatusCode, platformyRes.Errors);
