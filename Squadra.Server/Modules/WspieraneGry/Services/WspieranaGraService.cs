@@ -2,35 +2,37 @@
 using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.WspieraneGry.DTO;
-using Squadra.Server.Modules.WspieraneGry.Models;
 using Squadra.Server.Modules.WspieraneGry.Repositories;
 
 namespace Squadra.Server.Modules.WspieraneGry.Services;
 
 public class WspieranaGraService(IWspieranaGraRepository wspieranaGraRepository) : IWspieranaGraService
 {
-    public async Task<ServiceResult<ICollection<WspieranaGra>>> GetWspieraneGry()
+    public async Task<ServiceResult<ICollection<WspieranaGraDto>>> GetWspieraneGry()
     {
-        return ServiceResult<ICollection<WspieranaGra>>.Ok(await wspieranaGraRepository.GetWspieraneGry());
+        var gry = await wspieranaGraRepository.GetWspieraneGry();
+        return ServiceResult<ICollection<WspieranaGraDto>>.Ok(gry.Select(g => new WspieranaGraDto(g.Id, g.Tytul, g.Wydawca, g.Gatunek)).ToList());
     }
 
-    public async Task<ServiceResult<WspieranaGra>> GetWspieranaGra(int idGry)
+    public async Task<ServiceResult<WspieranaGraDto>> GetWspieranaGra(int idGry)
     {
         try
         {
             if (idGry <= 0)
-                return ServiceResult<WspieranaGra>.BadRequest(new ErrorItem("Nieprawidłowe id gry: " + idGry));
-            return ServiceResult<WspieranaGra>.Ok(await wspieranaGraRepository.GetWspieranaGra(idGry));
+                return ServiceResult<WspieranaGraDto>.BadRequest(new ErrorItem("Nieprawidłowe id gry: " + idGry));
+            var gra = await wspieranaGraRepository.GetWspieranaGra(idGry);
+            return ServiceResult<WspieranaGraDto>.Ok(new WspieranaGraDto(gra.Id, gra.Tytul, gra.Wydawca, gra.Gatunek));
         }
         catch (NieZnalezionoWBazieException e)
         {
-            return ServiceResult<WspieranaGra>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<WspieranaGraDto>.NotFound(new ErrorItem(e.Message));
         }
     }
     
-    public async Task<ServiceResult<ICollection<WspieranaGra>>> GetWspieraneGryMinInfo()
+    public async Task<ServiceResult<ICollection<MinInfoWspieranaGraDTO>>> GetWspieraneGryMinInfo()
     {
-        return ServiceResult<ICollection<WspieranaGra>>.Ok(await wspieranaGraRepository.GetWspieraneGryMinInfo());
+        var gry = await wspieranaGraRepository.GetWspieraneGry();
+        return ServiceResult<ICollection<MinInfoWspieranaGraDTO>>.Ok(gry.Select(x => new MinInfoWspieranaGraDTO(x.Id, x.Tytul)).ToList());
     }
     
     public async Task<ServiceResult<ICollection<GraZPlatformaDTO>>> GetWspieraneGryZPlatformami()

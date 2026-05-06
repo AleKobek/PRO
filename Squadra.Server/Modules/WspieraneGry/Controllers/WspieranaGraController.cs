@@ -19,30 +19,32 @@ public class WspieranaGraController(
 {
     [HttpGet]
     [EndpointSummary("Zwraca listę wszystkich wspieranych gier")]
-    [ProducesResponseType(typeof(ICollection<WspieranaGra>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ICollection<WspieranaGraDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult> GetWspieraneGry()
+    public async Task<ActionResult<ICollection<WspieranaGraDto>>> GetWspieraneGry()
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
 
         var result = await wspieranaGraService.GetWspieraneGry();
-        return result.StatusCode == 200
-            ? Ok(result.Value)
-            : StatusCode(result.StatusCode, new { errors = result.Errors });
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            404 => NotFound(new { error = result.Errors.FirstOrDefault()?.Message }),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
     }
 
     [HttpGet("{idGry:int}")]
     [EndpointSummary("Zwraca wspieraną grę o podanym id")]
-    [ProducesResponseType(typeof(WspieranaGra), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(WspieranaGraDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult> GetWspieranaGra(int idGry)
+    public async Task<ActionResult<WspieranaGraDto>> GetWspieranaGra(int idGry)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
@@ -60,7 +62,7 @@ public class WspieranaGraController(
 
     [HttpGet("mininfo")]
     [EndpointSummary("Zwraca listę wszystkich wspieranych gier z minimalnymi informacjami (id i nazwa)")]
-    [ProducesResponseType(typeof(ICollection<WspieranaGra>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ICollection<WspieranaGraDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     public async Task<ActionResult> GetWspieraneGryMinInfo()
     {
@@ -78,7 +80,7 @@ public class WspieranaGraController(
     [EndpointSummary("Zwraca listę wszystkich wspieranych gier wraz z platformami, na których są dostępne")]
     [ProducesResponseType(typeof(ICollection<GraZPlatformaDTO>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    public async Task<ActionResult> GetWspieraneGryZPlatformami()
+    public async Task<ActionResult<ICollection<GraZPlatformaDTO>>> GetWspieraneGryZPlatformami()
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
@@ -97,7 +99,7 @@ public class WspieranaGraController(
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult> GetPlatformyGry(int idGry)
+    public async Task<ActionResult<ICollection<Platforma>>> GetPlatformyGry(int idGry)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
