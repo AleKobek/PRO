@@ -85,8 +85,11 @@ public class JezykRepositoryTests : IDisposable
     [Fact]
     public async Task GetJezyk_WithInvalidId_ReturnsNull()
     {
-        // Act & Assert
-        await Assert.ThrowsAsync<NieZnalezionoWBazieException>(async () => await _repository.GetJezyk(999));
+        // Act
+        var result = await _repository.GetJezyk(999);
+
+        // Assert
+        Assert.Null(result);
     }
 
     [Fact]

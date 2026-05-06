@@ -1,7 +1,6 @@
 using Moq;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
-using Squadra.Server.Modules.Profile.Models;
 using Squadra.Server.Modules.Profile.Repositories;
 using Squadra.Server.Modules.Profile.Services;
 using Xunit;
@@ -23,11 +22,11 @@ public class JezykServiceTests
     public async Task GetJezyki_ReturnsOkWithLanguagesList()
     {
         // Arrange
-        var expectedLanguages = new List<Jezyk>
+        var expectedLanguages = new List<JezykDto>
         {
-            new Jezyk { Id = 1, Nazwa = "English" },
-            new Jezyk { Id = 2, Nazwa = "Polish" },
-            new Jezyk { Id = 3, Nazwa = "German" }
+            new JezykDto(1, "English"),
+            new JezykDto(2, "Polish"),
+            new JezykDto(3, "German")
         };
         _mockRepository.Setup(r => r.GetJezyki())
             .ReturnsAsync(expectedLanguages);
@@ -48,7 +47,7 @@ public class JezykServiceTests
     {
         // Arrange
         var languageId = 1;
-        var expectedLanguage =  new Jezyk { Id = languageId, Nazwa ="English" };
+        var expectedLanguage = new JezykDto(languageId, "English");
         _mockRepository.Setup(r => r.GetJezyk(languageId))
             .ReturnsAsync(expectedLanguage);
 
@@ -101,8 +100,8 @@ public class JezykServiceTests
         var profileId = 1;
         var expectedLanguages = new List<JezykOrazStopienDto>
         {
-            new JezykOrazStopienDto( new Jezyk { Id = 1, Nazwa ="English" }, new StopienBieglosciJezykaDto(3, "Advanced", 3)),
-            new JezykOrazStopienDto( new Jezyk { Id = 2, Nazwa ="Polish" }, new StopienBieglosciJezykaDto(5, "Native", 5))
+            new JezykOrazStopienDto(new JezykDto(1, "English"), new StopienBieglosciJezykaDto(3, "Advanced", 3)),
+            new JezykOrazStopienDto(new JezykDto(2, "Polish"), new StopienBieglosciJezykaDto(5, "Native", 5))
         };
         _mockRepository.Setup(r => r.GetJezykiProfilu(profileId))
             .ReturnsAsync(expectedLanguages);
@@ -161,8 +160,8 @@ public class JezykServiceTests
         };
         var expectedResult = new List<JezykOrazStopienDto>
         {
-            new JezykOrazStopienDto( new Jezyk { Id = 1, Nazwa ="English" }, new StopienBieglosciJezykaDto(3, "Advanced", 3)),
-            new JezykOrazStopienDto( new Jezyk { Id = 2, Nazwa ="Polish" }, new StopienBieglosciJezykaDto(5, "Native", 5))
+            new JezykOrazStopienDto(new JezykDto(1, "English"), new StopienBieglosciJezykaDto(3, "Advanced", 3)),
+            new JezykOrazStopienDto(new JezykDto(2, "Polish"), new StopienBieglosciJezykaDto(5, "Native", 5))
         };
         _mockRepository.Setup(r => r.ZmienJezykiProfilu(profileId, newLanguages))
             .ReturnsAsync(expectedResult);

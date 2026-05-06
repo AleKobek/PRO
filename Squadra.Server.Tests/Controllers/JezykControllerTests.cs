@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Squadra.Server.Modules.Profile.Controllers;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
-using Squadra.Server.Modules.Profile.Models;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
 using Xunit;
@@ -24,13 +23,13 @@ public class JezykControllerTests
     public async Task GetJezyki_ReturnsOkWithLanguageList()
     {
         // Arrange
-        ICollection<Jezyk> languages = new List<Jezyk>
+        ICollection<JezykDto> languages = new List<JezykDto>
         {
-            new Jezyk{Id = 1, Nazwa = "English"},
-            new Jezyk{Id = 3, Nazwa = "Polish"},
-            new Jezyk{Id = 3, Nazwa = "German"}
+            new JezykDto(1, "English"),
+            new JezykDto(2, "Polish"),
+            new JezykDto(3, "German")
         };
-        var result = ServiceResult<ICollection<Jezyk>>.Ok(languages);
+        var result = ServiceResult<ICollection<JezykDto>>.Ok(languages);
         _mockJezykService.Setup(s => s.GetJezyki())
             .ReturnsAsync(result);
 
@@ -39,7 +38,7 @@ public class JezykControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-        var returnedLanguages = Assert.IsAssignableFrom<IEnumerable<Jezyk>>(okResult.Value);
+        var returnedLanguages = Assert.IsAssignableFrom<IEnumerable<JezykDto>>(okResult.Value);
         Assert.Equal(3, returnedLanguages.Count());
     }
 
@@ -47,8 +46,8 @@ public class JezykControllerTests
     public async Task GetJezyk_WithValidId_ReturnsOkWithLanguage()
     {
         // Arrange
-        var languageDto = new Jezyk {Id = 1, Nazwa = "English"};
-        var result = ServiceResult<Jezyk>.Ok(languageDto);
+        var languageDto = new JezykDto(1, "English");
+        var result = ServiceResult<JezykDto?>.Ok(languageDto);
         _mockJezykService.Setup(s => s.GetJezyk(1))
             .ReturnsAsync(result);
 
@@ -57,7 +56,7 @@ public class JezykControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-        var returnedLanguage = Assert.IsType<Jezyk>(okResult.Value);
+        var returnedLanguage = Assert.IsType<JezykDto>(okResult.Value);
         Assert.Equal("English", returnedLanguage.Nazwa);
     }
 
@@ -65,7 +64,7 @@ public class JezykControllerTests
     public async Task GetJezyk_WithInvalidId_ReturnsNotFound()
     {
         // Arrange
-        var result = ServiceResult<Jezyk>.Fail(404, 
+        var result = ServiceResult<JezykDto?>.Fail(404, 
             new[] { new ErrorItem("Language not found", "id") });
         _mockJezykService.Setup(s => s.GetJezyk(999))
             .ReturnsAsync(result);
@@ -86,11 +85,11 @@ public class JezykControllerTests
         ICollection<JezykOrazStopienDto> languages = new List<JezykOrazStopienDto>
         {
             new JezykOrazStopienDto(
-                new Jezyk {Id = 1, Nazwa = "English"},
+                new JezykDto(1, "English"),
                 new StopienBieglosciJezykaDto(3, "Advanced", 3)
             ),
             new JezykOrazStopienDto(
-                new Jezyk {Id = 1, Nazwa = "English"},
+                new JezykDto(2, "Polish"),
                 new StopienBieglosciJezykaDto(5, "Native", 5)
             )
         };

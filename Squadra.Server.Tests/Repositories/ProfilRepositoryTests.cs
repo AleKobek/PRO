@@ -108,7 +108,7 @@ public class ProfilRepositoryTests : IDisposable
         var languages = new List<JezykOrazStopienDto>
         {
             new JezykOrazStopienDto(
-                new Jezyk {Id = 1, Nazwa = "English"},
+                new JezykDto(1, "English"),
                 new StopienBieglosciJezykaDto(3, "Advanced", 3))
         };
         var regionKraj = new RegionKrajDto(1, "Mazowieckie", 1, "Poland");

@@ -11,27 +11,33 @@ public class JezykRepository(
     IStopienBieglosciJezykaRepository stopienBieglosciJezykaRepository)
     : IJezykRepository
 {
-    public async Task<ICollection<Jezyk>> GetJezyki()
+    public async Task<ICollection<JezykDto>> GetJezyki()
     {
-        return await appDbContext.Jezyk.ToListAsync();
+        ICollection<JezykDto> jezykiDoZwrocenia =  new List<JezykDto>();
+        ICollection<Jezyk> jezyki = await appDbContext.Jezyk.ToListAsync();
+        foreach (var jezyk in jezyki)
+        {
+            jezykiDoZwrocenia.Add(new JezykDto(jezyk.Id, jezyk.Nazwa));
+        }
+        
+        return jezykiDoZwrocenia;
     }
     
-    public async Task<Jezyk> GetJezyk(int id)
+    public async Task<JezykDto?> GetJezyk(int id)
     {
-        var jezyk = await appDbContext.Jezyk.FindAsync(id);
-        if(jezyk == null ) throw new NieZnalezionoWBazieException("Nie znaleziono języka o id " + id);
-        return jezyk;
+        Jezyk? jezyk = await appDbContext.Jezyk.FindAsync(id);
+        return jezyk != null ? new JezykDto(jezyk.Id, jezyk.Nazwa) : null;
     }
 
     public async Task<ICollection<JezykOrazStopienDto>> GetJezykiProfilu(int id)
     {
         ICollection<JezykOrazStopienDto> jezykiDoZwrocenia = new List<JezykOrazStopienDto>();
         ICollection<JezykProfilu> jezykiUzytkownika = await appDbContext.JezykProfilu.Where(x => x.UzytkownikId == id).ToListAsync();
-        ICollection<Jezyk> jezyki = await GetJezyki();
+        ICollection<JezykDto> jezyki = await GetJezyki();
         ICollection<StopienBieglosciJezykaDto> stopnieBieglosci = await stopienBieglosciJezykaRepository.GetStopnieBieglosciJezyka();
         foreach (var var in jezykiUzytkownika)
         {
-            Jezyk? jezyk = jezyki.FirstOrDefault(x => x.Id == var.JezykId);
+            JezykDto? jezyk = jezyki.FirstOrDefault(x => x.Id == var.JezykId);
             StopienBieglosciJezykaDto? stopienBieglosci = stopnieBieglosci.FirstOrDefault(x => x.Id == var.StopienBieglosciId);
             if(jezyk != null &&  stopienBieglosci != null)
             {
