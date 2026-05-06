@@ -6,9 +6,9 @@ namespace Squadra.Server.Modules.Platformy.Services;
 
 public interface IPlatformaService
 {
-    public Task<ServiceResult<ICollection<Platforma>>> GetPlatformy();
+    public Task<ServiceResult<ICollection<PlatformaDto>>> GetPlatformy();
 
-    public Task<ServiceResult<Platforma>> GetPlatforma(int id);
+    public Task<ServiceResult<PlatformaDto>> GetPlatforma(int id);
     public Task<ServiceResult<ICollection<PlatformaUzytkownikaDTO>>> GetPlatformyUzytkownika(int idUzytkownika);
     public Task<ServiceResult<bool>> UpdatePlatformyUzytkownika(int idUzytkownika, List<UzytkownikPlatforma> nowePlatformy);
     public Task<ServiceResult<bool>> UsunPlatformyUzytkownika(int idUzytkownika);

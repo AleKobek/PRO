@@ -1,7 +1,4 @@
-﻿using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Jpeg;
-using SixLabors.ImageSharp.Processing;
-using Squadra.Server.Exceptions;
+﻿using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Platformy.DTO;
 using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Platformy.Repositories;
@@ -11,22 +8,25 @@ namespace Squadra.Server.Modules.Platformy.Services;
 
 public class PlatformaService(IPlatformaRepository platformaRepository) : IPlatformaService
 {
-    public async Task<ServiceResult<ICollection<Platforma>>> GetPlatformy()
+    public async Task<ServiceResult<ICollection<PlatformaDto>>> GetPlatformy()
     {
-        return ServiceResult<ICollection<Platforma>>.Ok(await platformaRepository.GetPlatformy());
+        var platformy = await platformaRepository.GetPlatformy();
+        return ServiceResult<ICollection<PlatformaDto>>.Ok(platformy.Select(p => new PlatformaDto(p.Id, p.Nazwa, p.Logo)).ToList());
     }
     
-    public async Task<ServiceResult<Platforma>> GetPlatforma(int id)
+    public async Task<ServiceResult<PlatformaDto>> GetPlatforma(int id)
     {
         try
         {
-            if(id < 1) return ServiceResult<Platforma>.BadRequest(new ErrorItem("Nieprawidłowe id platformy: " + id));
+            if(id < 1) return ServiceResult<PlatformaDto>.BadRequest(new ErrorItem("Nieprawidłowe id platformy: " + id));
             
-            return ServiceResult<Platforma>.Ok(await platformaRepository.GetPlatforma(id));
+            var platforma = await platformaRepository.GetPlatforma(id);
+            
+            return ServiceResult<PlatformaDto>.Ok(new PlatformaDto(platforma.Id, platforma.Nazwa, platforma.Logo));
         }
         catch (NieZnalezionoWBazieException e)
         {
-            return ServiceResult<Platforma>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<PlatformaDto>.NotFound(new ErrorItem(e.Message));
         }
     }
     

@@ -18,9 +18,9 @@ public class PlatformaController(
 {
     [HttpGet]
     [EndpointSummary("Zwraca dane wszystkich platform")]
-    [ProducesResponseType(typeof(IEnumerable<Platforma>), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<PlatformaDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    public async Task<ActionResult<IEnumerable<Platforma>>> GetPlatformy()
+    public async Task<ActionResult<IEnumerable<PlatformaDto>>> GetPlatformy()
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
@@ -34,11 +34,11 @@ public class PlatformaController(
 
     [HttpGet("{id:int}")]
     [EndpointSummary("Zwraca dane platformy o podanym id")]
-    [ProducesResponseType(typeof(Platforma), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(PlatformaDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult<Platforma>> GetPlatforma(int id)
+    public async Task<ActionResult<PlatformaDto>> GetPlatforma(int id)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
