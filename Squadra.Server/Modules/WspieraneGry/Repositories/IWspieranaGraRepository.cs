@@ -11,4 +11,5 @@ public interface IWspieranaGraRepository
     public Task<ICollection<WspieranaGra>> GetWspieraneGryMinInfo();
     public Task<ICollection<Platforma>> GetPlatformyGry(int idGry);
     public Task<ICollection<GraZPlatformaDTO>> GetWspieraneGryZPlatformami();
+    public Task<ICollection<Platforma>> GetPlatformyGryUzytkownika(int idGry, int idUzytkownika);
 }

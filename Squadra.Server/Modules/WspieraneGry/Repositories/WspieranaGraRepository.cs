@@ -63,4 +63,19 @@ public class WspieranaGraRepository(AppDbContext context) : IWspieranaGraReposit
         }
         return gryZPlatformami;
     }
+    // funkcja zwracająca platformy, na których dany użytkownik ma daną grę
+    public async Task<ICollection<Platforma>> GetPlatformyGryUzytkownika(int idGry, int idUzytkownika)
+    {
+        var gra = await context.WspieranaGra.FirstOrDefaultAsync(g => g.Id == idGry);
+        if (gra is null)
+            throw new NieZnalezionoWBazieException("Nie znaleziono gry o podanym id.");
+        
+        var platformy = await context.GraNaPlatformie
+            .Where(gp => gp.IdWspieranejGry == idGry && gp.Platforma.GraUzytkownikaNaPlatformieCollection
+                .Any(up => up.UzytkownikId == idUzytkownika))
+            .Select(gp => gp.Platforma)
+            .ToListAsync();
+        
+        return platformy;
+    }
 }

@@ -51,4 +51,20 @@ public class WspieranaGraService(IWspieranaGraRepository wspieranaGraRepository)
             return ServiceResult<ICollection<Platforma>>.NotFound(new ErrorItem(e.Message));
         }
     }
+    
+    public async Task<ServiceResult<ICollection<Platforma>>> GetPlatformyGryUzytkownika(int idGry, int idUzytkownika)
+    {
+        try
+        {
+            if (idGry <= 0)
+                return ServiceResult<ICollection<Platforma>>.BadRequest(new ErrorItem("Nieprawidłowe id gry: " + idGry));
+            if (idUzytkownika <= 0)
+                return ServiceResult<ICollection<Platforma>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika));
+            return ServiceResult<ICollection<Platforma>>.Ok(await wspieranaGraRepository.GetPlatformyGryUzytkownika(idGry, idUzytkownika));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<ICollection<Platforma>>.NotFound(new ErrorItem(e.Message));
+        }
+    }
 }
