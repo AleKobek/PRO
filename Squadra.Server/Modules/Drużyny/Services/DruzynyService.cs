@@ -36,7 +36,7 @@ public class DruzynyService(
             if (!ostatniaAktywnoscKapitanaRes.Succeeded) return ServiceResult<DruzynaDoTabelkiDto>.Fail(ostatniaAktywnoscKapitanaRes.StatusCode, ostatniaAktywnoscKapitanaRes.Errors);
             
             var ostatniaAktywnoscKapitana = ostatniaAktywnoscKapitanaRes.Value ?? DateTime.UtcNow;
-            var minutyOdOstatniejAktywnosciKapitana = (int)(DateTime.UtcNow - ostatniaAktywnoscKapitana).TotalMinutes;
+            var minutyOdOstatniejAktywnosciKapitana = (int)(DateTime.UtcNow.AddHours(2) - ostatniaAktywnoscKapitana).TotalMinutes; // dodajemy 2 godziny, bo ostatniaAktywnoscKapitana jest w UTC, a my chcemy porównywać do czasu lokalnego (który jest UTC+2)
             // zmieniamy to na string w formacie "X dni Y godzin Z minut temu"
             var ostatniaAktywnoscKapitanaString = minutyOdOstatniejAktywnosciKapitana switch
             {
