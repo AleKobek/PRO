@@ -1,6 +1,7 @@
 ﻿import React from "react";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
+import FormularzZewnetrznyDruzyny from "./FormularzZewnetrznyDruzyny";
 
 export default function StworzDruzyne() {
 
@@ -19,7 +20,7 @@ export default function StworzDruzyne() {
             <h1>Stwórz drużynę</h1>
             <button className={"przycisk-nawigacji"} onClick={() => {navigate('/twojeDruzyny')}}>Powrót do twoich drużyn</button>
             <br/><br/>
-
+            <FormularzZewnetrznyDruzyny uzytkownik={uzytkownik} ladowanie={ladowanie}/>
         </div>
     </>);
 }
