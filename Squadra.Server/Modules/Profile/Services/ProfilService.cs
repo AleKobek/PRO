@@ -66,8 +66,12 @@ public class ProfilService(
     {
         if(id < 1) return ServiceResult<ProfilMinInfoDto>.BadRequest(new ErrorItem("Nieprawidłowe id profilu: " + id));
         try
-        {            
-            return ServiceResult<ProfilMinInfoDto>.Ok(await profilRepository.GetProfilMinInfo(id));
+        { 
+            var profil = await profilRepository.GetProfilMinInfo(id);
+            var statusDoWyswietleniaRes = await GetStatusDoWyswietleniaProfilu(id);
+            if(!statusDoWyswietleniaRes.Succeeded) return ServiceResult<ProfilMinInfoDto>.Fail(statusDoWyswietleniaRes.StatusCode, statusDoWyswietleniaRes.Errors);
+
+            return ServiceResult<ProfilMinInfoDto>.Ok(profil with { NazwaStatusu = statusDoWyswietleniaRes.Value.Nazwa }); // .Value jest bezpieczne, bo jak się powiodło to nie jest null
         }
         catch (NieZnalezionoWBazieException e)
         {
