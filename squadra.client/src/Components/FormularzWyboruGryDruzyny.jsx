@@ -1,6 +1,6 @@
 ﻿// wybierasz, czy gra ma mieć dane z zewnętrznego serwisu i wybierasz grę.
 // Pobierane są zarówno gry użytkownika, jak i gry. Zależnie od wybranej opcji, select ma inną listę do renderowania
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Bounce, toast} from "react-toastify";
 import {API_BASE_URL} from "../config/api";
 
@@ -13,7 +13,6 @@ export default function FormularzWyboruGryDruzyny({
 
 
     const [idWybranejGry, ustawIdWybranejGry] = useState(0);
-    // do formularza wyboru gry drużyny (i integracji)
     const [wszystkieGry, ustawWszystkieGry] = useState([]);
     const [gryUzytkownika, ustawGryUzytkownika] = useState([]);
 
@@ -51,16 +50,18 @@ export default function FormularzWyboruGryDruzyny({
 
         const podajGry = async () => {
 
-            // podajemy kraje
+            // pobieramy wszystkie gry w bazie
             const wszystkieGryPobrane = await fetchJsonAbort(`${API_BASE_URL}/WspieranaGra`);
             if (!alive || !wszystkieGryPobrane || !Array.isArray(wszystkieGryPobrane)) return;
             ustawWszystkieGry(wszystkieGryPobrane);
 
-            // podajemy regiony
+            // pobieramy gry z biblioteki użytkownika
             const gryUzytkownikaPobrane = await fetchJsonAbort(`${API_BASE_URL}/BibliotekaGier/${uzytkownik.id}`);
             if(!alive || !gryUzytkownikaPobrane || !Array.isArray(gryUzytkownikaPobrane)) return;
             ustawGryUzytkownika(gryUzytkownikaPobrane);
 
+            if(gryUzytkownikaPobrane.length === 0) ustawIdWybranejGry(wszystkieGryPobrane[0].id);
+            else ustawIdWybranejGry(gryUzytkownikaPobrane[0].idGry);
         };
 
         podajGry();
@@ -73,11 +74,17 @@ export default function FormularzWyboruGryDruzyny({
         }
     }, [uzytkownik, uzytkownik.id]);
 
+    if(wszystkieGry.length === 0) return (<>
+            <h1>Ładowanie...</h1>
+        </>
+    )
+
     return (<div className="flex flex-col items-center justify-center gap-5 border-4 border-gray-500 rounded-lg p-5 shadow-lg">
         <h3>Formularz wyboru gry</h3>
-        <select onChange={(e) => ustawIdWybranejGry(e.target.value)}>
+        <select
+            onChange={(e) => ustawIdWybranejGry(e.target.value)}>
             {czyZintegrowano
-                ? gryUzytkownika.map((gra) => <option value={gra.id} key={gra.id}>{gra.tytul}</option>)
+                ? gryUzytkownika.map((gra) => <option value={gra.idGry} key={gra.idGry}>{gra.tytul}</option>)
                 : wszystkieGry.map((gra) => <option value={gra.id} key={gra.id}>{gra.tytul}</option>)
             }
         </select>
@@ -93,6 +100,8 @@ export default function FormularzWyboruGryDruzyny({
         </div>
         <button
             className="bg-green-600 text-white text-2xl p-2 hover:bg-green-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
-            onClick={() => ustawIdGryDruzyny(idWybranejGry)}>Dalej</button>
+            onClick={() => {
+                ustawIdGryDruzyny(idWybranejGry)
+            }}>Dalej</button>
     </div>);
 }
