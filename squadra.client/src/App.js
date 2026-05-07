@@ -15,6 +15,7 @@ import ProfilOgolny from "./Components/ProfilOgolny";
 import {useState} from "react";
 import {Bounce, ToastContainer} from "react-toastify";
 import TwojeDruzyny from "./Components/TwojeDruzyny";
+import StworzDruzyne from "./Components/StworzDruzyne";
 
 function App() {
 
@@ -53,6 +54,10 @@ function App() {
                 <Route path = "/twojeDruzyny" element = {<>
                     <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
                     <TwojeDruzyny/>
+                </>}></Route>
+                <Route path = "/stworzDruzyne" element = {<>
+                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
+                    <StworzDruzyne/>
                 </>}></Route>
               <Route path = "/login" element = {<Logowanie/>}></Route>
               <Route path = "/rejestracja" element = {<Rejestracja/>}></Route>

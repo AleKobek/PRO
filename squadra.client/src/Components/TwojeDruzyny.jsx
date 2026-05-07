@@ -24,7 +24,11 @@ export default function TwojeDruzyny() {
             <h1>Twoje drużyny</h1>
             <div className="flex justify-center gap-6">
                 <button className="bg-blue-600 text-white text-2xl p-2 hover:bg-blue-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105">Wyszukaj nową</button>
-                <button className="bg-green-600 text-white text-2xl p-2 hover:bg-green-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105">Stwórz drużynę</button>
+                <button
+                    className="bg-green-600 text-white text-2xl p-2 hover:bg-green-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
+                    onClick={() => navigate('/stworzDruzyne')}
+                >Stwórz drużynę
+                </button>
             </div>
             <div className="mt-10 text-2xl">
                 <TabelkaTwoichDruzynKomponent idUzytkownika={uzytkownik.id}/>
