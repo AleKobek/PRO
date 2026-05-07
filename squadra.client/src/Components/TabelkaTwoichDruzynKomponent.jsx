@@ -23,7 +23,7 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
             try {
                 const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
                 if (!res.ok) {
-                    toast.error('Wystąpił błąd podczas pobierania biblioteki gier', {
+                    toast.error('Wystąpił błąd podczas pobierania twoich drużyn', {
                         position: "top-center",
                         autoClose: 5000,
                         hideProgressBar: false,
@@ -40,7 +40,7 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;
                 console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania biblioteki gier', {
+                toast.error('Wystąpił błąd podczas pobierania twoich drużyn', {
                     position: "top-center",
                     autoClose: 5000,
                     hideProgressBar: false,
