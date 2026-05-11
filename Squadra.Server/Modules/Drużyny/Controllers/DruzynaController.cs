@@ -85,4 +85,26 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
+     
+    [HttpGet("formularz/wyszukiwanie")]
+    [EndpointSummary("Zwraca dane potrzebne do wyświetlenia formularza wyszukiwania drużyny")]
+    [EndpointDescription("Zwraca dane potrzebne do wyświetlenia formularza wyszukiwania")]
+    [ProducesResponseType(typeof(DaneDoFormularzaDruzynyBezStatystykDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<DaneDoFormularzaWyszukiwaniaDruzyny>> GetDaneDoFormularzaWyszukiwaniaDruzyny()
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetDaneDoFormularzaWyszukiwaniaDruzyny(uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
 }

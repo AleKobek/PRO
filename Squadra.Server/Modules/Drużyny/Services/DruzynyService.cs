@@ -1,12 +1,15 @@
 ﻿using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.BibliotekaGier.Services;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Repositories;
+using Squadra.Server.Modules.Platformy.DTO;
 using Squadra.Server.Modules.Platformy.Services;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Statystyki.Services;
 using Squadra.Server.Modules.Uzytkownicy.Services;
+using Squadra.Server.Modules.WspieraneGry.DTO;
 using Squadra.Server.Modules.WspieraneGry.Services;
 
 namespace Squadra.Server.Modules.Drużyny.Services;
@@ -19,7 +22,8 @@ public class DruzynyService(
     IJezykService jezykService,
     IStopienBieglosciJezykaService stopienBieglosciJezykaService,
     IStatystykiService statystykiService,
-    IPlatformaService platformaService
+    IPlatformaService platformaService,
+    IBibliotekaGierService bibliotekaGierService
     ) : IDruzynyService
 {
     private async Task<ServiceResult<DruzynaDoTabelkiDto>> GetDruzynaDoTabelki(int idDruzyny)
@@ -255,6 +259,39 @@ public class DruzynyService(
                 platformyRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
                 jezykiRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
                 stopnieRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+                roleRes.Value // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+            )
+        );
+    }
+    
+    // funkcja zwracająca dane do formularza bez statystyk, nie spersonalizowane
+    public async Task<ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>> GetDaneDoFormularzaWyszukiwaniaDruzyny(int idUzytkownika)
+    {
+
+        var gryRes = await wspieranaGraService.GetWspieraneGry();
+        
+        var bibliotekaGierRes = await bibliotekaGierService.PodajGryWBiblioteceUzytkownika(idUzytkownika);
+        if (!bibliotekaGierRes.Succeeded) return ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>.Fail(bibliotekaGierRes.StatusCode, bibliotekaGierRes.Errors);
+        
+        
+        var nastroje = await druzynyRepository.GetNastrojeRozgrywki();
+        
+        var platformyRes = await wspieranaGraService.GetWspieraneGryZPlatformami();
+        if (!platformyRes.Succeeded) return ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>.Fail(platformyRes.StatusCode, platformyRes.Errors);
+        
+        var jezykiOrazStopnieRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
+        if (!jezykiOrazStopnieRes.Succeeded) return ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>.Fail(jezykiOrazStopnieRes.StatusCode, jezykiOrazStopnieRes.Errors);
+
+        var roleRes = await statystykiService.GetRole();
+        if (!roleRes.Succeeded) return ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>.Fail(roleRes.StatusCode, roleRes.Errors);
+
+        return ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>.Ok(
+            new DaneDoFormularzaWyszukiwaniaDruzyny(
+                gryRes.Value.Select(x => new MinInfoWspieranaGraDTO(x.Id, x.Tytul)).ToList(),
+                bibliotekaGierRes.Value.Select(x => new MinInfoWspieranaGraDTO(x.IdGry, x.Tytul)).ToList(),
+                nastroje.Select(x => new NastrojRozgrywkiDto(x.Id, x.Nazwa)).ToList(),
+                platformyRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+                jezykiOrazStopnieRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
                 roleRes.Value // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             )
         );
