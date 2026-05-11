@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Services;
+using Squadra.Server.Modules.Uzytkownicy.Models;
 
 namespace Squadra.Server.Modules.Drużyny.Controllers;
 
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class DruzynaController(IDruzynyService druzynyService) : ControllerBase
+public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytkownik> userManager) : ControllerBase
 {
      
     [HttpGet("tabelka/{idUzytkownika:int}")]
@@ -44,15 +46,19 @@ public class DruzynaController(IDruzynyService druzynyService) : ControllerBase
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
-    [HttpGet("formularz/ze-statystykami/{idUzytkownika:int}/{idGry:int}")]
+    [HttpGet("formularz/ze-statystykami/{idGry:int}")]
     [EndpointSummary("Zwraca dane potrzebne do wyświetlenia formularza tworzenia drużyny, ze statystykami.")]
     [EndpointDescription("Podajemy uzytkownika, który tworzy drużynę, aby zwrócić jego statystyki, które mogą być przydatne przy tworzeniu drużyny. Podajemy też id gry, aby zwrócić tylko statystyki z tej gry.")]
     [ProducesResponseType(typeof(DaneDoFormularzaDruzynyZeStatystykamiDto), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public async Task<ActionResult<DaneDoFormularzaDruzynyZeStatystykamiDto>> GetDaneDoFormularzaDruzynyZeStatystykami(int idUzytkownika, int idGry)
+    public async Task<ActionResult<DaneDoFormularzaDruzynyZeStatystykamiDto>> GetDaneDoFormularzaDruzynyZeStatystykami(int idGry)
     {
-        var result = await druzynyService.GetDaneDoFormularzaDruzynyZeStatystykami(idGry, idUzytkownika);
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetDaneDoFormularzaDruzynyZeStatystykami(idGry, uzytkownik.Id);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
