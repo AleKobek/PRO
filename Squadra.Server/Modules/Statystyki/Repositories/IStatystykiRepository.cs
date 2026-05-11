@@ -19,4 +19,5 @@ public interface IStatystykiRepository
     public Task<ICollection<WymaganieDruzynyDoWyswietleniaDto>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny);
     public Task<ICollection<RangiStatystykiDto>> GetRangiGry(int idGry);
     public Task<ICollection<Rola>> GetRoleGry(int idGry);
+    public Task<ICollection<Rola>> GetRole();
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Statystyki.DTO;
 using Squadra.Server.Modules.Statystyki.Models;
 
@@ -264,5 +265,10 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
     public async Task<ICollection<Rola>> GetRoleGry(int idGry)
     {
         return await context.Rola.Where(r => r.IdGry == idGry).ToListAsync();
+    }
+
+    public async Task<ICollection<Rola>> GetRole()
+    {
+        return  await context.Rola.ToListAsync();
     }
 }

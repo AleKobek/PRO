@@ -18,4 +18,5 @@ public interface IStatystykiService
     public Task<ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny);
     public Task<ServiceResult<ICollection<RolaDto>>> GetRoleGry(int idGry);
     public Task<ServiceResult<StatystykiDoFormularzaDto>> GetStatystykiDoFormularza(int idGry, int idUzytkownika);
+    public Task<ServiceResult<ICollection<RolaDto>>> GetRole();
 }

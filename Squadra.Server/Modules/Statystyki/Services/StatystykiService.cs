@@ -226,4 +226,10 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
             return ServiceResult<StatystykiDoFormularzaDto>.NotFound(new ErrorItem(e.Message));
         }
     }
+
+    public async Task<ServiceResult<ICollection<RolaDto>>> GetRole()
+    {
+        var role = await statystykiRepository.GetRole();
+        return ServiceResult<ICollection<RolaDto>>.Ok(role.Select(x => new RolaDto(x.Id, x.Nazwa, x.IdGry)).ToList());
+    }
 }
