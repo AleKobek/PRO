@@ -140,7 +140,7 @@ export default function TabelkaBibliotekiGierKomponent({idUzytkownika}) {
     }
 
     const PanelStatystyk = () =>{
-        if(!statystykiGry || statystykiGry.length === 0) {
+        if(!statystykiGry || statystykiGry?.length === 0) {
             return(<div
                 ref={statRef}
                 className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] p-10 overflow-y-auto
@@ -172,21 +172,23 @@ export default function TabelkaBibliotekiGierKomponent({idUzytkownika}) {
             {/*  wyświetlamy statystyki jako tabelka, dzieląc na kategorie  */}
             {
                 statystykiGry.map((kategoria) => (
-                    <div id={kategoria.idKategorii} className="flex flex-col overflow-y-auto">
+                    <div key={kategoria.idKategorii} id={kategoria.idKategorii} className="flex flex-col overflow-y-auto">
                         <h3>{kategoria.nazwaKategorii}</h3>
                         <table className="w-full border-collapse">
                             <thead>
-                            <tr>
-                                <th className="border border-gray-500 p-2">Nazwa</th>
-                                <th className="border border-gray-500 p-2">Wartość</th>
-                            </tr>
-                            </thead>
-                            <tbody>{kategoria.statystyki.map((stat) => (
-                                <tr key={stat.id}>
-                                    <td className="border border-gray-500 p-2">{stat.nazwa}</td>
-                                    <td className="border border-gray-500 p-2">{stat.wartosc.length === 0 ? "-" : stat.wartosc}</td>
+                                <tr>
+                                    <th className="border border-gray-500 p-2">Nazwa</th>
+                                    <th className="border border-gray-500 p-2">Wartość</th>
                                 </tr>
-                            ))}</tbody>
+                            </thead>
+                            <tbody>
+                                {kategoria.statystyki.map((stat) => (
+                                    <tr key={stat.id}>
+                                        <td className="border border-gray-500 p-2">{stat.nazwa}</td>
+                                        <td className="border border-gray-500 p-2">{stat.wartosc === null ? "-" : stat.wartosc}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
                         </table>
                     </div>
                 ))
@@ -200,15 +202,16 @@ export default function TabelkaBibliotekiGierKomponent({idUzytkownika}) {
     return (<div>
             {Array.isArray(bibliotekaGier) && bibliotekaGier.length > 0 ? (
                 <table className="overflow-x-auto overflow-y-auto h-full w-full border-4 border-gray-600 rounded-lg shadow-lg">
+                    <thead>
+                        <tr className="font-semibold border border-gray-600 text-4xl text-gray-800">
+                            <th className="border border-gray-600 text-center" style={{width: "40%"}}>Tytuł</th>
+                            <th className="border border-gray-600 text-center">Gatunek</th>
+                            <th className="border border-gray-600 text-center text-2xl" style={{width: "10%"}}>Czas rozgrywki</th>
+                            <th className="border border-gray-600 text-center">Platformy</th>
+                            <th style={{width: "7%"}}></th>
+                        </tr>
+                    </thead>
                     <tbody>
-                    <tr className="font-semibold border border-gray-600 text-4xl text-gray-800">
-                        <th className="border border-gray-600 text-center" style={{width: "40%"}}>Tytuł</th>
-                        <th className="border border-gray-600 text-center">Gatunek</th>
-                        <th className="border border-gray-600 text-center text-2xl" style={{width: "10%"}}>Czas rozgrywki</th>
-                        <th className="border border-gray-600 text-center">Platformy</th>
-                        <th style={{width: "7%"}}></th>
-                    </tr>
-                    </tbody>
                     {bibliotekaGier.map((gra) => {
                         if (!gra || typeof gra !== 'object') return null;
 
@@ -248,8 +251,8 @@ export default function TabelkaBibliotekiGierKomponent({idUzytkownika}) {
                             </tr>
 
                         );
-                    })
-                }
+                    })}
+                    </tbody>
                 </table>
             ) : (
                 <div className="p-4 text-center text-gray-800">Brak gier w bibliotece</div>
