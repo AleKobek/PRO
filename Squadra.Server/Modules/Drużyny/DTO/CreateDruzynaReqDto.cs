@@ -12,6 +12,7 @@ public record CreateDruzynaReqDto(
     int? IdWymaganegoStopniaBieglosciJezyka,
     bool Czy18Plus,
     int? IdPlatformy,
+    int? IdRoliKapitana,
     ICollection<WymaganaStatystykaDruzyny>? WymaganeStatystyki,
     ICollection<CreateMiejsceWDruzynieReq> MiejscaWDruzynie
 );
