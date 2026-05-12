@@ -2,10 +2,9 @@
 
 namespace Squadra.Server.Modules.Drużyny.DTO;
 
-public record CreateDruzynaReq(
+public record CreateDruzynaReqDto(
     string Nazwa,
     int IdGry,
-    int IdKapitana,
     bool CzyPubliczna,
     string? Opis,
     int? IdNastrojuRozgrywki,
