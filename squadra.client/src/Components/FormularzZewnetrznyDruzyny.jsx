@@ -1,5 +1,7 @@
 ﻿import React, {useState} from "react";
 import FormularzWyboruGryDruzyny from "./FormularzWyboruGryDruzyny";
+import FormularzDruzynyZintegrowano from "./FormularzDruzynyZintegrowano";
+import FormularzDruzynyNieZintegrowano from "./FormularzDruzynyNieZintegrowano";
 
 
 export default function FormularzZewnetrznyDruzyny({uzytkownik, ladowanie}) {
@@ -11,9 +13,7 @@ export default function FormularzZewnetrznyDruzyny({uzytkownik, ladowanie}) {
     const [idGryDruzyny, ustawIdGryDruzyny] = useState(0);
 
     if(ladowanie || !uzytkownik) return (<>
-            <div id = "glowna">
-                <h1>Ładowanie...</h1>
-            </div>
+            <h1>Ładowanie...</h1>
         </>
     )
 
@@ -24,8 +24,15 @@ export default function FormularzZewnetrznyDruzyny({uzytkownik, ladowanie}) {
                 ustawIdGryDruzyny={ustawIdGryDruzyny}
                 czyZintegrowano={czyZintegrowano}
                 ustawCzyZintegrowano={ustawCzyZintegrowano}
-              />
-            : <>Tu będzie drugi formularz</>
+            />
+            : czyZintegrowano
+                ? <FormularzDruzynyZintegrowano
+                    uzytkownik={uzytkownik}
+                    idGryDruzyny={idGryDruzyny}
+                    ustawIdGryDruzyny={ustawIdGryDruzyny}
+                    czyZintegrowano={czyZintegrowano}
+                />
+                : <FormularzDruzynyNieZintegrowano uzytkownik={uzytkownik} ustawIdGryDruzyny={ustawIdGryDruzyny} idGryDruzyny={idGryDruzyny}/>
         }
     </>);
 }
