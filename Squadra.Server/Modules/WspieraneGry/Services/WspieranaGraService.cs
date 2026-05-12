@@ -56,19 +56,20 @@ public class WspieranaGraService(IWspieranaGraRepository wspieranaGraRepository)
         }
     }
     
-    public async Task<ServiceResult<ICollection<Platforma>>> GetPlatformyGryUzytkownika(int idGry, int idUzytkownika)
+    public async Task<ServiceResult<ICollection<PlatformaDto>>> GetPlatformyGryUzytkownika(int idGry, int idUzytkownika)
     {
         try
         {
             if (idGry <= 0)
-                return ServiceResult<ICollection<Platforma>>.BadRequest(new ErrorItem("Nieprawidłowe id gry: " + idGry));
+                return ServiceResult<ICollection<PlatformaDto>>.BadRequest(new ErrorItem("Nieprawidłowe id gry: " + idGry));
             if (idUzytkownika <= 0)
-                return ServiceResult<ICollection<Platforma>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika));
-            return ServiceResult<ICollection<Platforma>>.Ok(await wspieranaGraRepository.GetPlatformyGryUzytkownika(idGry, idUzytkownika));
+                return ServiceResult<ICollection<PlatformaDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika));
+            var platformyRes = await wspieranaGraRepository.GetPlatformyGryUzytkownika(idGry, idUzytkownika);
+            return ServiceResult<ICollection<PlatformaDto>>.Ok(platformyRes.Select(x => new PlatformaDto(x.Id, x.Nazwa, x.Logo)).ToList());
         }
         catch (NieZnalezionoWBazieException e)
         {
-            return ServiceResult<ICollection<Platforma>>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<ICollection<PlatformaDto>>.NotFound(new ErrorItem(e.Message));
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using Squadra.Server.Modules.Platformy.DTO;
-using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.WspieraneGry.DTO;
 
@@ -12,4 +11,5 @@ public interface IWspieranaGraService
     public Task<ServiceResult<ICollection<MinInfoWspieranaGraDTO>>> GetWspieraneGryMinInfo();
     public Task<ServiceResult<ICollection<GraZPlatformaDTO>>> GetWspieraneGryZPlatformami();
     public Task<ServiceResult<ICollection<PlatformaDto>>> GetPlatformyGry(int idGry);
-    public Task<ServiceResult<ICollection<Platforma>>> GetPlatformyGryUzytkownika(int idGry, int idUzytkownika);}
+    public Task<ServiceResult<ICollection<PlatformaDto>>> GetPlatformyGryUzytkownika(int idGry, int idUzytkownika);
+}
