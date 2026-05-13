@@ -1,6 +1,6 @@
-﻿import {Bounce, ToastContainer} from "react-toastify";
-import React from "react";
-import {useNavigate} from "react-router-dom";
+﻿import {Bounce, toast, ToastContainer} from "react-toastify";
+import React, {useEffect} from "react";
+import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import TabelkaTwoichDruzynKomponent from "./TabelkaTwoichDruzynKomponent";
 
@@ -8,8 +8,23 @@ export default function TwojeDruzyny() {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
+    const location = useLocation();
 
-
+    useEffect(() => {
+        if (location.state?.pomyslnieStworzonoDruzyne) {
+            toast.success('Pomyślnie utworzono drużynę!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }
+    },[location.state?.pomyslnieStworzonoDruzyne])
 
 
     if(ladowanie || !uzytkownik) return (<>
@@ -34,5 +49,18 @@ export default function TwojeDruzyny() {
                 <TabelkaTwoichDruzynKomponent idUzytkownika={uzytkownik.id}/>
             </div>
         </div>
+        <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />
     </>);
 }
