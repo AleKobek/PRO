@@ -1,4 +1,4 @@
-﻿using Squadra.Server.Modules.Statystyki.Models;
+﻿using Squadra.Server.Modules.Statystyki.DTO;
 
 namespace Squadra.Server.Modules.Drużyny.DTO;
 
@@ -13,6 +13,6 @@ public record CreateDruzynaReqDto(
     bool Czy18Plus,
     int? IdPlatformy,
     int? IdRoliKapitana,
-    ICollection<WymaganaStatystykaDruzyny>? WymaganeStatystyki,
+    ICollection<WartoscStatystykiDTO>? WymaganeStatystyki,
     ICollection<CreateMiejsceWDruzynieReq> MiejscaWDruzynie
 );
