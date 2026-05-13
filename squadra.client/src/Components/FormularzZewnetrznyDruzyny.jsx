@@ -11,6 +11,7 @@ export default function FormularzZewnetrznyDruzyny({uzytkownik, ladowanie}) {
     const [czyZintegrowano, ustawCzyZintegrowano] = useState(false);
 
     const [idGryDruzyny, ustawIdGryDruzyny] = useState(0);
+    const [bladOgolny, ustawBladOgolny] = useState("");
 
     if(ladowanie || !uzytkownik) return (<>
             <h1>Ładowanie...</h1>
@@ -31,8 +32,10 @@ export default function FormularzZewnetrznyDruzyny({uzytkownik, ladowanie}) {
                     idGryDruzyny={idGryDruzyny}
                     ustawIdGryDruzyny={ustawIdGryDruzyny}
                     czyZintegrowano={czyZintegrowano}
+                    ustawBladOgolny = {ustawBladOgolny}
                 />
-                : <FormularzDruzynyNieZintegrowano uzytkownik={uzytkownik} ustawIdGryDruzyny={ustawIdGryDruzyny} idGryDruzyny={idGryDruzyny}/>
+                : <FormularzDruzynyNieZintegrowano uzytkownik={uzytkownik} ustawIdGryDruzyny={ustawIdGryDruzyny} idGryDruzyny={idGryDruzyny} ustawBladOgolny={ustawBladOgolny}/>
         }
+        <span className="error-wiadomosc">{bladOgolny}</span>
     </>);
 }

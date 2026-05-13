@@ -1,11 +1,13 @@
 ﻿import React, {useEffect, useMemo, useState} from "react";
 import {Bounce, toast} from "react-toastify";
 import {API_BASE_URL} from "../config/api";
+import {useNavigate} from "react-router-dom";
 
 export default function FormularzDruzynyNieZintegrowano({
                                                       uzytkownik,
                                                       idGryDruzyny,
                                                       ustawIdGryDruzyny,
+                                                      ustawBladOgolny
                                                   }) {
     /*
     dane przychodzą w formie: (tutaj dla ow)
@@ -113,6 +115,8 @@ export default function FormularzDruzynyNieZintegrowano({
     }
     */
 
+    const navigate = useNavigate();
+
     // pobrane dane z bazy
     const [nastrojeRozgrywki, ustawNastrojeRozgrywki] = useState([]);
     const [platformy, ustawPlatformy] = useState([]);
@@ -134,6 +138,9 @@ export default function FormularzDruzynyNieZintegrowano({
     const [miejscaWDruzynie, ustawMiejscaWDruzynie] = useState([]); // tyle elementów ile miejsc
     const [idRoliKapitana, ustawIdRoliKapitana] = useState(null);
     const [idRoliDoDodania, ustawIdRoliDoDodania] = useState(null);
+
+    const [bladNazwy, ustawBladNazwy] = useState("");
+    const [bladOpisu, ustawBladOpisu] = useState("");
 
     useEffect(() => {
         const ac = new AbortController();
@@ -189,10 +196,17 @@ export default function FormularzDruzynyNieZintegrowano({
         }
     }, [idGryDruzyny, uzytkownik]);
 
+
+
     const przyWysylaniu = async () => {
         if(!uzytkownik) return;
         if(!idGryDruzyny) return;
         if(czyZablokowane) return; // na wszeeeelki wypadek
+
+        ustawBladNazwy("");
+        ustawBladOpisu("");
+        ustawBladOgolny("");
+
         /*
         Dane mają mieć format:
             string Nazwa,
@@ -232,7 +246,51 @@ export default function FormularzDruzynyNieZintegrowano({
                 }
             })
         }
-        // tutaj pakujemy i wysyłamy
+
+        // pakujemy i wysyłamy
+        const opcje = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(dane),
+            credentials: "include"
+        }
+
+        const res = await fetch(`${API_BASE_URL}/Druzyna`, opcje);
+
+        // Odczyt body różni się zależnie od typu odpowiedzi
+        // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
+        const ct = res.headers.get("content-type") || "";
+        const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+            ? await res.json().catch(() => null)
+            : await res.text().catch(() => "");
+
+        if (!res.ok) {
+            if(res.status === 400){
+                let bledy = body.errors;
+                ustawBladNazwy(bledy.Nazwa ? bledy.Nazwa[0] : "");
+                ustawBladOpisu(bledy.Opis ? bledy.Opis[0] : "");
+                ustawBladOgolny(body.message);
+            }
+            toast.error('Wystąpił błąd podczas tworzenia drużyny', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
+
+        // jak tutaj dojdziemy, wszystko jest git
+        navigate("/twojeDruzyny", {
+            state: { pomyslnieStworzonoDruzyne: true }
+        });
     }
 
     const czyZablokowane = useMemo(() =>{
@@ -247,15 +305,19 @@ export default function FormularzDruzynyNieZintegrowano({
     return (<div className="flex flex-col items-center justify-center gap-5">
         <button className="przycisk-nawigacji" onClick={() => ustawIdGryDruzyny(0)}>Zmień grę</button>
         <form className="flex flex-col items-center justify-center gap-5 border-4 border-gray-500 rounded-lg p-5 shadow-lg">
-            <label>
-                Nazwa:
-                <input
-                    type="text"
-                    value={nazwa}
-                    onChange={(e) => ustawNazwa(e.target.value)}
-                    className="border-2 border-gray-300 rounded-md p-2 w-full"
-                />
-            </label>
+            <div className="flex-col items-center justify-center gap-2 w-[700px]">
+                <label>
+                    Nazwa:
+                    <input
+                        type="text"
+                        value={nazwa}
+                        onChange={(e) => ustawNazwa(e.target.value)}
+                        className="border-2 border-gray-300 rounded-md p-2 w-full"
+                        maxLength={40}
+                    />
+                </label>
+                <span className="error-wiadomosc">{bladNazwy}</span>
+            </div>
             <div className="flex items-center justify-center gap-5">
                 <label>
                     Nastrój rozgrywki: <br/>
@@ -272,7 +334,7 @@ export default function FormularzDruzynyNieZintegrowano({
                     </select>
                 </label>
                 <label>
-                    Wymagany język:
+                    Wymagany język i stopień biegłości:
                     <div>
                         {
                             <div className="flex gap-2">
@@ -296,7 +358,9 @@ export default function FormularzDruzynyNieZintegrowano({
                                     onChange={(e) => {
                                         if(e.target.value === "") ustawIdMinimalnegoStopniaJezyka(null);
                                         else ustawIdMinimalnegoStopniaJezyka(parseInt(e.target.value))
-                                    }}>
+                                    }}
+                                    disabled={idWymaganegoJezyka === null}
+                                >
                                     <option value = "" key = {-1}>Brak</option>
                                     {
                                         wszystkieStopnie.map((stopien) =>
@@ -313,8 +377,11 @@ export default function FormularzDruzynyNieZintegrowano({
                     Platforma: <br/>
                     <select
                         className="border-2 border-gray-300 rounded-md p-2"
-                        onChange={(e) => ustawIdWybranejPlatformy(parseInt(e.target.value))}
-                        value={idWybranejPlatformy}
+                        onChange={(e) => {
+                            if(e.target.value === "") ustawIdWybranejPlatformy(null);
+                            else ustawIdWybranejPlatformy(parseInt(e.target.value))
+                        }}
+                        value={idWybranejPlatformy ?? ""}
                     >
                         <option value = "" key = {-1}>Brak</option>
                         {
@@ -324,14 +391,18 @@ export default function FormularzDruzynyNieZintegrowano({
                         }
                     </select>
                 </label>
-                <label>
-                    Opis:
-                    <textarea
-                        value={opis}
-                        onChange={(e) => ustawOpis(e.target.value)}
-                        className="border-2 border-gray-300 rounded-md p-2 w-full"
-                    />
-                </label>
+                <div className="flex-col items-center justify-center gap-2">
+                    <label>
+                        Opis: <br/>
+                        <textarea
+                            value={opis}
+                            onChange={(e) => ustawOpis(e.target.value)}
+                            className="border-2 border-gray-300 rounded-md p-2 w-[500px]"
+                            maxLength={300}
+                        />
+                    </label>
+                    <span className="error-wiadomosc">{bladOpisu}</span>
+                </div>
             </div>
             <div className="flex items-center justify-center gap-5">
                 <label>
@@ -355,7 +426,6 @@ export default function FormularzDruzynyNieZintegrowano({
             </div>
         </form>
         <h3>Konfiguracja miejsc w drużynie</h3>
-        <span>Pierwsze miejsce jest Twoje - kapitana drużyny</span>
         <table className="overflow-x-auto overflow-y-auto h-full w-1/4 border-4 border-gray-600 rounded-lg shadow-lg">
             <thead className="bg-gray-200">
                 <tr className="font-semibold border border-gray-600 text-3xl text-gray-800">
@@ -373,6 +443,7 @@ export default function FormularzDruzynyNieZintegrowano({
                             }}
                             value={idRoliKapitana ?? ""}
                             className="border-2 border-gray-300 rounded-md p-2"
+                            disabled={role.length === 0}
                         >
                             <option value = "" key = {-1}>Brak</option>
                             {
@@ -383,7 +454,7 @@ export default function FormularzDruzynyNieZintegrowano({
                             }
                         </select>
                     </th>
-                    <th className="text-gray-700 p-2">kapitan (zablokowane)</th>
+                    <th className="text-gray-700 p-2">Ty - kapitan (zablokowane)</th>
                 </tr>
             {/* tutaj mapujemy po miejscach w drużynie */}
                 {
