@@ -1,5 +1,6 @@
 ﻿using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Profile.Models;
+using Squadra.Server.Modules.Statystyki.Models;
 using Squadra.Server.Modules.Uzytkownicy.Models;
 using Squadra.Server.Modules.WspieraneGry.Models;
 

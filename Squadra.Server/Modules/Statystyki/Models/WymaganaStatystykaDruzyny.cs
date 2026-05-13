@@ -1,6 +1,6 @@
-﻿using Squadra.Server.Modules.Statystyki.Models;
+﻿using Squadra.Server.Modules.Drużyny.Models;
 
-namespace Squadra.Server.Modules.Drużyny.Models;
+namespace Squadra.Server.Modules.Statystyki.Models;
 
 public class WymaganaStatystykaDruzyny
 {

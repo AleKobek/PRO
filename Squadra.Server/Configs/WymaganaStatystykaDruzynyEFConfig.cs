@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Squadra.Server.Modules.Drużyny.Models;
+using Squadra.Server.Modules.Statystyki.Models;
 
 namespace Squadra.Server.Configs;
 
