@@ -210,7 +210,7 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
             var statystykiBezRang = statystyki
                 // All zwraca true, jeśli wszystkie elementy spełniają warunek.
                 // tutaj sprawdzamy, czy statystyka nie jest rangą, czyli czy nie ma rangi o takim samym id statystyki
-                .Where(s => rangi.All(r => r.IdStatystyki != s.Id))
+                .Where(s => rangi.All(r => r.Id != s.Id))
                 .OrderBy(s => s.Id)
                 .Select(s => new StatystykaDoFormularzaNieBedacaRangaDto(
                     s.Id,

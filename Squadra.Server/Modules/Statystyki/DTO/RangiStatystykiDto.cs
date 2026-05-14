@@ -1,8 +1,8 @@
 ﻿namespace Squadra.Server.Modules.Statystyki.DTO;
 
 public record RangiStatystykiDto(
-    int IdStatystyki,
-    string NazwaStatystyki,
+    int Id,
+    string Nazwa,
     ICollection<RangaWDtoRangiStatystykiDto> Rangi
 );
 

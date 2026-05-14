@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Squadra.Server.Modules.Drużyny.DTO;
@@ -106,5 +107,58 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
             404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
+    }
+    
+    [HttpPost]
+    [EndpointSummary("Tworzy drużynę")]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult> CreateDruzyna(CreateDruzynaReqDto dto)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        // var result = await druzynyService.CreateDruzyna(dto, uzytkownik.Id);
+        // return result.StatusCode switch
+        // {
+        //     201 => Created(),
+        //     400 => BadRequest(result.Errors[0].Message),
+        //     404 => NotFound(result.Errors[0].Message),
+        //     _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        // };
+        
+        Console.WriteLine("CreateDruzyna endpoint został wywołany. Oto dane, które otrzymał:");
+        Console.WriteLine($"Nazwa: {dto.Nazwa}");
+        Console.WriteLine($"IdGry: {dto.IdGry}");
+        Console.WriteLine($"CzyPubliczna: {dto.CzyPubliczna}");
+        Console.WriteLine($"Opis: {dto.Opis}");
+        Console.WriteLine($"IdNastrojuRozgrywki: {dto.IdNastrojuRozgrywki}");
+        Console.WriteLine($"IdWymaganegoJezyka: {dto.IdWymaganegoJezyka}");
+        Console.WriteLine($"IdWymaganegoStopniaBieglosciJezyka: {dto.IdWymaganegoStopniaBieglosciJezyka}");
+        Console.WriteLine($"Czy18Plus: {dto.Czy18Plus}");
+        Console.WriteLine($"IdPlatformy: {dto.IdPlatformy}");
+        Console.WriteLine($"IdRoliKapitana: {dto.IdRoliKapitana}");
+        Console.WriteLine($"Liczba WymaganychStatystyk: {dto.WymaganeStatystyki?.Count}");
+        if (dto.WymaganeStatystyki != null)
+        {
+            int statIndex = 1;
+            foreach (var stat in dto.WymaganeStatystyki)
+            {                Console.WriteLine($"  Statystyka {statIndex}:");
+                Console.WriteLine($"    IdStatystyki: {stat.IdStatystyki}");
+                Console.WriteLine($"    MinimalnaWartosc: {stat.Wartosc}");
+                statIndex++;
+            }
+        }
+        Console.WriteLine($"Liczba MiejscWDruzynie: {dto.MiejscaWDruzynie.Count}");
+        int miejsceIndex = 1;
+        foreach (var miejsce in dto.MiejscaWDruzynie)        {
+            Console.WriteLine($"  Miejsce {miejsceIndex}:");
+            Console.WriteLine($"    IdRoli: {miejsce.IdRoli}");
+            miejsceIndex++;
+        }
+        return NoContent(); // tylko do testów
     }
 }
