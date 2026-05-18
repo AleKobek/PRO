@@ -92,7 +92,13 @@ export default function FormularzWyboruGryDruzyny({
             <input
             type="checkbox"
             checked={czyZintegrowano}
-            onChange={() => ustawCzyZintegrowano(!czyZintegrowano)}
+            onChange={() => {
+                // gdy zmieniamy z niezintegrowanego na zintegrowane
+                if(!czyZintegrowano){
+                    ustawIdWybranejGry(gryUzytkownika[0] ? gryUzytkownika[0].idGry : null);
+                }
+                ustawCzyZintegrowano(!czyZintegrowano)
+            }}
             disabled={gryUzytkownika.length === 0}
             className="mr-2"
             />
