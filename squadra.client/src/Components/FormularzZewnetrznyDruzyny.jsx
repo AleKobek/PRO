@@ -31,7 +31,6 @@ export default function FormularzZewnetrznyDruzyny({uzytkownik, ladowanie}) {
                     uzytkownik={uzytkownik}
                     idGryDruzyny={idGryDruzyny}
                     ustawIdGryDruzyny={ustawIdGryDruzyny}
-                    czyZintegrowano={czyZintegrowano}
                     ustawBladOgolny = {ustawBladOgolny}
                 />
                 : <FormularzDruzynyNieZintegrowano uzytkownik={uzytkownik} ustawIdGryDruzyny={ustawIdGryDruzyny} idGryDruzyny={idGryDruzyny} ustawBladOgolny={ustawBladOgolny}/>
