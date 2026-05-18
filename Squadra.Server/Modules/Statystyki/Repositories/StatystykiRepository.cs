@@ -239,12 +239,19 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         var rangi = await context.Ranga
             .Include(r => r.Statystyka)
             .ThenInclude(s => s.Kategoria)
-            .Include(ranga => ranga.Statystyka).ThenInclude(statystyka => statystyka.Rola)
             .Include(ranga => ranga.Statystyka).ThenInclude(s => s.StatystykaUzytkownikaCollection)
             .Where(r => r.Statystyka.Kategoria.IdGry == idGry && r.Statystyka.StatystykaUzytkownikaCollection.Any(su => su.UzytkownikId == idUzytkownika && su.PorownywalnaWartoscLiczbowa >= r.WartoscLiczbowa))   
             .ToListAsync();
         
+        // musimy teraz wziąć statystyki, które są rangami, ale nie ma ich w rangach wyżej, czyli takie, w których wartość liczbową miał null i się nie załapało
+        var statystykiZNullami = await context.Statystyka
+            .Include(s => s.Kategoria)
+            .Include(s => s.RangaCollection)
+            .Where(s => s.RangaCollection.Count > 0 && s.Kategoria.IdGry == idGry && s.StatystykaUzytkownikaCollection.Any(su => su.UzytkownikId == idUzytkownika && su.PorownywalnaWartoscLiczbowa == null))
+            .ToListAsync();
+        
         var statystykiZRangami = rangi.Select(r => r.Statystyka).Distinct().ToList();
+        statystykiZRangami.AddRange(statystykiZNullami);
         var statystykiDoZwrocenia = new List<RangiStatystykiDto>();
         foreach (var statystyka in statystykiZRangami)
         {
@@ -252,11 +259,17 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
                 .Where(r => r.StatystykaId == statystyka.Id)
                 .Select(r => new RangaWDtoRangiStatystykiDto(r.Nazwa, r.WartoscLiczbowa))
                 .ToList();
+            string? nazwaRoli = null;
+            if (statystyka.RolaId != null)
+            {
+                var rola = await context.Rola.FindAsync(statystyka.RolaId);
+                nazwaRoli = rola?.Nazwa;
+            }
             statystykiDoZwrocenia.Add(new RangiStatystykiDto(
                 statystyka.Id,
-                statystyka.RolaId == null
+                nazwaRoli == null
                     ? $"{statystyka.Kategoria.Nazwa}: {statystyka.Nazwa}"
-                    : $"{statystyka.Kategoria.Nazwa}: {statystyka.Nazwa}({statystyka.Rola.Nazwa})",
+                    : $"{statystyka.Kategoria.Nazwa}: {statystyka.Nazwa}({nazwaRoli})",
                 rangiDlaStatystyki));
         }
         return statystykiDoZwrocenia;
