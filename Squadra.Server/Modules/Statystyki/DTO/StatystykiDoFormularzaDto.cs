@@ -2,8 +2,8 @@
 
 public record StatystykiDoFormularzaDto(
     ICollection<StatystykaDoFormularzaNieBedacaRangaDto> StatystykiNieBedaceRangami,
-    ICollection<RangiStatystykiDto> Rangi
-);
+    ICollection<RangiStatystykiDto> Rangi,
+    ICollection<RangiStatystykiDto> WszystkieRangi);
 
 public record StatystykaDoFormularzaNieBedacaRangaDto(
     int Id,

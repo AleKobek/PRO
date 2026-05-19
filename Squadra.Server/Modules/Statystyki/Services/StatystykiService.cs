@@ -206,6 +206,7 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         try
         {            
             var statystyki = await statystykiRepository.GetStatystykiZGry(idGry);
+            var wszystkieRangi = await statystykiRepository.GetRangiGry(idGry);
             var rangi = await statystykiRepository.GetMniejszeLubRowneRangiGryUzytkownika(idGry, idUzytkownika);
             var statystykiBezRang = statystyki
                 // All zwraca true, jeśli wszystkie elementy spełniają warunek.
@@ -219,7 +220,7 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
                         : $"{s.Kategoria.Nazwa}: {s.Nazwa}({s.Rola.Nazwa})"
                 ))
                 .ToList();
-            return ServiceResult<StatystykiDoFormularzaDto>.Ok(new StatystykiDoFormularzaDto(statystykiBezRang, rangi));
+            return ServiceResult<StatystykiDoFormularzaDto>.Ok(new StatystykiDoFormularzaDto(statystykiBezRang, rangi, wszystkieRangi));
         }
         catch (NieZnalezionoWBazieException e)
         {
