@@ -191,8 +191,8 @@ export default function FormularzDruzynyZintegrowano({
     // dodawanie wymagań drużyny
     const [idStatystykiDoDodania, ustawIdStatystykiDoDodania] = useState(null);
     const [nazwaStatystykiDoDodania, ustawNazweStatystykiDoDodania] = useState(null);
-    const [wartoscStatystykiDoDodania, ustawWartoscStatystykiDoDodania] = useState(null);
-    const [wartoscLiczbowaStatystykiDoDodania, ustawWartoscLiczbowaStatystykiDoDodania] = useState(null);
+    const [wartoscStatystykiDoDodania, ustawWartoscStatystykiDoDodania] = useState(0);
+    const [wartoscLiczbowaStatystykiDoDodania, ustawWartoscLiczbowaStatystykiDoDodania] = useState(0);
     const [idRangiDoDodania, ustawIdRangiDoDodania] = useState(null);
     const [nazwaRangiDoDodania, ustawNazweRangiDoDodania] = useState(null);
     const [wartoscRangiDoDodania, ustawWartoscRangiDoDodania] = useState(null);
@@ -202,8 +202,8 @@ export default function FormularzDruzynyZintegrowano({
     const [idRoliDoDodania, ustawIdRoliDoDodania] = useState(null);
     const [typWymaganiaDoDodania, ustawTypWymaganiaDoDodania] = useState(null); // do radio przy dodawaniu miejsca
     const [idStatystykiMiejscaDoDodania, ustawIdStatystykiMiejscaDoDodania] = useState(null);
-    const [wartoscStatystykiMiejscaDoDodania, ustawWartoscStatystykiMiejscaDoDodania] = useState(null);
-    const [wartoscLiczbowaStatystykiMiejscaDoDodania, ustawWartoscLiczbowaStatystykiMiejscaDoDodania] = useState(null);
+    const [wartoscStatystykiMiejscaDoDodania, ustawWartoscStatystykiMiejscaDoDodania] = useState(0);
+    const [wartoscLiczbowaStatystykiMiejscaDoDodania, ustawWartoscLiczbowaStatystykiMiejscaDoDodania] = useState(0);
     const [idRangiMiejscaDoDodania, ustawIdRangiMiejscaDoDodania] = useState(null);
     const [wartoscRangiMiejscaDoDodania, ustawWartoscRangiMiejscaDoDodania] = useState(null);
     const [wartoscLiczbowaRangiMiejscaDoDodania, ustawWartoscLiczbowaRangiMiejscaDoDodania] = useState(null);
@@ -313,15 +313,29 @@ export default function FormularzDruzynyZintegrowano({
             idPlatformy: idWybranejPlatformy,
             idRoliKapitana: idRoliKapitana,
             WymaganeStatystyki: wymaganiaDruzynowe.map((wymaganie) => {
-                //TODO ###################################################################################################################
+                return {
+                    idStatystyki: wymaganie.idStatystyki,
+                    wartosc: wymaganie.wartosc,
+                    porownywalnaWartoscLiczbowa : wymaganie.porownywalnaWartoscLiczbowa
+                }
             }),
             MiejscaWDruzynie: miejscaWDruzynie.map((miejsce) => {
+                let wymaganaStatystyka = null;
+                if(miejsce.idStatystyki !== null){
+                    wymaganaStatystyka = {
+                        idStatystyki: miejsce.idStatystyki,
+                        wartosc: miejsce.wartoscStatystyki,
+                        porownywalnaWartoscLiczbowa : miejsce.porownywalnaWartoscLiczbowa
+                    }
+                }
                 return {
                     idRoli: miejsce.idRoli,
-                    wymaganaStatystyka: null,
+                    wymaganaStatystyka: wymaganaStatystyka
                 }
             })
-        }
+        };
+
+        console.log(dane)
 
         // pakujemy i wysyłamy
         const opcje = {
