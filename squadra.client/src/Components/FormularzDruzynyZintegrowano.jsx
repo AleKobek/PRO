@@ -382,7 +382,7 @@ export default function FormularzDruzynyZintegrowano({
 
     const aktualnaListaStatystyk = useMemo(() =>{
         const zajete = new Set(wymaganiaDruzynowe.map((w => w.idStatystyki))); // id wszystkich statystyk, które są w wymaganiach
-       return (statystykiZBazy ?? []).filter(s => !zajete.has(s.idStatystyki))  // zostawiamy tylko te, których id nie jest zajęte
+       return (statystykiZBazy ?? []).filter(s => !zajete.has(s.id))  // zostawiamy tylko te, których id nie jest zajęte
     }, [statystykiZBazy, wymaganiaDruzynowe]);
 
     const aktualnaListaRang = useMemo(() =>{
@@ -946,7 +946,6 @@ export default function FormularzDruzynyZintegrowano({
                          porownywalnaWartoscLiczbowa = !idStatystyki ? null : wartoscLiczbowaRangiMiejscaDoDodania;
                     }
                     // tutaj wypisujemy to co dodajemy bo coś nie widać tego
-                    console.log(idRoli, nazwaRoli, idStatystyki, nazwaStatystyki, wartoscStatystyki, porownywalnaWartoscLiczbowa);
                     ustawMiejscaWDruzynie(prev => [...prev, {
                         idRoli: idRoli,
                         nazwaRoli: nazwaRoli,
