@@ -140,6 +140,22 @@ export default function FormularzDruzynyZintegrowano({
                      itd
                   ]
               },
+              "wszystkieRangi": [
+              {
+                "id": 12,
+                "nazwa": "Tryb rankingowy: Ranga(tank)",
+                "rangi": [
+                      {
+                        "nazwaRangi": "Bronze V",
+                        "wartoscLiczbowa": 1
+                      },
+                      {
+                        "nazwaRangi": "Bronze IV",
+                        "wartoscLiczbowa": 2
+                      },
+                     itd
+                  ]
+              },
           }
     }
     */
@@ -154,6 +170,7 @@ export default function FormularzDruzynyZintegrowano({
     const [role, ustawRole] = useState([]);
     const [statystykiZBazy, ustawStatystykiZBazy] = useState([]);
     const [rangiZBazy, ustawRangiZBazy] = useState([]);
+    const [wszystkieRangiZBazy, ustawWszystkieRangiZBazy] = useState([]);
 
     // dane z formularza
     const [nazwa, ustawNazwa] = useState("");
@@ -176,19 +193,18 @@ export default function FormularzDruzynyZintegrowano({
     const [nazwaStatystykiDoDodania, ustawNazweStatystykiDoDodania] = useState(null);
     const [wartoscStatystykiDoDodania, ustawWartoscStatystykiDoDodania] = useState(null);
     const [wartoscLiczbowaStatystykiDoDodania, ustawWartoscLiczbowaStatystykiDoDodania] = useState(null);
-    const [idStatystykiRangiDoDodania, ustawIdStatystykiRangiDoDodania] = useState(null);
-    const [nazwaStatystykiRangiDoDodania, ustawNazweStatystykiRangiDoDodania] = useState(null);
-    const [wartoscStatystykiRangiDoDodania, ustawWartoscStatystykiRangiDoDodania] = useState(null);
-    const [wartoscLiczbowaStatystykiRangiDoDodania, ustawWartoscLiczbowaStatystykiRangiDoDodania] = useState(null);
+    const [idRangiDoDodania, ustawIdRangiDoDodania] = useState(null);
+    const [nazwaRangiDoDodania, ustawNazweRangiDoDodania] = useState(null);
+    const [wartoscRangiDoDodania, ustawWartoscRangiDoDodania] = useState(null);
+    const [wartoscLiczbowaRangiDoDodania, ustawWartoscLiczbowaRangiDoDodania] = useState(null);
 
     // dodawanie miejsca
     const [idRoliDoDodania, ustawIdRoliDoDodania] = useState(null);
+    const [typWymaganiaDoDodania, ustawTypWymaganiaDoDodania] = useState(null); // do radio przy dodawaniu miejsca
     const [idStatystykiMiejscaDoDodania, ustawIdStatystykiMiejscaDoDodania] = useState(null);
-    const [nazwaStatystykiMiejscaDoDodania, ustawNazweStatystykiMiejscaDoDodania] = useState(null);
     const [wartoscStatystykiMiejscaDoDodania, ustawWartoscStatystykiMiejscaDoDodania] = useState(null);
     const [wartoscLiczbowaStatystykiMiejscaDoDodania, ustawWartoscLiczbowaStatystykiMiejscaDoDodania] = useState(null);
-    const [idStatystykiRangiMiejscaDoDodania, ustawIdStatystykiRangiMiejscaDoDodania] = useState(null);
-    const [nazwaStatystykiRangiMiejscaDoDodania, ustawNazweStatystykiRangiMiejscaDoDodania] = useState(null);
+    const [idRangiMiejscaDoDodania, ustawIdRangiMiejscaDoDodania] = useState(null);
     const [wartoscRangiMiejscaDoDodania, ustawWartoscRangiMiejscaDoDodania] = useState(null);
     const [wartoscLiczbowaRangiMiejscaDoDodania, ustawWartoscLiczbowaRangiMiejscaDoDodania] = useState(null);
 
@@ -226,24 +242,24 @@ export default function FormularzDruzynyZintegrowano({
             }
         };
 
-        const podajNieZintegrowaneDane = async () => {
+        const podajDane = async () => {
 
             const dane = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/formularz/ze-statystykami/${idGryDruzyny}`);
             if (!alive || !dane) return;
-            console.log(dane);
 
             ustawNastrojeRozgrywki(dane.nastrojeRozgrywki);
-            ustawIdWybranegoNastroju(dane.nastrojeRozgrywki[0].id)
+            ustawIdWybranegoNastroju(dane.nastrojeRozgrywki[0].id);
             ustawPlatformy(dane.platformy);
             ustawJezykiIStopnie(dane.jezykiOrazStopnie);
             ustawRole(dane.role ?? []);
-            ustawIdRoliDoDodania(dane.role[0]?.id ?? null);
             ustawStatystykiZBazy(dane.statystyki.statystykiNieBedaceRangami);
-            console.log(dane.statystyki.statystykiNieBedaceRangami)
-            ustawRangiZBazy(dane.statystyki.rangi)
+            ustawRangiZBazy(dane.statystyki.rangi);
+            ustawWszystkieRangiZBazy(dane.statystyki.wszystkieRangi);
+
+            ustawIdStatystykiMiejscaDoDodania(dane.statystyki.statystykiNieBedaceRangami[0]?.id)
         };
 
-        podajNieZintegrowaneDane();
+        podajDane();
         ustawLadowanie(false);
 
         // to funkcja sprzątająca. Odpali się od razu, gdy ten element zniknie, np. użytkownik zmieni stronę
@@ -375,42 +391,69 @@ export default function FormularzDruzynyZintegrowano({
     }, [rangiZBazy, wymaganiaDruzynowe]);
 
     const aktualnaListaWartosciRang = useMemo(() =>{
-        let aktualnaRanga = (rangiZBazy ?? []).find(x => x.id === idStatystykiRangiDoDodania);
+        let aktualnaRanga = (rangiZBazy ?? []).find(x => x.id === idRangiDoDodania);
         if (aktualnaRanga === undefined) return [];
-        if(wartoscStatystykiRangiDoDodania === null){
-            ustawWartoscStatystykiRangiDoDodania(aktualnaRanga.rangi[0]?.nazwaRangi)
-            ustawWartoscLiczbowaStatystykiRangiDoDodania(aktualnaRanga.rangi[0]?.wartoscLiczbowa);
+        if(wartoscRangiDoDodania === null){
+            ustawWartoscRangiDoDodania(aktualnaRanga.rangi[0]?.nazwaRangi)
+            ustawWartoscLiczbowaRangiDoDodania(aktualnaRanga.rangi[0]?.wartoscLiczbowa);
         }
         if(aktualnaRanga.rangi.length === 0){
-            ustawWartoscStatystykiRangiDoDodania(null);
-            ustawWartoscLiczbowaStatystykiRangiDoDodania(null);
+            ustawWartoscRangiDoDodania(null);
+            ustawWartoscLiczbowaRangiDoDodania(null);
         }
         return aktualnaRanga.rangi;
-    },[rangiZBazy, wartoscStatystykiRangiDoDodania, idStatystykiRangiDoDodania]);
+    },[rangiZBazy, wartoscRangiDoDodania, idRangiDoDodania]);
 
     // to samo co wyżej?
     const aktualnaListaWartosciRangMiejsca = useMemo(() =>{
-        let aktualnaRanga = (rangiZBazy ?? []).find(x => x.id === idStatystykiRangiMiejscaDoDodania);
+        let aktualnaRanga = (wszystkieRangiZBazy ?? []).find(x => x.id === idRangiMiejscaDoDodania);
         if (aktualnaRanga === undefined) return [];
+        if(wartoscRangiMiejscaDoDodania === null){
+            ustawWartoscRangiMiejscaDoDodania(aktualnaRanga.rangi[0]?.nazwaRangi)
+            ustawWartoscLiczbowaRangiMiejscaDoDodania(aktualnaRanga.rangi[0]?.wartoscLiczbowa);
+        }
+        if(aktualnaRanga.rangi.length === 0){
+            ustawWartoscRangiMiejscaDoDodania(null);
+            ustawWartoscLiczbowaRangiMiejscaDoDodania(null);
+        }
         return aktualnaRanga.rangi;
-    },[rangiZBazy, idStatystykiRangiMiejscaDoDodania]);
+    },[wszystkieRangiZBazy, wartoscRangiMiejscaDoDodania, idRangiMiejscaDoDodania]);
 
-    // na samym początku, gdy się załaduje strona, wybieramy pierwsze rangi z listy
+    const czyZablokowaneDodanieMiejsca = useMemo(() => {
+        if(miejscaWDruzynie.length > 8) return true;
+        if(!typWymaganiaDoDodania) return false;
+        if(typWymaganiaDoDodania === "liczbowe") return (!idStatystykiMiejscaDoDodania || idStatystykiMiejscaDoDodania < 0 || wartoscStatystykiMiejscaDoDodania === null || wartoscStatystykiMiejscaDoDodania.length === 0);
+        if(typWymaganiaDoDodania === "ranga") return (!idRangiMiejscaDoDodania || idRangiMiejscaDoDodania < 0 || wartoscRangiMiejscaDoDodania === null);
+        return true; // jakby coś się spieprzyło z typem
+    },[idRangiMiejscaDoDodania, idStatystykiMiejscaDoDodania, miejscaWDruzynie.length, typWymaganiaDoDodania, wartoscRangiMiejscaDoDodania, wartoscStatystykiMiejscaDoDodania])
+
+    // na samym początku, gdy się załaduje strona, wybieramy pierwsze rangi z listy - wymagania drużyny
     useEffect(() => {
         if(rangiZBazy === null) return;
+
         const pierwszaRanga = rangiZBazy[0];
         if(pierwszaRanga === undefined) return;
 
-        ustawIdStatystykiRangiDoDodania(pierwszaRanga.id);
-        ustawNazweStatystykiRangiDoDodania(pierwszaRanga.nazwa)
-        ustawWartoscStatystykiDoDodania(pierwszaRanga.rangi[0]?.nazwaRangi)
-        ustawWartoscLiczbowaStatystykiDoDodania(pierwszaRanga.rangi[0]?.wartoscLiczbowa)
-
-        ustawIdStatystykiRangiMiejscaDoDodania(pierwszaRanga.id);
-        ustawNazweStatystykiRangiMiejscaDoDodania(pierwszaRanga.nazwa)
-        ustawWartoscStatystykiMiejscaDoDodania(pierwszaRanga.rangi[0]?.nazwaRangi)
-        ustawWartoscLiczbowaStatystykiMiejscaDoDodania(pierwszaRanga.rangi[0]?.wartoscLiczbowa)
+        ustawIdRangiDoDodania(pierwszaRanga.id);
+        ustawNazweRangiDoDodania(pierwszaRanga.nazwa)
+        ustawWartoscRangiDoDodania(pierwszaRanga.rangi[0]?.nazwaRangi)
+        ustawWartoscLiczbowaRangiDoDodania(pierwszaRanga.rangi[0]?.wartoscLiczbowa)
     }, [rangiZBazy]);
+
+    // na samym początku, gdy się załaduje strona, wybieramy pierwsze rangi z listy - wymaganie miejsca
+    useEffect(() => {
+        if(wszystkieRangiZBazy === null) return;
+
+        const pierwszaRangaMiejsca = wszystkieRangiZBazy[0];
+        if(pierwszaRangaMiejsca === undefined) return;
+
+        ustawIdRangiMiejscaDoDodania(pierwszaRangaMiejsca.id);
+        ustawWartoscRangiMiejscaDoDodania(pierwszaRangaMiejsca.rangi[0]?.nazwaRangi)
+        ustawWartoscLiczbowaRangiMiejscaDoDodania(pierwszaRangaMiejsca.rangi[0]?.wartoscLiczbowa)
+    }, [wszystkieRangiZBazy]);
+
+
+
 
     if(!uzytkownik || ladowanie) return <div className="flex flex-col justify-center items-center h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900">
@@ -606,9 +649,12 @@ export default function FormularzDruzynyZintegrowano({
                     <input
                         type="number"
                         className="border-2 border-gray-300 rounded-md p-2 ml-2"
-                        value={wartoscStatystykiDoDodania}
-                        onChange={(e) => ustawWartoscStatystykiDoDodania(e.target.value)}
-                        disabled={!idStatystykiRangiDoDodania || idStatystykiRangiDoDodania < 0}
+                        value={wartoscLiczbowaStatystykiDoDodania}
+                        onChange={(e) => {
+                            ustawWartoscStatystykiDoDodania(e.target.value.toString())
+                            ustawWartoscLiczbowaStatystykiDoDodania(e.target.value)
+                        }}
+                        disabled={!idStatystykiDoDodania || idStatystykiDoDodania < 0}
                     />
                 </label>
                 <button
@@ -630,14 +676,14 @@ export default function FormularzDruzynyZintegrowano({
                     <div className="flex gap-2">
                         <select
                             className="border-2 border-gray-300 rounded-md p-2"
-                            value = {idStatystykiRangiDoDodania ?? ""}
+                            value = {idRangiDoDodania ?? ""}
                             onChange={(e) => {
-                                if(e.target.value === "") ustawIdStatystykiRangiDoDodania(null);
+                                if(e.target.value === "") ustawIdRangiDoDodania(null);
                                 else {
                                     let id = parseInt(e.target.value);
                                     let statystyka = aktualnaListaRang.find(x => x.id === id);
-                                    ustawIdStatystykiRangiDoDodania(id)
-                                    ustawNazweStatystykiRangiDoDodania(statystyka.nazwa)
+                                    ustawIdRangiDoDodania(id)
+                                    ustawNazweRangiDoDodania(statystyka.nazwa)
                                 }
                             }}
                         >
@@ -649,21 +695,21 @@ export default function FormularzDruzynyZintegrowano({
                         </select>
                         <select
                             className="border-2 border-gray-300 rounded-md p-2"
-                            value={wartoscLiczbowaStatystykiRangiDoDodania ?? ""}
+                            value={wartoscLiczbowaRangiDoDodania ?? ""}
                             onChange={(e) => {
                                 // na wszelki wypadek
                                 if(e.target.value === "") {
-                                    ustawWartoscStatystykiRangiDoDodania(null);
-                                    ustawWartoscLiczbowaStatystykiRangiDoDodania(null);
+                                    ustawWartoscRangiDoDodania(null);
+                                    ustawWartoscLiczbowaRangiDoDodania(null);
                                 }
                                 else {
                                     let wartoscLiczbowa = parseInt(e.target.value);
                                     let ranga = aktualnaListaWartosciRang.find(x => x.wartoscLiczbowa === wartoscLiczbowa);
-                                    ustawWartoscStatystykiRangiDoDodania(ranga.nazwaRangi);
-                                    ustawWartoscLiczbowaStatystykiRangiDoDodania(wartoscLiczbowa);
+                                    ustawWartoscRangiDoDodania(ranga.nazwaRangi);
+                                    ustawWartoscLiczbowaRangiDoDodania(wartoscLiczbowa);
                                 }
                             }}
-                            disabled={idStatystykiRangiDoDodania === null || aktualnaListaWartosciRang.length === 0}
+                            disabled={idRangiDoDodania === null || aktualnaListaWartosciRang.length === 0}
                         >
                             {aktualnaListaWartosciRang.length === 0 && <option value="" key={-1}>Brak</option>}
                             {aktualnaListaWartosciRang.map((wartoscRangi) =>
@@ -679,24 +725,18 @@ export default function FormularzDruzynyZintegrowano({
                 <button
                     className="bg-green-900 text-white rounded-md px-5 py-3.5 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
                     onClick={() => {
-                        console.log("dodajemy rangę do wymagań drużynowych", {
-                            idStatystykiRangiDoDodania,
-                            nazwaStatystykiRangiDoDodania,
-                            wartoscStatystykiRangiDoDodania,
-                            wartoscLiczbowaStatystykiRangiDoDodania,
-                        })
                         ustawWymaganiaDruzynowe(prev => [...prev, {
-                            idStatystyki: idStatystykiRangiDoDodania,
-                            nazwa: nazwaStatystykiRangiDoDodania,
-                            wartosc: wartoscStatystykiRangiDoDodania,
-                            porownywalnaWartoscLiczbowa: wartoscLiczbowaStatystykiRangiDoDodania,
+                            idStatystyki: idRangiDoDodania,
+                            nazwa: nazwaRangiDoDodania,
+                            wartosc: wartoscRangiDoDodania,
+                            porownywalnaWartoscLiczbowa: wartoscLiczbowaRangiDoDodania,
                         }])
-                        ustawIdStatystykiRangiDoDodania(null);
-                        ustawNazweStatystykiRangiDoDodania(null);
-                        ustawWartoscStatystykiRangiDoDodania(null);
-                        ustawWartoscLiczbowaStatystykiRangiDoDodania(null);
+                        ustawIdRangiDoDodania(null);
+                        ustawNazweRangiDoDodania(null);
+                        ustawWartoscRangiDoDodania(null);
+                        ustawWartoscLiczbowaRangiDoDodania(null);
                     }}
-                    disabled={!idStatystykiRangiDoDodania || !wartoscStatystykiRangiDoDodania || !wartoscLiczbowaStatystykiRangiDoDodania || wartoscLiczbowaStatystykiRangiDoDodania < 0}
+                    disabled={!idRangiDoDodania || !wartoscRangiDoDodania || !wartoscLiczbowaRangiDoDodania || wartoscLiczbowaRangiDoDodania < 0}
                 >Dodaj</button>
             </div>
         </div>
@@ -731,8 +771,8 @@ export default function FormularzDruzynyZintegrowano({
                         }
                     </select>
                 </th>
-                <th className="border border-gray-600 text-center">brak</th>
-                <th className="border border-gray-600 text-center">brak</th>
+                <th className="border border-gray-600 text-center">-</th>
+                <th className="border border-gray-600 text-center">-</th>
                 <th className="text-gray-700 p-2">Ty - kapitan (zablokowane)</th>
             </tr>
             {/* tutaj mapujemy po miejscach w drużynie */}
@@ -740,9 +780,9 @@ export default function FormularzDruzynyZintegrowano({
                 miejscaWDruzynie.map((miejsce, index) =>
                     <>
                         <tr className="border border-gray-600 bg-amber-50" key = {index}>
-                            <th className="border border-gray-600 text-center">{miejsce.nazwaRoli.length === 0 ? "brak" : miejsce.nazwaRoli}</th>
-                            <th className="border border-gray-600 text-center">{miejsce.nazwaStatystyki.length === 0 ? "brak" : miejsce.nazwaStatystyki}</th>
-                            <th className="border border-gray-600 text-center">{miejsce.wartoscStatystyki.length === 0 ? "brak" : miejsce.wartoscStatystyki}</th>
+                            <th className="border border-gray-600 text-center">{!miejsce.nazwaRoli || miejsce.nazwaRoli.length === 0 ? "-" : miejsce.nazwaRoli}</th>
+                            <th className="border border-gray-600 text-center">{!miejsce.nazwaStatystyki || miejsce.nazwaStatystyki.length === 0 ? "-" : miejsce.nazwaStatystyki}</th>
+                            <th className="border border-gray-600 text-center">{!miejsce.wartoscStatystyki || miejsce.wartoscStatystyki.length === 0 ? "-" : miejsce.wartoscStatystyki}</th>
                             <th>
                                 <button
                                     className="bg-red-900 text-white rounded-md px-5 py-3.5 hover:bg-red-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
@@ -759,33 +799,164 @@ export default function FormularzDruzynyZintegrowano({
         </table>
         {/* dodawanie miejsca */}
         <div className="flex items-center justify-center gap-5">
-            <select
-                value={idRoliDoDodania ?? ""}
-                onChange={(e) => {
-                    if(e.target.value === "") ustawIdRoliDoDodania(null);
-                    else ustawIdRoliDoDodania(parseInt(e.target.value))
-                }}
-                disabled={role.length === 0}
-                className="border-2 border-gray-300 rounded-md p-2"
-            >
-                <option value = "" key = {-1}>Brak</option>
-                {
-                    role.map((rola) =>
-                        <option value={rola.id} key={rola.id}>{rola.nazwa}</option>
-                    )
-                }
-            </select>
+            {/* wybieramy rolę w drużynie miejsca */}
+            <label> Wybierz rolę: <br/>
+                <select
+                    value={idRoliDoDodania ?? ""}
+                    onChange={(e) => {
+                        if(e.target.value === "") ustawIdRoliDoDodania(null);
+                        else ustawIdRoliDoDodania(parseInt(e.target.value))
+                    }}
+                    disabled={role.length === 0}
+                    className="border-2 border-gray-300 rounded-md p-2"
+                >
+                    <option value = "" key = {-1}>Brak</option>
+                    {
+                        role.map((rola) =>
+                            <option value={rola.id} key={rola.id}>{rola.nazwa}</option>
+                        )
+                    }
+                </select>
+            </label>
+            <label>
+                Wybierz wymaganie: <br/>
+                <div className="flex flex-col gap-2">
+                    <label><input
+                    className="mx-2"
+                    type = "radio"
+                    name = "typWymagania"
+                    checked= {typWymaganiaDoDodania === null}
+                    onChange={() => ustawTypWymaganiaDoDodania(null)}/>Brak
+                    </label>
+                    <label><input
+                        className="mx-2"
+                        type = "radio"
+                        name = "typWymagania"
+                        checked= {typWymaganiaDoDodania === "liczbowe"}
+                        onChange={() => ustawTypWymaganiaDoDodania("liczbowe")}/>liczbowe
+                    </label>
+                    <label><input
+                        className="mx-2"
+                        type = "radio"
+                        name = "typWymagania"
+                        checked= {typWymaganiaDoDodania === "ranga"}
+                        onChange={() => ustawTypWymaganiaDoDodania("ranga")}/>Minimalna ranga
+                    </label>
+                </div>
+            </label>
+            {/* jeżeli wybrano wymaganie liczbowe */}
+            {typWymaganiaDoDodania === "liczbowe" &&
+                <div className="flex items-center justify-center gap-5">
+                    <select
+                        className="border-2 border-gray-300 rounded-md p-2"
+                        value = {idStatystykiMiejscaDoDodania ?? ""}
+                        onChange={(e) => {
+                            if(e.target.value === "") {
+                                ustawIdStatystykiMiejscaDoDodania(null);
+                            }
+                            else {
+                                ustawIdStatystykiMiejscaDoDodania(parseInt(e.target.value));
+                            }
+                        }}
+                    >
+                        {
+                            statystykiZBazy.map((statystyka) =>
+                                <option value={statystyka.id} key={statystyka.id}>{statystyka.nazwa}</option>)
+                        }
+                    </select>
+                    <input
+                        type="number"
+                        className="border-2 border-gray-300 rounded-md p-2 ml-2"
+                        value={wartoscStatystykiMiejscaDoDodania ?? 0}
+                        onChange={(e) => {
+                            ustawWartoscStatystykiMiejscaDoDodania(e.target.value.toString())
+                            ustawWartoscLiczbowaStatystykiMiejscaDoDodania(e.target.value)
+                        }}
+                        disabled={!idStatystykiMiejscaDoDodania || idStatystykiMiejscaDoDodania < 0}
+                    />
+                </div>
+            }
+            {typWymaganiaDoDodania === "ranga" &&
+                <div className="flex items-center justify-center gap-5">
+                    <select
+                        className="border-2 border-gray-300 rounded-md p-2"
+                        value = {idRangiMiejscaDoDodania ?? ""}
+                        onChange={(e) => {
+                            if(e.target.value === "") ustawIdRangiMiejscaDoDodania(null);
+                            else ustawIdRangiMiejscaDoDodania(parseInt(e.target.value))
+                        }}
+                    >
+                        {
+                            wszystkieRangiZBazy.map((ranga) =>
+                                <option value={ranga.id} key={ranga.id}>{ranga.nazwa}</option>)
+                        }
+                    </select>
+                    <select
+                        className="border-2 border-gray-300 rounded-md p-2"
+                        value={wartoscLiczbowaRangiMiejscaDoDodania ?? ""}
+                        onChange={(e) => {
+                            // na wszelki wypadek
+                            if(e.target.value === "") {
+                                ustawWartoscRangiMiejscaDoDodania(null);
+                                ustawWartoscLiczbowaRangiMiejscaDoDodania(null);
+                            }
+                            else {
+                                let wartoscLiczbowa = parseInt(e.target.value);
+                                let ranga = aktualnaListaWartosciRangMiejsca.find(x => x.wartoscLiczbowa === wartoscLiczbowa);
+                                ustawWartoscRangiMiejscaDoDodania(ranga.nazwaRangi);
+                                ustawWartoscLiczbowaRangiMiejscaDoDodania(wartoscLiczbowa);
+                            }
+                        }}
+                        disabled={idRangiMiejscaDoDodania === null || aktualnaListaWartosciRangMiejsca.length === 0}
+                    >
+                        {aktualnaListaWartosciRangMiejsca.length === 0 && <option value="" key={-1}>Brak</option>}
+                        {aktualnaListaWartosciRangMiejsca.map((wartoscRangi) =>
+                            <option
+                                key = {wartoscRangi.wartoscLiczbowa}
+                                value = {wartoscRangi.wartoscLiczbowa}
+                            >
+                                {wartoscRangi.nazwaRangi}
+                            </option>)}
+                    </select>
+                </div>
+            }
             <button
                 className={ miejscaWDruzynie.length > 8
                     ? "zablokowany-przycisk"
                     : "p-2 bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600"}
                 onClick={() => {
-                    let miejsceDoDodania;
-                    if(idRoliDoDodania === null || idRoliDoDodania === "") miejsceDoDodania = {idRoli: null, nazwaRoli: ""};
-                    else miejsceDoDodania = {idRoli: idRoliDoDodania, nazwaRoli: role.find(r => r.id === idRoliDoDodania).nazwa};
-                    ustawMiejscaWDruzynie(prev => [...prev, miejsceDoDodania]);
+                    // {int? idRoli, string? nazwaRoli,
+                    // string? nazwaStatystyki, int? idStatystyki, string? wartoscStatystyki, int? porownywalnaWartoscLiczbowa}
+                    let idRoli = idRoliDoDodania < 0 ? null : idRoliDoDodania;
+                    let nazwaRoli = !idRoli ? null : role.find(x => x.id === idRoliDoDodania)?.nazwa;
+                    let idStatystyki = null;
+                    let nazwaStatystyki = null;
+                    let wartoscStatystyki = null;
+                    let porownywalnaWartoscLiczbowa = null;
+                    if(typWymaganiaDoDodania === "liczbowe") {
+                        idStatystyki = idStatystykiMiejscaDoDodania < 0 ? null : idStatystykiMiejscaDoDodania; // -1 traktujemy jak null
+                        nazwaStatystyki = !idStatystyki ? null : statystykiZBazy.find(x => x.id === idStatystyki)?.nazwa;
+                        wartoscStatystyki = !idStatystyki ? null : wartoscStatystykiMiejscaDoDodania;
+                        porownywalnaWartoscLiczbowa = !idStatystyki ? null : wartoscLiczbowaStatystykiMiejscaDoDodania;
+
+                    }else if(typWymaganiaDoDodania === "ranga") {
+                         idStatystyki = idRangiMiejscaDoDodania < 0 ? null : idRangiMiejscaDoDodania; // -1 traktujemy jak null
+                         nazwaStatystyki = !idStatystyki ? null : wszystkieRangiZBazy.find(x => x.id === idStatystyki)?.nazwa;
+                         wartoscStatystyki = !idStatystyki ? null : wartoscRangiMiejscaDoDodania;
+                         porownywalnaWartoscLiczbowa = !idStatystyki ? null : wartoscLiczbowaRangiMiejscaDoDodania;
+                    }
+                    // tutaj wypisujemy to co dodajemy bo coś nie widać tego
+                    console.log(idRoli, nazwaRoli, idStatystyki, nazwaStatystyki, wartoscStatystyki, porownywalnaWartoscLiczbowa);
+                    ustawMiejscaWDruzynie(prev => [...prev, {
+                        idRoli: idRoli,
+                        nazwaRoli: nazwaRoli,
+                        idStatystyki: idStatystyki,
+                        nazwaStatystyki: nazwaStatystyki,
+                        wartoscStatystyki: wartoscStatystyki,
+                        porownywalnaWartoscLiczbowa: porownywalnaWartoscLiczbowa
+                    }])
                 }}
-                disabled={miejscaWDruzynie.length > 8}
+                disabled={czyZablokowaneDodanieMiejsca}
             >Dodaj</button>
         </div>
         <button
