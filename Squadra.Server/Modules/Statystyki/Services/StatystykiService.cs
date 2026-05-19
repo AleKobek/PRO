@@ -232,4 +232,26 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         var role = await statystykiRepository.GetRole();
         return ServiceResult<ICollection<RolaDto>>.Ok(role.Select(x => new RolaDto(x.Id, x.Nazwa, x.IdGry)).ToList());
     }
+
+    public async Task<ServiceResult<ICollection<RangiStatystykiDto>>> GetRangiGry(int idGry)
+    {
+        if (idGry <= 0)
+        {
+            return ServiceResult<ICollection<RangiStatystykiDto>>.BadRequest(
+                new ErrorItem("Nieprawidłowy identyfikator gry: " + idGry));
+        }
+
+        try
+        {
+            var rangi = await statystykiRepository.GetRangiGry(idGry);
+            return ServiceResult<ICollection<RangiStatystykiDto>>.Ok(rangi.Select(x =>
+                    new RangiStatystykiDto(x.Id, x.Nazwa,
+                        x.Rangi.Select(r => new RangaWDtoRangiStatystykiDto(r.NazwaRangi, r.WartoscLiczbowa)).ToList()))
+                .ToList());
+        }
+        catch (NieZnalezionoWBazieException ex)
+        {
+            return ServiceResult<ICollection<RangiStatystykiDto>>.NotFound(new ErrorItem(ex.Message));
+        }
+    }
 }
