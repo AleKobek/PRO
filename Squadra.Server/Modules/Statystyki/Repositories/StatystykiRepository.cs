@@ -284,4 +284,11 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
     {
         return  await context.Rola.ToListAsync();
     }
+    
+    public async Task<Rola> GetRola(int idRoli)
+    {
+        var rola = await context.Rola.FindAsync(idRoli);
+        if (rola == null) throw new NieZnalezionoWBazieException("Nie znaleziono roli o id " + idRoli);
+        return rola;
+    }
 }

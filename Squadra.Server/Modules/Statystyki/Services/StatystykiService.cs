@@ -255,4 +255,22 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
             return ServiceResult<ICollection<RangiStatystykiDto>>.NotFound(new ErrorItem(ex.Message));
         }
     }
+    
+    public async Task<ServiceResult<RolaDto>> GetRola(int idRoli)
+    {
+        if (idRoli <= 0)
+        {
+            return ServiceResult<RolaDto>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator roli: " + idRoli));
+        }
+        
+        try
+        {
+            var rola = await statystykiRepository.GetRola(idRoli);
+            return ServiceResult<RolaDto>.Ok(new RolaDto(rola.Id, rola.Nazwa, rola.IdGry));
+        }
+        catch (NieZnalezionoWBazieException ex)
+        {
+            return ServiceResult<RolaDto>.NotFound(new ErrorItem(ex.Message));
+        }
+    }
 }

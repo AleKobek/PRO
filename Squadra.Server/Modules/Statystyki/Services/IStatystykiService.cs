@@ -20,4 +20,5 @@ public interface IStatystykiService
     public Task<ServiceResult<StatystykiDoFormularzaDto>> GetStatystykiDoFormularza(int idGry, int idUzytkownika);
     public Task<ServiceResult<ICollection<RolaDto>>> GetRole();
     public Task<ServiceResult<ICollection<RangiStatystykiDto>>> GetRangiGry(int idGry);
+    public Task<ServiceResult<RolaDto>> GetRola(int idRoli);
 }
