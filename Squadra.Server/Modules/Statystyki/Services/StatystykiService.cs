@@ -276,9 +276,10 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
     
     public ServiceResult<ICollection<int>> FiltrujNieistniejaceStatystyki(ICollection<int> idStatystyk)
     {
-        if (idStatystyk.Any(id => id <= 0))
+        var nieprawidlowaStatystyka = idStatystyk.FirstOrDefault(id => id <= 0);
+        if (nieprawidlowaStatystyka != 0)
         {
-            return ServiceResult<ICollection<int>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki w kolekcji."));
+            return ServiceResult<ICollection<int>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki w kolekcji: " + nieprawidlowaStatystyka));
         }
         
         var result =  statystykiRepository.FiltrujNieistniejaceStatystyki(idStatystyk);
