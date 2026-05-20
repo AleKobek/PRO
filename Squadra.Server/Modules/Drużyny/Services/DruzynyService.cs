@@ -296,4 +296,88 @@ public class DruzynyService(
             )
         );
     }
+
+    public async Task<ServiceResult<bool>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
+    {
+        try
+        {
+            // sprawdzamy poprawność danych
+            var graRes = await wspieranaGraService.GetWspieranaGra(druzynaReq.IdGry);
+            if (!graRes.Succeeded) return ServiceResult<bool>.Fail(graRes.StatusCode, graRes.Errors);
+
+            if (druzynaReq.IdPlatformy != null)
+            {
+                var platformaRes =
+                    await platformaService.GetPlatforma(druzynaReq.IdPlatformy ??
+                                                        0); // już odfiltrowaliśmy drużyny bez IdPlatformy, więc możemy bezpiecznie użyć ?? 0
+                if (!platformaRes.Succeeded)
+                    return ServiceResult<bool>.Fail(platformaRes.StatusCode, platformaRes.Errors);
+            }
+
+            if (druzynaReq.IdWymaganegoJezyka != null)
+            {
+                var jezykRes = await jezykService.GetJezyk(druzynaReq.IdWymaganegoJezyka ?? 0);
+                if (!jezykRes.Succeeded) return ServiceResult<bool>.Fail(jezykRes.StatusCode, jezykRes.Errors);
+            }
+
+            if (druzynaReq.IdWymaganegoStopniaBieglosciJezyka != null)
+            {
+                var stopienRes =
+                    await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(
+                        druzynaReq.IdWymaganegoStopniaBieglosciJezyka ?? 0);
+                if (!stopienRes.Succeeded) return ServiceResult<bool>.Fail(stopienRes.StatusCode, stopienRes.Errors);
+            }
+
+            if (druzynaReq.IdRoliKapitana != null)
+            {
+                var rolaRes = await statystykiService.GetRola(druzynaReq.IdRoliKapitana ?? 0);
+                if (!rolaRes.Succeeded) return ServiceResult<bool>.Fail(rolaRes.StatusCode, rolaRes.Errors);
+            }
+
+            if (druzynaReq.WymaganeStatystyki != null)
+            {
+                var nieprawidloweStatystykiRes =
+                    statystykiService.FiltrujNieistniejaceStatystyki(druzynaReq.WymaganeStatystyki
+                        .Select(x => x.IdStatystyki).ToList());
+                if (!nieprawidloweStatystykiRes.Succeeded)
+                    return ServiceResult<bool>.Fail(nieprawidloweStatystykiRes.StatusCode,
+                        nieprawidloweStatystykiRes.Errors);
+                var nieprawidloweStatystyki = nieprawidloweStatystykiRes.Value ?? [];
+                if (nieprawidloweStatystyki.Count > 0)
+                {
+                    var errorMessage =
+                        $"Podane statystyki o id: [{string.Join(", ", nieprawidloweStatystyki)}], które zostały podane w wymaganiach drużyny, nie istnieją w bazie danych.";
+                    return ServiceResult<bool>.BadRequest(new ErrorItem(errorMessage));
+                }
+            }
+
+            var wymaganeStatystykiMiejscWDruzynie = druzynaReq.MiejscaWDruzynie.Select(x => x.WymaganaStatystyka)
+                .Where(x => x != null).Select(x => x!.IdStatystyki).ToList();
+            if (wymaganeStatystykiMiejscWDruzynie.Count > 0)
+            {
+                var nieprawidloweStatystykiRes =
+                    statystykiService.FiltrujNieistniejaceStatystyki(wymaganeStatystykiMiejscWDruzynie);
+                if (!nieprawidloweStatystykiRes.Succeeded)
+                    return ServiceResult<bool>.Fail(nieprawidloweStatystykiRes.StatusCode,
+                        nieprawidloweStatystykiRes.Errors);
+                var nieprawidloweStatystyki = nieprawidloweStatystykiRes.Value ?? [];
+                if (nieprawidloweStatystyki.Count > 0)
+                {
+                    var errorMessage =
+                        $"Podane statystyki w miejscach w drużynie o id statystyk: [{string.Join(", ", nieprawidloweStatystyki)}] nie istnieją w bazie danych.";
+                    return ServiceResult<bool>.BadRequest(new ErrorItem(errorMessage));
+                }
+            }
+
+            // statystyki sprawdzone, tworzymy drużynę
+            var stworzDruzyneRes = await druzynyRepository.StworzDruzyne(druzynaReq, idKapitana);
+            if (!stworzDruzyneRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się stworzyć drużyny")]);
+            
+            return ServiceResult<bool>.Ok(true);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
 }
