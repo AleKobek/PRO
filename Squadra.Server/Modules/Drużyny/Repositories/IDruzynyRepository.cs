@@ -12,4 +12,5 @@ public interface IDruzynyRepository
     public Task<NastrojRozgrywki> GetNastrojRozgrywki(int idNastroju);
     public Task<bool> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana);
     public Task<bool> UsunDruzyne(int idDruzyny);
+    public Task<bool> WyrzucUzytkownikaZeWszystkichDruzyn(int idUzytkownika);
 }

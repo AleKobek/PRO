@@ -172,4 +172,13 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
             throw;
         }
     }
+    
+    public async Task<bool> WyrzucUzytkownikaZeWszystkichDruzyn(int idUzytkownika)
+    {
+        var miejscaWDruzynie = await context.MiejsceWDruzynie.Where(m => m.UzytkownikId == idUzytkownika).ToListAsync();
+        var zaktualiZowaneMiejsca = miejscaWDruzynie.Select(x => { x.UzytkownikId = null; return x;}).ToList();
+        context.MiejsceWDruzynie.UpdateRange(zaktualiZowaneMiejsca);
+        await context.SaveChangesAsync();
+        return true;
+    }
 }
