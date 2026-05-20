@@ -7,7 +7,7 @@ public record CreateDruzynaReqDto(
     int IdGry,
     bool CzyPubliczna,
     string? Opis,
-    int? IdNastrojuRozgrywki,
+    int IdNastrojuRozgrywki,
     int? IdWymaganegoJezyka,
     int? IdWymaganegoStopniaBieglosciJezyka,
     bool Czy18Plus,
