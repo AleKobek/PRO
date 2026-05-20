@@ -102,6 +102,7 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
                 var noweMiejsceWDruzynie = new MiejsceWDruzynie
                 {
                     DruzynaId = idDruzyny,
+                    UzytkownikId = idKapitana,
                     RolaId = miejsce.IdRoli,
                     StatystykaId = miejsce.WymaganaStatystyka?.IdStatystyki,
                     WartoscStatystyki = miejsce.WymaganaStatystyka?.Wartosc,
