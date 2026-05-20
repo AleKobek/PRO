@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Models;
 using Squadra.Server.Modules.Statystyki.Models;
 
@@ -50,6 +51,73 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
         if (nastroj == null) throw new NieZnalezionoWBazieException("Nie znaleziono nastroju o id " + idNastroju);
         return nastroj;
     }
-    
-    
+
+    // w serwisie trzeba będzie posprawdzać id wszystkich elementów czy istnieje
+    public async Task<bool> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
+    {
+        var nastrojRozgrywki = await context.NastrojRozgrywki.FindAsync(druzynaReq.IdNastrojuRozgrywki);
+        if (nastrojRozgrywki == null) throw new NieZnalezionoWBazieException("Nie znaleziono nastroju o id " + druzynaReq.IdNastrojuRozgrywki);
+        
+        var transakcja = await context.Database.BeginTransactionAsync();
+        try
+        {
+            var czyMaWymagania = druzynaReq.WymaganeStatystyki is { Count: > 0 } 
+                                 || druzynaReq.MiejscaWDruzynie
+                                     .Any(x => x.WymaganaStatystyka is not null);
+            
+            var druzyna = new Druzyna
+            {
+                Nazwa = druzynaReq.Nazwa,
+                GraId = druzynaReq.IdGry,
+                KapitanId = idKapitana,
+                CzyPubliczna = druzynaReq.CzyPubliczna,
+                Opis = druzynaReq.Opis,
+                NastrojRozgrywkiId = druzynaReq.IdNastrojuRozgrywki,
+                WymaganyJezykId = druzynaReq.IdWymaganegoJezyka,
+                WymaganyStopienBieglosciJezykaId = druzynaReq.IdWymaganegoStopniaBieglosciJezyka,
+                Czy18Plus = druzynaReq.Czy18Plus,
+                PlatformaId = druzynaReq.IdPlatformy,
+                CzyMaWymagania = czyMaWymagania
+            };
+            // dodajemy drużynę i bierzemy jej id, żeby potem dodać wymagania i miejsca
+            var dodanaDruzyna = context.Druzyna.Add(druzyna);
+            await context.SaveChangesAsync();
+            var idDruzyny = dodanaDruzyna.Entity.Id;
+            if(druzynaReq.WymaganeStatystyki != null && druzynaReq.WymaganeStatystyki.Count > 0)
+            {
+                foreach (var wymaganaStatystyka in druzynaReq.WymaganeStatystyki)
+                {
+                    var nowaWymaganaStatystykaDruzyny = new WymaganaStatystykaDruzyny
+                    {
+                        DruzynaId = idDruzyny,
+                        StatystykaId = wymaganaStatystyka.IdStatystyki,
+                        Wartosc = wymaganaStatystyka.Wartosc,
+                        PorownywalnaWartoscLiczbowa = wymaganaStatystyka.PorownywalnaWartoscLiczbowa
+                    };
+                    context.WymaganaStatystykaDruzyny.Add(nowaWymaganaStatystykaDruzyny);
+                }
+            }
+            foreach (var miejsce in druzynaReq.MiejscaWDruzynie)
+            {
+                var noweMiejsceWDruzynie = new MiejsceWDruzynie
+                {
+                    DruzynaId = idDruzyny,
+                    RolaId = miejsce.IdRoli,
+                    StatystykaId = miejsce.WymaganaStatystyka?.IdStatystyki,
+                    WartoscStatystyki = miejsce.WymaganaStatystyka?.Wartosc,
+                    WartoscLiczbowaStatystyki = miejsce.WymaganaStatystyka?.PorownywalnaWartoscLiczbowa
+                };
+                context.MiejsceWDruzynie.Add(noweMiejsceWDruzynie);
+            }
+            await context.SaveChangesAsync();
+            await transakcja.CommitAsync();
+            return true;
+        }
+        catch (Exception e)
+        {
+            await transakcja.RollbackAsync();
+            Console.WriteLine("Wystąpił błąd podczas tworzenia drużyny: " + e.Message);
+            return false;
+        }
+    }
 }
