@@ -22,4 +22,5 @@ public interface IStatystykiRepository
     public Task<ICollection<Rola>> GetRole();
     public Task<Rola> GetRola(int idRoli);
     public ICollection<int> FiltrujNieistniejaceStatystyki(ICollection<int> idStatystyk);
+    public Task<bool> UsunWymaganeStatystykiDruzyny(int idDruzyny);
 }

@@ -296,4 +296,14 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
     {
         return idStatystyk.Where(x => !context.Statystyka.Any(s => s.Id == x)).ToList();
     }
+    
+    public async Task<bool> UsunWymaganeStatystykiDruzyny(int idDruzyny)
+    {
+        var druzyna = await context.Druzyna.FindAsync(idDruzyny);
+        if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
+        var wymaganeStatystykiDruzyny = context.WymaganaStatystykaDruzyny.Where(w => w.DruzynaId == idDruzyny);
+        context.WymaganaStatystykaDruzyny.RemoveRange(wymaganeStatystykiDruzyny);
+        await context.SaveChangesAsync();
+        return true;
+    }
 }
