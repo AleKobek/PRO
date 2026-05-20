@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Drużyny.DTO;
@@ -130,7 +131,15 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
     
     public async Task<bool> UsunDruzyne(int idDruzyny)
     {
-        var transakcja = await context.Database.BeginTransactionAsync();
+        // jeśli istnieje zewnętrzna transakcja, użyjemy jej; w przeciwnym razie utworzymy nową
+        IDbContextTransaction? transakcja = context.Database.CurrentTransaction;
+        var createdTransaction = false;
+        if (transakcja == null)
+        {
+            transakcja = await context.Database.BeginTransactionAsync();
+            createdTransaction = true;
+        }
+
         var druzyna = await context.Druzyna.FindAsync(idDruzyny);
         if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
         try
@@ -143,13 +152,24 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
             // usuwamy drużynę
             context.Druzyna.Remove(druzyna);
             await context.SaveChangesAsync();
-            await transakcja.CommitAsync();
+
+            if (createdTransaction)
+            {
+                await transakcja.CommitAsync();
+            }
+
             return true;
-        }catch (Exception e)
+        }
+        catch (Exception e)
         {
-            await transakcja.RollbackAsync();
-            Console.WriteLine("Wystąpił błąd podczas usuwania drużyny: " + e.Message);
-            return false;
+            if (createdTransaction)
+            {
+                await transakcja.RollbackAsync();
+                Console.WriteLine("Wystąpił błąd podczas usuwania drużyny: " + e.Message);
+                return false;
+            }
+            // jeśli nie utworzyliśmy transakcji tutaj, rzucamy wyjątek dalej aby zewnętrzna transakcja mogła go obsłużyć/rollbackować
+            throw;
         }
     }
 }
