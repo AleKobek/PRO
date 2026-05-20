@@ -11,4 +11,5 @@ public interface IDruzynyRepository
     public Task<ICollection<NastrojRozgrywki>> GetNastrojeRozgrywki();
     public Task<NastrojRozgrywki> GetNastrojRozgrywki(int idNastroju);
     public Task<bool> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana);
+    public Task<bool> UsunDruzyne(int idDruzyny);
 }

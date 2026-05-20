@@ -4,10 +4,11 @@ using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Models;
 using Squadra.Server.Modules.Statystyki.Models;
+using Squadra.Server.Modules.Statystyki.Repositories;
 
 namespace Squadra.Server.Modules.Drużyny.Repositories;
 
-public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
+public class DruzynyRepository(AppDbContext context, IStatystykiRepository statystykiRepository) : IDruzynyRepository
 {
     
     public async Task<Druzyna> GetDruzyna(int idDruzyny)
@@ -123,6 +124,31 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
         {
             await transakcja.RollbackAsync();
             Console.WriteLine("Wystąpił błąd podczas tworzenia drużyny: " + e.Message);
+            return false;
+        }
+    }
+    
+    public async Task<bool> UsunDruzyne(int idDruzyny)
+    {
+        var transakcja = await context.Database.BeginTransactionAsync();
+        var druzyna = await context.Druzyna.FindAsync(idDruzyny);
+        if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
+        try
+        {
+            // usuwamy wymagane statystyki drużyny
+            await statystykiRepository.UsunWymaganeStatystykiDruzyny(idDruzyny);
+            // usuwamy wszystkie miejsca w drużynie
+            var miejscaWDruzynie = await context.MiejsceWDruzynie.Where(m => m.DruzynaId == idDruzyny).ToListAsync();
+            context.MiejsceWDruzynie.RemoveRange(miejscaWDruzynie);
+            // usuwamy drużynę
+            context.Druzyna.Remove(druzyna);
+            await context.SaveChangesAsync();
+            await transakcja.CommitAsync();
+            return true;
+        }catch (Exception e)
+        {
+            await transakcja.RollbackAsync();
+            Console.WriteLine("Wystąpił błąd podczas usuwania drużyny: " + e.Message);
             return false;
         }
     }
