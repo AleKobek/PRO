@@ -21,4 +21,5 @@ public interface IStatystykiService
     public Task<ServiceResult<ICollection<RolaDto>>> GetRole();
     public Task<ServiceResult<ICollection<RangiStatystykiDto>>> GetRangiGry(int idGry);
     public Task<ServiceResult<RolaDto>> GetRola(int idRoli);
+    public ServiceResult<ICollection<int>> FiltrujNieistniejaceStatystyki(ICollection<int> idStatystyk);
 }

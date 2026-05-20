@@ -273,4 +273,15 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
             return ServiceResult<RolaDto>.NotFound(new ErrorItem(ex.Message));
         }
     }
+    
+    public ServiceResult<ICollection<int>> FiltrujNieistniejaceStatystyki(ICollection<int> idStatystyk)
+    {
+        if (idStatystyk.Any(id => id <= 0))
+        {
+            return ServiceResult<ICollection<int>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki w kolekcji."));
+        }
+        
+        var result =  statystykiRepository.FiltrujNieistniejaceStatystyki(idStatystyk);
+        return ServiceResult<ICollection<int>>.Ok(result);
+    }
 }

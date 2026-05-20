@@ -291,4 +291,9 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         if (rola == null) throw new NieZnalezionoWBazieException("Nie znaleziono roli o id " + idRoli);
         return rola;
     }
+
+    public ICollection<int> FiltrujNieistniejaceStatystyki(ICollection<int> idStatystyk)
+    {
+        return idStatystyk.Where(x => !context.Statystyka.Any(s => s.Id == x)).ToList();
+    }
 }
