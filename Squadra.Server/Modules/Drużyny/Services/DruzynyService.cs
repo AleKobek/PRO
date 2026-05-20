@@ -380,4 +380,24 @@ public class DruzynyService(
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
+    
+    public async Task<ServiceResult<bool>> UsunDruzyne(int idDruzyny, int idUsuwajacegoUzytkownika)
+    {
+        try
+        {
+            if (idDruzyny <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id drużyny: " + idDruzyny)); 
+            
+            var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
+            if (druzyna.KapitanId != idUsuwajacegoUzytkownika) return ServiceResult<bool>.Forbidden(new ErrorItem("Tylko kapitan drużyny może ją usunąć"));
+            
+            var usunDruzyneRes = await druzynyRepository.UsunDruzyne(idDruzyny);
+            if (!usunDruzyneRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć drużyny")]);
+            
+            return ServiceResult<bool>.Ok(true);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
 }
