@@ -1,4 +1,5 @@
 ﻿using Squadra.Server.Context;
+using Squadra.Server.Modules.Drużyny.Services;
 using Squadra.Server.Modules.IntegracjeZewnetrzne.Services;
 using Squadra.Server.Modules.Powiadomienia.Services;
 using Squadra.Server.Modules.Shared.Services;
@@ -11,6 +12,7 @@ public class UsunKontoService (
     IIntegracjeZewnetrzneService integracjeZewnetrzneService,
     IPowiadomienieService powiadomienieService,
     IZnajomiService znajomiService,
+    IDruzynyService druzynyService,
     AppDbContext context) : IUsunKontoService
 {
     public async Task<ServiceResult<bool>> UsunKonto(int id)
@@ -38,6 +40,22 @@ public class UsunKontoService (
             {
                 await transakcja.RollbackAsync();
                 return integracjeRes;
+            }
+            
+            // wyrzucamy go ze wszystkich drużyn
+            var wyrzucanieRes = await druzynyService.WyrzucUzytkownikaZeWszystkichDruzyn(id);
+            if(!wyrzucanieRes.Succeeded)
+            {
+                await transakcja.RollbackAsync();
+                return wyrzucanieRes;
+            }
+            
+            // usuwamy wszystkie drużyny, których jest kapitanem
+            var usuwanieRes = await druzynyService.UsunWszystkieDruzynyUzytkownika(id);
+            if(!usuwanieRes.Succeeded)
+            {
+                await transakcja.RollbackAsync();
+                return usuwanieRes;
             }
             
             var uzytkownikRes = await uzytkownikService.DeleteUzytkownik(id);
