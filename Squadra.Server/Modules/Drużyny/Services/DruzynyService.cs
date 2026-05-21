@@ -401,6 +401,27 @@ public class DruzynyService(
         }
     }
     
+    public async Task<ServiceResult<bool>> OpuśćDruzyne(int idDruzyny, int idUzytkownika)
+    {
+        try
+        {
+            if (idDruzyny <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id drużyny: " + idDruzyny)); 
+            if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
+            
+            var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
+            if (druzyna.KapitanId == idUzytkownika) return ServiceResult<bool>.Forbidden(new ErrorItem("Kapitan drużyny nie może jej opuścić, musi ją usunąć"));
+            
+            var opuscDruzyneRes = await druzynyRepository.OpuscDruzyne(idDruzyny, idUzytkownika);
+            if (!opuscDruzyneRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się opuścić drużyny")]);
+            
+            return ServiceResult<bool>.Ok(true);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
     public async Task<ServiceResult<bool>> WyrzucUzytkownikaZeWszystkichDruzyn(int idUzytkownika)
     {
         if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 

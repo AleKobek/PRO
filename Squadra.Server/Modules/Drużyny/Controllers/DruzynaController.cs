@@ -130,6 +130,28 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
         };
     }
     
+    [HttpPut("opuszczanie/{idDruzyny:int}")]
+    [EndpointSummary("Pozwala użytkownikowi opuścić drużynę, do której należy.")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult> OpuśćDruzyne(int idDruzyny)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.OpuśćDruzyne(idDruzyny, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
     [HttpDelete("{idDruzyny:int}")]
     [EndpointSummary("Usuwa drużynę")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -151,5 +173,5 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
             404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
-     }
+    }
 }
