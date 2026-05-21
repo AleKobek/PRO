@@ -2,6 +2,7 @@
 using Squadra.Server.Modules.BibliotekaGier.Services;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Repositories;
+using Squadra.Server.Modules.Platformy;
 using Squadra.Server.Modules.Platformy.DTO;
 using Squadra.Server.Modules.Platformy.Services;
 using Squadra.Server.Modules.Profile.DTO.Profil;
@@ -439,5 +440,20 @@ public class DruzynyService(
         var result = await druzynyRepository.UsunWszystkieDruzynyUzytkownika(idUzytkownika);
         if (!result) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć wszystkich drużyn użytkownika")]);
         return  ServiceResult<bool>.NoContent(true);
+    }
+
+    public async Task<ServiceResult<bool>> UpdateDruzyna(int idDruzyny, int idUzytkownika, DruzynaUpdateDto druzynaReq)
+    {
+        if(idDruzyny <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Id drużyny musi być większe od 0"));
+        try
+        {
+            var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
+            if(druzyna.KapitanId != idUzytkownika) return ServiceResult<bool>.Forbidden(new ErrorItem("Tylko kapitan drużyny może ją edytować"));
+            return ServiceResult<bool>.NoContent(await druzynyRepository.UpdateDruzyna(idDruzyny, druzynaReq));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
     }
 }

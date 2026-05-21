@@ -4,6 +4,7 @@ using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Models;
+using Squadra.Server.Modules.Platformy;
 using Squadra.Server.Modules.Statystyki.Models;
 using Squadra.Server.Modules.Statystyki.Repositories;
 
@@ -199,6 +200,24 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
             var czyUsunieto = await UsunDruzyne(druzyna.Id);
             if (!czyUsunieto) return false;
         }
+        return true;
+    }
+
+    public async Task<bool> UpdateDruzyna(int idDruzyny, DruzynaUpdateDto druzynaReq)
+    {
+        var druzynaDoZmiany = await context.Druzyna.FindAsync(idDruzyny);
+        if (druzynaDoZmiany == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
+
+        druzynaDoZmiany.Nazwa = druzynaReq.Nazwa;
+        druzynaDoZmiany.CzyPubliczna = druzynaReq.CzyPubliczna;
+        druzynaDoZmiany.Opis = druzynaReq.Opis;
+        druzynaDoZmiany.NastrojRozgrywkiId = druzynaReq.IdNastrojuRozgrywki;
+        druzynaDoZmiany.WymaganyJezykId = druzynaReq.IdWymaganegoJezyka;
+        druzynaDoZmiany.WymaganyStopienBieglosciJezykaId = druzynaReq.IdWymaganegoStopniaBieglosciJezyka;
+        druzynaDoZmiany.Czy18Plus = druzynaReq.Czy18Plus;
+
+        await context.SaveChangesAsync();
+
         return true;
     }
 }

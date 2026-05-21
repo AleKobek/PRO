@@ -1,5 +1,6 @@
 ﻿using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Models;
+using Squadra.Server.Modules.Platformy;
 
 namespace Squadra.Server.Modules.Drużyny.Repositories;
 
@@ -15,4 +16,5 @@ public interface IDruzynyRepository
     public Task<bool> OpuscDruzyne(int idDruzyny, int idUzytkownika);
     public Task<bool> WyrzucUzytkownikaZeWszystkichDruzyn(int idUzytkownika);
     public Task<bool> UsunWszystkieDruzynyUzytkownika(int idUzytkownika);
+    public Task<bool> UpdateDruzyna(int idDruzyny, DruzynaUpdateDto druzynaReq);
 }

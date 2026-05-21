@@ -1,4 +1,5 @@
 ﻿using Squadra.Server.Modules.Drużyny.DTO;
+using Squadra.Server.Modules.Platformy;
 using Squadra.Server.Modules.Shared.Services;
 
 namespace Squadra.Server.Modules.Drużyny.Services;
@@ -16,4 +17,5 @@ public interface IDruzynyService
     public Task<ServiceResult<bool>> OpuscDruzyne(int idDruzyny, int idUzytkownika);
     public Task<ServiceResult<bool>> WyrzucUzytkownikaZeWszystkichDruzyn(int idUzytkownika);
     public Task<ServiceResult<bool>> UsunWszystkieDruzynyUzytkownika(int idUzytkownika);
+    public Task<ServiceResult<bool>> UpdateDruzyna(int idDruzyny, int idUzytkownika, DruzynaUpdateDto druzynaReq);
 }
