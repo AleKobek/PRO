@@ -3,7 +3,6 @@
 namespace Squadra.Server.Modules.Drużyny.DTO;
 
 public record DruzynaSzczegolyDto(
-    string Nazwa,
     string TytulGry,
     string? Opis,
     string? NastrojRozgrywki,

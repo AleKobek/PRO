@@ -145,7 +145,6 @@ public class DruzynyService(
        
         // składamy wszystko do kupy i zwracamy szczegóły drużyny
         return ServiceResult<DruzynaSzczegolyDto>.Ok(new DruzynaSzczegolyDto(
-            druzyna.Nazwa,
             graRes.Value.Tytul, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             druzyna.Opis,
             nastrojRozgrywki.Nazwa,
