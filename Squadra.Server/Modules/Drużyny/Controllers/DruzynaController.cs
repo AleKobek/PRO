@@ -136,12 +136,12 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    public async Task<ActionResult> OpuśćDruzyne(int idDruzyny)
+    public async Task<ActionResult> OpuscDruzyne(int idDruzyny)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
         
-        var result = await druzynyService.OpuśćDruzyne(idDruzyny, uzytkownik.Id);
+        var result = await druzynyService.OpuscDruzyne(idDruzyny, uzytkownik.Id);
         return result.StatusCode switch
         {
             204 => NoContent(),

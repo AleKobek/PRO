@@ -401,7 +401,7 @@ public class DruzynyService(
         }
     }
     
-    public async Task<ServiceResult<bool>> OpuśćDruzyne(int idDruzyny, int idUzytkownika)
+    public async Task<ServiceResult<bool>> OpuscDruzyne(int idDruzyny, int idUzytkownika)
     {
         try
         {
