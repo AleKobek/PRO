@@ -431,4 +431,13 @@ public class DruzynyService(
         
         return ServiceResult<bool>.Ok(true);
     }
+    
+    public async Task<ServiceResult<bool>> UsunWszystkieDruzynyUzytkownika(int idUzytkownika)
+    {
+        if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
+        
+        var result = await druzynyRepository.UsunWszystkieDruzynyUzytkownika(idUzytkownika);
+        if (!result) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć wszystkich drużyn użytkownika")]);
+        return  ServiceResult<bool>.NoContent(true);
+    }
 }

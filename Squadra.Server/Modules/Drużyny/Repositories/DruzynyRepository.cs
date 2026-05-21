@@ -190,4 +190,15 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         await context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> UsunWszystkieDruzynyUzytkownika(int idUzytkownika)
+    {
+        var druzyny = await context.Druzyna.Where(d => d.KapitanId == idUzytkownika).ToListAsync();
+        foreach (var druzyna in druzyny)
+        {
+            var czyUsunieto = await UsunDruzyne(druzyna.Id);
+            if (!czyUsunieto) return false;
+        }
+        return true;
+    }
 }

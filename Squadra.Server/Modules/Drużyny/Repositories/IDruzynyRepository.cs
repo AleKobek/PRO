@@ -14,4 +14,5 @@ public interface IDruzynyRepository
     public Task<bool> UsunDruzyne(int idDruzyny);
     public Task<bool> OpuscDruzyne(int idDruzyny, int idUzytkownika);
     public Task<bool> WyrzucUzytkownikaZeWszystkichDruzyn(int idUzytkownika);
+    public Task<bool> UsunWszystkieDruzynyUzytkownika(int idUzytkownika);
 }
