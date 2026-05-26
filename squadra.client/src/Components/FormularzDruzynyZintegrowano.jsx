@@ -1,5 +1,5 @@
 ﻿import React, {useEffect, useMemo, useState} from "react";
-import {Bounce, toast} from "react-toastify";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL} from "../config/api";
 import {useNavigate} from "react-router-dom";
 
@@ -335,8 +335,6 @@ export default function FormularzDruzynyZintegrowano({
             })
         };
 
-        console.log(dane)
-
         // pakujemy i wysyłamy
         const opcje = {
             method: 'POST',
@@ -363,7 +361,7 @@ export default function FormularzDruzynyZintegrowano({
                 ustawBladOpisu(bledy.Opis ? bledy.Opis[0] : "");
                 ustawBladOgolny(body.message);
             }
-            toast.error('Wystąpił błąd podczas tworzenia drużyny', {
+            toast.error(`Wystąpił błąd podczas tworzenia drużyny: ${body}`, {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
@@ -982,5 +980,18 @@ export default function FormularzDruzynyZintegrowano({
             onClick={przyWysylaniu}>
             Stwórz
         </button>
+        <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />
     </div>)
 }
