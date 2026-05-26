@@ -139,7 +139,7 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
     const przyKliknieciuSzczegoly = async (idDruzyny, nazwaDruzyny) => {
         await pobierzStatystykiDruzyny(idDruzyny);
         ustawNazwaWybranejDruzyny(nazwaDruzyny);
-        ustawPokazPanelSzczegolow(true);
+        ustawPokazPanelSzczegolow(!pokazPanelSzczegolow);
     }
 
 
@@ -209,11 +209,13 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
         )}
         {pokazPanelSzczegolow &&
             <PanelSzczegolowDruzyny
+                idDruzyny={idWybranejDruzyny}
                 nazwaDruzyny={nazwaWybranejDruzyny}
                 szczegolyDruzyny={szczegolyWybranejDruzyny}
                 idUzytkownika={idUzytkownika}
                 daneDruzyny={szczegolyWybranejDruzyny}
                 ref={szczegolyRef}
+                ustawPokazPanelSzczegolow={ustawPokazPanelSzczegolow}
             />}
     </div>);
 }
