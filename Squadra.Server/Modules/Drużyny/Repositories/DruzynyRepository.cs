@@ -62,9 +62,9 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         if (nastrojRozgrywki == null) throw new NieZnalezionoWBazieException("Nie znaleziono nastroju o id " + druzynaReq.IdNastrojuRozgrywki);
         
         var nieprawidloweIdRol = druzynaReq.MiejscaWDruzynie.Select(x => x.IdRoli)
-                .Where(x => !context.Rola.Any(r => r.Id == x)).ToList();
+                .Where(x => x != null && !context.Rola.Any(r => r.Id == x)).ToList();
             if (nieprawidloweIdRol.Count > 0)
-                throw new NieZnalezionoWBazieException("Nie znaleziono róli o id: " + string.Join(", ", nieprawidloweIdRol));
+                throw new NieZnalezionoWBazieException("Nie znaleziono roli o id: " + string.Join(", ", nieprawidloweIdRol));
         
         var transakcja = await context.Database.BeginTransactionAsync();
         try
