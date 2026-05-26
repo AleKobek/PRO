@@ -27,7 +27,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
             .Include(m => m.Druzyna)
             .ToListAsync();
 
-        return miejscaWDruzynie.Select(m => m.Druzyna).ToList();
+        return miejscaWDruzynie.Select(m => m.Druzyna).Distinct().ToList();
     }
     
     public async Task<ICollection<MiejsceWDruzynie>> GetMiejscaWDruzynie(int idDruzyny)
