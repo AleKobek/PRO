@@ -606,7 +606,7 @@ export default function FormularzDruzynyZintegrowano({
         </form>
         <h3>Konfiguracja minimalnych wymaganych statystyk</h3>
         {/* tabelka w wymaganiami */}
-        <table className="overflow-x-auto overflow-y-auto h-full w-1/4 border-4 border-gray-600 rounded-lg shadow-lg">
+        <table className="overflow-x-auto overflow-y-auto h-full w-1/2 border-4 border-gray-600 rounded-lg shadow-lg">
             <thead className="bg-gray-200">
             <tr className="font-semibold border border-gray-600 text-3xl text-gray-800">
                 <th className="border border-gray-600 text-center p-2">Nazwa</th>
