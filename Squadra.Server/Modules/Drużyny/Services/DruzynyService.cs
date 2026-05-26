@@ -149,7 +149,7 @@ public class DruzynyService(
             druzyna.Opis,
             nastrojRozgrywki.Nazwa,
             czlonkowieDruzyny
-                .Select(x => new MiejsceWDruzynieSzczegolyDto(x.Czlonek, x.Rola, x.Wymaganie, x.CzyKapitan))
+                .Select(x => new MiejsceWDruzynieSzczegolyDto(x.IdMiejscaWDruzynie, x.Czlonek, x.Rola, x.Wymaganie, x.CzyKapitan))
                 .ToList(),
             jezykIStopienBiegłosci,
             wymaganiaRes.Value, // już się upewniliśmy, że wymaganiaRes.Value nie jest null, więc można bezpiecznie użyć .Value
@@ -189,6 +189,7 @@ public class DruzynyService(
             }
             
             czlonkowieDoZwrocenia.Add(new MiejsceWDruzynieSzczegolyDto(
+                miejsce.Id,
                 czlonek,
                 miejsce.Rola?.Nazwa,
                 wymaganie,
