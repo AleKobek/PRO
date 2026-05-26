@@ -680,6 +680,8 @@ export default function FormularzDruzynyZintegrowano({
                             wartosc: wartoscStatystykiDoDodania,
                             porownywalnaWartoscLiczbowa: wartoscLiczbowaStatystykiDoDodania,
                         }])
+                        ustawIdStatystykiDoDodania(null);
+                        ustawNazweStatystykiDoDodania(null);
                     }}
                     disabled={!idStatystykiDoDodania || idStatystykiDoDodania < 0 || !wartoscStatystykiDoDodania}
                 >Dodaj</button>
