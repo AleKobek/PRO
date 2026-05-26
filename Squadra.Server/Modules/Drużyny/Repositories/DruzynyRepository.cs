@@ -105,12 +105,24 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
                     context.WymaganaStatystykaDruzyny.Add(nowaWymaganaStatystykaDruzyny);
                 }
             }
+            // dodajemy miejsce kapitana
+            var miejsceKapitana = new MiejsceWDruzynie
+            {
+                DruzynaId = idDruzyny,
+                UzytkownikId = idKapitana,
+                RolaId = druzynaReq.IdRoliKapitana,
+                StatystykaId = null,
+                WartoscStatystyki = null,
+                WartoscLiczbowaStatystyki = null
+            };
+            context.MiejsceWDruzynie.Add(miejsceKapitana);
+            // dodajemy pozostałe miejsca
             foreach (var miejsce in druzynaReq.MiejscaWDruzynie)
             {
                 var noweMiejsceWDruzynie = new MiejsceWDruzynie
                 {
                     DruzynaId = idDruzyny,
-                    UzytkownikId = idKapitana,
+                    UzytkownikId = null,
                     RolaId = miejsce.IdRoli,
                     StatystykaId = miejsce.WymaganaStatystyka?.IdStatystyki,
                     WartoscStatystyki = miejsce.WymaganaStatystyka?.Wartosc,
