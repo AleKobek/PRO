@@ -189,7 +189,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
             .Select(x => new WymaganieDruzynyDoWyswietleniaDto(
                 x.StatystykaId,
                 x.Statystyka.RolaId == null
-                    ? null
+                    ? x.Statystyka.Nazwa
                     : $"{x.Statystyka.Nazwa}({x.Statystyka.Rola.Nazwa})",
                 x.Wartosc ?? "brak"
             )).ToListAsync();
