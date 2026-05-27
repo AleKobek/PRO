@@ -7,7 +7,7 @@ public record DruzynaSzczegolyDto(
     string? Opis,
     string? NastrojRozgrywki,
     ICollection<MiejsceWDruzynieSzczegolyDto> Czlonkowie,
-    string? WymaganyJezykIStopienBiegłosci,
+    string? WymaganyJezykIStopienBieglosci,
     ICollection<WymaganieDruzynyDoWyswietleniaDto> WymaganiaDoWypisania,
     bool CzyPubliczna,
     bool Czy18Plus,
