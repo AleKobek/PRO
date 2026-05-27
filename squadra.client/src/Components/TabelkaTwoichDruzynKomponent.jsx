@@ -1,7 +1,8 @@
-﻿import React, {useEffect, useMemo, useState} from "react";
+﻿import React, {useEffect, useState} from "react";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
 import PanelSzczegolowDruzyny from "./PanelSzczegolowDruzyny";
+import MiniAwatarKomponent from "./MiniAwatarKomponent";
 
 
 
@@ -185,7 +186,7 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
                                     if (!czlonek || typeof czlonek !== 'object')
                                         return (<div key={index} className="h-10 flex flex-col items-center justify-center my-3">
                                         {rola && czlonkowie.length < 7 && <div className="text-center text-xs">{rola}</div>}
-                                        <MiniAwatarComponent status={null} obraz="puste"/>
+                                        <MiniAwatarKomponent status={null} obraz="puste"/>
                                         {/* jak lista członków jest za długa, to nie pokazujemy pseudonimów */}
                                         {czlonkowie.length < 7 && <div className="text-center text-xs text-blue-900 mt-1.5">Puste</div>}
                                     </div>);
@@ -193,7 +194,7 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
                                     return (<div key={czlonek.idUzytkownika} className="h-10 flex flex-col items-center justify-center my-3">
                                         {rola && czlonkowie.length < 7 && <div className="text-center text-xs">{rola}</div>}
                                         {czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-4 h-4"/> : <div className="h-5 mt-1"/>}
-                                        <MiniAwatarComponent status={czlonek.nazwaStatusu} obraz={czlonek.awatar}/>
+                                        <MiniAwatarKomponent status={czlonek.nazwaStatusu} obraz={czlonek.awatar}/>
                                         {/* jak lista członków jest za długa, to nie pokazujemy pseudonimów */}
                                         {czlonkowie.length < 7 && <div className="text-center text-xs">{czlonek.pseudonim}</div>}
                                     </div>);
@@ -228,65 +229,4 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
                 ustawPokazPanelEdycji={ustawPokazPanelEdycji}
             />}
     </div>);
-}
-
-function MiniAwatarComponent({obraz, status = null}) {
-
-    const imgSrc = obraz === ""
-        ? "/img/domyslny_awatar.png"
-        : obraz === "puste"
-            ? "/img/puste_miejsce.png"
-            : "data:image/jpeg;base64," + obraz;
-
-    if(status === null)
-        return <img
-            src={imgSrc}
-            alt="awatar"
-            className="awatar block h-10 w-10 object-cover rounded-full border border-3 border-blue-900"
-        />;
-
-    return (
-        <span className="relative inline-block h-10 w-10 mb-2">
-            <img
-                src={imgSrc}
-                alt="awatar"
-                className="awatar block h-full w-full object-cover rounded-full border border-3 border-black"
-            />
-            <MiniKropkaStatusuKomponent status={status}/>
-        </span>
-    );
-}
-
-function MiniKropkaStatusuKomponent({status}){
-
-    const classNameStatusu = useMemo(() => {
-        const Status = {
-            1: "DOSTĘPNY",
-            2: "ZARAZ WRACAM",
-            3: "NIE PRZESZKADZAĆ",
-            5: "OFFLINE"
-        }
-        const tempStatus = Status[status]
-        // dostajemy nazwę (w awatar komponent)
-        if(!tempStatus)
-            switch(status){
-                case "Dostępny": return "bg-green-500";
-                case "Zaraz wracam": return "bg-yellow-400";
-                case "Nie przeszkadzać": return "bg-red-500";
-                case "Offline": return "bg-gray-400";
-                default : return null; // jak nie ma statusu, nic nie rysujemy
-            }
-        // dostajemy id
-        switch(tempStatus){
-            case "DOSTĘPNY": return "bg-green-500";
-            case "ZARAZ WRACAM": return "bg-yellow-400";
-            case "NIE PRZESZKADZAĆ": return "bg-red-500";
-            case "OFFLINE": return "bg-gray-400";
-            default : return null; // jak coś się popsuje
-        }
-    },[status]);
-
-    const kropkaClass = `absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 h-3 w-3 rounded-full border border-black ${classNameStatusu}`;
-
-    return(<span className={status && kropkaClass}/>)
 }
