@@ -93,7 +93,8 @@ public class DruzynyService(
         return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Ok(druzynyDoTabelki);
     }
     
-    public async Task<ServiceResult<DruzynaSzczegolyDto>> PodajSzczegolyDruzyny(int idDruzyny)
+    // może podamy też od razu, czy to jego drużyna i czy jest kapitanem, żeby nie musieć tego sprawdzać na froncie
+    public async Task<ServiceResult<DruzynaSzczegolyDto>> PodajSzczegolyDruzyny(int idDruzyny, int idUzytkownika)
     {
         if(idDruzyny <= 0) return ServiceResult<DruzynaSzczegolyDto>.BadRequest(new ErrorItem("Id drużyny musi być większe od 0"));
         var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
@@ -142,6 +143,12 @@ public class DruzynyService(
             nazwaPlatformy = platformaRes.Value.Nazwa; // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć .Value
             logoPlatformy = platformaRes.Value.Logo;
         }
+        
+        var statusCzlonkostwa = czlonkowieDruzyny.Any(x => x.Czlonek?.IdUzytkownika == idUzytkownika) // sprawdzamy, czy użytkownik jest członkiem drużyny
+            ? czlonkowieDruzyny.First(x => x.Czlonek?.IdUzytkownika == idUzytkownika).CzyKapitan // jeżeli jest członkiem, to sprawdzamy, czy jest kapitanem
+                ? "Kapitan" 
+                : "Członek"
+            : "Brak"; // jeżeli nie jest członkiem
        
         // składamy wszystko do kupy i zwracamy szczegóły drużyny
         return ServiceResult<DruzynaSzczegolyDto>.Ok(new DruzynaSzczegolyDto(
@@ -156,7 +163,8 @@ public class DruzynyService(
             druzyna.CzyPubliczna,
             druzyna.Czy18Plus,
             nazwaPlatformy,
-            logoPlatformy
+            logoPlatformy,
+            statusCzlonkostwa
         ));
     }
     

@@ -38,7 +38,11 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
     [ProducesResponseType(404)]
     public async Task<ActionResult<DruzynaSzczegolyDto>> GetDruzynaSzczegoly(int idDruzyny)
     {
-        var result = await druzynyService.PodajSzczegolyDruzyny(idDruzyny);
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.PodajSzczegolyDruzyny(idDruzyny, uzytkownik.Id);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),

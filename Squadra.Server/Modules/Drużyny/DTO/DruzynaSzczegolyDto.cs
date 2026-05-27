@@ -12,5 +12,6 @@ public record DruzynaSzczegolyDto(
     bool CzyPubliczna,
     bool Czy18Plus,
     string? NazwaPlatformy,
-    byte[]? LogoPlatformy
+    byte[]? LogoPlatformy,
+    string StatusCzlonkostwa
 );
