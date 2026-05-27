@@ -10,6 +10,7 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
     const [druzyny, ustawDruzyny] = useState([]);
 
     const [pokazPanelSzczegolow, ustawPokazPanelSzczegolow] = useState(false);
+    const [pokazPanelEdycji, ustawPokazPanelEdycji] = useState(false);
     const [idWybranejDruzyny, ustawIdWybranejDruzyny] = useState(null);
     const [nazwaWybranejDruzyny, ustawNazwaWybranejDruzyny] = useState("");
     const [szczegolyWybranejDruzyny, ustawSzczegolyWybranejDruzyny] = useState(null);
@@ -224,6 +225,7 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
                 daneDruzyny={szczegolyWybranejDruzyny}
                 ref={szczegolyRef}
                 ustawPokazPanelSzczegolow={ustawPokazPanelSzczegolow}
+                ustawPokazPanelEdycji={ustawPokazPanelEdycji}
             />}
     </div>);
 }
