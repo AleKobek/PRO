@@ -1,4 +1,7 @@
 ﻿import React, {useState} from "react";
+import AwatarComponent from "./AwatarComponent";
+import {CLIENT_URL} from "../config/api";
+import MiniAwatarKomponent from "./MiniAwatarKomponent";
 
 export default function PanelSzczegolowDruzyny({
                                                    idDruzyny,
@@ -85,7 +88,36 @@ export default function PanelSzczegolowDruzyny({
 
     // zwykła lista, bez przycisków
     const ListaCzlonkowDlaCzlonka = () =>{
-        return (<div></div>)
+        return (<div>
+            <table className="w-full border-collapse border-2 border-black">
+                <thead>
+                <tr className="bg-gray-200">
+                    <th className="border border-black px-4 py-2">Członek</th>
+                    <th className="border border-black px-4 py-2">Rola</th>
+                    <th className="border border-black px-4 py-2">Wymaganie</th>
+                </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-500 text-md px-4 py-2">
+                {daneDruzyny.czlonkowie.map((miejsce) => {
+                    return (<tr key={miejsce.idMiejscaWDruzynie} >
+                        {/* członek */}
+                        {miejsce.czlonek ? <th className="flex items-center gap-2 px-4 py-2">
+                            {miejsce.czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-50 h-50"/> : <div className="pl-9"/>}
+                            <MiniAwatarKomponent
+                                obraz={miejsce.czlonek.awatar}
+                                status={miejsce.czlonek.nazwaStatusu}/>
+                            <a
+                                className="text-sm hover:underline"
+                                href={`${CLIENT_URL}/profil/` + miejsce.czlonek.idUzytkownika}>{miejsce.czlonek.pseudonim}</a>
+                        </th> : <th className="px-4 py-2 border border-gray-500 text-gray-700">Puste</th>}
+                        {/* rola */}
+                        <th className="px-4 py-2 border border-gray-500">{miejsce.rola ?? "-"}</th>
+                        <th className="px-4 py-2 border border-gray-500">{miejsce.wymaganie ?? "-"}</th>
+                    </tr>)
+                })}
+                </tbody>
+            </table>
+        </div>)
     }
 
     // obok pustych miejsc są przyciski z wysyłaniem prośby o dołączenie
@@ -95,7 +127,7 @@ export default function PanelSzczegolowDruzyny({
 
     return(<div
         ref={ref}
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[700px] pt-2 p-10 overflow-y-auto
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 pt-2 p-10 overflow-y-auto
                 rounded-md shadow-lg justify-center items-center bg-white border-2 border-amber-400"
         style={{zIndex: 2000}}
     >
@@ -106,7 +138,7 @@ export default function PanelSzczegolowDruzyny({
             <h2 className="text-2xl font-bold">Szczegóły drużyny:</h2>
             <h3 className="text-xl mb-4 text-blue-700">{nazwaDruzyny}</h3>
         {/*  zwykłe dane jak opis, nastrój, platforma itp.  */}
-            <div className="flex flex-col gap-4 justify-center items-center text-xl">
+            <div className="flex flex-col gap-4 justify-center items-center text-xl border-2 border-gray-600 shadow-md rounded-md p-4 px-7 mb-6">
                 {/* tytuł gry */}
                 <label className="pole-w-szczegolach-druzyny">
                     Gra
@@ -127,7 +159,7 @@ export default function PanelSzczegolowDruzyny({
                 {/* opis */}
                 <label className="pole-w-szczegolach-druzyny">
                     Opis
-                    <p className="text-gray-700 font-normal bg-blue-50 rounded-md p-2 w-fit">{daneDruzyny.opis === "" ? "brak" : daneDruzyny.opis}</p>
+                    <p className="text-gray-700 font-normal bg-blue-50 rounded-md p-2 max-w-[900px] text-wrap whitespace-normal break-words">{daneDruzyny.opis === "" ? "brak" : daneDruzyny.opis}</p>
                 </label>
                 {/* nastrój rozgrywki */}
                 <label className="pole-w-szczegolach-druzyny">
