@@ -218,6 +218,10 @@
   #glowna .box-zmiany-hasla { @apply text-center my-10 border-2 border-red-900 rounded-md p-2.5 bg-[#fcb7ab]; }
   #glowna .box-zmiany-hasla form { border: none; }
 
+  #glowna .pole-w-szczegolach-druzyny {@apply flex flex-col justify-center items-center mb-2 font-semibold ;}
+  #glowna .pole-w-szczegolach-druzyny span {@apply  font-normal bg-blue-50 rounded-md p-2 w-fit}
+  #glowna .pole-w-szczegolach-druzyny p {@apply  font-normal bg-blue-50 rounded-md p-2 w-fit}
+
   .error-wiadomosc { @apply text-red-600 font-bold; }
   .error-pole { border-color: red; border-style: solid; }
   .success-widomosc { @apply text-green-600 font-bold grid text-center; }
