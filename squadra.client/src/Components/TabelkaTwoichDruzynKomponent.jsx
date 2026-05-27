@@ -172,14 +172,22 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
                             <td className="text-gray-900 text-center border border-gray-600">{tytulGry}</td>
                             <td className="text-gray-900 text-center border border-gray-600">{ostatniaAktywnoscKapitana}</td>
                             <td className="flex gap-5 items-center justify-center border-gray-600 py-5">
-                                {Array.isArray(czlonkowie) && czlonkowie.map((miejsce) => {
-                                    if (!miejsce || typeof miejsce !== 'object') return null;
+                                {Array.isArray(czlonkowie) && czlonkowie.map((miejsce, index) => {
 
-                                    const czlonek = miejsce.czlonek;
-                                    if (!czlonek || typeof czlonek !== 'object') return null;
+                                    if (!miejsce || typeof miejsce !== 'object') return null;
 
                                     const rola = miejsce.rola ?? null;
                                     const czyKapitan = miejsce.czyKapitan ?? false;
+
+                                    const czlonek = miejsce.czlonek;
+
+                                    if (!czlonek || typeof czlonek !== 'object')
+                                        return (<div key={index} className="h-10 flex flex-col items-center justify-center my-3">
+                                        {rola && czlonkowie.length < 7 && <div className="text-center text-xs">{rola}</div>}
+                                        <MiniAwatarComponent status={null} obraz="puste"/>
+                                        {/* jak lista członków jest za długa, to nie pokazujemy pseudonimów */}
+                                        {czlonkowie.length < 7 && <div className="text-center text-xs text-blue-900 mt-1.5">Puste</div>}
+                                    </div>);
 
                                     return (<div key={czlonek.idUzytkownika} className="h-10 flex flex-col items-center justify-center my-3">
                                         {rola && czlonkowie.length < 7 && <div className="text-center text-xs">{rola}</div>}
@@ -220,9 +228,20 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
     </div>);
 }
 
-function MiniAwatarComponent({obraz, status}) {
+function MiniAwatarComponent({obraz, status = null}) {
 
-    const imgSrc = obraz === "" ? "/img/domyslny_awatar.png" : "data:image/jpeg;base64," + obraz;
+    const imgSrc = obraz === ""
+        ? "/img/domyslny_awatar.png"
+        : obraz === "puste"
+            ? "/img/puste_miejsce.png"
+            : "data:image/jpeg;base64," + obraz;
+
+    if(status === null)
+        return <img
+            src={imgSrc}
+            alt="awatar"
+            className="awatar block h-10 w-10 object-cover rounded-full border border-3 border-blue-900"
+        />;
 
     return (
         <span className="relative inline-block h-10 w-10 mb-2">
