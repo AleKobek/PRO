@@ -68,8 +68,50 @@ export default function PanelSzczegolowDruzyny({
         ustawPokazPanelEdycji(true);
         ustawPokazPanelSzczegolow(false);
     }
-    const przyKliknieciuRozwiaz = () => {
+    const przyKliknieciuRozwiaz = async () => {
+        if(daneDruzyny.statusCzlonkostwa !== "Kapitan") {
+            toast.error('Tylko kapitan może rozwiązać drużynę!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
+        // tutaj wysyłamy żądanie do backendu o rozwiązanie drużyny, a potem odświeżamy listę drużyn
+        const opcje = {
+            method: "DELETE",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include"
+        }
 
+        const res = await fetch(`${API_BASE_URL}/Druzyna/` + idDruzyny, opcje);
+        if(!res.ok){
+            const ct = res.headers.get("content-type") || "";
+            const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                ? await res.json().catch(() => null)
+                : await res.text().catch(() => "");
+
+            toast.error(`Wystąpił błąd podczas rozwiązywania drużyny: ${body}`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }
+        // jak tu dotarliśmy, wszystko jest git
+        usunDruzyne(idDruzyny);
+        ustawPokazPanelSzczegolow(false);
     }
 
     const przyKliknieciuWysylaniaProsby = (idMiejsca) => {
@@ -213,6 +255,8 @@ export default function PanelSzczegolowDruzyny({
             </table>
         </div>)
     }
+
+    if(daneDruzyny === null) {return <div></div>}
 
     return(<div
         ref={ref}

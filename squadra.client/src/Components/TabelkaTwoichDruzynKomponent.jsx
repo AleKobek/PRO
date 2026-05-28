@@ -144,6 +144,16 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
         ustawPokazPanelSzczegolow(!pokazPanelSzczegolow);
     }
 
+    const usunDruzyneZTabelki = (idDruzyny) => {
+        if (!idDruzyny) return;
+        if (!idUzytkownika) return;
+        ustawIdWybranejDruzyny(null);
+        ustawNazwaWybranejDruzyny("");
+        ustawSzczegolyWybranejDruzyny(null);
+        let druzynyTemp = druzyny.filter(druzyna => druzyna.id !== idDruzyny);
+        ustawDruzyny(druzynyTemp);
+    }
+
 
     return (<div>
         {Array.isArray(druzyny) && druzyny.length > 0 ? (
@@ -227,6 +237,7 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
                 ref={szczegolyRef}
                 ustawPokazPanelSzczegolow={ustawPokazPanelSzczegolow}
                 ustawPokazPanelEdycji={ustawPokazPanelEdycji}
+                usunDruzyne = {usunDruzyneZTabelki}
             />}
     </div>);
 }
