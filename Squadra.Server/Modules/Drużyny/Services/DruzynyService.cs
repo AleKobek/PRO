@@ -473,6 +473,29 @@ public class DruzynyService(
         }
     }
     
+    public async Task<ServiceResult<bool>> OproznijMiejsceWDruzynie(int idMiejsca, int idUsuwajacegoUzytkownika)
+    {
+        try
+        {
+            if (idMiejsca <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id miejsca: " + idMiejsca)); 
+            
+            var kapitanId = await druzynyRepository.GetIdKapitanaDruzynyMiejsca(idMiejsca);
+            if (kapitanId != idUsuwajacegoUzytkownika) return ServiceResult<bool>.Forbidden(new ErrorItem("Tylko kapitan drużyny może wyrzucić użytkownika z drużyny"));
+            
+            var miejsce = await druzynyRepository.GetMiejsceWDruzynie(idMiejsca);
+            if(miejsce.UzytkownikId == idUsuwajacegoUzytkownika) return ServiceResult<bool>.Forbidden(new ErrorItem("Kapitan drużyny nie może jej opuścić, musi ją usunąć"));
+            
+            var opuscDruzyneRes = await druzynyRepository.OproznijMiejsceWDruzynie(idMiejsca);
+            if (!opuscDruzyneRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć użytkownika z miejsca o id " + idMiejsca)]);
+            
+            return ServiceResult<bool>.Ok(true);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
     public async Task<ServiceResult<bool>> WyrzucUzytkownikaZeWszystkichDruzyn(int idUzytkownika)
     {
         if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 

@@ -16,6 +16,7 @@ public interface IDruzynyService
     public Task<ServiceResult<bool>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana);
     public Task<ServiceResult<bool>> UsunDruzyne(int idDruzyny, int idUsuwajacegoUzytkownika);
     public Task<ServiceResult<bool>> OpuscDruzyne(int idDruzyny, int idUzytkownika);
+    public Task<ServiceResult<bool>> OproznijMiejsceWDruzynie(int idMiejsca, int idUsuwajacegoUzytkownika);
     public Task<ServiceResult<bool>> WyrzucUzytkownikaZeWszystkichDruzyn(int idUzytkownika);
     public Task<ServiceResult<bool>> UsunWszystkieDruzynyUzytkownika(int idUzytkownika);
     public Task<ServiceResult<bool>> UpdateDruzyna(int idDruzyny, int idUzytkownika, DruzynaUpdateDto druzynaReq);

@@ -155,6 +155,27 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
+    [HttpPut("miejsce/{idmiejscaWDruzynie:int}")]
+    [EndpointSummary("Pozwala opróżnić dane miejsce w drużynie.")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult> OproznijMiejsceWDruzynie(int idmiejscaWDruzynie, int idUzytkownika)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.OproznijMiejsceWDruzynie(idmiejscaWDruzynie, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
     
     [HttpDelete("{idDruzyny:int}")]
     [EndpointSummary("Usuwa drużynę")]
