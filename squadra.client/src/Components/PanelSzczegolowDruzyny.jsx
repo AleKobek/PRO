@@ -110,6 +110,17 @@ export default function PanelSzczegolowDruzyny({
             });
         }
         // jak tu dotarliśmy, wszystko jest git
+        toast.success(`Pomyślnie usunięto drużynę!`, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+        });
         usunDruzyne(idDruzyny);
         ustawPokazPanelSzczegolow(false);
     }
