@@ -102,7 +102,7 @@ export default function NaglowekZalogowano({
         };
     },[])
 
-    // przy załadowaniu strony także jednorazowo sprawdzamy czy są nowe wiadomości
+    // przy załadowaniu strony także jednorazowo sprawdzamy czy są nowe wiadomości i pingamy
     useEffect(() => {
         const ac = new AbortController();
         let alive = true;
@@ -110,6 +110,7 @@ export default function NaglowekZalogowano({
         async function fetchNow(signal) {
             if (!alive) return;
             await sprawdzCzySaNoweWiadomosci(signal);
+            await fetch(`${API_BASE_URL}/Uzytkownik/ping`, {credentials: "include"});
         }
 
         fetchNow(ac.signal);
