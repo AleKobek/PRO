@@ -1,7 +1,8 @@
 ﻿import React, {useState} from "react";
 import AwatarComponent from "./AwatarComponent";
-import {CLIENT_URL} from "../config/api";
+import {API_BASE_URL, CLIENT_URL} from "../config/api";
 import MiniAwatarKomponent from "./MiniAwatarKomponent";
+import {Bounce, toast} from "react-toastify";
 
 export default function PanelSzczegolowDruzyny({
                                                    idDruzyny,
@@ -10,9 +11,9 @@ export default function PanelSzczegolowDruzyny({
                                                    idUzytkownika,
                                                    ref,
                                                    ustawPokazPanelSzczegolow,
-                                                   ustawPokazPanelEdycji}) {
+                                                   ustawPokazPanelEdycji,
+                                                   usunDruzyne}) {
 
-    const [idWybranegoMiejsca, ustawIdWybranegoMiejsca] = useState(null);
 
     /*
 
@@ -233,7 +234,8 @@ export default function PanelSzczegolowDruzyny({
                     <span>{daneDruzyny.tytulGry}</span>
                 </label>
                 {/* platforma */}
-                <label className="pole-w-szczegolach-druzyny">
+                {daneDruzyny.nazwaPlatformy?.length > 0 &&
+                    <label className="pole-w-szczegolach-druzyny">
                     Platforma
                     <div className="flex items-center gap-2">
                         <img
@@ -243,7 +245,7 @@ export default function PanelSzczegolowDruzyny({
                         />
                         <span className="font-bold">{daneDruzyny.nazwaPlatformy}</span>
                     </div>
-                </label>
+                </label>}
                 {/* opis */}
                 <label className="pole-w-szczegolach-druzyny">
                     Opis
