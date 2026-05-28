@@ -238,6 +238,7 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
                 ustawPokazPanelSzczegolow={ustawPokazPanelSzczegolow}
                 ustawPokazPanelEdycji={ustawPokazPanelEdycji}
                 usunDruzyne = {usunDruzyneZTabelki}
+                ustawSzczegolyDruzyny={ustawSzczegolyWybranejDruzyny}
             />}
     </div>);
 }

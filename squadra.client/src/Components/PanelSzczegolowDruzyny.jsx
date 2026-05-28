@@ -12,7 +12,8 @@ export default function PanelSzczegolowDruzyny({
                                                    ref,
                                                    ustawPokazPanelSzczegolow,
                                                    ustawPokazPanelEdycji,
-                                                   usunDruzyne}) {
+                                                   usunDruzyne,
+                                                   ustawSzczegolyDruzyny}) {
 
 
     /*
@@ -177,8 +178,42 @@ export default function PanelSzczegolowDruzyny({
 
     }
 
-    const przyKliknieciuWyrzuceniaZDruzyny = (idMiejsca) => {
+    const przyKliknieciuWyrzuceniaZDruzyny = async (idMiejsca) => {
+        const opcje = {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include"
+        }
 
+        const res = await fetch(`${API_BASE_URL}/Druzyna/miejsce/${idMiejsca}`, opcje);
+        if(!res.ok){
+            const ct = res.headers.get("content-type") || "";
+            const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                ? await res.json().catch(() => null)
+                : await res.text().catch(() => "");
+
+            toast.error(`Wystąpił błąd podczas wyrzucania z drużyny: ${body}`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }
+        // jak tu dotarliśmy, wszystko jest git.
+        const tempDaneDruzyny = {
+            ...daneDruzyny,
+            czlonkowie: daneDruzyny.czlonkowie.map(miejsce =>
+                miejsce.idMiejscaWDruzynie === idMiejsca
+                    ? { ...miejsce, czlonek: null }
+                    : miejsce
+            )
+        };
+        ustawSzczegolyDruzyny(tempDaneDruzyny);
     }
 
     // obok miejsca w drużynie jest przycisk zaproszenia lub usunięcia z drużyny
@@ -212,12 +247,12 @@ export default function PanelSzczegolowDruzyny({
                         <th className="px-4 py-2 border border-gray-500">
                         {miejsce.czlonek
                             ? <button
-                                onClick={przyKliknieciuWyrzuceniaZDruzyny(miejsce.idMiejscaWDruzynie)}
+                                onClick={() => przyKliknieciuWyrzuceniaZDruzyny(miejsce.idMiejscaWDruzynie)}
                                 className="bg-red-700 hover:bg-red-500 text-white font-bold py-2 px-4 rounded"
                                 disabled={miejsce.czyKapitan}
                             >Wyrzuć</button>
                             : <button
-                                onClick={przyKliknieciuZaproszeniaDoDruzyny(miejsce.idMiejscaWDruzynie)}
+                                onClick={() => przyKliknieciuZaproszeniaDoDruzyny(miejsce.idMiejscaWDruzynie)}
                                 className="bg-green-700 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
                               >Zaproś</button>
                         }</th>
