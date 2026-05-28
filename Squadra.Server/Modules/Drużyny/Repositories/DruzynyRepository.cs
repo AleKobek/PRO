@@ -219,6 +219,15 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         return true;
     }
     
+    public async Task<bool> OproznijMiejsceWDruzynie(int idMiejsca)
+    {
+        var miejsceWDruzynie = await context.MiejsceWDruzynie.FindAsync(idMiejsca);
+        if (miejsceWDruzynie == null) throw new NieZnalezionoWBazieException("Nie znaleziono miejsca w drużynie o id " + idMiejsca);
+        miejsceWDruzynie.UzytkownikId = null;
+        await context.SaveChangesAsync();
+        return true;
+    }
+    
     public async Task<bool> WyrzucUzytkownikaZeWszystkichDruzyn(int idUzytkownika)
     {
         var miejscaWDruzynie = await context.MiejsceWDruzynie.Where(m => m.UzytkownikId == idUzytkownika).ToListAsync();
