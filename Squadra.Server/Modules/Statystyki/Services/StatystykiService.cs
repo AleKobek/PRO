@@ -181,6 +181,24 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         }
     }
     
+    public async Task<ServiceResult<ICollection<WartoscStatystykiDTO>>> GetWymaganiaDruzyny(int idDruzyny)
+    {
+        if (idDruzyny <= 0)
+        {
+            return ServiceResult<ICollection<WartoscStatystykiDTO>>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator drużyny: " + idDruzyny));
+        }
+        
+        try
+        {
+            var result = await statystykiRepository.GetWymaganiaDruzyny(idDruzyny);
+            return ServiceResult<ICollection<WartoscStatystykiDTO>>.Ok(result);
+        }
+        catch (NieZnalezionoWBazieException ex)
+        {
+            return ServiceResult<ICollection<WartoscStatystykiDTO>>.NotFound(new ErrorItem(ex.Message));
+        }
+    }
+    
     public async Task<ServiceResult<ICollection<RolaDto>>> GetRoleGry(int idGry)
     {
         if (idGry <= 0)

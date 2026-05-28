@@ -196,6 +196,19 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         
         return wymaganiaDruzyny;
     }
+
+    public async Task<ICollection<WartoscStatystykiDTO>> GetWymaganiaDruzyny(int idDruzyny)
+    {
+        var druzyna = await context.Druzyna.FindAsync(idDruzyny);
+        if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
+        
+        var wymaganiaDruzyny = await context.WymaganaStatystykaDruzyny
+            .Where(m => m.DruzynaId == idDruzyny)
+            .Select(x => new WartoscStatystykiDTO(x.StatystykaId, x.Wartosc, x.PorownywalnaWartoscLiczbowa))
+            .ToListAsync();
+
+        return wymaganiaDruzyny;
+    }
     
     public async Task<string?> GetNazwaRangi(int idStatystyki, int wartoscLiczbowa)
     {
