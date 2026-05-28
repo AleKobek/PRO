@@ -31,14 +31,16 @@ export default function PanelSzczegolowDruzyny({
           },
           "rola": "support",
           "wymaganie": null,
-          "czyKapitan": true
+          "czyKapitan": true,
+          "czyOgladajacySpelniaWymagania": null
         },
         {
           "idMiejscaWDruzynie": 17,
           "czlonek": null,
           "rola": "support",
           "wymaganie": "Ranga(support): Gold V",
-          "czyKapitan": false
+          "czyKapitan": false,
+          "czyOgladajacySpelniaWymagania": true
         }
       ],
       "wymaganyJezykIStopienBiegłosci": "polski - Zaawansowany",
@@ -81,9 +83,55 @@ export default function PanelSzczegolowDruzyny({
 
     }
 
+    const przyKliknieciuWyrzuceniaZDruzyny = (idMiejsca) => {
+
+    }
+
     // obok miejsca w drużynie jest przycisk zaproszenia lub usunięcia z drużyny
     const ListaCzlonkowDlaKapitana = () =>{
-        return (<div></div>)
+        return (<div>
+            <table className="w-full border-collapse border-2 border-black">
+                <thead>
+                <tr className="bg-gray-200">
+                    <th className="border border-black px-4 py-2">Członek</th>
+                    <th className="border border-black px-4 py-2">Rola</th>
+                    <th className="border border-black px-4 py-2">Wymaganie</th>
+                    <th className="border border-black px-4 py-2">Zarządzanie</th>
+                </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-500 text-md px-4 py-2">
+                {daneDruzyny.czlonkowie.map((miejsce) => {
+                    return (<tr key={miejsce.idMiejscaWDruzynie} >
+                        {/* członek */}
+                        {miejsce.czlonek ? <th className="flex items-center gap-2 px-4 py-2">
+                            {miejsce.czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-50 h-50"/> : <div className="pl-9"/>}
+                            <MiniAwatarKomponent
+                                obraz={miejsce.czlonek.awatar}
+                                status={miejsce.czlonek.nazwaStatusu}/>
+                            <a
+                                className="text-sm hover:underline"
+                                href={`${CLIENT_URL}/profil/` + miejsce.czlonek.idUzytkownika}>{miejsce.czlonek.pseudonim}</a>
+                        </th> : <th className="px-4 py-2 border border-gray-500 text-gray-700">Puste</th>}
+                        {/* rola */}
+                        <th className="px-4 py-2 border border-gray-500">{miejsce.rola ?? "-"}</th>
+                        <th className="px-4 py-2 border border-gray-500">{miejsce.wymaganie ?? "-"}</th>
+                        <th className="px-4 py-2 border border-gray-500">
+                        {miejsce.czlonek
+                            ? <button
+                                onClick={przyKliknieciuWyrzuceniaZDruzyny(miejsce.idMiejscaWDruzynie)}
+                                className="bg-red-700 hover:bg-red-500 text-white font-bold py-2 px-4 rounded"
+                                disabled={miejsce.czyKapitan}
+                            >Wyrzuć</button>
+                            : <button
+                                onClick={przyKliknieciuZaproszeniaDoDruzyny(miejsce.idMiejscaWDruzynie)}
+                                className="bg-green-700 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                              >Zaproś</button>
+                        }</th>
+                    </tr>)
+                })}
+                </tbody>
+            </table>
+        </div>)
     }
 
     // zwykła lista, bez przycisków
@@ -122,7 +170,47 @@ export default function PanelSzczegolowDruzyny({
 
     // obok pustych miejsc są przyciski z wysyłaniem prośby o dołączenie
     const ListaCzlonkowDlaObcego = () =>{
-        return (<div></div>)
+        return (<div>
+            <table className="w-full border-collapse border-2 border-black">
+                <thead>
+                <tr className="bg-gray-200">
+                    <th className="border border-black px-4 py-2">Członek</th>
+                    <th className="border border-black px-4 py-2">Rola</th>
+                    <th className="border border-black px-4 py-2">Wymaganie</th>
+                    <th className="border border-black px-4 py-2">Zarządzanie</th>
+                </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-500 text-md px-4 py-2">
+                {daneDruzyny.czlonkowie.map((miejsce) => {
+                    return (<tr key={miejsce.idMiejscaWDruzynie} >
+                        {/* członek */}
+                        {miejsce.czlonek ? <th className="flex items-center gap-2 px-4 py-2">
+                            {miejsce.czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-50 h-50"/> : <div className="pl-9"/>}
+                            <MiniAwatarKomponent
+                                obraz={miejsce.czlonek.awatar}
+                                status={miejsce.czlonek.nazwaStatusu}/>
+                            <a
+                                className="text-sm hover:underline"
+                                href={`${CLIENT_URL}/profil/` + miejsce.czlonek.idUzytkownika}>{miejsce.czlonek.pseudonim}</a>
+                        </th> : <th className="px-4 py-2 border border-gray-500 text-gray-700">Puste</th>}
+                        {/* rola */}
+                        <th className="px-4 py-2 border border-gray-500">{miejsce.rola ?? "-"}</th>
+                        <th className="px-4 py-2 border border-gray-500">{miejsce.wymaganie ?? "-"}</th>
+                            {miejsce.czlonek
+                                ? <th className="px-4 py-2 border border-gray-500 text-gray-700">Zajęte</th>
+                                : <th className="px-4 py-2 border border-gray-500">
+                                    <button
+                                        onClick={przyKliknieciuWysylaniaProsby(miejsce.idMiejscaWDruzynie)}
+                                        className="bg-green-700 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                                        disabled={miejsce.czyOgladajacySpelniaWymagania !== true}
+                                    >Wyślij prośbę o dołączenie</button>
+                                  </th>
+                            }
+                    </tr>)
+                })}
+                </tbody>
+            </table>
+        </div>)
     }
 
     return(<div
