@@ -7,5 +7,6 @@ public record MiejsceWDruzynieSzczegolyDto(
     ProfilMinInfoDto? Czlonek,
     string? Rola,
     string? Wymaganie,
-    bool CzyKapitan = false
+    bool CzyKapitan = false,
+    bool? CzyOgladajacySpelniaWymagania = null
 );

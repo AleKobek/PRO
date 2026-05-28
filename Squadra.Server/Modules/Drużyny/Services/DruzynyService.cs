@@ -103,10 +103,43 @@ public class DruzynyService(
         var graRes = await wspieranaGraService.GetWspieranaGra(druzyna.GraId);
         if (!graRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(graRes.StatusCode, graRes.Errors);
         
+        
         // pobieramy członków drużyny
         var czlonkowieDruzynyRes = await GetCzlonkowieDruzynyDoWyswietlenia(idDruzyny);
         if (!czlonkowieDruzynyRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(czlonkowieDruzynyRes.StatusCode, czlonkowieDruzynyRes.Errors);
         var czlonkowieDruzyny = czlonkowieDruzynyRes.Value ?? new List<MiejsceWDruzynieSzczegolyDto>();
+        
+        var statusCzlonkostwa = czlonkowieDruzyny.Any(x => x.Czlonek?.IdUzytkownika == idUzytkownika) // sprawdzamy, czy użytkownik jest członkiem drużyny
+            ? czlonkowieDruzyny.First(x => x.Czlonek?.IdUzytkownika == idUzytkownika).CzyKapitan // jeżeli jest członkiem, to sprawdzamy, czy jest kapitanem
+                ? "Kapitan" 
+                : "Członek"
+            : "Brak"; // jeżeli nie jest członkiem
+        
+        var czlonkowieDruzynyZeSprawdzonymiWymaganiami = new List<MiejsceWDruzynieSzczegolyDto>();
+        if(statusCzlonkostwa != "Brak") czlonkowieDruzynyZeSprawdzonymiWymaganiami.AddRange(czlonkowieDruzyny); // jak to nasza drużyna, nie musimy sprawdzać
+        else
+        {
+            // najpierw dodajemy zapełnione miejsca, bo dla nich nie musimy sprawdzać wymagań, więc od razu możemy je dodać do listy ze sprawdzonymi wymaganiami
+            czlonkowieDruzynyZeSprawdzonymiWymaganiami.AddRange(czlonkowieDruzyny.Where(x => x.Czlonek != null));
+
+            foreach (var miejsceWDruzynie in czlonkowieDruzyny.Where(x => x.Czlonek == null))
+            {
+
+                var czySpelniaWymaganiaRes =
+                    await CzyUzytkownikSpelniaWymaganieMiejsca(miejsceWDruzynie.IdMiejscaWDruzynie, idUzytkownika);
+                if (!czySpelniaWymaganiaRes.Succeeded)
+                    czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(new MiejsceWDruzynieSzczegolyDto(
+                        miejsceWDruzynie.IdMiejscaWDruzynie,
+                        miejsceWDruzynie.Czlonek,
+                        miejsceWDruzynie.Rola,
+                        miejsceWDruzynie.Wymaganie,
+                        miejsceWDruzynie.CzyKapitan,
+                        null // jeżeli nie udało się sprawdzić, to zostawiamy null, żeby frontend mógł zdecydować, co z tym zrobić
+                    ));
+
+                else czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(miejsceWDruzynie with { CzyOgladajacySpelniaWymagania = czySpelniaWymaganiaRes.Value });
+            }
+        }
         
         // pobieramy nastrój rozgrywki
         var nastrojRozgrywki = await druzynyRepository.GetNastrojRozgrywki(druzyna.NastrojRozgrywkiId);
@@ -144,20 +177,13 @@ public class DruzynyService(
             logoPlatformy = platformaRes.Value.Logo;
         }
         
-        var statusCzlonkostwa = czlonkowieDruzyny.Any(x => x.Czlonek?.IdUzytkownika == idUzytkownika) // sprawdzamy, czy użytkownik jest członkiem drużyny
-            ? czlonkowieDruzyny.First(x => x.Czlonek?.IdUzytkownika == idUzytkownika).CzyKapitan // jeżeli jest członkiem, to sprawdzamy, czy jest kapitanem
-                ? "Kapitan" 
-                : "Członek"
-            : "Brak"; // jeżeli nie jest członkiem
        
         // składamy wszystko do kupy i zwracamy szczegóły drużyny
         return ServiceResult<DruzynaSzczegolyDto>.Ok(new DruzynaSzczegolyDto(
             graRes.Value.Tytul, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             druzyna.Opis,
             nastrojRozgrywki.Nazwa,
-            czlonkowieDruzyny
-                .Select(x => new MiejsceWDruzynieSzczegolyDto(x.IdMiejscaWDruzynie, x.Czlonek, x.Rola, x.Wymaganie, x.CzyKapitan))
-                .ToList(),
+            czlonkowieDruzynyZeSprawdzonymiWymaganiami,
             jezykIStopienBiegłosci,
             wymaganiaRes.Value, // już się upewniliśmy, że wymaganiaRes.Value nie jest null, więc można bezpiecznie użyć .Value
             druzyna.CzyPubliczna,
