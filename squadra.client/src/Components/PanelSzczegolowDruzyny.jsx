@@ -118,8 +118,48 @@ export default function PanelSzczegolowDruzyny({
 
     }
 
-    const przyKliknieciuOpuszczaniaDruzyny = () => {
+    const przyKliknieciuOpuszczaniaDruzyny = async () => {
 
+        // tutaj wysyłamy żądanie do backendu o opuszczenie drużyny, a potem odświeżamy listę drużyn
+        const opcje = {
+            method: "PUT",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include"
+        }
+
+        const res = await fetch(`${API_BASE_URL}/Druzyna/opuszczanie/` + idDruzyny, opcje);
+        if(!res.ok){
+            const ct = res.headers.get("content-type") || "";
+            const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                ? await res.json().catch(() => null)
+                : await res.text().catch(() => "");
+
+            toast.error(`Wystąpił błąd podczas opuszczania drużyny: ${body}`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+        }
+        // jak tu dotarliśmy, wszystko jest git
+        toast.success(`Pomyślnie opuszczono drużynę!`, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce,
+        });
+        usunDruzyne(idDruzyny);
+        ustawPokazPanelSzczegolow(false);
     }
 
     const przyKliknieciuZaproszeniaDoDruzyny = (idMiejsca) => {
