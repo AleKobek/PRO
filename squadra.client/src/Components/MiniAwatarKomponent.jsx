@@ -2,7 +2,7 @@
 
 export default function MiniAwatarKomponent({obraz, status = null}) {
 
-    const imgSrc = obraz === ""
+    const imgSrc = obraz === "" || obraz === null
         ? "/img/domyslny_awatar.png"
         : obraz === "puste"
             ? "/img/puste_miejsce.png"
