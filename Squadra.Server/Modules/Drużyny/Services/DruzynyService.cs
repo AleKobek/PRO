@@ -305,6 +305,20 @@ public class DruzynyService(
             )
         );
     }
+    public async Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganieMiejsca(int idMiejsca, int idUzytkownika)
+    {
+        if(idMiejsca <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id miejsca w drużynie: " + idMiejsca));
+        if(idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
+        try 
+        { 
+            var spelniaWymaganie = await druzynyRepository.CzyUzytkownikSpelniaWymaganieMiejsca(idMiejsca, idUzytkownika); 
+            return ServiceResult<bool>.Ok(spelniaWymaganie);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+         return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
 
     public async Task<ServiceResult<bool>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
     {

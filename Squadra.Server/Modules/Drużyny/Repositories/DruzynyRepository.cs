@@ -55,6 +55,30 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         return nastroj;
     }
 
+    public async Task<bool> CzyUzytkownikSpelniaWymaganieMiejsca(int idMiejsca, int idUzytkownika)
+    {
+        var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
+        if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + idUzytkownika + " nie istnieje.");
+
+        var miejsce = await context.MiejsceWDruzynie.FindAsync(idMiejsca);
+        if (miejsce == null) throw new NieZnalezionoWBazieException("Nie znaleziono miejsca w drużynie o id " + idMiejsca);
+
+        if (miejsce.StatystykaId == null) return true; // jeżeli nie ma wymaganej statystyki, to każdy spełnia wymaganie
+        
+        // jeżeli jest wymagana statystyka, sprawdzamy czy użytkownik ma tę statystykę i czy spełnia wymaganie
+        var statystykaUzytkownika = await context.StatystykaUzytkownika
+            .FirstOrDefaultAsync(s => s.UzytkownikId == idUzytkownika && s.StatystykaId == miejsce.StatystykaId);
+        if (statystykaUzytkownika == null) return false; // jeśli użytkownik nie ma tej statystyki, to nie spełnia wymagania
+            
+        if (miejsce.WartoscLiczbowaStatystyki != null)
+        {
+            return statystykaUzytkownika.PorownywalnaWartoscLiczbowa >= miejsce.WartoscLiczbowaStatystyki;
+        }
+            
+        return statystykaUzytkownika.Wartosc == miejsce.WartoscStatystyki;
+
+    }
+
     // w serwisie trzeba będzie posprawdzać id wszystkich elementów czy istnieje
     public async Task<bool> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
     {
