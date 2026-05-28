@@ -176,6 +176,28 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         }
         return true;
     }
+
+    public async Task<bool> CzyUzytkownikSpelniaOgolneWymaganiaDruzyny(int idDruzyny, int idUzytkownika)
+    {
+        var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
+        if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + idUzytkownika + " nie istnieje.");
+        
+        var druzyna = await context.Druzyna.FindAsync(idDruzyny);
+        if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
+
+        var wymagania = await GetWymaganiaDruzyny(idDruzyny);
+        
+        bool czyUzytkownikSpelniaWymagania = true;
+        foreach (var w in wymagania){
+            var statystykaUzytkownika = await context.StatystykaUzytkownika.FirstOrDefaultAsync(s => s.UzytkownikId == idUzytkownika && s.StatystykaId == w.IdStatystyki);
+            if (statystykaUzytkownika == null || statystykaUzytkownika.PorownywalnaWartoscLiczbowa < w.PorownywalnaWartoscLiczbowa)
+            {
+                czyUzytkownikSpelniaWymagania = false;
+                break;
+            }
+        }
+        return czyUzytkownikSpelniaWymagania;
+    }
     
     public async Task<ICollection<WymaganieDruzynyDoWyswietleniaDto>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny)
     {
