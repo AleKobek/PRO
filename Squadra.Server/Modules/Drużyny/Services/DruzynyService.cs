@@ -156,11 +156,13 @@ public class DruzynyService(
             : null;
         
         if (stopienBieglosciRes is { Succeeded: false }) return ServiceResult<DruzynaSzczegolyDto>.Fail(stopienBieglosciRes.StatusCode, stopienBieglosciRes.Errors);
-
         
-        var jezykIStopienBiegłosci = jezykRes != null && stopienBieglosciRes != null
-            ? $"{jezykRes.Value.Nazwa} - {stopienBieglosciRes.Value.Nazwa}" // już odfiltrowaliśmy drużyny bez WymaganyJezykId i WymaganyStopienBieglosciJezykaId, więc możemy bezpiecznie użyć .Value
-            : jezykRes.Value?.Nazwa; 
+        
+        var jezykIStopienBiegłosci = jezykRes != null 
+            ? stopienBieglosciRes != null 
+                ? $"{jezykRes.Value.Nazwa} - {stopienBieglosciRes.Value.Nazwa}" // już odfiltrowaliśmy drużyny bez WymaganyJezykId i WymaganyStopienBieglosciJezykaId, więc możemy bezpiecznie użyć .Value
+                : jezykRes.Value.Nazwa // już odfiltrowaliśmy drużyny bez WymaganyJezykId, więc możemy bezpiecznie użyć .Value
+            : null; // jeżeli nie ma wymaganego języka, to zwracamy null
         
         // pobieramy wymagania drużyny
         var wymaganiaRes = await statystykiService.GetWymaganiaDruzynyDoWyswietlenia(idDruzyny);
