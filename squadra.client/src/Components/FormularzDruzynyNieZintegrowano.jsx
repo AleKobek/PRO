@@ -132,7 +132,6 @@ export default function FormularzDruzynyNieZintegrowano({
     const [idMinimalnegoStopniaJezyka, ustawIdMinimalnegoStopniaJezyka] = useState(null);
     const [czyPubliczna, ustawCzyPubliczna] = useState(true);
     const [idWybranejPlatformy, ustawIdWybranejPlatformy] = useState(null);
-    const [czy18Plus, ustawCzy18Plus] = useState(false);
 
     // {idRoli, nazwaRoli}
     const [miejscaWDruzynie, ustawMiejscaWDruzynie] = useState([]); // tyle elementów ile miejsc
@@ -216,7 +215,6 @@ export default function FormularzDruzynyNieZintegrowano({
             int? IdNastrojuRozgrywki,
             int? IdWymaganegoJezyka,
             int? IdWymaganegoStopniaBieglosciJezyka,
-            bool Czy18Plus,
             int? IdPlatformy,
             int? IdRoliKapitana,
             ICollection<WymaganaStatystykaDruzyny>? WymaganeStatystyki, (u nas null)
@@ -235,7 +233,6 @@ export default function FormularzDruzynyNieZintegrowano({
             idNastrojuRozgrywki: idWybranegoNastroju,
             idWymaganegoJezyka: idWymaganegoJezyka,
             idWymaganegoStopniaBieglosciJezyka: idMinimalnegoStopniaJezyka,
-            czy18Plus: czy18Plus,
             idPlatformy: idWybranejPlatformy,
             idRoliKapitana: idRoliKapitana,
             WymaganeStatystyki: null,
@@ -412,15 +409,6 @@ export default function FormularzDruzynyNieZintegrowano({
                         className="mx-2"
                         checked={czyPubliczna}
                         onChange={() => ustawCzyPubliczna(!czyPubliczna)}
-                    />
-                </label>
-                <label>
-                    Czy 18 plus:
-                    <input
-                        type="checkbox"
-                        className="mx-2"
-                        checked={czy18Plus}
-                        onChange={() => ustawCzy18Plus(!czy18Plus)}
                     />
                 </label>
             </div>

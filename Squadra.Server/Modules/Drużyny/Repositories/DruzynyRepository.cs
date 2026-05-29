@@ -127,7 +127,6 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
                 NastrojRozgrywkiId = druzynaReq.IdNastrojuRozgrywki,
                 WymaganyJezykId = druzynaReq.IdWymaganegoJezyka,
                 WymaganyStopienBieglosciJezykaId = druzynaReq.IdWymaganegoStopniaBieglosciJezyka,
-                Czy18Plus = druzynaReq.Czy18Plus,
                 PlatformaId = druzynaReq.IdPlatformy,
                 CzyMaWymagania = czyMaWymagania
             };
@@ -279,8 +278,6 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         druzynaDoZmiany.NastrojRozgrywkiId = druzynaReq.IdNastrojuRozgrywki;
         druzynaDoZmiany.WymaganyJezykId = druzynaReq.IdWymaganegoJezyka;
         druzynaDoZmiany.WymaganyStopienBieglosciJezykaId = druzynaReq.IdWymaganegoStopniaBieglosciJezyka;
-        druzynaDoZmiany.Czy18Plus = druzynaReq.Czy18Plus;
-
         await context.SaveChangesAsync();
 
         return true;

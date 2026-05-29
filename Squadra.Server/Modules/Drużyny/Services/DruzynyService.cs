@@ -2,8 +2,6 @@
 using Squadra.Server.Modules.BibliotekaGier.Services;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Repositories;
-using Squadra.Server.Modules.Platformy;
-using Squadra.Server.Modules.Platformy.DTO;
 using Squadra.Server.Modules.Platformy.Services;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.Services;
@@ -192,7 +190,6 @@ public class DruzynyService(
             jezykIStopienBiegłosci,
             wymaganiaRes.Value, // już się upewniliśmy, że wymaganiaRes.Value nie jest null, więc można bezpiecznie użyć .Value
             druzyna.CzyPubliczna,
-            druzyna.Czy18Plus,
             nazwaPlatformy,
             logoPlatformy,
             statusCzlonkostwa

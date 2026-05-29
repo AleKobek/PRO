@@ -11,7 +11,6 @@ public record DruzynaSzczegolyDto(
     string? WymaganyJezykIStopienBieglosci,
     ICollection<WymaganieDruzynyDoWyswietleniaDto> WymaganiaDoWypisania,
     bool CzyPubliczna,
-    bool Czy18Plus,
     string? NazwaPlatformy,
     byte[]? LogoPlatformy,
     string StatusCzlonkostwa

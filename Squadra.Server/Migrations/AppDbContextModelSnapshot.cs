@@ -204,12 +204,6 @@ namespace Squadra.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("Czy18Plus")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false)
-                        .HasColumnName("czy_18_plus");
-
                     b.Property<bool>("CzyMaWymagania")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bit")
@@ -340,30 +334,6 @@ namespace Squadra.Server.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Nastroj_Rozgrywki", (string)null);
-                });
-
-            modelBuilder.Entity("Squadra.Server.Modules.Drużyny.Models.WymaganaStatystykaDruzyny", b =>
-                {
-                    b.Property<int>("DruzynaId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("StatystykaId")
-                        .HasColumnType("int");
-
-                    b.Property<double?>("PorownywalnaWartoscLiczbowa")
-                        .HasColumnType("float")
-                        .HasColumnName("porownywalna_wartosc_liczbowa");
-
-                    b.Property<string>("Wartosc")
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("wartosc");
-
-                    b.HasKey("DruzynaId", "StatystykaId");
-
-                    b.HasIndex("StatystykaId");
-
-                    b.ToTable("Wymagana_Statystyka_Druzyny", (string)null);
                 });
 
             modelBuilder.Entity("Squadra.Server.Modules.Platformy.Models.Platforma", b =>
@@ -898,7 +868,7 @@ namespace Squadra.Server.Migrations
 
             modelBuilder.Entity("Squadra.Server.Modules.Statystyki.Models.Ranga", b =>
                 {
-                    b.Property<int>("IdStatystyki")
+                    b.Property<int>("StatystykaId")
                         .HasColumnType("int")
                         .HasColumnName("id_statystyki");
 
@@ -912,7 +882,7 @@ namespace Squadra.Server.Migrations
                         .HasColumnType("nvarchar(40)")
                         .HasColumnName("nazwa");
 
-                    b.HasKey("IdStatystyki", "WartoscLiczbowa");
+                    b.HasKey("StatystykaId", "WartoscLiczbowa");
 
                     b.ToTable("Ranga", (string)null);
                 });
@@ -999,6 +969,30 @@ namespace Squadra.Server.Migrations
                     b.HasIndex("StatystykaId");
 
                     b.ToTable("Statystyka_uzytkownika", (string)null);
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Statystyki.Models.WymaganaStatystykaDruzyny", b =>
+                {
+                    b.Property<int>("DruzynaId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StatystykaId")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("PorownywalnaWartoscLiczbowa")
+                        .HasColumnType("float")
+                        .HasColumnName("porownywalna_wartosc_liczbowa");
+
+                    b.Property<string>("Wartosc")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("wartosc");
+
+                    b.HasKey("DruzynaId", "StatystykaId");
+
+                    b.HasIndex("StatystykaId");
+
+                    b.ToTable("Wymagana_Statystyka_Druzyny", (string)null);
                 });
 
             modelBuilder.Entity("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", b =>
@@ -1418,27 +1412,6 @@ namespace Squadra.Server.Migrations
                     b.Navigation("Uzytkownik");
                 });
 
-            modelBuilder.Entity("Squadra.Server.Modules.Drużyny.Models.WymaganaStatystykaDruzyny", b =>
-                {
-                    b.HasOne("Squadra.Server.Modules.Drużyny.Models.Druzyna", "Druzyna")
-                        .WithMany("WymaganaStatystykaDruzynyCollection")
-                        .HasForeignKey("DruzynaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("WymaganaStatystykaDruzyny_Druzyna");
-
-                    b.HasOne("Squadra.Server.Modules.Statystyki.Models.Statystyka", "Statystyka")
-                        .WithMany("WymaganaStatystykaDruzynyCollection")
-                        .HasForeignKey("StatystykaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("Wymagana_Statystyka_Druzyny_Statystyka");
-
-                    b.Navigation("Druzyna");
-
-                    b.Navigation("Statystyka");
-                });
-
             modelBuilder.Entity("Squadra.Server.Modules.Platformy.Models.UzytkownikPlatforma", b =>
                 {
                     b.HasOne("Squadra.Server.Modules.Platformy.Models.Platforma", "Platforma")
@@ -1565,7 +1538,7 @@ namespace Squadra.Server.Migrations
                 {
                     b.HasOne("Squadra.Server.Modules.Statystyki.Models.Statystyka", "Statystyka")
                         .WithMany("RangaCollection")
-                        .HasForeignKey("IdStatystyki")
+                        .HasForeignKey("StatystykaId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1622,6 +1595,27 @@ namespace Squadra.Server.Migrations
                     b.Navigation("Statystyka");
 
                     b.Navigation("Uzytkownik");
+                });
+
+            modelBuilder.Entity("Squadra.Server.Modules.Statystyki.Models.WymaganaStatystykaDruzyny", b =>
+                {
+                    b.HasOne("Squadra.Server.Modules.Drużyny.Models.Druzyna", "Druzyna")
+                        .WithMany("WymaganaStatystykaDruzynyCollection")
+                        .HasForeignKey("DruzynaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("WymaganaStatystykaDruzyny_Druzyna");
+
+                    b.HasOne("Squadra.Server.Modules.Statystyki.Models.Statystyka", "Statystyka")
+                        .WithMany("WymaganaStatystykaDruzynyCollection")
+                        .HasForeignKey("StatystykaId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("Wymagana_Statystyka_Druzyny_Statystyka");
+
+                    b.Navigation("Druzyna");
+
+                    b.Navigation("Statystyka");
                 });
 
             modelBuilder.Entity("Squadra.Server.Modules.Wiadomosci.Models.Wiadomosc", b =>

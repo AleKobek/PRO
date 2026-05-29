@@ -53,7 +53,6 @@ export default function StronaSzczegolowDruzyny() {
        }
      ],
      "czyPubliczna": true,
-     "czy18Plus": false,
      "nazwaPlatformy": "PC",
      "logoPlatformy": (tutaj logo),
      "statusCzlonkostwa": "Kapitan" lub "Członek" lub "Brak"
@@ -485,11 +484,6 @@ export default function StronaSzczegolowDruzyny() {
                     <label className="pole-w-szczegolach-druzyny">
                         Publiczność
                         <span>{daneDruzyny.czyPubliczna ? "Publiczna" : "Prywatna"}</span>
-                    </label>
-                    {/* czy 18+ */}
-                    <label className="pole-w-szczegolach-druzyny">
-                        Czy 18+?
-                        <span>{daneDruzyny.czy18Plus ? "tak" : "nie"}</span>
                     </label>
                 </div>
                 {/*  wymagania ogólne  */}

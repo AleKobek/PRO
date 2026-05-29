@@ -57,12 +57,6 @@ public class DruzynaEFConfig : IEntityTypeConfiguration<Druzyna>
             .HasColumnName("id_wymaganego_stopnia_bieglosci_jezyka");
         
         builder
-            .Property(x => x.Czy18Plus)
-            .HasColumnName("czy_18_plus")
-            .HasDefaultValue(false)
-            .IsRequired();
-        
-        builder
             .Property(x => x.PlatformaId)
             .HasColumnName("id_platformy");
         

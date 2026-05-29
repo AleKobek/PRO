@@ -10,7 +10,6 @@ public record CreateDruzynaReqDto(
     int IdNastrojuRozgrywki,
     int? IdWymaganegoJezyka,
     int? IdWymaganegoStopniaBieglosciJezyka,
-    bool Czy18Plus,
     int? IdPlatformy,
     int? IdRoliKapitana,
     ICollection<WartoscStatystykiDTO>? WymaganeStatystyki,

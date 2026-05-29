@@ -6,6 +6,5 @@ public record DruzynaUpdateDto(
     string? Opis,
     int IdNastrojuRozgrywki,
     int? IdWymaganegoJezyka,
-    int? IdWymaganegoStopniaBieglosciJezyka,
-    bool Czy18Plus
+    int? IdWymaganegoStopniaBieglosciJezyka
 );

@@ -180,7 +180,6 @@ export default function FormularzDruzynyZintegrowano({
     const [idMinimalnegoStopniaJezyka, ustawIdMinimalnegoStopniaJezyka] = useState(null);
     const [czyPubliczna, ustawCzyPubliczna] = useState(true);
     const [idWybranejPlatformy, ustawIdWybranejPlatformy] = useState(null);
-    const [czy18Plus, ustawCzy18Plus] = useState(false);
 
     // {int? idRoli, string? nazwaRoli, string? nazwaStatystyki, int? idStatystyki, string? wartoscStatystyki, int? porownywalnaWartoscLiczbowa}
     const [miejscaWDruzynie, ustawMiejscaWDruzynie] = useState([]); // tyle elementów ile miejsc
@@ -290,7 +289,6 @@ export default function FormularzDruzynyZintegrowano({
             int? IdNastrojuRozgrywki,
             int? IdWymaganegoJezyka,
             int? IdWymaganegoStopniaBieglosciJezyka,
-            bool Czy18Plus,
             int? IdPlatformy,
             int? IdRoliKapitana,
             ICollection<WartoscStatystykiDTO>? WymaganeStatystyki -> {int IdStatystyki, string? Wartosc, double PorownywalnaWartoscLiczbowa}
@@ -309,7 +307,6 @@ export default function FormularzDruzynyZintegrowano({
             idNastrojuRozgrywki: idWybranegoNastroju,
             idWymaganegoJezyka: idWymaganegoJezyka,
             idWymaganegoStopniaBieglosciJezyka: idMinimalnegoStopniaJezyka,
-            czy18Plus: czy18Plus,
             idPlatformy: idWybranejPlatformy,
             idRoliKapitana: idRoliKapitana,
             WymaganeStatystyki: wymaganiaDruzynowe.map((wymaganie) => {
@@ -589,15 +586,6 @@ export default function FormularzDruzynyZintegrowano({
                         className="mx-2"
                         checked={czyPubliczna}
                         onChange={() => ustawCzyPubliczna(!czyPubliczna)}
-                    />
-                </label>
-                <label>
-                    Czy 18 plus:
-                    <input
-                        type="checkbox"
-                        className="mx-2"
-                        checked={czy18Plus}
-                        onChange={() => ustawCzy18Plus(!czy18Plus)}
                     />
                 </label>
             </div>

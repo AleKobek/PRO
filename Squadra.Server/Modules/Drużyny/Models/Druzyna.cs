@@ -17,7 +17,6 @@ public class Druzyna
     public int NastrojRozgrywkiId { get; set; }
     public int? WymaganyJezykId { get; set; }
     public int? WymaganyStopienBieglosciJezykaId { get; set; }
-    public bool Czy18Plus { get; set; }
     public int? PlatformaId { get; set; }
     public bool CzyMaWymagania { get; set; }
     
