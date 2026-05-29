@@ -93,7 +93,7 @@ public class DruzynyService(
         return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Ok(druzynyDoTabelki);
     }
     
-    // może podamy też od razu, czy to jego drużyna i czy jest kapitanem, żeby nie musieć tego sprawdzać na froncie
+    
     public async Task<ServiceResult<DruzynaSzczegolyDto>> PodajSzczegolyDruzyny(int idDruzyny, int idUzytkownika)
     {
         if(idDruzyny <= 0) return ServiceResult<DruzynaSzczegolyDto>.BadRequest(new ErrorItem("Id drużyny musi być większe od 0"));
@@ -182,6 +182,7 @@ public class DruzynyService(
        
         // składamy wszystko do kupy i zwracamy szczegóły drużyny
         return ServiceResult<DruzynaSzczegolyDto>.Ok(new DruzynaSzczegolyDto(
+            druzyna.Nazwa,
             graRes.Value.Tytul, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             druzyna.Opis,
             nastrojRozgrywki.Nazwa,
