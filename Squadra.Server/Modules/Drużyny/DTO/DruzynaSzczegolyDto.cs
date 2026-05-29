@@ -7,6 +7,7 @@ public record DruzynaSzczegolyDto(
     string TytulGry,
     string? Opis,
     string? NastrojRozgrywki,
+    int? IdNastrojuRozgrywki,
     ICollection<MiejsceWDruzynieSzczegolyDto> Czlonkowie,
     string? WymaganyJezykIStopienBieglosci,
     ICollection<WymaganieDruzynyDoWyswietleniaDto> WymaganiaDoWypisania,

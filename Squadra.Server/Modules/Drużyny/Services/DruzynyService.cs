@@ -186,6 +186,7 @@ public class DruzynyService(
             graRes.Value.Tytul, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             druzyna.Opis,
             nastrojRozgrywki.Nazwa,
+            nastrojRozgrywki.Id,
             czlonkowieDruzynyZeSprawdzonymiWymaganiami,
             jezykIStopienBiegłosci,
             wymaganiaRes.Value, // już się upewniliśmy, że wymaganiaRes.Value nie jest null, więc można bezpiecznie użyć .Value
