@@ -21,6 +21,7 @@ export default function StronaSzczegolowDruzyny() {
      "tytulGry": "Overwatch",
      "opis": "EEEEE",
      "nastrojRozgrywki": "Zwykły",
+     "idNastrojuRozgrywki": 1,
      "czlonkowie": [
        {
          "idMiejscaWDruzynie": 16,
@@ -151,7 +152,7 @@ export default function StronaSzczegolowDruzyny() {
             idDruzyny: idDruzyny,
             nazwa: daneDruzyny.nazwa,
             opis: daneDruzyny.opis,
-            nastrojRozgrywki: daneDruzyny.nastrojRozgrywki,
+            idNastrojuRozgrywki: daneDruzyny.idNastrojuRozgrywki,
             czyPubliczna: daneDruzyny.czyPubliczna
         };
         // tutaj pokazujemy panel edycji, a panel szczegółów chowamy
