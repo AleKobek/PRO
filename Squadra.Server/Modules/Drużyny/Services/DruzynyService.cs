@@ -529,7 +529,18 @@ public class DruzynyService(
         {
             var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
             if(druzyna.KapitanId != idUzytkownika) return ServiceResult<bool>.Forbidden(new ErrorItem("Tylko kapitan drużyny może ją edytować"));
-            return ServiceResult<bool>.NoContent(await druzynyRepository.UpdateDruzyna(idDruzyny, druzynaReq));
+            
+            var nastroj = await druzynyRepository.GetNastrojRozgrywki(druzynaReq.IdNastrojuRozgrywki); // tylko po to, aby wywaliło błąd gdy nie znajdzie
+            
+            var bledy = new List<ErrorItem>();
+
+            if(druzynaReq.Nazwa.Trim().Length == 0) bledy.Add(new ErrorItem("Nazwa drużyny nie może być pusta", nameof(druzynaReq.Nazwa)));
+            if(druzynaReq.Nazwa.Trim().Length > 40) bledy.Add(new ErrorItem("Nazwa drużyny nie może być dłuższa niż 40 znaków", nameof(druzynaReq.Nazwa)));
+            if(druzynaReq.Opis?.Trim().Length > 300) bledy.Add(new ErrorItem("Opis nie może być dłuższy niż 300 znaków", nameof(druzynaReq.Opis)));
+            
+            return bledy.Count > 0 
+                ? ServiceResult<bool>.BadRequest(bledy.ToArray()) 
+                : ServiceResult<bool>.NoContent(await druzynyRepository.UpdateDruzyna(idDruzyny, druzynaReq));
         }
         catch (NieZnalezionoWBazieException e)
         {

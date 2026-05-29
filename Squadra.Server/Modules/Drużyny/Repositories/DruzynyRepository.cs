@@ -272,12 +272,10 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         var druzynaDoZmiany = await context.Druzyna.FindAsync(idDruzyny);
         if (druzynaDoZmiany == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
 
-        druzynaDoZmiany.Nazwa = druzynaReq.Nazwa;
+        druzynaDoZmiany.Nazwa = druzynaReq.Nazwa.Trim();
         druzynaDoZmiany.CzyPubliczna = druzynaReq.CzyPubliczna;
-        druzynaDoZmiany.Opis = druzynaReq.Opis;
+        druzynaDoZmiany.Opis = druzynaReq.Opis?.Trim();
         druzynaDoZmiany.NastrojRozgrywkiId = druzynaReq.IdNastrojuRozgrywki;
-        druzynaDoZmiany.WymaganyJezykId = druzynaReq.IdWymaganegoJezyka;
-        druzynaDoZmiany.WymaganyStopienBieglosciJezykaId = druzynaReq.IdWymaganegoStopniaBieglosciJezyka;
         await context.SaveChangesAsync();
 
         return true;

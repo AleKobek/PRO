@@ -4,7 +4,5 @@ public record DruzynaUpdateDto(
     string Nazwa,
     bool CzyPubliczna,
     string? Opis,
-    int IdNastrojuRozgrywki,
-    int? IdWymaganegoJezyka,
-    int? IdWymaganegoStopniaBieglosciJezyka
+    int IdNastrojuRozgrywki
 );
