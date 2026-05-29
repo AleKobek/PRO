@@ -8,6 +8,9 @@ export default function StronaGlowna() {
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
 
+    useEffect(() => {
+        document.title = `Squadra`;
+    }, []);
     
     useEffect(() => {
         if (!ladowanie && uzytkownik) {

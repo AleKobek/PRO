@@ -11,7 +11,9 @@ export default function TwojeKonto() {
     const { uzytkownik, ladowanie } = useAuth();
     const location = useLocation();
 
-
+    useEffect(() => {
+        document.title = `Squadra`;
+    }, []);
 
     useEffect(() => {
         if (location.state?.pomyslnieEdytowanoKonto) {

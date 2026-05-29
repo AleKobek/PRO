@@ -1,4 +1,4 @@
-﻿import React from "react";
+﻿import React, {useEffect} from "react";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import FormularzZewnetrznyDruzyny from "./FormularzZewnetrznyDruzyny";
@@ -7,6 +7,10 @@ export default function StworzDruzyne() {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
+
+    useEffect(() => {
+        document.title = `Squadra`;
+    }, []);
 
     if(ladowanie || !uzytkownik) return (<>
             <div id = "glowna">

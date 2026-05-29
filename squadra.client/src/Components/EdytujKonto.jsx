@@ -42,6 +42,9 @@ export default function EdytujKonto() {
     const [bladOgolnyHasla, ustawbladOgolnyHasla] = useState("");
 
 
+    useEffect(() => {
+        document.title = `Squadra`;
+    }, []);
 
     useEffect(() => {
 

@@ -15,6 +15,11 @@ export default function Logowanie() {
     const [czySieWysyla, ustawCzySieWysyla] = useState(false);
     const [bladOgolny, ustawBladOgolny] = useState("");
 
+
+    useEffect(() => {
+        document.title = `Squadra`;
+    }, []);
+
     const czyZablokowaneWyslij = useMemo(() =>{
         return(
             loginLubEmail.trim().length === 0 ||

@@ -26,6 +26,10 @@ import {Bounce, toast} from "react-toastify";
     const [czyJestBlad, ustawCzyJestBlad] = useState(false);
 
     useEffect(() => {
+        document.title = `Squadra`;
+    }, []);
+
+    useEffect(() => {
         if(!uzytkownik) return;
         const ac = new AbortController();
         let alive = true; // nie aktualizujemy stanu po unmount

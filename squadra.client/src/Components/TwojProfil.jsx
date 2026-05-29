@@ -12,6 +12,9 @@ export default function TwojProfil() {
     const { uzytkownik, ladowanie } = useAuth();
     const location = useLocation();
 
+    useEffect(() => {
+        document.title = `Squadra`;
+    }, []);
 
     useEffect(() => {
         if (location.state?.pomyslnieEdytowanoProfil) {

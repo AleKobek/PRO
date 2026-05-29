@@ -4,7 +4,7 @@ import {API_BASE_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
 
 // pamiętać o tym, aby to było w nawiasach klamrowych!
-export default function DaneProfilu({idUzytkownika}) {
+export default function DaneProfilu({idUzytkownika, ustawPseudonimDoNazwyKarty = null}) {
     
     const [pseudonim, ustawPseudonim] = useState("");
     const [zaimki, ustawZaimki] = useState("");
@@ -77,6 +77,7 @@ export default function DaneProfilu({idUzytkownika}) {
             if (!data) return;
 
             ustawPseudonim(data.pseudonim ?? "");
+            if(ustawPseudonimDoNazwyKarty) ustawPseudonimDoNazwyKarty(data.pseudonim ?? "");
             ustawZaimki(data.zaimki ?? "");
             // {idRegionu, nazwaRegionu, idKraju, nazwaKraju}
             const regionIKraj = data.regionIKraj;

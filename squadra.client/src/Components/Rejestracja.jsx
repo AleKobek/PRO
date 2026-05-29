@@ -26,6 +26,11 @@ export default function Rejestracja() {
     const [bladOgolny, ustawBladOgolny] = useState("");
 
     // jeszcze zanim wyślemy do backendu staramy się zrobić weryfikację także na froncie, aby trochę odciążyć
+
+    useEffect(() => {
+        document.title = `Squadra`;
+    }, []);
+
     function sprawdzHaslo() {
         let re = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,128})");
         if(re.test(haslo1) === false) return ("Hasło musi mieć dużą literę, małą literę, cyfrę, znak specjalny i minimum 8 znaków")

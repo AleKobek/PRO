@@ -19,8 +19,12 @@ export default function ProfilOgolny() {
     const frDelRef = React.useRef(null);
     const [pokazUsunZnajomego, ustawPokazUsunZnajomego] = useState(false);
     const [czyZablokowaneUsun, ustawCzyZablokowaneUsun] = useState(true);
+    const [pseudonim, ustawPseudonim] = useState("");
 
-
+    useEffect(() => {
+        if(pseudonim.length === 0) document.title = `Squadra: Profil użytkownika`;
+        else document.title = `Squadra: Profil ${pseudonim}`;
+    }, [pseudonim]);
 
     useEffect(() => {
         if(uzytkownik === null) return;
@@ -251,7 +255,7 @@ export default function ProfilOgolny() {
     return (<>
         <div id = "glowna">
             <h1>Profil użytkownika</h1>
-            <DaneProfilu idUzytkownika={parseInt(idWlascicielaProfilu)}></DaneProfilu>
+            <DaneProfilu idUzytkownika={parseInt(idWlascicielaProfilu)} ustawPseudonimDoNazwyKarty={ustawPseudonim}></DaneProfilu>
             <PrzyciskPodProfilem/>
             <h2 className="mt-10">Biblioteka gier</h2>
             <TabelkaBibliotekiGierKomponent idUzytkownika={parseInt(idWlascicielaProfilu)}/>

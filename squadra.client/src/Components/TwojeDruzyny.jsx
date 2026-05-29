@@ -11,6 +11,10 @@ export default function TwojeDruzyny() {
     const location = useLocation();
 
     useEffect(() => {
+        document.title = `Squadra`;
+    }, []);
+
+    useEffect(() => {
         if (location.state?.pomyslnieStworzonoDruzyne) {
             toast.success('Pomyślnie utworzono drużynę!', {
                 position: "top-center",

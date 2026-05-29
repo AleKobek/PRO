@@ -21,6 +21,10 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
     const [loginDoZaproszenia, ustawLoginDoZaproszenia] = useState("");
     const [czySieWysylaZaproszenie, ustawCzySieWysylaZaproszenie] = useState(false);
 
+    useEffect(() => {
+        document.title = `Squadra`;
+    }, []);
+
     // aktualizujemy wybranemu znajomemu, czy ma nowe wiadomości
     const przyWyborzeZnajomego = (idZnajomego) => {
         ustawIdZnajomegoZOtwartymCzatem(idZnajomego);
