@@ -1,7 +1,6 @@
 ﻿import React, {useEffect, useState} from "react";
-import {API_BASE_URL} from "../config/api";
+import {API_BASE_URL, CLIENT_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
-import PanelSzczegolowDruzyny from "./PanelSzczegolowDruzyny";
 import MiniAwatarKomponent from "./MiniAwatarKomponent";
 
 
@@ -9,13 +8,6 @@ import MiniAwatarKomponent from "./MiniAwatarKomponent";
 export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
 
     const [druzyny, ustawDruzyny] = useState([]);
-
-    const [pokazPanelSzczegolow, ustawPokazPanelSzczegolow] = useState(false);
-    const [pokazPanelEdycji, ustawPokazPanelEdycji] = useState(false);
-    const [idWybranejDruzyny, ustawIdWybranejDruzyny] = useState(null);
-    const [nazwaWybranejDruzyny, ustawNazwaWybranejDruzyny] = useState("");
-    const [szczegolyWybranejDruzyny, ustawSzczegolyWybranejDruzyny] = useState(null);
-    const szczegolyRef = React.useRef(null); // powinien być tutaj, czy w komponencie?
 
 
     // pobieramy tabelkę drużyn
@@ -81,78 +73,9 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
         };
     }, [idUzytkownika]);
 
-    const pobierzStatystykiDruzyny = async (idDruzyny) => {
-        if (!idDruzyny) return;
-        if (!idUzytkownika) return;
-        if (idDruzyny === idWybranejDruzyny) return; // nie musimy pobierać drugi raz
-
-        ustawIdWybranejDruzyny(idDruzyny);
-
-
-        const ac = new AbortController();
-        let alive = true;
-
-        // pobieramy szczegóły danej drużyny
-        const fetchJsonAbort = async (url) => {
-            try {
-                const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
-                if (!res.ok) {
-                    toast.error('Wystąpił błąd podczas pobierania danych drużyny', {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    });
-                    return null;
-                }
-                return await res.json();
-            } catch (err) {
-                if (err && err.name === 'AbortError') return null;
-                console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania danych drużyny', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
-                return null;
-            }
-        };
-
-        const data = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/szczegoly/${idDruzyny}`);
-
-        // przerywamy działanie funkcji
-        if (!alive) return;
-        if (!data) return;
-
-        ustawSzczegolyWybranejDruzyny(data);
-    }
-
-    const przyKliknieciuSzczegoly = async (idDruzyny, nazwaDruzyny) => {
-        await pobierzStatystykiDruzyny(idDruzyny);
-        ustawNazwaWybranejDruzyny(nazwaDruzyny);
-        ustawPokazPanelSzczegolow(!pokazPanelSzczegolow);
-    }
-
-    const usunDruzyneZTabelki = (idDruzyny) => {
-        if (!idDruzyny) return;
-        if (!idUzytkownika) return;
-        ustawIdWybranejDruzyny(null);
-        ustawNazwaWybranejDruzyny("");
-        ustawSzczegolyWybranejDruzyny(null);
-        let druzynyTemp = druzyny.filter(druzyna => druzyna.id !== idDruzyny);
-        ustawDruzyny(druzynyTemp);
-    }
+    const openInNewTab = url => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
 
 
     return (<div>
@@ -214,7 +137,7 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
                             <td className="items-center border border-gray-600">
                                 <button
                                     className="bg-blue-600 text-white text-2xl p-2 hover:bg-blue-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
-                                    onClick={() => przyKliknieciuSzczegoly(druzyna.id, druzyna.nazwa)}
+                                    onClick={() => openInNewTab(druzyna.id ? `${CLIENT_URL}/druzyna/${druzyna.id}` : '#')}
                                 >Szczegóły</button>
                             </td>
                         </tr>
@@ -227,18 +150,5 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
         ) : (
             <div className="p-4 text-center text-gray-800">Brak drużyn. Kliknij przycisk na górze, aby do jakiejś dołączyć!</div>
         )}
-        {pokazPanelSzczegolow &&
-            <PanelSzczegolowDruzyny
-                idDruzyny={idWybranejDruzyny}
-                nazwaDruzyny={nazwaWybranejDruzyny}
-                szczegolyDruzyny={szczegolyWybranejDruzyny}
-                idUzytkownika={idUzytkownika}
-                daneDruzyny={szczegolyWybranejDruzyny}
-                ref={szczegolyRef}
-                ustawPokazPanelSzczegolow={ustawPokazPanelSzczegolow}
-                ustawPokazPanelEdycji={ustawPokazPanelEdycji}
-                usunDruzyne = {usunDruzyneZTabelki}
-                ustawSzczegolyDruzyny={ustawSzczegolyWybranejDruzyny}
-            />}
     </div>);
 }

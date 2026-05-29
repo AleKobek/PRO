@@ -16,6 +16,7 @@ import {useState} from "react";
 import {Bounce, ToastContainer} from "react-toastify";
 import TwojeDruzyny from "./Components/TwojeDruzyny";
 import StworzDruzyne from "./Components/StworzDruzyne";
+import StronaSzczegolowDruzyny from "./Components/StronaSzczegolowDruzyny";
 
 function App() {
 
@@ -58,6 +59,10 @@ function App() {
                 <Route path = "/stworzDruzyne" element = {<>
                     <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
                     <StworzDruzyne/>
+                </>}></Route>
+                <Route path = "/druzyna/:idDruzyny" element = {<>
+                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
+                    <StronaSzczegolowDruzyny/>
                 </>}></Route>
               <Route path = "/login" element = {<Logowanie/>}></Route>
               <Route path = "/rejestracja" element = {<Rejestracja/>}></Route>

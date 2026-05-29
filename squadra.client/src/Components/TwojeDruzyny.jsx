@@ -24,7 +24,34 @@ export default function TwojeDruzyny() {
                 transition: Bounce,
             });
         }
-    },[location.state?.pomyslnieStworzonoDruzyne])
+        if (location.state?.pomyslnieUsunietoDruzyne) {
+            toast.success('Pomyślnie usunięto drużynę!', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            
+            if (location.state?.pomyslnieOpuszczonoDruzyne) {
+                toast.success('Pomyślnie opuszczono drużynę!', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+            }
+        }
+    },[location.state?.pomyslnieOpuszczonoDruzyne, location.state?.pomyslnieStworzonoDruzyne, location.state?.pomyslnieUsunietoDruzyne])
 
 
     if(ladowanie || !uzytkownik) return (<>
