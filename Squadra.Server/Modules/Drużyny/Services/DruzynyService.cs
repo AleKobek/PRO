@@ -99,11 +99,6 @@ public class DruzynyService(
         if(idDruzyny <= 0) return ServiceResult<DruzynaSzczegolyDto>.BadRequest(new ErrorItem("Id drużyny musi być większe od 0"));
         var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
         
-        // pobieramy grę, żeby mieć jej tytuł
-        var graRes = await wspieranaGraService.GetWspieranaGra(druzyna.GraId);
-        if (!graRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(graRes.StatusCode, graRes.Errors);
-        
-        
         // pobieramy członków drużyny
         var czlonkowieDruzynyRes = await GetCzlonkowieDruzynyDoWyswietlenia(idDruzyny);
         if (!czlonkowieDruzynyRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(czlonkowieDruzynyRes.StatusCode, czlonkowieDruzynyRes.Errors);
@@ -114,6 +109,13 @@ public class DruzynyService(
                 ? "Kapitan" 
                 : "Członek"
             : "Brak"; // jeżeli nie jest członkiem
+        
+        // musimy potem jeszcze sprawdzać, czy ma zaproszenie do niej
+        if(!druzyna.CzyPubliczna && statusCzlonkostwa == "Brak") return ServiceResult<DruzynaSzczegolyDto>.Forbidden(new ErrorItem("Nie można pobrać szczegółów drużyny, ponieważ jest ona prywatna, a użytkownik nie jest jej członkiem"));
+        
+        // pobieramy grę, żeby mieć jej tytuł
+        var graRes = await wspieranaGraService.GetWspieranaGra(druzyna.GraId);
+        if (!graRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(graRes.StatusCode, graRes.Errors);
         
         var czlonkowieDruzynyZeSprawdzonymiWymaganiami = new List<MiejsceWDruzynieSzczegolyDto>();
         if(statusCzlonkostwa != "Brak") czlonkowieDruzynyZeSprawdzonymiWymaganiami.AddRange(czlonkowieDruzyny); // jak to nasza drużyna, nie musimy sprawdzać

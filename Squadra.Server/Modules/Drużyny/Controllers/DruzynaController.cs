@@ -35,6 +35,7 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
     [EndpointSummary("Zwraca szczegółowe dane drużyny, potrzebne do wyświetlenia jej na stronie drużyny.")]
     [ProducesResponseType(typeof(DruzynaSzczegolyDto), 200)]
     [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
     [ProducesResponseType(404)]
     public async Task<ActionResult<DruzynaSzczegolyDto>> GetDruzynaSzczegoly(int idDruzyny)
     {
@@ -47,6 +48,7 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
         {
             200 => Ok(result.Value),
             400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
