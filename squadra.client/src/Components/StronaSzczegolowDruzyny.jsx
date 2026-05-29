@@ -148,7 +148,13 @@ export default function StronaSzczegolowDruzyny() {
             });
             return;
         }
-        const daneDoPrzekazania = {...daneDruzyny, idDruzyny: idDruzyny };
+        const daneDoPrzekazania = {
+            idDruzyny: idDruzyny,
+            nazwa: daneDruzyny.nazwa,
+            opis: daneDruzyny.opis,
+            nastrojRozgrywki: daneDruzyny.nastrojRozgrywki,
+            czyPubliczna: daneDruzyny.czyPubliczna
+        };
         // tutaj pokazujemy panel edycji, a panel szczegółów chowamy
          navigate('/edytujDruzyne', {state: {daneDoPrzekazania}});
     }
