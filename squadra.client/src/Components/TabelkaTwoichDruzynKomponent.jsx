@@ -2,12 +2,14 @@
 import {API_BASE_URL, CLIENT_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
 import MiniAwatarKomponent from "./MiniAwatarKomponent";
+import {useNavigate} from "react-router-dom";
 
 
 
 export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
 
     const [druzyny, ustawDruzyny] = useState([]);
+    const navigate = useNavigate();
 
 
     // pobieramy tabelkę drużyn
@@ -73,9 +75,6 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
         };
     }, [idUzytkownika]);
 
-    const openInNewTab = url => {
-        window.open(url, '_blank', 'noopener,noreferrer');
-    };
 
 
     return (<div>
@@ -137,7 +136,7 @@ export default function TabelkaTwoichDruzynKomponent({idUzytkownika}) {
                             <td className="items-center border border-gray-600">
                                 <button
                                     className="bg-blue-600 text-white text-2xl p-2 hover:bg-blue-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
-                                    onClick={() => openInNewTab(druzyna.id ? `${CLIENT_URL}/druzyna/${druzyna.id}` : '#')}
+                                    onClick={() =>navigate(druzyna.id ? `/druzyna/${druzyna.id}` : '#')}
                                 >Szczegóły</button>
                             </td>
                         </tr>
