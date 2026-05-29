@@ -443,6 +443,7 @@ export default function StronaSzczegolowDruzyny() {
     return (<>
         <div id = "glowna">
             <div className="flex flex-col justify-center items-center">
+                <button className={"przycisk-nawigacji"} onClick={() => {navigate('/twojeDruzyny')}}>Powrót do twoich drużyn</button>
                 <h2 className="text-2xl font-bold">Szczegóły drużyny:</h2>
                 <h3 className="text-xl mb-4 text-blue-700">{daneDruzyny.nazwa}</h3>
                 {/*  zwykłe dane jak opis, nastrój, platforma itp.  */}
