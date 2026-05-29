@@ -148,8 +148,9 @@ export default function StronaSzczegolowDruzyny() {
             });
             return;
         }
+        const daneDoPrzekazania = {...daneDruzyny, idDruzyny: idDruzyny };
         // tutaj pokazujemy panel edycji, a panel szczegółów chowamy
-         navigate('/edytujDruzyne', {state: {daneDruzyny}});
+         navigate('/edytujDruzyne', {state: {daneDoPrzekazania}});
     }
     
     const przyKliknieciuRozwiaz = async () => {
