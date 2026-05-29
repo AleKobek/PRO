@@ -201,10 +201,11 @@ export default function Rejestracja() {
                     </label><br/>
                     <span id = "error-haslo" className="error-wiadomosc">{bladHasla}</span><br/>
                     <button
+                        className={czyZablokowaneWyslij ? "zablokowany-przycisk" : "wyslij-formularz-przycisk"}
                         type="button"
                         disabled={czyZablokowaneWyslij}
                         onClick={przyWysylaniu}
-                    >Zarejestruj się</button>
+                    >Zarejestruj się</button><br/>
                     <span id = "error-ogolny" className="error-wiadomosc">{bladOgolny}</span><br/>
                 </form>
             </div>
