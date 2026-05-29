@@ -12,6 +12,7 @@ public interface IDruzynyService
     public Task<ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>> GetDaneDoFormularzaDruzynyZeStatystykami(int idGry, int idUzytkownika);
     public Task<ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>> GetDaneDoFormularzaDruzynyBezStatystyk(int idGry);
     public Task<ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>> GetDaneDoFormularzaWyszukiwaniaDruzyny(int idUzytkownika);
+    public Task<ServiceResult<ICollection<NastrojRozgrywkiDto>>> GetNastrojeRozgrywki();
     public Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganieMiejsca(int idMiejsca, int idUzytkownika);
     public Task<ServiceResult<bool>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana);
     public Task<ServiceResult<bool>> UsunDruzyne(int idDruzyny, int idUsuwajacegoUzytkownika);

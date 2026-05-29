@@ -115,6 +115,20 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
         };
     }
     
+    [HttpGet("nastroje-rozgrywki")]
+    [EndpointSummary("Zwraca nastroje rozgrywki, które można wybrać przy tworzeniu drużyny.")]
+    [EndpointDescription("Zwraca nastroje rozgrywki, które można wybrać przy tworzeniu i edytowaniu drużyny.")]
+    [ProducesResponseType(typeof(IEnumerable<NastrojRozgrywkiDto>), 200)]
+    public async Task<ActionResult<IEnumerable<NastrojRozgrywkiDto>>> GetNastrojeRozgrywki()
+    {
+        var result = await druzynyService.GetNastrojeRozgrywki();
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
     [HttpPost]
     [EndpointSummary("Tworzy drużynę")]
     [ProducesResponseType((int)HttpStatusCode.Created)]

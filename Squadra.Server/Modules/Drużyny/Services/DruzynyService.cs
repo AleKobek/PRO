@@ -334,6 +334,12 @@ public class DruzynyService(
             )
         );
     }
+    public async Task<ServiceResult<ICollection<NastrojRozgrywkiDto>>> GetNastrojeRozgrywki()
+    {
+        var nastroje = await druzynyRepository.GetNastrojeRozgrywki();
+        var nastrojeDto = nastroje.Select(x => new NastrojRozgrywkiDto(x.Id, x.Nazwa)).ToList();
+        return ServiceResult<ICollection<NastrojRozgrywkiDto>>.Ok(nastrojeDto);
+    }
     public async Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganieMiejsca(int idMiejsca, int idUzytkownika)
     {
         if(idMiejsca <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id miejsca w drużynie: " + idMiejsca));
