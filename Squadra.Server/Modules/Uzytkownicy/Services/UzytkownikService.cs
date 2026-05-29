@@ -218,7 +218,7 @@ public class UzytkownikService(
             bledy.Add(new ErrorItem("Niepoprawny numer telefonu.", nameof(NumerTelefonu), "NiepoprawnyNumerTelefonu"));
         }
 
-        if (DataUrodzenia.Year < 1900 || DateTime.Now.Year - DataUrodzenia.Year < 18)
+        if (DataUrodzenia.Year < 1900 || DataUrodzenia.AddYears(18) > DateOnly.FromDateTime(DateTime.Now))
         {
             bledy.Add(new ErrorItem("Niepoprawna data urodzenia.", nameof(DataUrodzenia), "NiepoprawnaDataUrodzenia"));
         }
