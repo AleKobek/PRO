@@ -115,32 +115,6 @@ public class DruzynyService(
         var graRes = await wspieranaGraService.GetWspieranaGra(druzyna.GraId);
         if (!graRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(graRes.StatusCode, graRes.Errors);
         
-        var czlonkowieDruzynyZeSprawdzonymiWymaganiami = new List<MiejsceWDruzynieSzczegolyDto>();
-        if(statusCzlonkostwa != "Brak") czlonkowieDruzynyZeSprawdzonymiWymaganiami.AddRange(czlonkowieDruzyny); // jak to nasza drużyna, nie musimy sprawdzać
-        else
-        {
-            // najpierw dodajemy zapełnione miejsca, bo dla nich nie musimy sprawdzać wymagań, więc od razu możemy je dodać do listy ze sprawdzonymi wymaganiami
-            czlonkowieDruzynyZeSprawdzonymiWymaganiami.AddRange(czlonkowieDruzyny.Where(x => x.Czlonek != null));
-
-            foreach (var miejsceWDruzynie in czlonkowieDruzyny.Where(x => x.Czlonek == null))
-            {
-
-                var czySpelniaWymaganiaRes =
-                    await CzyUzytkownikSpelniaWymaganieMiejsca(miejsceWDruzynie.IdMiejscaWDruzynie, idUzytkownika);
-                if (!czySpelniaWymaganiaRes.Succeeded)
-                    czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(new MiejsceWDruzynieSzczegolyDto(
-                        miejsceWDruzynie.IdMiejscaWDruzynie,
-                        miejsceWDruzynie.Czlonek,
-                        miejsceWDruzynie.Rola,
-                        miejsceWDruzynie.Wymaganie,
-                        miejsceWDruzynie.CzyKapitan,
-                        null // jeżeli nie udało się sprawdzić, to zostawiamy null, żeby frontend mógł zdecydować, co z tym zrobić
-                    ));
-
-                else czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(miejsceWDruzynie with { CzyOgladajacySpelniaWymagania = czySpelniaWymaganiaRes.Value });
-            }
-        }
-        
         // pobieramy nastrój rozgrywki
         var nastrojRozgrywki = await druzynyRepository.GetNastrojRozgrywki(druzyna.NastrojRozgrywkiId);
         
@@ -177,6 +151,42 @@ public class DruzynyService(
             if (!platformaRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(platformaRes.StatusCode, platformaRes.Errors);
             nazwaPlatformy = platformaRes.Value.Nazwa; // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć .Value
             logoPlatformy = platformaRes.Value.Logo;
+        }
+        
+        var czyUzytkownikSpelniaWymaganiaCzlonkostwaRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(idDruzyny, idUzytkownika);
+        if (!czyUzytkownikSpelniaWymaganiaCzlonkostwaRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(wymaganiaRes.StatusCode, wymaganiaRes.Errors);
+        var czyUzytkownikSpelniaWymaganiaCzlonkostwa = czyUzytkownikSpelniaWymaganiaCzlonkostwaRes.Value;
+        
+        var czlonkowieDruzynyZeSprawdzonymiWymaganiami = new List<MiejsceWDruzynieSzczegolyDto>();
+        if(statusCzlonkostwa != "Brak") czlonkowieDruzynyZeSprawdzonymiWymaganiami.AddRange(czlonkowieDruzyny); // jak to nasza drużyna, nie musimy sprawdzać
+        else
+        {
+            // najpierw dodajemy zapełnione miejsca, bo dla nich nie musimy sprawdzać wymagań, więc od razu możemy je dodać do listy ze sprawdzonymi wymaganiami
+            czlonkowieDruzynyZeSprawdzonymiWymaganiami.AddRange(czlonkowieDruzyny.Where(x => x.Czlonek != null));
+
+            foreach (var miejsceWDruzynie in czlonkowieDruzyny.Where(x => x.Czlonek == null))
+            {
+                if(!czyUzytkownikSpelniaWymaganiaCzlonkostwa) 
+                {
+                    // jeżeli nie spełnia wymagań członkostwa, to nie spełnia też wymagań miejsca
+                    czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(miejsceWDruzynie with { CzyOgladajacySpelniaWymagania = false }); 
+                    continue;
+                }
+                
+                var czySpelniaWymaganiaRes =
+                    await CzyUzytkownikSpelniaWymaganieMiejsca(miejsceWDruzynie.IdMiejscaWDruzynie, idUzytkownika);
+                if (!czySpelniaWymaganiaRes.Succeeded)
+                    czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(new MiejsceWDruzynieSzczegolyDto(
+                        miejsceWDruzynie.IdMiejscaWDruzynie,
+                        miejsceWDruzynie.Czlonek,
+                        miejsceWDruzynie.Rola,
+                        miejsceWDruzynie.Wymaganie,
+                        miejsceWDruzynie.CzyKapitan,
+                        null // jeżeli nie udało się sprawdzić, to zostawiamy null, żeby frontend mógł zdecydować, co z tym zrobić
+                    ));
+
+                else czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(miejsceWDruzynie with { CzyOgladajacySpelniaWymagania = czySpelniaWymaganiaRes.Value });
+            }
         }
         
        
