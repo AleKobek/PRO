@@ -35,6 +35,26 @@ public class BibliotekaGierService(IBibliotekaGierRepository bibliotekaGierRepos
             return ServiceResult<ICollection<GraWBiblioteceDTO>>.NotFound(new ErrorItem(e.Message));
         }
     }
+
+    public async Task<ServiceResult<bool>> CzyUzytkownikMaDanaGreNaDanejPlatformie(int idUzytkownika, int idGry, int idPlatformy)
+    {
+        if(idUzytkownika <= 0)
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id uzytkownika: " + idUzytkownika));
+        if(idGry <= 0)            
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id gry: " + idGry));
+        if(idPlatformy <= 0)            
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id platformy: " + idPlatformy));
+        try
+        {
+            var wynik = await bibliotekaGierRepository.CzyUzytkownikMaDanaGreNaDanejPlatformie(idUzytkownika, idGry, idPlatformy);
+            return ServiceResult<bool>.Ok(wynik);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
     
     public async Task<ServiceResult<bool>> UpdateBibliotekeGierUzytkownika(
         int idUzytkownika, List<GraUzytkownikaNaPlatformie> noweGryNaPlatformie, List<GraUzytkownika> noweGry
