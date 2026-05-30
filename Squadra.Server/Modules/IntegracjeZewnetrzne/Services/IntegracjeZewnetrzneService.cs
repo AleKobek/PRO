@@ -4,6 +4,7 @@ using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.BibliotekaGier.Models;
 using Squadra.Server.Modules.BibliotekaGier.Services;
+using Squadra.Server.Modules.Drużyny.Services;
 using Squadra.Server.Modules.IntegracjeZewnetrzne.DTO;
 using Squadra.Server.Modules.IntegracjeZewnetrzne.Repositories;
 using Squadra.Server.Modules.Platformy.Models;
@@ -21,6 +22,7 @@ public class IntegracjeZewnetrzneService(
     IStatystykiService statystykiService,
     IBibliotekaGierService bibliotekaGierService,
     IPlatformaService platformaService,
+    IDruzynyService druzynyService,
     IUzytkownikService uzytkownikService) : IIntegracjeZewnetrzneService
 {
     
@@ -89,6 +91,14 @@ public class IntegracjeZewnetrzneService(
             return wyczyscDaneResult;
         }
         
+        var druzynyResult = await druzynyService.PrzerwijIntegracjeUzytkownikaOdnosnieDruzyn(idUzytkownika);
+        if (!druzynyResult.Succeeded)
+        {
+            if (czyToNowaTransakcja)
+                await transakcja!.RollbackAsync();
+            return druzynyResult;
+        }
+        
         var result = await uzytkownikService.UpdateDaneKontaNaZewnetrznymSerwisie(idUzytkownika, null, null);
         if (!result.Succeeded)
         {
@@ -101,8 +111,6 @@ public class IntegracjeZewnetrzneService(
             await transakcja!.CommitAsync();
 
         return ServiceResult<bool>.Ok(true);
-
-        // przydałoby się jeszcze przejść po drużynach i gildiach i wyrzucić go z każdej, która ma wymagania co do statystyk
     }
     
     
