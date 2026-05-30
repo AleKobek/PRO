@@ -92,8 +92,67 @@ export default function EdytujDruzyne() {
         }
     },[nastrojeRozgrywki, uzytkownik])
 
+    /*
+    Dane muszą mieć format:
+    {
+        string Nazwa,
+        bool CzyPubliczna,
+        string? Opis,
+        int IdNastrojuRozgrywki
+    }
+    */
     const przyWysylaniu = async () => {
+        if(!uzytkownik) return;
+        ustawBladNazwy("")
+        ustawBladOpisu("")
 
+        const druzynaDoWyslania = {
+            nazwa: nowaNazwa,
+            opis: nowyOpis,
+            idNastrojuRozgrywki: idNowegoNastrojuRozgrywki,
+            czyPubliczna: noweCzyPubliczna
+        }
+
+        const opcje = {
+            method: "PUT",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: "include",
+            body: JSON.stringify(druzynaDoWyslania)
+        }
+
+        const res = await fetch(`${API_BASE_URL}/Druzyna/${stareDane.idDruzyny}`, opcje);
+
+        const ct = res.headers.get("content-type") || "";
+        const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+            ? await res.json().catch(() => null)
+            : await res.text().catch(() => "");
+
+        if (!res.ok) {
+            if(res.status === 400){
+                let bledy = body.errors;
+                ustawBladNazwy(bledy.Nazwa ? bledy.Nazwa[0] : "");
+                ustawBladOpisu(bledy.Opis ? bledy.Opis[0] : "");
+            }
+            toast.error('Wystąpił błąd podczas edycji drużyny', {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
+
+        // jak tutaj dojdziemy, wszystko jest git
+        navigate(`/druzyna/${stareDane.idDruzyny}`, {
+            state: { pomyslnieEdytowanoDruzyne: true }
+        });
     }
     
     const czyZablokowane = useMemo(() => {

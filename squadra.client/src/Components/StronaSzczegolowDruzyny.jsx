@@ -1,7 +1,7 @@
 ﻿import '../App.css';
 
-import React, {useEffect} from 'react';
-import {useNavigate, useParams} from "react-router-dom";
+import React, {useEffect, useRef} from 'react';
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL, CLIENT_URL} from "../config/api";
@@ -9,9 +9,11 @@ import MiniAwatarKomponent from "./MiniAwatarKomponent";
 export default function StronaSzczegolowDruzyny() {
 
     const navigate = useNavigate();
+    const location = useLocation();
     const { uzytkownik, ladowanie } = useAuth();
     const { idDruzyny } = useParams();
     const [daneDruzyny, ustawDaneDruzyny] = React.useState(null);
+    const toastShownRef = useRef(false);
 
 
     /*
@@ -68,6 +70,28 @@ export default function StronaSzczegolowDruzyny() {
         if(!daneDruzyny) document.title = `Szczegóły drużyny`;
         else document.title = `Szczegóły drużyny ${daneDruzyny.nazwa}`;
     }, [daneDruzyny]);
+
+    useEffect(() => {
+        if (location.state?.pomyslnieEdytowanoDruzyne && !toastShownRef.current) {
+            // Małe opóźnienie aby upewnić się że ToastContainer jest renderowany
+            const timer = setTimeout(() => {
+                toast.success('Pomyślnie edytowano drużynę!', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                toastShownRef.current = true;
+            }, 100);
+
+            return () => clearTimeout(timer);
+        }
+    },[location.state?.pomyslnieEdytowanoDruzyne])
     
 
     useEffect(() => {
