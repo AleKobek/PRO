@@ -372,6 +372,20 @@ public class DruzynyService(
         if(idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
         try 
         { 
+            var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
+            if (!druzyna.CzyZintegrowano) return ServiceResult<bool>.Ok(true); // jeżeli drużyna nie jest zintegrowana, to każdy spełnia jej wymagania
+            
+            // sprawdzamy, czy ma daną grę na danej platformie
+            if(druzyna.PlatformaId != null){
+                var czyMaTeGreNaPlatformieRes = await bibliotekaGierService.CzyUzytkownikMaDanaGreNaDanejPlatformie(
+                    idUzytkownika, 
+                    druzyna.GraId,
+                    druzyna.PlatformaId ?? 0 // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć ?? 0
+                ); 
+                if (!czyMaTeGreNaPlatformieRes.Succeeded) return czyMaTeGreNaPlatformieRes;
+                if (!czyMaTeGreNaPlatformieRes.Value) return ServiceResult<bool>.Ok(false);
+            }
+            
             var spelniaWymaganie = await druzynyRepository.CzyUzytkownikSpelniaWymaganiaDruzyny(idDruzyny, idUzytkownika); 
             return ServiceResult<bool>.Ok(spelniaWymaganie);
         }
