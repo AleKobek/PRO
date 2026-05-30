@@ -20,6 +20,8 @@ public interface IDruzynyRepository
     public Task<bool> OpuscDruzyne(int idDruzyny, int idUzytkownika);
     public Task<bool> OproznijMiejsceWDruzynie(int idMiejsca);
     public Task<bool> WyrzucUzytkownikaZeWszystkichDruzyn(int idUzytkownika);
+    public Task<bool> WyrzucUzytkownikaZeWszystkichZintegrowanychDruzyn(int idUzytkownika);
     public Task<bool> UsunWszystkieDruzynyUzytkownika(int idUzytkownika);
+    public Task<bool> UsunWszystkieZintegrowaneDruzynyUzytkownika(int idUzytkownika);
     public Task<bool> UpdateDruzyna(int idDruzyny, DruzynaUpdateDto druzynaReq);
 }

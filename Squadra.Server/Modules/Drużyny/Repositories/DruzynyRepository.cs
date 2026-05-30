@@ -276,9 +276,31 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         return true;
     }
     
+    public async Task<bool> WyrzucUzytkownikaZeWszystkichZintegrowanychDruzyn(int idUzytkownika)
+    {
+        var miejscaWDruzynie = await context.MiejsceWDruzynie
+            .Include(x => x.Druzyna)
+            .Where(m => m.UzytkownikId == idUzytkownika && m.Druzyna.CzyZintegrowano).ToListAsync();
+        var zaktualiZowaneMiejsca = miejscaWDruzynie.Select(x => { x.UzytkownikId = null; return x;}).ToList();
+        context.MiejsceWDruzynie.UpdateRange(zaktualiZowaneMiejsca);
+        await context.SaveChangesAsync();
+        return true;
+    }
+    
     public async Task<bool> UsunWszystkieDruzynyUzytkownika(int idUzytkownika)
     {
         var druzyny = await context.Druzyna.Where(d => d.KapitanId == idUzytkownika).ToListAsync();
+        foreach (var druzyna in druzyny)
+        {
+            var czyUsunieto = await UsunDruzyne(druzyna.Id);
+            if (!czyUsunieto) return false;
+        }
+        return true;
+    }
+    
+    public async Task<bool> UsunWszystkieZintegrowaneDruzynyUzytkownika(int idUzytkownika)
+    {
+        var druzyny = await context.Druzyna.Where(d => d.KapitanId == idUzytkownika && d.CzyZintegrowano).ToListAsync();
         foreach (var druzyna in druzyny)
         {
             var czyUsunieto = await UsunDruzyne(druzyna.Id);

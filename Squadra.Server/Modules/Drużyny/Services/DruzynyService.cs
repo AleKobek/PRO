@@ -546,6 +546,18 @@ public class DruzynyService(
         
         return ServiceResult<bool>.Ok(true);
     }
+
+    public async Task<ServiceResult<bool>> PrzerwijIntegracjeUzytkownikaOdnosnieDruzyn(int idUzytkownika)
+    {
+        if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
+        
+        var wyrzucUzytkownikaRes = await druzynyRepository.WyrzucUzytkownikaZeWszystkichZintegrowanychDruzyn(idUzytkownika);
+        if (!wyrzucUzytkownikaRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się wyrzucić użytkownika ze wszystkich zintegrowanych drużyn")]);
+        var usunDruzynyRes = await druzynyRepository.UsunWszystkieZintegrowaneDruzynyUzytkownika(idUzytkownika);
+        if (!usunDruzynyRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć wszystkich zintegrowanych drużyn użytkownika")]);
+        
+        return ServiceResult<bool>.Ok(true);
+    }
     
     public async Task<ServiceResult<bool>> UsunWszystkieDruzynyUzytkownika(int idUzytkownika)
     {
