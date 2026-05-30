@@ -592,7 +592,8 @@ export default function FormularzDruzynyZintegrowano({
                 </label>
             </div>
         </form>
-        <h3>Konfiguracja minimalnych wymaganych statystyk</h3>
+        <h3>Konfiguracja minimalnych wymaganych statystyk potrzebnych do dołączenia do drużyny</h3>
+        <span>Po dołączeniu do drużyny, statystyki członka nie będą już sprawdzane pod względem spełnienia warunków</span>
         {/* tabelka w wymaganiami */}
         <table className="overflow-x-auto overflow-y-auto h-full w-1/2 border-4 border-gray-600 rounded-lg shadow-lg">
             <thead className="bg-gray-200">
