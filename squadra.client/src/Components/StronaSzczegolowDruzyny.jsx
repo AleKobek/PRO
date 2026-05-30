@@ -13,6 +13,7 @@ export default function StronaSzczegolowDruzyny() {
     const { uzytkownik, ladowanie } = useAuth();
     const { idDruzyny } = useParams();
     const [daneDruzyny, ustawDaneDruzyny] = React.useState(null);
+    const [czyZablokowanoDostep, ustawCzyZablokowanoDostep] = React.useState(false);
     const toastShownRef = useRef(false);
 
 
@@ -108,6 +109,10 @@ export default function StronaSzczegolowDruzyny() {
                 try {
                     const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
                     if (!res.ok) {
+                        if (res.status === 403) {
+                            console.log(res)
+                            ustawCzyZablokowanoDostep(true)
+                        }
                         toast.error('Wystąpił błąd podczas pobierania danych drużyny', {
                             position: "top-center",
                             autoClose: 5000,
@@ -457,6 +462,19 @@ export default function StronaSzczegolowDruzyny() {
             </table>
         </div>)
     }
+
+
+    if(czyZablokowanoDostep) return (<>
+            <div id = "glowna">
+                <h1 className="text-red-700">Blokada dostępu.</h1>
+                <div className="flex justify-center">
+                    <span className="text-center items-center text-2xl">
+                        Nie masz dostępu do danych tej drużyny, ponieważ jest prywatna.
+                    </span>
+                </div>
+            </div>
+        </>
+    )
 
     if(ladowanie || !uzytkownik || !daneDruzyny) return (<>
             <div id = "glowna">
