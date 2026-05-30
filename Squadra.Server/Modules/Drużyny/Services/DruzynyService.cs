@@ -203,7 +203,8 @@ public class DruzynyService(
             druzyna.CzyPubliczna,
             nazwaPlatformy,
             logoPlatformy,
-            statusCzlonkostwa
+            statusCzlonkostwa,
+            druzyna.CzyZintegrowano
         ));
     }
     

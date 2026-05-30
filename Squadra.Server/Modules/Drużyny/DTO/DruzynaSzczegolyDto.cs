@@ -14,5 +14,6 @@ public record DruzynaSzczegolyDto(
     bool CzyPubliczna,
     string? NazwaPlatformy,
     byte[]? LogoPlatformy,
-    string StatusCzlonkostwa
+    string StatusCzlonkostwa,
+    bool CzyZintegrowano
 );
