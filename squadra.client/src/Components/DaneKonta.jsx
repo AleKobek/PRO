@@ -108,8 +108,9 @@ export default function DaneKonta({uzytkownik}) {
             </label>
         </div>
         {/*  tutaj będzie lista platform, mapujemy jak w innych listach */}
-        <h3>Platformy</h3>
-        <ul className="items-center justify-center flex-col gap-9 mb-6 border-2 border-black rounded-lg">
+        {platformy.length > 0 && <div>
+            <h3>Platformy</h3>
+            <ul className="items-center justify-center flex-col gap-9 mb-6 border-2 border-black rounded-lg">
             {platformy.map((platforma) => (
                 <li key = {platforma.idPlatformy} className="flex items-center gap-5 mx-4">
                     <img
@@ -120,6 +121,7 @@ export default function DaneKonta({uzytkownik}) {
                     <span className="font-bold">{platforma.nazwa}</span>
                 </li>
             ))}
-        </ul>
+            </ul>
+        </div>}
     </div>)
 }
