@@ -138,6 +138,6 @@ export default function EdytujIntegracjeWKoncieKomponent({zewnetrzneId, ustawZew
     return(<div className="flex flex-col items-center justify-center border-4 border-gray-700 rounded-lg p-8 space-y-6 w-fit gap-4 text-xl">
         <div><span>Połączono jako użytkownik:</span> <span className="font-bold">{zewnetrznyLogin}</span></div>
         <button className="bg-red-900 text-white rounded-md px-5 py-3.5 text-4xl hover:bg-red-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105" onClick={przyWysylaniuOdlaczenia}>Przerwij integrację</button>
-        <span>Przerwanie integracji wyrzuci cię z drużyn i gildii, które mają wymagania</span>
+        <span>Przerwanie integracji wyrzuci Cię z drużyn, które uzywają zintegrowanych danych, i usunie Twoje drużyny używające zintegrowanych danych.</span>
     </div>);
 }

@@ -4,7 +4,7 @@ import FormularzDruzynyZintegrowano from "./FormularzDruzynyZintegrowano";
 import FormularzDruzynyNieZintegrowano from "./FormularzDruzynyNieZintegrowano";
 
 
-export default function FormularzZewnetrznyDruzyny({uzytkownik, ladowanie}) {
+export default function FormularzZewnetrznyDruzyny({uzytkownik, ladowanie, ustawPokazOkienkoTlumaczenia}) {
 
 
 
@@ -25,6 +25,7 @@ export default function FormularzZewnetrznyDruzyny({uzytkownik, ladowanie}) {
                 ustawIdGryDruzyny={ustawIdGryDruzyny}
                 czyZintegrowano={czyZintegrowano}
                 ustawCzyZintegrowano={ustawCzyZintegrowano}
+                ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia}
             />
             : czyZintegrowano
                 ? <FormularzDruzynyZintegrowano
@@ -33,7 +34,7 @@ export default function FormularzZewnetrznyDruzyny({uzytkownik, ladowanie}) {
                     ustawIdGryDruzyny={ustawIdGryDruzyny}
                     ustawBladOgolny = {ustawBladOgolny}
                 />
-                : <FormularzDruzynyNieZintegrowano uzytkownik={uzytkownik} ustawIdGryDruzyny={ustawIdGryDruzyny} idGryDruzyny={idGryDruzyny} ustawBladOgolny={ustawBladOgolny}/>
+                : <FormularzDruzynyNieZintegrowano uzytkownik={uzytkownik} ustawIdGryDruzyny={ustawIdGryDruzyny} idGryDruzyny={idGryDruzyny} ustawBladOgolny={ustawBladOgolny} />
         }
         <span className="error-wiadomosc">{bladOgolny}</span>
     </>);

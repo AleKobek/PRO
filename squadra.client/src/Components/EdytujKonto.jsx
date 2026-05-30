@@ -8,6 +8,7 @@ import FormularzKonta from "./FormularzKonta";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
 import EdytujIntegracjeWKoncieKomponent from "./EdytujIntegracjeWKoncieKomponent";
+import {OkienkoTlumaczaceZintegrowanie} from "./OkienkoTlumaczaceZintegrowanie";
 export default function EdytujKonto() {
 
     const navigate = useNavigate();
@@ -40,6 +41,9 @@ export default function EdytujKonto() {
     const [noweHaslo, ustawNoweHaslo] = useState("");
     const [powtorzHaslo, ustawPowtorzHaslo] = useState("");
     const [bladOgolnyHasla, ustawbladOgolnyHasla] = useState("");
+
+    const [pokazOkienkoTlumaczenia, ustawPokazOkienkoTlumaczenia] = useState(false);
+    const ref = React.useRef(null);
 
 
     useEffect(() => {
@@ -290,8 +294,17 @@ export default function EdytujKonto() {
                     <span id = "error-ogolny-hasla" className="error-wiadomosc">{bladOgolnyHasla}</span><br/>
                 </form>
             </div>
-            <h3>Zewnętrzny serwis</h3>
-            <EdytujIntegracjeWKoncieKomponent zewnetrzneId={zewnetrzneId} ustawZewnetrzneId={ustawZewnetrzneId} zewnetrznyLogin={zewnetrznyLogin} ustawZewnetrznyLogin={ustawZewnetrznyLogin} />
+            <h3 className="flex items-center mb-4">
+                Zewnętrzny serwis
+                <img
+                    src="/img/znak-zapytania.svg"
+                    alt="koperta"
+                    className="h-[1em] w-auto align-middle ml-2"
+                    onClick={() => ustawPokazOkienkoTlumaczenia(true)}
+                />
+            </h3>
+            <EdytujIntegracjeWKoncieKomponent zewnetrzneId={zewnetrzneId} ustawZewnetrzneId={ustawZewnetrzneId} zewnetrznyLogin={zewnetrznyLogin} ustawZewnetrznyLogin={ustawZewnetrznyLogin} ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia}/>
         </div>
+        {pokazOkienkoTlumaczenia && OkienkoTlumaczaceZintegrowanie(ref, ustawPokazOkienkoTlumaczenia)}
     </>);
 }

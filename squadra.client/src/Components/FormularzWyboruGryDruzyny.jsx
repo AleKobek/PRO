@@ -9,6 +9,7 @@ export default function FormularzWyboruGryDruzyny({
                                                       ustawIdGryDruzyny, 
                                                       czyZintegrowano, 
                                                       ustawCzyZintegrowano,
+                                                      ustawPokazOkienkoTlumaczenia
                                                   }) {
 
 
@@ -88,7 +89,7 @@ export default function FormularzWyboruGryDruzyny({
                 : wszystkieGry.map((gra) => <option value={gra.id} key={gra.id}>{gra.tytul}</option>)
             }
         </select>
-        <div>
+        <div className="flex items-center justify-center">
             <input
             type="checkbox"
             checked={czyZintegrowano}
@@ -103,6 +104,12 @@ export default function FormularzWyboruGryDruzyny({
             className="mr-2"
             />
             Użyj zintegrowanych danych
+            <img
+                src="/img/znak-zapytania.svg"
+                alt="koperta"
+                className="h-[1em] w-auto align-middle ml-2"
+                onClick={() => ustawPokazOkienkoTlumaczenia(true)}
+            />
         </div>
         <button
             className="bg-green-600 text-white text-2xl p-2 hover:bg-green-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
