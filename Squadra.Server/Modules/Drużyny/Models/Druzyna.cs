@@ -18,7 +18,7 @@ public class Druzyna
     public int? WymaganyJezykId { get; set; }
     public int? WymaganyStopienBieglosciJezykaId { get; set; }
     public int? PlatformaId { get; set; }
-    public bool CzyMaWymagania { get; set; }
+    public bool CzyZintegrowano { get; set; }
     
     public virtual WspieranaGra Gra { get; set; } = null!;
     public virtual Uzytkownik Kapitan { get; set; } = null!;

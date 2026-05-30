@@ -61,8 +61,8 @@ public class DruzynaEFConfig : IEntityTypeConfiguration<Druzyna>
             .HasColumnName("id_platformy");
         
         builder
-            .Property(x => x.CzyMaWymagania)
-            .HasColumnName("czy_ma_wymagania")
+            .Property(x => x.CzyZintegrowano)
+            .HasColumnName("czy_zintegrowano")
             .HasDefaultValue(false)
             .IsRequired();
 

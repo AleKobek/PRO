@@ -151,7 +151,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
                 WymaganyJezykId = druzynaReq.IdWymaganegoJezyka,
                 WymaganyStopienBieglosciJezykaId = druzynaReq.IdWymaganegoStopniaBieglosciJezyka,
                 PlatformaId = druzynaReq.IdPlatformy,
-                CzyMaWymagania = czyMaWymagania
+                CzyZintegrowano = czyMaWymagania
             };
             // dodajemy drużynę i bierzemy jej id, żeby potem dodać wymagania i miejsca
             var dodanaDruzyna = context.Druzyna.Add(druzyna);
