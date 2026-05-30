@@ -360,6 +360,14 @@ public class DruzynyService(
         try
         {
             // sprawdzamy poprawność danych
+            
+            // tutaj tylko na błędy nazwy i opisu
+            var bledy = new List<ErrorItem>();
+            if (string.IsNullOrWhiteSpace(druzynaReq.Nazwa)) bledy.Add(new ErrorItem("Nazwa drużyny nie może być pusta", nameof(druzynaReq.Nazwa)));
+            if (druzynaReq.Nazwa.Length > 40) bledy.Add(new ErrorItem("Nazwa drużyny nie może być dłuższa niż 40 znaków", nameof(druzynaReq.Nazwa)));
+            if (druzynaReq.Opis?.Length > 300) bledy.Add(new ErrorItem("Opis drużyny nie może być dłuższy niż 300 znaków", nameof(druzynaReq.Opis)));
+            if(bledy.Count > 0) return ServiceResult<bool>.BadRequest(bledy.ToArray());
+            
             var graRes = await wspieranaGraService.GetWspieranaGra(druzynaReq.IdGry);
             if (!graRes.Succeeded) return ServiceResult<bool>.Fail(graRes.StatusCode, graRes.Errors);
 

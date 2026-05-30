@@ -141,13 +141,24 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
         if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
         
         var result = await druzynyService.StworzDruzyne(dto, uzytkownik.Id);
-        return result.StatusCode switch
+
+        switch (result.StatusCode)
         {
-            201 => Created(),
-            400 => BadRequest(result.Errors[0].Message),
-            404 => NotFound(result.Errors[0].Message),
-            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
-        };
+            // Dla 400 u nas zwracamy ValidationProblem, ponieważ błędy dotyczą konkretnych pól
+            case 201:
+                return Created();
+            case 400:
+            {
+                foreach (var e in result.Errors)
+                    ModelState.AddModelError(e.Field ?? string.Empty, e.Message);
+                return ValidationProblem();
+            }
+            case 404:
+                return NotFound(new { errors = result.Errors });
+            // coś jeszcze innego
+            default:
+                return StatusCode(result.StatusCode, new { errors = result.Errors });
+        }
     }
     
     [HttpPut("opuszczanie/{idDruzyny:int}")]

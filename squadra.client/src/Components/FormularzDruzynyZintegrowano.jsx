@@ -574,7 +574,7 @@ export default function FormularzDruzynyZintegrowano({
                             className="border-2 border-gray-300 rounded-md p-2 w-[500px]"
                             maxLength={300}
                         />
-                    </label>
+                    </label><br/>
                     <span className="error-wiadomosc">{bladOpisu}</span>
                 </div>
             </div>
