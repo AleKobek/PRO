@@ -218,7 +218,8 @@ export default function FormularzDruzynyNieZintegrowano({
             int? IdPlatformy,
             int? IdRoliKapitana,
             ICollection<WymaganaStatystykaDruzyny>? WymaganeStatystyki, (u nas null)
-            ICollection<CreateMiejsceWDruzynieReq> MiejscaWDruzynie
+            ICollection<CreateMiejsceWDruzynieReq> MiejscaWDruzynie,
+            bool CzyZintegrowana
 
         CreateMiejsceWDruzynieReq wygląda tak:
             int? IdRoli,
@@ -241,7 +242,8 @@ export default function FormularzDruzynyNieZintegrowano({
                     idRoli: miejsce.idRoli,
                     wymaganaStatystyka: null,
                 }
-            })
+            }),
+            czyZintegrowana: false
         }
 
         // pakujemy i wysyłamy

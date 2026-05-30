@@ -292,7 +292,8 @@ export default function FormularzDruzynyZintegrowano({
             int? IdPlatformy,
             int? IdRoliKapitana,
             ICollection<WartoscStatystykiDTO>? WymaganeStatystyki -> {int IdStatystyki, string? Wartosc, double PorownywalnaWartoscLiczbowa}
-            ICollection<CreateMiejsceWDruzynieReq> MiejscaWDruzynie
+            ICollection<CreateMiejsceWDruzynieReq> MiejscaWDruzynie,
+            bool CzyZintegrowana
 
         CreateMiejsceWDruzynieReq wygląda tak:
             int? IdRoli,
@@ -329,7 +330,8 @@ export default function FormularzDruzynyZintegrowano({
                     idRoli: miejsce.idRoli,
                     wymaganaStatystyka: wymaganaStatystyka
                 }
-            })
+            }),
+            czyZintegrowana: true
         };
 
         // pakujemy i wysyłamy
