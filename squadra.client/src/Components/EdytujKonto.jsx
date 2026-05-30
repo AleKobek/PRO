@@ -298,8 +298,8 @@ export default function EdytujKonto() {
                 Zewnętrzny serwis
                 <img
                     src="/img/znak-zapytania.svg"
-                    alt="koperta"
-                    className="h-[1em] w-auto align-middle ml-2"
+                    alt="znak zapytania"
+                    className="h-[1em] w-auto align-middle ml-2 cursor-pointer"
                     onClick={() => ustawPokazOkienkoTlumaczenia(true)}
                 />
             </h3>
