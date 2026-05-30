@@ -354,6 +354,21 @@ public class DruzynyService(
          return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
+    
+    public async Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganiaDruzyny(int idDruzyny, int idUzytkownika)
+    {
+        if(idDruzyny <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id drużyny: " + idDruzyny));
+        if(idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
+        try 
+        { 
+            var spelniaWymaganie = await druzynyRepository.CzyUzytkownikSpelniaWymaganiaDruzyny(idDruzyny, idUzytkownika); 
+            return ServiceResult<bool>.Ok(spelniaWymaganie);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
 
     public async Task<ServiceResult<bool>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
     {

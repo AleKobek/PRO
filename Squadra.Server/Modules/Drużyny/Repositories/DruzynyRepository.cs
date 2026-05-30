@@ -99,7 +99,30 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
 
     }
 
-    // w serwisie trzeba będzie posprawdzać id wszystkich elementów czy istnieje
+    public async Task<bool> CzyUzytkownikSpelniaWymaganiaDruzyny(int idDruzyny, int idUzytkownika)
+    {
+        var wymaganiaDruzyny = await context.WymaganaStatystykaDruzyny
+            .Where(m => m.DruzynaId == idDruzyny)
+            .ToListAsync();
+        // przechodzimy po kolei przez wymagania i sprawdzamy czy użytkownik je spełnia, jeśli któreś nie jest spełnione, to zwracamy false
+        foreach (var wymaganie in wymaganiaDruzyny)
+        {
+            var statystykaUzytkownika = await context.StatystykaUzytkownika
+                .FirstOrDefaultAsync(s => s.UzytkownikId == idUzytkownika && s.StatystykaId == wymaganie.StatystykaId);
+            if (statystykaUzytkownika == null) return false; // jeśli użytkownik nie ma tej statystyki, to nie spełnia wymagania
+            
+            if (wymaganie.PorownywalnaWartoscLiczbowa != null)
+            {
+                if(statystykaUzytkownika.PorownywalnaWartoscLiczbowa < wymaganie.PorownywalnaWartoscLiczbowa) return false;
+            }
+            else
+            {
+                if (statystykaUzytkownika.Wartosc != wymaganie.Wartosc) return false;
+            }
+        }
+        return true; // jeśli spełnia wszystkie wymagania, to zwracamy true
+    }
+
     public async Task<bool> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
     {
         var nastrojRozgrywki = await context.NastrojRozgrywki.FindAsync(druzynaReq.IdNastrojuRozgrywki);
