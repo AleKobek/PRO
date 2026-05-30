@@ -13,5 +13,6 @@ public record CreateDruzynaReqDto(
     int? IdPlatformy,
     int? IdRoliKapitana,
     ICollection<WartoscStatystykiDTO>? WymaganeStatystyki,
-    ICollection<CreateMiejsceWDruzynieReq> MiejscaWDruzynie
+    ICollection<CreateMiejsceWDruzynieReq> MiejscaWDruzynie,
+    bool CzyZintegrowana
 );

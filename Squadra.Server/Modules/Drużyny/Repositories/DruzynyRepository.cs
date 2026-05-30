@@ -136,9 +136,6 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         var transakcja = await context.Database.BeginTransactionAsync();
         try
         {
-            var czyMaWymagania = druzynaReq.WymaganeStatystyki is { Count: > 0 } 
-                                 || druzynaReq.MiejscaWDruzynie
-                                     .Any(x => x.WymaganaStatystyka is not null);
             
             var druzyna = new Druzyna
             {
@@ -151,7 +148,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
                 WymaganyJezykId = druzynaReq.IdWymaganegoJezyka,
                 WymaganyStopienBieglosciJezykaId = druzynaReq.IdWymaganegoStopniaBieglosciJezyka,
                 PlatformaId = druzynaReq.IdPlatformy,
-                CzyZintegrowano = czyMaWymagania
+                CzyZintegrowano = druzynaReq.CzyZintegrowana
             };
             // dodajemy drużynę i bierzemy jej id, żeby potem dodać wymagania i miejsca
             var dodanaDruzyna = context.Druzyna.Add(druzyna);
