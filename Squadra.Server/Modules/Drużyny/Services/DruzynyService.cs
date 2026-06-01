@@ -317,15 +317,22 @@ public class DruzynyService(
     public async Task<ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>> GetDaneDoFormularzaWyszukiwaniaDruzyny(int idUzytkownika)
     {
 
-        var gryRes = await wspieranaGraService.GetWspieraneGry();
+        var gryRes = await wspieranaGraService.GetWspieraneGryZPlatformamiDoSelect();
         
         var bibliotekaGierRes = await bibliotekaGierService.PodajGryWBiblioteceUzytkownika(idUzytkownika);
         if (!bibliotekaGierRes.Succeeded) return ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>.Fail(bibliotekaGierRes.StatusCode, bibliotekaGierRes.Errors);
         
+        var gryUzytkownikaZPlatformami = bibliotekaGierRes.Value.Select(x =>
+            new GraZPlatformaDoSelectDto(
+                x.IdGry, 
+                x.Tytul, 
+                x.Platformy.Select(y => new PlatformaMinInfo(y.IdPlatformy, y.Nazwa)).ToList()
+            )
+        ).ToList(); // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
         
         var nastroje = await druzynyRepository.GetNastrojeRozgrywki();
         
-        var platformyRes = await wspieranaGraService.GetWspieraneGryZPlatformami();
+        var platformyRes = await wspieranaGraService.GetWspieraneGryZPlatformamiDoSelect();
         if (!platformyRes.Succeeded) return ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>.Fail(platformyRes.StatusCode, platformyRes.Errors);
         
         var jezykiOrazStopnieRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
@@ -336,10 +343,9 @@ public class DruzynyService(
 
         return ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>.Ok(
             new DaneDoFormularzaWyszukiwaniaDruzyny(
-                gryRes.Value.Select(x => new MinInfoWspieranaGraDTO(x.Id, x.Tytul)).ToList(),
-                bibliotekaGierRes.Value.Select(x => new MinInfoWspieranaGraDTO(x.IdGry, x.Tytul)).ToList(),
+                gryRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+                gryUzytkownikaZPlatformami,
                 nastroje.Select(x => new NastrojRozgrywkiDto(x.Id, x.Nazwa)).ToList(),
-                platformyRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
                 jezykiOrazStopnieRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
                 roleRes.Value // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             )

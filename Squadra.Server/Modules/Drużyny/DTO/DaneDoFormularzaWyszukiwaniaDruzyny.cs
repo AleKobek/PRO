@@ -5,10 +5,9 @@ using Squadra.Server.Modules.WspieraneGry.DTO;
 namespace Squadra.Server.Modules.Drużyny.DTO;
 
 public record DaneDoFormularzaWyszukiwaniaDruzyny(
-    ICollection<MinInfoWspieranaGraDTO> WszystkieGry,
-    ICollection<MinInfoWspieranaGraDTO> GryUzytkownika,
+    ICollection<GraZPlatformaDoSelectDto> WszystkieGryzPlatformami,
+    ICollection<GraZPlatformaDoSelectDto> GryUzytkownikaZPlatformami,
     ICollection<NastrojRozgrywkiDto> NastrojeRozgrywki,
-    ICollection<GraZPlatformaDTO> GryZPlatformami,
     ICollection<JezykOrazRowneLubNizszeStopnieDto> JezykiOrazStopnie,
     ICollection<RolaDto> Role
 );
