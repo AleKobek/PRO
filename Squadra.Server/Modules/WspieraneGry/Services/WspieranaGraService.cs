@@ -41,6 +41,18 @@ public class WspieranaGraService(IWspieranaGraRepository wspieranaGraRepository)
         return ServiceResult<ICollection<GraZPlatformaDTO>>.Ok(await wspieranaGraRepository.GetWspieraneGryZPlatformami());
     }
     
+    public async Task<ServiceResult<ICollection<GraZPlatformaDoSelectDto>>> GetWspieraneGryZPlatformamiDoSelect()
+    {
+        var gryZPlatformami = await wspieranaGraRepository.GetWspieraneGryZPlatformami();
+        return ServiceResult<ICollection<GraZPlatformaDoSelectDto>>.Ok(gryZPlatformami.Select(g =>
+            new GraZPlatformaDoSelectDto(
+                g.Id,
+                g.Tytul,
+                g.Platformy.Select(p => new PlatformaMinInfo(p.Id, p.Nazwa)).ToList()
+            )).ToList()
+        );
+    }
+    
     public async Task<ServiceResult<ICollection<PlatformaDto>>> GetPlatformyGry(int idGry)
     {
         try

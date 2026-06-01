@@ -10,6 +10,7 @@ public interface IWspieranaGraService
     public Task<ServiceResult<WspieranaGraDto>> GetWspieranaGra(int idGry);
     public Task<ServiceResult<ICollection<MinInfoWspieranaGraDTO>>> GetWspieraneGryMinInfo();
     public Task<ServiceResult<ICollection<GraZPlatformaDTO>>> GetWspieraneGryZPlatformami();
+    public Task<ServiceResult<ICollection<GraZPlatformaDoSelectDto>>> GetWspieraneGryZPlatformamiDoSelect();
     public Task<ServiceResult<ICollection<PlatformaDto>>> GetPlatformyGry(int idGry);
     public Task<ServiceResult<ICollection<PlatformaDto>>> GetPlatformyGryUzytkownika(int idGry, int idUzytkownika);
 }
