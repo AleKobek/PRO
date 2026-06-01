@@ -70,7 +70,10 @@ export default function TwojeDruzyny() {
         <div id = "glowna">
             <h1>Twoje drużyny</h1>
             <div className="flex justify-center gap-6">
-                <button className="bg-blue-600 text-white text-2xl p-2 hover:bg-blue-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105">Wyszukaj nową</button>
+                <button
+                    className="bg-blue-600 text-white text-2xl p-2 hover:bg-blue-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
+                    onClick={() => navigate('/wyszukajDruzyne')}
+                >Wyszukaj nową</button>
                 <button
                     className="bg-green-600 text-white text-2xl p-2 hover:bg-green-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
                     onClick={() => navigate('/stworzDruzyne')}
