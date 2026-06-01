@@ -53,12 +53,13 @@ public class WspieranaGraRepository(AppDbContext context) : IWspieranaGraReposit
         List<GraZPlatformaDTO> gryZPlatformami = new List<GraZPlatformaDTO>();
         foreach (var gra in gry)
         {
+            var platformy = await GetPlatformyGry(gra.Id);
             gryZPlatformami.Add(new GraZPlatformaDTO(
                 gra.Id,
                 gra.Tytul,
                 gra.Wydawca,
                 gra.Gatunek,
-                gra.GraNaPlatformieCollection.Select(gp => gp.Platforma).ToList()
+                platformy.ToList()
             ));
         }
         return gryZPlatformami;
