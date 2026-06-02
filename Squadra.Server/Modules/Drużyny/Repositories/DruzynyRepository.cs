@@ -341,7 +341,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
                         && (req.IdJezyka == null || d.WymaganyJezykId == req.IdJezyka)
                         && (req.IdStopnia == null || d.WymaganyStopienBieglosciJezykaId == req.IdStopnia)
                         && d.CzyZintegrowano == req.CzyZintegrowano
-                        && (string.IsNullOrEmpty(req.Nazwa) || d.Nazwa.Contains(req.Nazwa))
+                        && (string.IsNullOrEmpty(req.Nazwa) || d.Nazwa.Contains(req.Nazwa.Trim()))
             )
             .Include(d => d.MiejsceWDruzynieCollection)
             .ToListAsync();
