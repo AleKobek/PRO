@@ -651,16 +651,20 @@ public class DruzynyService(
 
         if (req.IdJezyka != null)
         {
-            var jezykRes = await jezykService.GetJezyk(req.IdJezyka ?? 0);
-            if (!jezykRes.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(jezykRes.StatusCode, jezykRes.Errors);
+            var jezykiRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
+            if (!jezykiRes.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(jezykiRes.StatusCode, jezykiRes.Errors);
+
+            var jezykISopien = jezykiRes.Value.FirstOrDefault(x => x.Jezyk.Id == req.IdJezyka);
+            if(jezykISopien == null) return ServiceResult<WyszukajDruzynyResDto>.BadRequest(new ErrorItem("Nie posiadasz wymaganego języka, aby szukać drużyn wymagających tego języka"));
+            
+            if (req.IdStopnia != null)
+            {
+                var stopien = jezykISopien.Stopnie.FirstOrDefault(x => x.Id == req.IdStopnia);
+                if (stopien == null) return ServiceResult<WyszukajDruzynyResDto>.BadRequest(new ErrorItem("Nie posiadasz wymaganego stopnia biegłości języka, aby szukać drużyn wymagających tego stopnia biegłości języka"));
+            }
+
         }
         else if (req.IdStopnia != null) return ServiceResult<WyszukajDruzynyResDto>.BadRequest(new ErrorItem("Nie można podać stopnia biegłości języka bez podania języka"));
-
-        if (req.IdStopnia != null)
-        {
-            var stopienRes = await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(req.IdStopnia ?? 0);
-            if (!stopienRes.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(stopienRes.StatusCode, stopienRes.Errors);
-        }
 
         try
         {
