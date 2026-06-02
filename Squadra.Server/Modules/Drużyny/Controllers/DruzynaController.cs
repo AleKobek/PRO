@@ -249,4 +249,27 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
+
+    [HttpPost("wyszukaj")]
+    [EndpointSummary("Wyszukuje drużyny spełniające podane kryteria")]
+    [ProducesResponseType(typeof(ICollection<DruzynaDoTabelkiDto>), 200)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult<ICollection<DruzynaDoTabelkiDto>>> WyszukajDruzyny(WyszukajDruzyneReqDto dto)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+
+        return Ok(new List<DruzynaDoTabelkiDto>()); // TODO: odkomentować i zaimplementować wyszukiwanie drużyn
+        
+        // var result = await druzynyService.WyszukajDruzyny(dto, uzytkownik.Id);
+        // return result.StatusCode switch
+        // {
+        //     200 => Ok(result.Value),
+        //     400 => BadRequest(result.Errors[0].Message),
+        //     404 => NotFound(result.Errors[0].Message),
+        //     _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        // };
+    }
 }
