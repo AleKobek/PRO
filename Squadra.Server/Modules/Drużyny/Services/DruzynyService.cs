@@ -628,4 +628,72 @@ public class DruzynyService(
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
+
+    public async Task<ServiceResult<WyszukajDruzynyResDto>> WyszukajDruzyny(WyszukajDruzyneReqDto req, int idUzytkownika)
+    {
+        // sprawdzić, czy jeżeli jest zintegrowane, to czy ma tę grę i platformę. może wyżej też?
+        // odfiltrowujemy tak, aby zostało bez ról tylko wtedy gdy faktycznie nie ma ról
+        
+        var gra = await wspieranaGraService.GetWspieranaGra(req.IdGry);
+        if (!gra.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(gra.StatusCode, gra.Errors);
+        
+        if(req.IdPlatformy != null)
+        {
+            var platforma = await platformaService.GetPlatforma(req.IdPlatformy ?? 0);
+            if (!platforma.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(platforma.StatusCode, platforma.Errors);
+            var czyMaTeGreNaPlatformieRes = await bibliotekaGierService.CzyUzytkownikMaDanaGreNaDanejPlatformie(
+                idUzytkownika, 
+                req.IdGry,
+                req.IdPlatformy ?? 0 // już odfiltrowaliśmy drużyny bez IdPlatformy, więc możemy bezpiecznie użyć ?? 0
+            );
+            if (!czyMaTeGreNaPlatformieRes.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(czyMaTeGreNaPlatformieRes.StatusCode, czyMaTeGreNaPlatformieRes.Errors);
+        }
+
+        if (req.IdJezyka != null)
+        {
+            var jezykRes = await jezykService.GetJezyk(req.IdJezyka ?? 0);
+            if (!jezykRes.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(jezykRes.StatusCode, jezykRes.Errors);
+        }
+        else if (req.IdStopnia != null) return ServiceResult<WyszukajDruzynyResDto>.BadRequest(new ErrorItem("Nie można podać stopnia biegłości języka bez podania języka"));
+
+        if (req.IdStopnia != null)
+        {
+            var stopienRes = await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(req.IdStopnia ?? 0);
+            if (!stopienRes.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(stopienRes.StatusCode, stopienRes.Errors);
+        }
+
+        try
+        {
+            var nastroj = await druzynyRepository.GetNastrojRozgrywki(req.IdNastrojuRozgrywki); // tylko po to, aby wywaliło błąd gdy nie znajdzie
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<WyszukajDruzynyResDto>.NotFound(new ErrorItem(e.Message));
+        }
+        var roleGry = await statystykiService.GetRoleGry(req.IdGry); 
+        if (!roleGry.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(roleGry.StatusCode, roleGry.Errors);
+        
+        // sprawdzamy, czy podał poprawne role
+        if (req.IdRol.Length > 0)
+        {
+            var roleGryIds = roleGry.Value.Select(x => x.Id).ToList();
+            var nieprawidloweRole = req.IdRol.Where(x => !roleGryIds.Contains(x)).ToList();
+            if (nieprawidloweRole.Count > 0) 
+                return ServiceResult<WyszukajDruzynyResDto>.BadRequest(new ErrorItem(
+                    $"Podane role o id: [{string.Join(", ", nieprawidloweRole)}], które zostały podane w wymaganiach drużyny, nie istnieją w bazie danych dla tej gry."
+                ));
+            
+        }
+        if(req.IdRol.Length == 0 && roleGry.Value.Count > 0) return ServiceResult<WyszukajDruzynyResDto>.BadRequest(new ErrorItem("Jeżeli gra ma role, to należy podać id przynajmniej jednej roli"));
+        
+        // wszystko powinno być git, można szukać drużyn
+        var idDruzyn = await druzynyRepository.WyszukajIdDruzyn(req, idUzytkownika);
+        var idDruzynNaStrone = idDruzyn.Take(LiczbaDruzynNaStroneNaStart).ToList();
+        var druzynyRes = await GetDruzynyDoTabelki(idDruzynNaStrone.ToArray());
+        if(!druzynyRes.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(druzynyRes.StatusCode, druzynyRes.Errors);
+        
+        return ServiceResult<WyszukajDruzynyResDto>.Ok(new WyszukajDruzynyResDto(idDruzyn.ToArray(), druzynyRes.Value));
+    }
+    
+    const int LiczbaDruzynNaStroneNaStart = 20;
 }
