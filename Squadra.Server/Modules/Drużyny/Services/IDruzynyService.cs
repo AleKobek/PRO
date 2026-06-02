@@ -7,6 +7,7 @@ namespace Squadra.Server.Modules.Drużyny.Services;
 public interface IDruzynyService
 {
     public Task<ServiceResult<ICollection<DruzynaDoTabelkiDto>>> GetWszystkieDruzynyUzytkownikaDoTabelki(int idUzytkownika);
+    public Task<ServiceResult<ICollection<DruzynaDoTabelkiDto>>> GetDruzynyDoTabelki(int[] idDruzyn);
     public Task<ServiceResult<DruzynaSzczegolyDto>> PodajSzczegolyDruzyny(int idDruzyny, int idUzytkownika);
     public Task<ServiceResult<ICollection<MiejsceWDruzynieSzczegolyDto>>> GetCzlonkowieDruzynyDoWyswietlenia(int idDruzyny);
     public Task<ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>> GetDaneDoFormularzaDruzynyZeStatystykami(int idGry, int idUzytkownika);

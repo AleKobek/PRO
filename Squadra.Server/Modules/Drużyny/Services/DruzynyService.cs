@@ -90,7 +90,22 @@ public class DruzynyService(
             .ToList();        
         return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Ok(druzynyDoTabelki);
     }
-    
+
+    public async Task<ServiceResult<ICollection<DruzynaDoTabelkiDto>>> GetDruzynyDoTabelki(int[] idDruzyn)
+    {
+        var druzyny = await druzynyRepository.GetDruzyny(idDruzyn);
+        var druzynyDoTabelki = new List<DruzynaDoTabelkiDto>();
+        foreach (var druzyna in druzyny)
+        {
+            var druzynaDoTabelkiRes = await GetDruzynaDoTabelki(druzyna.Id);
+            if (!druzynaDoTabelkiRes.Succeeded) return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Fail(druzynaDoTabelkiRes.StatusCode, druzynaDoTabelkiRes.Errors);
+            druzynyDoTabelki.Add(druzynaDoTabelkiRes.Value); // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+        }
+        druzynyDoTabelki = druzynyDoTabelki
+            .OrderBy(x => x.MinutyOdOstatniejAktywnosciKapitana)
+            .ToList();        
+        return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Ok(druzynyDoTabelki);
+    }
     
     public async Task<ServiceResult<DruzynaSzczegolyDto>> PodajSzczegolyDruzyny(int idDruzyny, int idUzytkownika)
     {
