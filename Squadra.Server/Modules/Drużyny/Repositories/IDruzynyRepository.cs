@@ -24,4 +24,5 @@ public interface IDruzynyRepository
     public Task<bool> UsunWszystkieDruzynyUzytkownika(int idUzytkownika);
     public Task<bool> UsunWszystkieZintegrowaneDruzynyUzytkownika(int idUzytkownika);
     public Task<bool> UpdateDruzyna(int idDruzyny, DruzynaUpdateDto druzynaReq);
+    public Task<ICollection<int>> WyszukajIdDruzyn(WyszukajDruzyneReqDto req, int idUzytkownika);
 }

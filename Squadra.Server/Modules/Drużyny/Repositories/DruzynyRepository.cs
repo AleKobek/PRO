@@ -322,4 +322,68 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
 
         return true;
     }
+    
+    public async Task<ICollection<int>> WyszukajIdDruzyn(WyszukajDruzyneReqDto req, int idUzytkownika)
+    {
+        var druzyny = await context.Druzyna
+            .Where(d => d.GraId == req.IdGry
+                        && (req.IdPlatformy == null || d.PlatformaId == req.IdPlatformy)
+                        && d.NastrojRozgrywkiId == req.IdNastrojuRozgrywki
+                        && (req.IdJezyka == null || d.WymaganyJezykId == req.IdJezyka)
+                        && (req.IdStopnia == null || d.WymaganyStopienBieglosciJezykaId == req.IdStopnia)
+                        && d.CzyZintegrowano == req.CzyZintegrowano
+                        && (string.IsNullOrEmpty(req.Nazwa) || d.Nazwa.Contains(req.Nazwa))
+            )
+            .Include(d => d.MiejsceWDruzynieCollection)
+            .ToListAsync();
+
+        // jeżeli nie ma wymagań, obchodzą nas tylko role i wolne miejsca
+        if(!req.CzyZintegrowano)
+        {
+            // na górze odfiltrowujemy tak, aby zostało bez ról tylko wtedy gdy faktycznie nie ma ról
+            if (req.IdRol.Length == 0)
+            {
+                // po prostu ma mieć wolne miejsca
+                druzyny = druzyny.Where(d => d.MiejsceWDruzynieCollection.Any(m => m.UzytkownikId == null)).ToList();
+            }
+            else
+            {
+                druzyny = druzyny.Where(d => d.MiejsceWDruzynieCollection
+                    .Any(m =>
+                        m.UzytkownikId == null // jest wolne
+                        && ( // rola nam pasuje
+                            m.RolaId == null
+                            || req.IdRol.Contains(m.RolaId.Value)
+                        )
+                    )
+                ).ToList();
+            }
+
+            return druzyny.Select(x => x.Id).ToList();
+        }
+        // jeżeli mogą być wymagania
+        List<int> przefiltrowaneDruzyny = [];
+        foreach (var druzyna in druzyny)
+        {
+            if (!await CzyUzytkownikSpelniaWymaganiaDruzyny(druzyna.Id, idUzytkownika)) continue;
+            
+            var miejscaWDruzynie = druzyna.MiejsceWDruzynieCollection.Where(m => m.UzytkownikId == null).ToList();
+            
+            // jeżeli są preferencje ról, to filtrujemy miejsca w drużynie, żeby zostały tylko te, które pasują do preferencji ról (albo nie mają przypisanej roli)
+            if (req.IdRol.Length > 0) miejscaWDruzynie = miejscaWDruzynie.Where(m => m.RolaId == null || req.IdRol.Contains(m.RolaId.Value)).ToList();
+            
+            var czyJestMiejsce = false;
+            foreach (var miejsce in miejscaWDruzynie)
+            {
+                if (!await CzyUzytkownikSpelniaWymaganieMiejsca(miejsce.Id, idUzytkownika)) continue;
+                // jeżeli spełnia wymaganie
+                czyJestMiejsce = true;
+                break;
+            }
+            // są wolne miejsca, na które możemy dołączyć
+            if(czyJestMiejsce) przefiltrowaneDruzyny.Add(druzyna.Id);
+        }
+
+        return przefiltrowaneDruzyny;
+    }
 }
