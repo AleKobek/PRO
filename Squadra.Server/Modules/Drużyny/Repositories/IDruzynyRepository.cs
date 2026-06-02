@@ -8,6 +8,7 @@ public interface IDruzynyRepository
 {
     public Task<Druzyna> GetDruzyna(int idDruzyny);
     public Task<ICollection<Druzyna>> GetDruzynyUzytkownika(int idUzytkownika);
+    public Task<ICollection<Druzyna>> GetDruzyny(int[] idDruzyn);
     public Task<ICollection<MiejsceWDruzynie>> GetMiejscaWDruzynie(int idDruzyny);
     public Task<MiejsceWDruzynie> GetMiejsceWDruzynie(int idMiejsca);
     public Task<int> GetIdKapitanaDruzynyMiejsca(int idMiejsca);
