@@ -169,7 +169,6 @@ export default function WyszukajDruzyne() {
             ustawRole(dane.role);
             
             ustawIdWybranejGry(dane.wszystkieGryzPlatformami[0].id)
-            ustawIdWybranegoNastroju(dane.nastrojeRozgrywki[0].id)
         };
 
         if(wszystkieGryzPlatformami.length === 0) podajDane();
@@ -327,9 +326,13 @@ export default function WyszukajDruzyne() {
                         Nastrój rozgrywki: <br/>
                         <select
                             className="border-2 border-gray-300 rounded-md p-2"
-                            onChange={(e) => ustawIdWybranegoNastroju(parseInt(e.target.value))}
+                            onChange={(e) => {
+                                if(e.target.value === "") ustawIdWybranegoNastroju(null);
+                                else ustawIdWybranegoNastroju(parseInt(e.target.value))
+                            }}
                             value={idWybranegoNastroju}
                         >
+                            <option value = "" key = {-1}>Dowolny</option>
                             {
                                 nastrojeRozgrywki.map((nastroj) =>
                                     <option value={nastroj.id} key={nastroj.id}>{nastroj.nazwa}</option>

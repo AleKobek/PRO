@@ -668,7 +668,10 @@ public class DruzynyService(
 
         try
         {
-            var nastroj = await druzynyRepository.GetNastrojRozgrywki(req.IdNastrojuRozgrywki); // tylko po to, aby wywaliło błąd gdy nie znajdzie
+            if(req.IdNastrojuRozgrywki != null)
+            {
+                var nastroj = await druzynyRepository.GetNastrojRozgrywki(req.IdNastrojuRozgrywki ?? 1); // tylko po to, aby wywaliło błąd gdy nie znajdzie
+            } 
         }
         catch (NieZnalezionoWBazieException e)
         {

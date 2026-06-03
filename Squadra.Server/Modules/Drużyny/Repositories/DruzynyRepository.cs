@@ -337,7 +337,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         var druzyny = await context.Druzyna
             .Where(d => d.GraId == req.IdGry
                         && (req.IdPlatformy == null || d.PlatformaId == req.IdPlatformy)
-                        && d.NastrojRozgrywkiId == req.IdNastrojuRozgrywki
+                        && (req.IdNastrojuRozgrywki == null || d.NastrojRozgrywkiId == req.IdNastrojuRozgrywki)
                         && (req.IdJezyka == null || d.WymaganyJezykId == req.IdJezyka)
                         && (req.IdStopnia == null || d.WymaganyStopienBieglosciJezykaId == req.IdStopnia)
                         && d.CzyZintegrowano == req.CzyZintegrowano
