@@ -1,14 +1,17 @@
 ﻿import {Bounce, toast, ToastContainer} from "react-toastify";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
-import TabelkaTwoichDruzynKomponent from "./TabelkaTwoichDruzynKomponent";
+import TabelkaDruzynKomponent from "./TabelkaDruzynKomponent";
+import {API_BASE_URL} from "../config/api";
 
 export default function TwojeDruzyny() {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
     const location = useLocation();
+
+    const [druzyny, ustawDruzyny] = useState([]);
 
     useEffect(() => {
         document.title = `Squadra`;
@@ -59,6 +62,69 @@ export default function TwojeDruzyny() {
     },[location.state?.pomyslnieOpuszczonoDruzyne, location.state?.pomyslnieStworzonoDruzyne, location.state?.pomyslnieUsunietoDruzyne])
 
 
+    // pobieramy tabelkę drużyn
+    useEffect(() => {
+
+        if(!uzytkownik) return;
+
+        const ac = new AbortController();
+        let alive = true;
+
+        const fetchJsonAbort = async (url) => {
+            try {
+                const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
+                if (!res.ok) {
+                    toast.error('Wystąpił błąd podczas pobierania twoich drużyn', {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    return null;
+                }
+                return await res.json();
+            } catch (err) {
+                if (err && err.name === 'AbortError') return null;
+                console.error('Błąd pobierania:', err);
+                toast.error('Wystąpił błąd podczas pobierania twoich drużyn', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                return null;
+            }
+        };
+
+        const podajTwojeDruzyny = async () => {
+            const data = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/tabelka/${uzytkownik.id}`);
+            if (!alive) return;
+
+            let normalized = [];
+            if (Array.isArray(data)) normalized = data;
+            else if (data) normalized = [data];
+
+            ustawDruzyny(normalized);
+        };
+
+        podajTwojeDruzyny();
+
+        return () => {
+            alive = false;
+            ac.abort();
+        };
+    }, [uzytkownik]);
+
     if(ladowanie || !uzytkownik) return (<>
             <div id = "glowna">
                 <h1>Ładowanie...</h1>
@@ -81,7 +147,7 @@ export default function TwojeDruzyny() {
                 </button>
             </div>
             <div className="mt-10 text-2xl">
-                <TabelkaTwoichDruzynKomponent idUzytkownika={uzytkownik.id}/>
+                <TabelkaDruzynKomponent druzyny={druzyny} brakDruzynWiadomosc={"Nie należysz do żadnej drużyny. Czas to zmienić! Razem raźniej!"}/>
             </div>
         </div>
         <ToastContainer
