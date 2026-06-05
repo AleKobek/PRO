@@ -7,7 +7,9 @@ import SelectStatusowNaNaglowkuKomponent from "./SelectStatusowNaNaglowkuKompone
 
 export default function NaglowekZalogowano({
                                            czySaNoweWiadomosci = false,
-                                           ustawCzySaNoweWiadomosci = () => {}
+                                           ustawCzySaNoweWiadomosci = () => {},
+                                            awatarUrl = "",
+                                            ustawAwatarUrl = () => {},
 }){
 
     const navigate = useNavigate();
@@ -15,7 +17,6 @@ export default function NaglowekZalogowano({
 
     const [aktualnyStatus, ustawAktualnyStatusZBazy] = useState("Dostępny");
     const [listaStatusow, ustawListeStatusow] = useState([]);
-    const [awatarUrl, ustawAwatarUrl] = useState("");
 
     // powiadomienia
     const [pokazPowiadomienia, ustawPokazPowiadomienia] = useState(false);
@@ -63,7 +64,7 @@ export default function NaglowekZalogowano({
     
     useEffect(() => {
         ustawAwatarUrl(uzytkownik?.awatar ? "data:image/jpeg;base64," + uzytkownik?.awatar : "");
-    },[uzytkownik]);
+    },[ustawAwatarUrl, uzytkownik]);
 
 
     // pobieramy powiadomienia z serwera co minutę

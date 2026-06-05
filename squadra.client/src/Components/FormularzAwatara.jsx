@@ -5,7 +5,8 @@ import {Bounce, toast} from "react-toastify";
 
 export default function FormularzAwatara({
                                              uzytkownik,
-                                             staryAwatar
+                                             staryAwatar,
+                                             ustawAwatarUrl
                                         })
 {
     
@@ -68,6 +69,8 @@ export default function FormularzAwatara({
             }
             return;
         }
+
+        ustawAwatarUrl(podgladAwatara);
 
         // jak tutaj dojdziemy, wszystko jest git
         navigate("/twojProfil", {

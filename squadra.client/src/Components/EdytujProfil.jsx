@@ -7,7 +7,7 @@ import {useAuth} from "../Context/AuthContext";
 import FormularzAwatara from "./FormularzAwatara";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
-    export default function EdytujProfil() {
+    export default function EdytujProfil({ustawAwatarUrl}) {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
@@ -139,7 +139,7 @@ import {Bounce, toast} from "react-toastify";
                               stareZaimki = {zaimki} staryOpis = {opis} staryRegion = {region} staryKraj = {kraj} uzytkownik={uzytkownik} staryAwatar={awatar}/>
             <br></br>
             <h2>Edytuj awatar</h2>
-            <FormularzAwatara uzytkownik={uzytkownik} staryAwatar={awatar}/>
+            <FormularzAwatara uzytkownik={uzytkownik} staryAwatar={awatar} ustawAwatarUrl={ustawAwatarUrl}/>
         </div>
     </>);
 }
