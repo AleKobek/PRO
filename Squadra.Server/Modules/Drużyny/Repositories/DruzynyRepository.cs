@@ -146,9 +146,6 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
             .Where(d => d.GraId == idGry && d.MiejsceWDruzynieCollection.Any(m => m.UzytkownikId == idUzytkownika))
             .CountAsync();
         
-        Console.WriteLine("####################################################");
-        Console.WriteLine($"Liczba drużyn użytkownika {idUzytkownika} w grze {idGry}: {liczbaDruzynGracza}");
-        
         return liczbaDruzynGracza >= MaksymalnaLiczbaDruzynGraczaDlaGry;
     }
     
