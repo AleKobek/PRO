@@ -358,9 +358,9 @@ export default function FormularzDruzynyZintegrowano({
                 let bledy = body.errors;
                 ustawBladNazwy(bledy.Nazwa ? bledy.Nazwa[0] : "");
                 ustawBladOpisu(bledy.Opis ? bledy.Opis[0] : "");
-                ustawBladOgolny(body.message);
+                ustawBladOgolny(bledy.Ogolne ?? body.message);
             }
-            toast.error(`Wystąpił błąd podczas tworzenia drużyny: ${body}`, {
+            toast.error(`${body.errors.Ogolne ?? body.message ?? "Wystąpił błąd podczas tworzenia drużyny"}`, {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,

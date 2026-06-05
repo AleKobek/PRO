@@ -154,7 +154,7 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
             case 400:
             {
                 foreach (var e in result.Errors)
-                    ModelState.AddModelError(e.Field ?? string.Empty, e.Message);
+                    ModelState.AddModelError(e.Field ?? "Ogolne", e.Message);
                 return ValidationProblem();
             }
             case 404:

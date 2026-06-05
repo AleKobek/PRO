@@ -36,6 +36,8 @@ export default function FormularzZewnetrznyDruzyny({uzytkownik, ladowanie, ustaw
                 />
                 : <FormularzDruzynyNieZintegrowano uzytkownik={uzytkownik} ustawIdGryDruzyny={ustawIdGryDruzyny} idGryDruzyny={idGryDruzyny} ustawBladOgolny={ustawBladOgolny} />
         }
-        <span className="error-wiadomosc">{bladOgolny}</span>
+        <div className="flex justify-center">
+            <span className="error-wiadomosc">{bladOgolny}</span>
+        </div>
     </>);
 }
