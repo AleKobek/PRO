@@ -421,4 +421,14 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
 
         return przefiltrowaneDruzyny;
     }
+
+    public async Task<bool> DodajUzytkownikaNaMiejsce(int idMiejsca, int idUzytkownika)
+    {
+        var miejsceWDruzynie = await context.MiejsceWDruzynie.FindAsync(idMiejsca);
+        if (miejsceWDruzynie == null) throw new NieZnalezionoWBazieException("Nie znaleziono miejsca w drużynie o id " + idMiejsca);
+
+        miejsceWDruzynie.UzytkownikId = idUzytkownika;
+        await context.SaveChangesAsync();
+        return true;
+    }
 }

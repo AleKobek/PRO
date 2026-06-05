@@ -27,4 +27,5 @@ public interface IDruzynyService
     public Task<ServiceResult<bool>> UsunWszystkieDruzynyUzytkownika(int idUzytkownika);
     public Task<ServiceResult<bool>> UpdateDruzyna(int idDruzyny, int idUzytkownika, DruzynaUpdateDto druzynaReq);
     public Task<ServiceResult<TabelkaDruzynResDto>> WyszukajDruzyny(WyszukajDruzyneReqDto req, int idUzytkownika);
+    public Task<ServiceResult<bool>> DodajUzytkownikaNaMiejsce(int idMiejsca, int idUzytkownika);
 }

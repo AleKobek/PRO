@@ -734,5 +734,32 @@ public class DruzynyService(
         
         return ServiceResult<TabelkaDruzynResDto>.Ok(new TabelkaDruzynResDto(idDruzyn.ToArray(), druzynyRes.Value));
     }
+    public async Task<ServiceResult<bool>> DodajUzytkownikaNaMiejsce(int idMiejsca, int idUzytkownika)
+    {
+        try
+        {
+            if (idMiejsca <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id miejsca: " + idMiejsca)); 
+            if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
+            
+            var miejsce = await druzynyRepository.GetMiejsceWDruzynie(idMiejsca);
+            if(miejsce.UzytkownikId != null) return ServiceResult<bool>.BadRequest(new ErrorItem("To miejsce jest już zajęte"));
+            
+            if(await druzynyRepository.CzyUzytkownikNalezyDoDruzyny(idUzytkownika, miejsce.DruzynaId)) 
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Użytkownik już należy do tej drużyny"));
+            
+            var czyUzytkownikSpelniaWymaganiaDruzynyRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(miejsce.DruzynaId, idUzytkownika);
+            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Succeeded) return czyUzytkownikSpelniaWymaganiaDruzynyRes;
+            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Value) return ServiceResult<bool>.Ok(false);
     
+            var czyUzytkownikSpelniaWymaganieMiejscaRes = await CzyUzytkownikSpelniaWymaganieMiejsca(idMiejsca, idUzytkownika);
+            if (!czyUzytkownikSpelniaWymaganieMiejscaRes.Succeeded) return czyUzytkownikSpelniaWymaganieMiejscaRes;
+            if (!czyUzytkownikSpelniaWymaganieMiejscaRes.Value) return ServiceResult<bool>.Ok(false);
+            
+            return ServiceResult<bool>.Ok(await druzynyRepository.DodajUzytkownikaNaMiejsce(idMiejsca, idUzytkownika));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
 }

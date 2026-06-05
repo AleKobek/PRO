@@ -28,4 +28,5 @@ public interface IDruzynyRepository
     public Task<bool> UpdateDruzyna(int idDruzyny, DruzynaUpdateDto druzynaReq);
     public Task<ICollection<int>> WyszukajIdDruzyn(WyszukajDruzyneReqDto req, int idUzytkownika);
     public Task<bool> CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(int idUzytkownika, int idGry);
+    public Task<bool> DodajUzytkownikaNaMiejsce(int idMiejsca, int idUzytkownika);
 }
