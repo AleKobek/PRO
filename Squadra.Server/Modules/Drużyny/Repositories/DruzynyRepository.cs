@@ -149,6 +149,14 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         return liczbaDruzynGracza >= MaksymalnaLiczbaDruzynGraczaDlaGry;
     }
     
+    public async Task<bool> CzyUzytkownikNalezyDoDruzyny(int idUzytkownika, int idDruzyny)
+    {
+        var druzyna = await context.Druzyna.FindAsync(idDruzyny);
+        if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
+        
+        return await context.MiejsceWDruzynie.AnyAsync(m => m.DruzynaId == idDruzyny && m.UzytkownikId == idUzytkownika);
+    }
+    
     public async Task<bool> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
     {
         var nastrojRozgrywki = await context.NastrojRozgrywki.FindAsync(druzynaReq.IdNastrojuRozgrywki);

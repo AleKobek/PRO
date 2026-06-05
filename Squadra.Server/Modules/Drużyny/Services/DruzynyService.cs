@@ -430,6 +430,21 @@ public class DruzynyService(
         }
     }
     
+    public async Task<ServiceResult<bool>> CzyUzytkownikNalezyDoDruzyny(int idUzytkownika, int idDruzyny)
+    {
+        if(idDruzyny <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id drużyny: " + idDruzyny));
+        if(idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika));
+        
+        try{
+            
+            return ServiceResult<bool>.Ok(await druzynyRepository.CzyUzytkownikNalezyDoDruzyny(idDruzyny, idUzytkownika));
+            
+        }catch(NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
     public async Task<ServiceResult<bool>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
     {
         try
