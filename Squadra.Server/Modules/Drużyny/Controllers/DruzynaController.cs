@@ -14,14 +14,18 @@ namespace Squadra.Server.Modules.Drużyny.Controllers;
 public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytkownik> userManager) : ControllerBase
 {
      
-    [HttpGet("tabelka/{idUzytkownika:int}")]
+    [HttpGet("twoje")]
     [EndpointSummary("Zwraca wszystkie drużyny użytkownika, w formacie potrzebnym do wyświetlenia ich w tabelce na stronie głównej.")]
-    [ProducesResponseType(typeof(ICollection<DruzynaDoTabelkiDto>), 200)]
+    [ProducesResponseType(typeof(TabelkaDruzynResDto), 200)]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public async Task<ActionResult<ICollection<DruzynaDoTabelkiDto>>> GetWszystkieDruzynyUzytkownikaDoTabelki(int idUzytkownika)
+    public async Task<ActionResult<TabelkaDruzynResDto>> GetWszystkieDruzynyUzytkownikaDoTabelki()
     {
-        var result = await druzynyService.GetWszystkieDruzynyUzytkownikaDoTabelki(idUzytkownika);
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetWszystkieDruzynyUzytkownikaDoTabelki(uzytkownik.Id);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),

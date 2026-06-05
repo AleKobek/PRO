@@ -1,20 +1,97 @@
-﻿import React from "react";
+﻿import React, {useEffect, useState} from "react";
 
 import MiniAwatarKomponent from "./MiniAwatarKomponent";
 import {useNavigate} from "react-router-dom";
+import {API_BASE_URL} from "../config/api";
+import {Bounce, toast} from "react-toastify";
 
 
 
-export default function TabelkaDruzynKomponent({druzyny, brakDruzynWiadomosc, czySzczegolyWNowejKarcie = false}) {
+export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, czySzczegolyWNowejKarcie = false, pierwszaStronaDruzyn}) {
 
     const navigate = useNavigate();
+    const [druzynyNaStronie, ustawDruzynyNaStronie] = useState([])
+
+    const [liczbaDruzynNaStronie, ustawLiczbeDruzynNaStronie] = useState(20); // domyślne ustawienie liczby drużyn na stronie to 20
+    const [aktualnaStrona, ustawAktualnaStrone] = useState(0)
+    const liczbaStron = Math.max(1, Math.ceil((idDruzyn?.length ?? 0) / liczbaDruzynNaStronie));
 
     const openInNewTab = url => {
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
+    // po załadowaniu od razu ustawiamy pierwszą stronę drużyn
+    useEffect(() => {
+        ustawDruzynyNaStronie(pierwszaStronaDruzyn);
+    }, [pierwszaStronaDruzyn]);
+
+    // przy zmianie strony pobieramy drużyny o podanych id
+    useEffect(() => {
+        if(!idDruzyn) return;
+        if(idDruzyn.length === 0) return;
+        if(aktualnaStrona < 0) return;
+        if(aktualnaStrona >= liczbaStron) return;
+        if(liczbaDruzynNaStronie === 0) return;
+
+        const ac = new AbortController();
+        let alive = true;
+
+        const pobierzNoweDruzyny = async () => {
+            const idDruzynDoPobrania = idDruzyn.slice(aktualnaStrona * liczbaDruzynNaStronie, (aktualnaStrona + 1) * liczbaDruzynNaStronie);
+            const opcje = {
+                method: 'POST', // nie GET, bo to nie jest klasyczne wyszukiwanie zasobu po url
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(idDruzynDoPobrania),
+                credentials: "include",
+                abortSignal: ac.signal,
+            }
+
+            const res = await fetch(`${API_BASE_URL}/Druzyna/tabelka`, opcje);
+            const body = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                toast.error(`Wystąpił błąd podczas pobierania drużyn: ${body?.message ?? res.statusText ?? "nieznany błąd"}`, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                return;
+            }
+            if(!alive || !body) return;
+            ustawDruzynyNaStronie(body);
+        }
+
+        pobierzNoweDruzyny();
+
+        return () => {
+            alive = false;
+            ac.abort();
+        };
+    },[aktualnaStrona, idDruzyn, liczbaDruzynNaStronie, liczbaStron])
+
     return (<div>
-        {Array.isArray(druzyny) && druzyny.length > 0 ? (
+        <span className="mr-2">Liczba drużyn na stronie:</span>
+        <select
+            className="border border-gray-300 rounded-md p-1 mb-2"
+            value={liczbaDruzynNaStronie}
+            onChange={ (e) => {
+                ustawLiczbeDruzynNaStronie(parseInt(e.target.value));
+                ustawAktualnaStrone(0);
+            }}>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="50">50</option>
+        </select>
+        {Array.isArray(druzynyNaStronie) && druzynyNaStronie.length > 0 ? (
             <table className="overflow-x-auto overflow-y-auto h-full w-full border-4 border-gray-600 rounded-lg shadow-lg">
                 <tbody>
                 <tr className="font-bold border border-gray-600 text-3xl text-gray-800">
@@ -26,7 +103,7 @@ export default function TabelkaDruzynKomponent({druzyny, brakDruzynWiadomosc, cz
                     <th style={{width: "8%"}}></th>
                 </tr>
 
-                {druzyny.map((druzyna) => {
+                {druzynyNaStronie.map((druzyna) => {
                     if (!druzyna || typeof druzyna !== 'object') return null;
 
                     const key = druzyna.id;
@@ -89,5 +166,17 @@ export default function TabelkaDruzynKomponent({druzyny, brakDruzynWiadomosc, cz
         ) : (
             <div className="p-4 text-center text-gray-800">{brakDruzynWiadomosc}</div>
         )}
+        {/* paginacja */}
+        <div className="flex justify-center mt-3"><span>Strona {aktualnaStrona + 1} z {liczbaStron}</span></div>
+        <div className="flex justify-center gap-6">
+            <button className={aktualnaStrona === 0 ? "zablokowany-przycisk" : "bg-blue-900 hover:bg-blue-600 text-white"} disabled={aktualnaStrona === 0}
+                    onClick={ () => { ustawAktualnaStrone(aktualnaStrona - 1) } }
+            >Poprzednia strona</button>
+
+            {/* przycisk następnej strony*/}
+            <button className={liczbaStron === 0 || aktualnaStrona === liczbaStron - 1 ? "zablokowany-przycisk" : "bg-blue-900 hover:bg-blue-600 text-white"} disabled= {liczbaStron === 0 || aktualnaStrona === liczbaStron - 1}
+                    onClick={ () => { ustawAktualnaStrone(aktualnaStrona + 1) } }
+            >Następna strona</button>
+        </div>
     </div>);
 }

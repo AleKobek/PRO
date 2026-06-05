@@ -74,21 +74,16 @@ public class DruzynyService(
         }
     }
     
-    public async Task<ServiceResult<ICollection<DruzynaDoTabelkiDto>>> GetWszystkieDruzynyUzytkownikaDoTabelki(int idUzytkownika)
+    public async Task<ServiceResult<TabelkaDruzynResDto>> GetWszystkieDruzynyUzytkownikaDoTabelki(int idUzytkownika)
     {
-        if(idUzytkownika <= 0) return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.BadRequest(new ErrorItem("Id użytkownika musi być większe od 0"));
+        if(idUzytkownika <= 0) return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Id użytkownika musi być większe od 0"));
         var druzyny = await druzynyRepository.GetDruzynyUzytkownika(idUzytkownika);
-        var druzynyDoTabelki = new List<DruzynaDoTabelkiDto>();
-        foreach (var druzyna in druzyny)
-        {
-            var druzynaDoTabelkiRes = await GetDruzynaDoTabelki(druzyna.Id);
-            if (!druzynaDoTabelkiRes.Succeeded) return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Fail(druzynaDoTabelkiRes.StatusCode, druzynaDoTabelkiRes.Errors);
-            druzynyDoTabelki.Add(druzynaDoTabelkiRes.Value); // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
-        }
-        druzynyDoTabelki = druzynyDoTabelki
-            .OrderBy(x => x.MinutyOdOstatniejAktywnosciKapitana)
-            .ToList();        
-        return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Ok(druzynyDoTabelki);
+        var idDruzyn = druzyny.Select(x => x.Id).ToArray();
+        var idDruzynNaStrone = idDruzyn.Take(LiczbaDruzynNaStroneNaStart).ToArray();
+        var druzynyDoTabelki = await GetDruzynyDoTabelki(idDruzynNaStrone);
+        if(!druzynyDoTabelki.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(druzynyDoTabelki.StatusCode, druzynyDoTabelki.Errors);
+                
+        return ServiceResult<TabelkaDruzynResDto>.Ok(new TabelkaDruzynResDto(idDruzyn, druzynyDoTabelki.Value ?? []));
     }
 
     public async Task<ServiceResult<ICollection<DruzynaDoTabelkiDto>>> GetDruzynyDoTabelki(int[] idDruzyn)

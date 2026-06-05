@@ -11,7 +11,8 @@ export default function TwojeDruzyny() {
     const { uzytkownik, ladowanie } = useAuth();
     const location = useLocation();
 
-    const [druzyny, ustawDruzyny] = useState([]);
+    const [idDruzyn, ustawIdDruzyn] = useState([]);
+    const [pierwszaStronaDruzyn, ustawDruzynyNaStronie] = useState([])
 
     useEffect(() => {
         document.title = `Squadra`;
@@ -107,14 +108,11 @@ export default function TwojeDruzyny() {
         };
 
         const podajTwojeDruzyny = async () => {
-            const data = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/tabelka/${uzytkownik.id}`);
+            const dane = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/twoje`);
             if (!alive) return;
 
-            let normalized = [];
-            if (Array.isArray(data)) normalized = data;
-            else if (data) normalized = [data];
-
-            ustawDruzyny(normalized);
+            ustawIdDruzyn(dane.idDruzyn);
+            ustawDruzynyNaStronie(dane.pierwszaStronaDruzyn);
         };
 
         podajTwojeDruzyny();
@@ -147,7 +145,12 @@ export default function TwojeDruzyny() {
                 </button>
             </div>
             <div className="mt-10 text-2xl">
-                <TabelkaDruzynKomponent druzyny={druzyny} brakDruzynWiadomosc={"Nie należysz do żadnej drużyny. Czas to zmienić! Razem raźniej!"}/>
+                <TabelkaDruzynKomponent
+                    idDruzyn={idDruzyn}
+                    brakDruzynWiadomosc={"Nie należysz do żadnej drużyny. Czas to zmienić! Razem raźniej!"}
+                    czySzczegolyWNowejKarcie = {false}
+                    pierwszaStronaDruzyn={pierwszaStronaDruzyn}
+                />
             </div>
         </div>
         <ToastContainer
