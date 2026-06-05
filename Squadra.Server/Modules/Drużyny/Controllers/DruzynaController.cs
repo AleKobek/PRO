@@ -270,4 +270,21 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
+
+    [HttpPost("tabelka")]
+    [EndpointSummary("Zwraca drużyny w formacie do tabelki, dla podanych id drużyn")]
+    [ProducesResponseType(typeof(ICollection<DruzynaDoTabelkiDto>), 200)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult<ICollection<DruzynaDoTabelkiDto>>> GetDruzynyDoTabelki(int[] idDruzyn)
+    {
+        var result = await druzynyService.GetDruzynyDoTabelki(idDruzyn);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
 }
