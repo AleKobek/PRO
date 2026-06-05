@@ -171,7 +171,7 @@ export default function ListaJezykow({
                         .sort((a, b) => b.wartosc - a.wartosc)
                         .map((pozycja, index) => (
                             <JezykNaLiscieKomponent
-                                key={`${pozycja.idJezyka}-${pozycja.idStopnia}`} // użyj stabilnego, unikalnego klucza
+                                key={`${pozycja.idJezyka}-${pozycja.idStopnia}`}
                                 jezykDoKomponentu={pozycja} idZListy={index} czyEdytuj={false}
                             />
                         ))}

@@ -19,6 +19,7 @@ import StworzDruzyne from "./Components/StworzDruzyne";
 import StronaSzczegolowDruzyny from "./Components/StronaSzczegolowDruzyny";
 import EdytujDruzyne from "./Components/EdytujDruzyne";
 import WyszukajDruzyne from "./Components/WyszukajDruzyne";
+import WynikiWyszukiwaniaDruzyn from "./Components/WynikiWyszukiwaniaDruzyn";
 
 function App() {
 
@@ -73,6 +74,10 @@ function App() {
                 <Route path = "/wyszukajDruzyne" element = {<>
                     <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
                     <WyszukajDruzyne/>
+                </>}></Route>
+                <Route path = "/wyszukaneDruzyny" element = {<>
+                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
+                    <WynikiWyszukiwaniaDruzyn/>
                 </>}></Route>
               <Route path = "/login" element = {<Logowanie/>}></Route>
               <Route path = "/rejestracja" element = {<Rejestracja/>}></Route>
