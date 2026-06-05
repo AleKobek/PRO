@@ -142,7 +142,7 @@ export default function FormularzProfilu({
             })),
             pseudonim: pseudonim,
         };
-        
+
         const opcje = {
             method: "PUT",
             headers: {
@@ -194,15 +194,11 @@ export default function FormularzProfilu({
     // ustawiamy nową listę dostępnych regionów, jeśli kraj się zmieni
     const regionyDoWyboru = useMemo(() => {
         if (!kraj?.id) return [];
-        return listaRegionowZBazy.filter(r => r.krajId === kraj.id);
+        let listaRegionow = listaRegionowZBazy.filter(r => r.krajId === kraj.id);
+        ustawRegion(listaRegionow[0]);
+        return listaRegionow;
     }, [kraj?.id, listaRegionowZBazy]);
 
-    // jeśli zmieni się lista dostępnych regionów, a wybrany region nie będzie już pasował, to go odznaczamy
-    useEffect(() => {
-        if (czyRegionSync && region?.id && !regionyDoWyboru.some(r => r.id === region.id)) {
-            ustawRegion({});
-        }
-    }, [regionyDoWyboru, region?.id, czyRegionSync]);
 
     /**
      * porównujemy czy użytkownik coś zmienił w swoich listach języków
