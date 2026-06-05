@@ -12,6 +12,7 @@ namespace Squadra.Server.Modules.Drużyny.Repositories;
 
 public class DruzynyRepository(AppDbContext context, IStatystykiRepository statystykiRepository) : IDruzynyRepository
 {
+    public static readonly int MaksymalnaLiczbaDruzynGraczaDlaGry = 10;
     
     public async Task<Druzyna> GetDruzyna(int idDruzyny)
     {
@@ -132,6 +133,25 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         return true; // jeśli spełnia wszystkie wymagania, to zwracamy true
     }
 
+    public async Task<bool> CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(int idUzytkownika, int idGry)
+    {
+        var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
+        if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + idUzytkownika + " nie istnieje.");
+        
+        var gra = await context.WspieranaGra.FindAsync(idGry);
+        if (gra == null) throw new NieZnalezionoWBazieException("Nie znaleziono gry o id " + idGry);
+        
+        // Liczba drużyn, w których użytkownik jest członkiem (ma przypisany UzytkownikId) i drużyna dotyczy danej gry
+        var liczbaDruzynGracza = await context.Druzyna
+            .Where(d => d.GraId == idGry && d.MiejsceWDruzynieCollection.Any(m => m.UzytkownikId == idUzytkownika))
+            .CountAsync();
+        
+        Console.WriteLine("####################################################");
+        Console.WriteLine($"Liczba drużyn użytkownika {idUzytkownika} w grze {idGry}: {liczbaDruzynGracza}");
+        
+        return liczbaDruzynGracza >= MaksymalnaLiczbaDruzynGraczaDlaGry;
+    }
+    
     public async Task<bool> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
     {
         var nastrojRozgrywki = await context.NastrojRozgrywki.FindAsync(druzynaReq.IdNastrojuRozgrywki);

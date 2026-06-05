@@ -25,6 +25,9 @@ public class DruzynyService(
     IBibliotekaGierService bibliotekaGierService
     ) : IDruzynyService
 {
+    
+    public static readonly int LiczbaDruzynNaStroneNaStart = 20;
+    
     private async Task<ServiceResult<DruzynaDoTabelkiDto>> GetDruzynaDoTabelki(int idDruzyny)
     {
         try
@@ -411,6 +414,22 @@ public class DruzynyService(
         }
     }
 
+    
+    public async Task<ServiceResult<bool>> CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(int idUzytkownika, int idGry)
+    {
+        if(idGry <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id gry: " + idGry));
+        if(idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika));
+        
+        try{
+            
+            return ServiceResult<bool>.Ok(await druzynyRepository.CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idGry, idUzytkownika));
+            
+        }catch(NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
     public async Task<ServiceResult<bool>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
     {
         try
@@ -427,6 +446,10 @@ public class DruzynyService(
             var graRes = await wspieranaGraService.GetWspieranaGra(druzynaReq.IdGry);
             if (!graRes.Succeeded) return ServiceResult<bool>.Fail(graRes.StatusCode, graRes.Errors);
 
+            var czyUzytkownikPrzekraczaMaksLiczbeDruzynRes = await CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(druzynaReq.IdGry, idKapitana);
+            if (!czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Succeeded) return ServiceResult<bool>.Fail(czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.StatusCode, czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Errors);
+            if (czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Value) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie można stworzyć drużyny, ponieważ użytkownik może być w maksymalnie " + DruzynyRepository.MaksymalnaLiczbaDruzynGraczaDlaGry +" drużynach dla danej gry"));
+            
             if (druzynaReq.IdPlatformy != null)
             {
                 var platformaRes =
@@ -697,5 +720,4 @@ public class DruzynyService(
         return ServiceResult<TabelkaDruzynResDto>.Ok(new TabelkaDruzynResDto(idDruzyn.ToArray(), druzynyRes.Value));
     }
     
-    const int LiczbaDruzynNaStroneNaStart = 20;
 }

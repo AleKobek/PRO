@@ -16,6 +16,7 @@ public interface IDruzynyService
     public Task<ServiceResult<ICollection<NastrojRozgrywkiDto>>> GetNastrojeRozgrywki();
     public Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganieMiejsca(int idMiejsca, int idUzytkownika);
     public Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganiaDruzyny(int idDruzyny, int idUzytkownika);
+    public Task<ServiceResult<bool>> CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(int idGry, int idUzytkownika);
     public Task<ServiceResult<bool>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana);
     public Task<ServiceResult<bool>> UsunDruzyne(int idDruzyny, int idUsuwajacegoUzytkownika);
     public Task<ServiceResult<bool>> OpuscDruzyne(int idDruzyny, int idUzytkownika);
