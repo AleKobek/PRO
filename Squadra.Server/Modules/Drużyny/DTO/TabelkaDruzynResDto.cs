@@ -1,6 +1,6 @@
 ﻿namespace Squadra.Server.Modules.Drużyny.DTO;
 
-public record WyszukajDruzynyResDto(
+public record TabelkaDruzynResDto(
     int[] IdDruzyn,
     ICollection<DruzynaDoTabelkiDto> PierwszaStronaDruzyn
 );

@@ -629,42 +629,42 @@ public class DruzynyService(
         }
     }
 
-    public async Task<ServiceResult<WyszukajDruzynyResDto>> WyszukajDruzyny(WyszukajDruzyneReqDto req, int idUzytkownika)
+    public async Task<ServiceResult<TabelkaDruzynResDto>> WyszukajDruzyny(WyszukajDruzyneReqDto req, int idUzytkownika)
     {
         // sprawdzić, czy jeżeli jest zintegrowane, to czy ma tę grę i platformę. może wyżej też?
         // odfiltrowujemy tak, aby zostało bez ról tylko wtedy gdy faktycznie nie ma ról
         
         var gra = await wspieranaGraService.GetWspieranaGra(req.IdGry);
-        if (!gra.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(gra.StatusCode, gra.Errors);
+        if (!gra.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(gra.StatusCode, gra.Errors);
         
         if(req.IdPlatformy != null)
         {
             var platforma = await platformaService.GetPlatforma(req.IdPlatformy ?? 0);
-            if (!platforma.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(platforma.StatusCode, platforma.Errors);
+            if (!platforma.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(platforma.StatusCode, platforma.Errors);
             var czyMaTeGreNaPlatformieRes = await bibliotekaGierService.CzyUzytkownikMaDanaGreNaDanejPlatformie(
                 idUzytkownika, 
                 req.IdGry,
                 req.IdPlatformy ?? 0 // już odfiltrowaliśmy drużyny bez IdPlatformy, więc możemy bezpiecznie użyć ?? 0
             );
-            if (!czyMaTeGreNaPlatformieRes.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(czyMaTeGreNaPlatformieRes.StatusCode, czyMaTeGreNaPlatformieRes.Errors);
+            if (!czyMaTeGreNaPlatformieRes.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(czyMaTeGreNaPlatformieRes.StatusCode, czyMaTeGreNaPlatformieRes.Errors);
         }
 
         if (req.IdJezyka != null)
         {
             var jezykiRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
-            if (!jezykiRes.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(jezykiRes.StatusCode, jezykiRes.Errors);
+            if (!jezykiRes.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(jezykiRes.StatusCode, jezykiRes.Errors);
 
             var jezykISopien = jezykiRes.Value.FirstOrDefault(x => x.Jezyk.Id == req.IdJezyka);
-            if(jezykISopien == null) return ServiceResult<WyszukajDruzynyResDto>.BadRequest(new ErrorItem("Nie posiadasz wymaganego języka, aby szukać drużyn wymagających tego języka"));
+            if(jezykISopien == null) return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Nie posiadasz wymaganego języka, aby szukać drużyn wymagających tego języka"));
             
             if (req.IdStopnia != null)
             {
                 var stopien = jezykISopien.Stopnie.FirstOrDefault(x => x.Id == req.IdStopnia);
-                if (stopien == null) return ServiceResult<WyszukajDruzynyResDto>.BadRequest(new ErrorItem("Nie posiadasz wymaganego stopnia biegłości języka, aby szukać drużyn wymagających tego stopnia biegłości języka"));
+                if (stopien == null) return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Nie posiadasz wymaganego stopnia biegłości języka, aby szukać drużyn wymagających tego stopnia biegłości języka"));
             }
 
         }
-        else if (req.IdStopnia != null) return ServiceResult<WyszukajDruzynyResDto>.BadRequest(new ErrorItem("Nie można podać stopnia biegłości języka bez podania języka"));
+        else if (req.IdStopnia != null) return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Nie można podać stopnia biegłości języka bez podania języka"));
 
         try
         {
@@ -675,10 +675,10 @@ public class DruzynyService(
         }
         catch (NieZnalezionoWBazieException e)
         {
-            return ServiceResult<WyszukajDruzynyResDto>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<TabelkaDruzynResDto>.NotFound(new ErrorItem(e.Message));
         }
         var roleGry = await statystykiService.GetRoleGry(req.IdGry); 
-        if (!roleGry.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(roleGry.StatusCode, roleGry.Errors);
+        if (!roleGry.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(roleGry.StatusCode, roleGry.Errors);
         
         // sprawdzamy, czy podał poprawne role
         if (req.IdRol.Length > 0)
@@ -686,20 +686,20 @@ public class DruzynyService(
             var roleGryIds = roleGry.Value.Select(x => x.Id).ToList();
             var nieprawidloweRole = req.IdRol.Where(x => !roleGryIds.Contains(x)).ToList();
             if (nieprawidloweRole.Count > 0) 
-                return ServiceResult<WyszukajDruzynyResDto>.BadRequest(new ErrorItem(
+                return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem(
                     $"Podane role o id: [{string.Join(", ", nieprawidloweRole)}], które zostały podane w wymaganiach drużyny, nie istnieją w bazie danych dla tej gry."
                 ));
             
         }
-        if(req.IdRol.Length == 0 && roleGry.Value.Count > 0) return ServiceResult<WyszukajDruzynyResDto>.BadRequest(new ErrorItem("Jeżeli gra ma role, to należy podać id przynajmniej jednej roli"));
+        if(req.IdRol.Length == 0 && roleGry.Value.Count > 0) return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Jeżeli gra ma role, to należy podać id przynajmniej jednej roli"));
         
         // wszystko powinno być git, można szukać drużyn
         var idDruzyn = await druzynyRepository.WyszukajIdDruzyn(req, idUzytkownika);
         var idDruzynNaStrone = idDruzyn.Take(LiczbaDruzynNaStroneNaStart).ToList();
         var druzynyRes = await GetDruzynyDoTabelki(idDruzynNaStrone.ToArray());
-        if(!druzynyRes.Succeeded) return ServiceResult<WyszukajDruzynyResDto>.Fail(druzynyRes.StatusCode, druzynyRes.Errors);
+        if(!druzynyRes.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(druzynyRes.StatusCode, druzynyRes.Errors);
         
-        return ServiceResult<WyszukajDruzynyResDto>.Ok(new WyszukajDruzynyResDto(idDruzyn.ToArray(), druzynyRes.Value));
+        return ServiceResult<TabelkaDruzynResDto>.Ok(new TabelkaDruzynResDto(idDruzyn.ToArray(), druzynyRes.Value));
     }
     
     const int LiczbaDruzynNaStroneNaStart = 20;
