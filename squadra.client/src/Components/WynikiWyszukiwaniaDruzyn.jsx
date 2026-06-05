@@ -1,8 +1,9 @@
 ﻿import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import React, {useEffect, useState} from "react";
-import {Bounce, ToastContainer} from "react-toastify";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 import TabelkaDruzynKomponent from "./TabelkaDruzynKomponent";
+import {API_BASE_URL} from "../config/api";
 
 export default function WynikiWyszukiwaniaDruzyn() {
 
@@ -27,6 +28,57 @@ export default function WynikiWyszukiwaniaDruzyn() {
     },[location.state.dane, location.state.dane.idDruzyn, location.state.dane.pierwszaStronaDruzyn])
 
 
+    useEffect(() => {
+        if(!idDruzyn) return;
+        if(idDruzyn.length === 0) return;
+        if(aktualnaStrona < 0) return;
+        if(aktualnaStrona >= liczbaStron) return;
+        if(liczbaDruzynNaStronie === 0) return;
+        if(!uzytkownik) return;
+
+        const ac = new AbortController();
+        let alive = true;
+
+        const pobierzNoweDruzyny = async () => {
+            const idDruzynDoPobrania = idDruzyn.slice(aktualnaStrona * liczbaDruzynNaStronie, (aktualnaStrona + 1) * liczbaDruzynNaStronie);
+            const opcje = {
+                method: 'POST', // nie GET, bo to nie jest klasyczne wyszukiwanie zasobu po url
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(idDruzynDoPobrania),
+                credentials: "include",
+                abortSignal: ac.signal,
+            }
+
+            const res = await fetch(`${API_BASE_URL}/Druzyna/tabelka`, opcje);
+            const body = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                toast.error(`Wystąpił błąd podczas pobierania drużyn: ${body?.message ?? res.statusText ?? "nieznany błąd"}`, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                return;
+            }
+            if(!alive || !body) return;
+            ustawDruzynyNaStronie(body);
+        }
+
+        pobierzNoweDruzyny();
+
+        return () => {
+            alive = false;
+            ac.abort();
+        };
+    },[aktualnaStrona, idDruzyn, liczbaDruzynNaStronie, liczbaStron, uzytkownik])
 
     if(ladowanie || !uzytkownik) return (<>
             <div id = "glowna">
@@ -39,11 +91,13 @@ export default function WynikiWyszukiwaniaDruzyn() {
         <div id = "glowna">
             <button className={"przycisk-nawigacji"} onClick={() => navigate('/wyszukajDruzyne')}>Wyszukaj inne drużyny</button>
             <h1>Wyszukane drużyny</h1>
+            <span className="mr-2">Liczba drużyn na stronie:</span>
             <select
+                className="border border-gray-300 rounded-md p-1 mb-2"
+                value={liczbaDruzynNaStronie}
                 onChange={ (e) => {
                     ustawLiczbeDruzynNaStronie(parseInt(e.target.value));
                     ustawAktualnaStrone(0);
-                    // pobierzNoweDruzyny();
                 }}>
                 <option value="10">10</option>
                 <option value="20">20</option>
