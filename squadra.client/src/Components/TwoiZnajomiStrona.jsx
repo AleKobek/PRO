@@ -227,19 +227,7 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
             if (!res.ok) {
-                switch (res.status) {
-                    case 404: {
-                        toast.error('Użytkownik o takim loginie nie istnieje!', toastOptions);
-                        break;
-                    }
-                    case 409: { // konflikt, u nas to się dzieje gdy uzytkownik jest już znajomym
-                        toast.error('Ten użytkownik jest już Twoim znajomym!', toastOptions);
-                        break;
-                    }
-                    default: {
-                        toast.error(`Nie można wysłać zaproszenia: ${body || 'Nieznany błąd.'}`, toastOptions);
-                    }
-                }
+                toast.error(body, toastOptions);
                 return;
             }
             toast.success("Pomyślnie wysłano zaproszenie!", toastOptions);
