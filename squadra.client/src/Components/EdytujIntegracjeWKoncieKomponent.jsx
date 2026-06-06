@@ -34,7 +34,7 @@ export default function EdytujIntegracjeWKoncieKomponent({zewnetrzneId, ustawZew
             : await res.text().catch(() => "");
 
         if (!res.ok) {
-            toast.error(`Wystąpił błąd: ${body.message}`, {
+            toast.error(`Wystąpił błąd: ${body}`, {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
