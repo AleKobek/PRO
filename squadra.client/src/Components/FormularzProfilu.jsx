@@ -307,7 +307,7 @@ export default function FormularzProfilu({
             </div>
         <br/>
         <label htmlFor="opis">Opis<br/>
-        <textarea id = "opis" name ="opis" maxLength={300} value={opis} onChange={(e)=>ustawOpis(e.target.value)}></textarea></label>
+        <textarea id = "opis" name ="opis" maxLength={300} value={opis} className="w-[500px]" onChange={(e)=>ustawOpis(e.target.value)}></textarea></label>
         <span id = "error-opis" className="error-wiadomosc">{bladOpisu}</span><br/>
         
         <br/>
