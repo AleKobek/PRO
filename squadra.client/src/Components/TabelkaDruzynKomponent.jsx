@@ -100,7 +100,7 @@ export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, c
                     <th className="border border-gray-600 text-center text-xl" style={{width: "10%"}}>Ostatnia aktywność kapitana</th>
                     <th className="border border-gray-600 text-center">Członkowie</th>
                     <th className="border border-gray-600 text-center">Nastrój</th>
-                    <th style={{width: "8%"}}></th>
+                    <th className="text-sm" style={{width: "8%"}}>{czySzczegolyWNowejKarcie ? "Otwórz nową kartę ze szczegółami" : "Przejdź do szczegółów"}</th>
                 </tr>
 
                 {druzynyNaStronie.map((druzyna) => {
