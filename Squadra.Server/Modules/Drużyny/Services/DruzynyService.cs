@@ -2,6 +2,7 @@
 using Squadra.Server.Modules.BibliotekaGier.Services;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Repositories;
+using Squadra.Server.Modules.IntegracjeZewnetrzne.Services;
 using Squadra.Server.Modules.Platformy.Services;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.Services;
@@ -22,7 +23,8 @@ public class DruzynyService(
     IStopienBieglosciJezykaService stopienBieglosciJezykaService,
     IStatystykiService statystykiService,
     IPlatformaService platformaService,
-    IBibliotekaGierService bibliotekaGierService
+    IBibliotekaGierService bibliotekaGierService,
+    IIntegracjeZewnetrzneService integracjeZewnetrzneService
     ) : IDruzynyService
 {
     
@@ -680,6 +682,7 @@ public class DruzynyService(
                 req.IdPlatformy ?? 0 // już odfiltrowaliśmy drużyny bez IdPlatformy, więc możemy bezpiecznie użyć ?? 0
             );
             if (!czyMaTeGreNaPlatformieRes.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(czyMaTeGreNaPlatformieRes.StatusCode, czyMaTeGreNaPlatformieRes.Errors);
+            if(!czyMaTeGreNaPlatformieRes.Value) return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Nie można szukać drużyn wymagających tej platformy, ponieważ nie posiadasz tej gry na tej platformie"));
         }
 
         if (req.IdJezyka != null)
