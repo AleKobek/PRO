@@ -360,8 +360,6 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
     public async Task<ICollection<int>> WyszukajIdDruzyn(WyszukajDruzyneReqDto req, int idUzytkownika)
     {
         // preferencje zintegrowania = [zintegrowane, niezintegrowane, wszystkie]
-        Console.WriteLine("###############################");
-        Console.WriteLine(req.PreferencjeZintegrowania);
         var druzyny = await context.Druzyna
             .Where(d => d.GraId == req.IdGry
                         && (req.IdPlatformy == null || d.PlatformaId == req.IdPlatformy)
@@ -405,13 +403,9 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         }
         // jeżeli mogą być wymagania
         List<int> przefiltrowaneDruzyny = [];
-        Console.WriteLine("############################### po ifie");
         foreach (var druzyna in druzyny)
         {
-            Console.WriteLine("Sprawdzam drużynę " + druzyna.Id);
             if (!await CzyUzytkownikSpelniaWymaganiaDruzyny(druzyna.Id, idUzytkownika)) continue;
-            Console.WriteLine("Sprawdzono drużynę " + druzyna.Id);
-
             
             var miejscaWDruzynie = druzyna.MiejsceWDruzynieCollection.Where(m => m.UzytkownikId == null).ToList();
             
