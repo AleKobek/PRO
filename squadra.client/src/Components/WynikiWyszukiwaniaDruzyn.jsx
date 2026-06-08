@@ -33,6 +33,7 @@ export default function WynikiWyszukiwaniaDruzyn() {
         <div id = "glowna">
             <button className={"przycisk-nawigacji"} onClick={() => navigate('/wyszukajDruzyne')}>Wyszukaj inne drużyny</button>
             <h1>Wyszukane drużyny</h1>
+            <h3>Szczegóły wyświetlą się w nowych kartach</h3>
             <TabelkaDruzynKomponent
                 idDruzyn={idDruzyn}
                 brakDruzynWiadomosc="Brak dostępnch drużyn spełniających warunki wyszukiwania"
