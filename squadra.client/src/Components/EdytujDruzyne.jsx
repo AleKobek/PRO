@@ -191,7 +191,7 @@ export default function EdytujDruzyne() {
                     <input
                         type="text"
                         value={nowaNazwa}
-                        className="border-2 border-gray-300 rounded-md p-2 w-full"
+                        className="border-2 border-gray-300 rounded-md p-2 w-[600px]"
                         onChange={(e) => ustawNazwe(e.target.value)}
                     />
                     <span className="error-wiadomosc">{bladNazwy}</span>
@@ -201,7 +201,7 @@ export default function EdytujDruzyne() {
                     <textarea
                         value={nowyOpis}
                         onChange={(e) => ustawOpis(e.target.value)}
-                        className="border-2 border-gray-300 rounded-md p-2 w-full"
+                        className="border-2 border-gray-300 rounded-md p-2 w-[600px]"
                         maxLength={300}
                     />
                 <span className="error-wiadomosc">{bladOpisu}</span>
