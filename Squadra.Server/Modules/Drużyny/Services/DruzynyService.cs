@@ -509,6 +509,10 @@ public class DruzynyService(
                         $"Podane statystyki o id: [{string.Join(", ", nieprawidloweStatystyki)}], które zostały podane w wymaganiach drużyny, nie istnieją w bazie danych.";
                     return ServiceResult<bool>.BadRequest(new ErrorItem(errorMessage));
                 }
+
+                var czySpelniaWymaganiaRes = await statystykiService.CzyUzytkownikSpelniaWymagania(druzynaReq.WymaganeStatystyki, idKapitana);
+                if(!czySpelniaWymaganiaRes.Succeeded) return ServiceResult<bool>.Fail(czySpelniaWymaganiaRes.StatusCode, czySpelniaWymaganiaRes.Errors);
+                if (!czySpelniaWymaganiaRes.Value) return ServiceResult<bool>.BadRequest(new ErrorItem("Kapitan musi spełniać wymagania tworzonej przez siebie drużyny"));
             }
 
             var wymaganeStatystykiMiejscWDruzynie = druzynaReq.MiejscaWDruzynie.Select(x => x.WymaganaStatystyka)
