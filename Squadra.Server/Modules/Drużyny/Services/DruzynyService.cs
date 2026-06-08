@@ -2,7 +2,6 @@
 using Squadra.Server.Modules.BibliotekaGier.Services;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Repositories;
-using Squadra.Server.Modules.IntegracjeZewnetrzne.Services;
 using Squadra.Server.Modules.Platformy.Services;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.Services;
@@ -23,8 +22,7 @@ public class DruzynyService(
     IStopienBieglosciJezykaService stopienBieglosciJezykaService,
     IStatystykiService statystykiService,
     IPlatformaService platformaService,
-    IBibliotekaGierService bibliotekaGierService,
-    IIntegracjeZewnetrzneService integracjeZewnetrzneService
+    IBibliotekaGierService bibliotekaGierService
     ) : IDruzynyService
 {
     
@@ -668,6 +666,14 @@ public class DruzynyService(
     {
         // sprawdzić, czy jeżeli jest zintegrowane, to czy ma tę grę i platformę. może wyżej też?
         // odfiltrowujemy tak, aby zostało bez ról tylko wtedy gdy faktycznie nie ma ról
+        
+        // preferencje zintegrowania = [zintegrowane, niezintegrowane, wszystkie]
+
+        var czyUzytkownikMaZintegrowaneKontoRes = await uzytkownikService.CzyUzytkownikMaZintegrowaneKonto(idUzytkownika);
+        if (!czyUzytkownikMaZintegrowaneKontoRes.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(czyUzytkownikMaZintegrowaneKontoRes.StatusCode, czyUzytkownikMaZintegrowaneKontoRes.Errors);
+        var maZintegrowaneKonto = czyUzytkownikMaZintegrowaneKontoRes.Value;
+        if(!maZintegrowaneKonto && req.PreferencjeZintegrowania != "niezintegrowane")
+            return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Nie można szukać drużyn zintegrowanych, ponieważ nie masz zintegrowanego konta"));
         
         var gra = await wspieranaGraService.GetWspieranaGra(req.IdGry);
         if (!gra.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(gra.StatusCode, gra.Errors);

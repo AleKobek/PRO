@@ -24,6 +24,7 @@ export default function WyszukajDruzyne() {
     const [idWybranejPlatformy, ustawIdWybranejPlatformy] = useState(null);
     const [idWybranegoNastroju, ustawIdWybranegoNastroju] = useState(null);
     const [czyZintegrowano, ustawCzyZintegrowano] = useState(false);
+    const [czyTylkoZintegrowane, ustawCzyTylkoZintegrowane] = useState(false);
     const [wybraneRole, ustawWybraneRole] = useState([]);
     const [idWymaganegoJezyka, ustawIdWymaganegoJezyka] = useState(null);
     const [idMinimalnegoStopniaJezyka, ustawIdMinimalnegoStopniaJezyka] = useState(null);
@@ -188,7 +189,7 @@ export default function WyszukajDruzyne() {
         int IdNastrojuRozgrywki,
         int IdJezyka,
         int IdStopnia,
-        bool CzyZintegrowano,
+        string PreferencjeZintegrowania,
         string Nazwa,
         ICollection<int> IdRol
     */
@@ -204,12 +205,16 @@ export default function WyszukajDruzyne() {
             idNastrojuRozgrywki: idWybranegoNastroju,
             idJezyka: idWymaganegoJezyka,
             idStopnia: idMinimalnegoStopniaJezyka,
-            czyZintegrowano: czyZintegrowano,
+            PreferencjeZintegrowania: czyZintegrowano
+                ? czyTylkoZintegrowane
+                    ? "zintegrowane"
+                    : "wszystkie"
+                : "niezintegrowane",
             nazwa: nazwa,
             idRol: wybraneRole
         }
 
-
+        console.log(daneDoWyslania)
 
         // pakujemy i wysyłamy
         const opcje = {
@@ -258,33 +263,47 @@ export default function WyszukajDruzyne() {
             <br/><br/>
             <form className="flex flex-col items-center justify-center gap-5">
                 {/* czy zintegrowano */}
-                <div className="flex items-center justify-center">
-                    <input
-                        type="checkbox"
-                        checked={czyZintegrowano}
-                        onChange={() => {
-                            // gdy zmieniamy z niezintegrowanego na zintegrowane
-                            if(!czyZintegrowano){
-                                ustawIdWybranejGry(gryUzytkownikaZPlatformami[0] ? gryUzytkownikaZPlatformami[0].id : null);
-                                ustawIdWybranejPlatformy(gryUzytkownikaZPlatformami[0] 
-                                    ? gryUzytkownikaZPlatformami[0].platformy[0] 
-                                        ? gryUzytkownikaZPlatformami[0].platformy[0].id 
+                <div>
+                    <div className="flex items-center justify-center">
+                        <input
+                            type="checkbox"
+                            checked={czyZintegrowano}
+                            onChange={() => {
+                                // gdy zmieniamy z niezintegrowanego na zintegrowane
+                                if(!czyZintegrowano){
+                                    ustawIdWybranejGry(gryUzytkownikaZPlatformami[0] ? gryUzytkownikaZPlatformami[0].id : null);
+                                    ustawIdWybranejPlatformy(gryUzytkownikaZPlatformami[0]
+                                        ? gryUzytkownikaZPlatformami[0].platformy[0]
+                                            ? gryUzytkownikaZPlatformami[0].platformy[0].id
+                                            : null
                                         : null
-                                    : null
-                                )
-                            }
-                            ustawCzyZintegrowano(!czyZintegrowano)
-                        }}
-                        disabled={gryUzytkownikaZPlatformami.length === 0}
-                        className="mr-2"
-                    />
-                    Użyj zintegrowanych danych
-                    <img
-                        src="/img/znak-zapytania.svg"
-                        alt="znak zapytania"
-                        className="h-[1em] w-auto align-middle ml-2 cursor-pointer"
-                        onClick={() => ustawPokazOkienkoTlumaczenia(true)}
-                    />
+                                    )
+                                }
+                                ustawCzyZintegrowano(!czyZintegrowano)
+                            }}
+                            disabled={gryUzytkownikaZPlatformami.length === 0}
+                            className="mr-2"
+                        />
+                        Użyj zintegrowanych danych
+                        <img
+                            src="/img/znak-zapytania.svg"
+                            alt="znak zapytania"
+                            className="h-[1em] w-auto align-middle ml-2 cursor-pointer"
+                            onClick={() => ustawPokazOkienkoTlumaczenia(true)}
+                        />
+                    </div>
+                    {czyZintegrowano && <div>
+                        <input
+                            type="checkbox"
+                            checked={czyTylkoZintegrowane}
+                            onChange={() => {
+                                ustawCzyTylkoZintegrowane(!czyTylkoZintegrowane)
+                            }}
+                            disabled={gryUzytkownikaZPlatformami.length === 0 || !czyZintegrowano}
+                            className="mr-2"
+                        />
+                        Wyszukaj TYLKO drużyny ze zintegrowanymi danymi
+                    </div>}
                 </div>
                 {/* wybór gry i platformy */}
                 <div className="flex items-center justify-center gap-5">

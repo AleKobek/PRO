@@ -359,13 +359,20 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
     
     public async Task<ICollection<int>> WyszukajIdDruzyn(WyszukajDruzyneReqDto req, int idUzytkownika)
     {
+        // preferencje zintegrowania = [zintegrowane, niezintegrowane, wszystkie]
+        Console.WriteLine("###############################");
+        Console.WriteLine(req.PreferencjeZintegrowania);
         var druzyny = await context.Druzyna
             .Where(d => d.GraId == req.IdGry
                         && (req.IdPlatformy == null || d.PlatformaId == req.IdPlatformy)
                         && (req.IdNastrojuRozgrywki == null || d.NastrojRozgrywkiId == req.IdNastrojuRozgrywki)
                         && (req.IdJezyka == null || d.WymaganyJezykId == req.IdJezyka)
                         && (req.IdStopnia == null || d.WymaganyStopienBieglosciJezykaId == req.IdStopnia)
-                        && d.CzyZintegrowano == req.CzyZintegrowano
+                        && (
+                                req.PreferencjeZintegrowania == "wszystkie" 
+                                ||(req.PreferencjeZintegrowania == "zintegrowane" && d.CzyZintegrowano) 
+                                ||(req.PreferencjeZintegrowania == "niezintegrowane" && !d.CzyZintegrowano)
+                            )
                         && (string.IsNullOrEmpty(req.Nazwa) || d.Nazwa.Contains(req.Nazwa.Trim()))
                         && d.MiejsceWDruzynieCollection.All(m => m.UzytkownikId != idUzytkownika)
             )
@@ -373,7 +380,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
             .ToListAsync();
 
         // jeżeli nie ma wymagań, obchodzą nas tylko role i wolne miejsca
-        if(!req.CzyZintegrowano)
+        if(req.PreferencjeZintegrowania == "niezintegrowane")
         {
             // na górze odfiltrowujemy tak, aby zostało bez ról tylko wtedy gdy faktycznie nie ma ról
             if (req.IdRol.Length == 0)
@@ -398,9 +405,13 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         }
         // jeżeli mogą być wymagania
         List<int> przefiltrowaneDruzyny = [];
+        Console.WriteLine("############################### po ifie");
         foreach (var druzyna in druzyny)
         {
+            Console.WriteLine("Sprawdzam drużynę " + druzyna.Id);
             if (!await CzyUzytkownikSpelniaWymaganiaDruzyny(druzyna.Id, idUzytkownika)) continue;
+            Console.WriteLine("Sprawdzono drużynę " + druzyna.Id);
+
             
             var miejscaWDruzynie = druzyna.MiejsceWDruzynieCollection.Where(m => m.UzytkownikId == null).ToList();
             

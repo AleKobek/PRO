@@ -6,7 +6,7 @@ public record WyszukajDruzyneReqDto(
     int? IdNastrojuRozgrywki,
     int? IdJezyka,
     int? IdStopnia,
-    bool CzyZintegrowano,
+    string PreferencjeZintegrowania,
     string? Nazwa,
     int[] IdRol
 );
