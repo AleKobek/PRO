@@ -78,6 +78,16 @@ public class UzytkownikRepository(
         return uzytkownik.OstatniaAktywnosc;
     }
 
+    public async Task<bool> CzyUzytkownikMaZintegrowaneKonto(int id)
+    {
+        var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
+        
+        if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + id + " nie istnieje");
+
+        return uzytkownik.IdNaZewnetrznymSerwisie != null && uzytkownik.LoginNaZewnetrznymSerwisie != null;
+    }
+
+
     public async Task<bool> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
     {
         var uzytkownikDoDodania = new Uzytkownik {

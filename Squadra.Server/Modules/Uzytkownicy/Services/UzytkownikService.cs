@@ -59,6 +59,20 @@ public class UzytkownikService(
             return ServiceResult<DateTime?>.NotFound(new ErrorItem(e.Message));
         }
     }
+
+    public async Task<ServiceResult<bool>> CzyUzytkownikMaZintegrowaneKonto(int id)
+    {
+        if(id < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Niepoprawne id użytkownika: " + id));
+        try
+        {
+            var maZintegrowaneKonto = await uzytkownikRepository.CzyUzytkownikMaZintegrowaneKonto(id);
+            return ServiceResult<bool>.Ok(maZintegrowaneKonto);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
     
     public async Task<ServiceResult<bool>> CreateUzytkownik(UzytkownikCreateDto uzytkownik)
     {

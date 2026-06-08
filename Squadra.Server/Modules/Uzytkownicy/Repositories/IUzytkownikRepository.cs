@@ -9,6 +9,7 @@ public interface IUzytkownikRepository
     public Task<UzytkownikResDto> GetUzytkownik(int id);
 
     public Task<UzytkownikResDto> GetUzytkownik(string login);
+    public Task<bool> CzyUzytkownikMaZintegrowaneKonto(int id);
 
     public Task<bool> CreateUzytkownik(UzytkownikCreateDto uzytkownik);
 
