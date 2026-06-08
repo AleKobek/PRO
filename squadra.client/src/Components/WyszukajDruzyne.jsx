@@ -272,12 +272,6 @@ export default function WyszukajDruzyne() {
                                 // gdy zmieniamy z niezintegrowanego na zintegrowane
                                 if(!czyZintegrowano){
                                     ustawIdWybranejGry(gryUzytkownikaZPlatformami[0] ? gryUzytkownikaZPlatformami[0].id : null);
-                                    ustawIdWybranejPlatformy(gryUzytkownikaZPlatformami[0]
-                                        ? gryUzytkownikaZPlatformami[0].platformy[0]
-                                            ? gryUzytkownikaZPlatformami[0].platformy[0].id
-                                            : null
-                                        : null
-                                    )
                                 }
                                 ustawCzyZintegrowano(!czyZintegrowano)
                             }}
