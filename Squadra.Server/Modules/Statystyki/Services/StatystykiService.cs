@@ -185,6 +185,18 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
             return ServiceResult<bool>.NotFound(new ErrorItem(ex.Message));
         }
     }
+
+    public async Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymagania(ICollection<WartoscStatystykiDTO> wymagania, int idUzytkownika)
+    {
+        if(idUzytkownika <= 0)
+        {
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator użytkownika: " + idUzytkownika));
+        }
+        var czySaBledneIdentyfikatoryWWymaganiach = wymagania.Any(x => x.IdStatystyki <= 0);
+        if (czySaBledneIdentyfikatoryWWymaganiach) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki w wymaganiach."));
+        return ServiceResult<bool>.Ok(await statystykiRepository.CzyUzytkownikSpelniaWymagania(wymagania, idUzytkownika));
+    }
+
     
     public async Task<ServiceResult<ICollection<WymaganieDruzynyDoWyswietleniaDto>>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny)
     {

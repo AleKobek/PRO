@@ -199,6 +199,12 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         return czyUzytkownikSpelniaWymagania;
     }
     
+    public async Task<bool> CzyUzytkownikSpelniaWymagania(ICollection<WartoscStatystykiDTO> wymagania, int idUzytkownika)
+    {
+        var statystykiUzytkownika = await context.StatystykaUzytkownika.Where(s => s.UzytkownikId == idUzytkownika).ToListAsync();
+        return CzySpelniaWymagania(wymagania, statystykiUzytkownika.Select(s => new WartoscStatystykiDTO(s.StatystykaId, s.Wartosc, s.PorownywalnaWartoscLiczbowa)).ToList());
+    }
+    
     public async Task<ICollection<WymaganieDruzynyDoWyswietleniaDto>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny)
     {
         var druzyna = await context.Druzyna.FindAsync(idDruzyny);
