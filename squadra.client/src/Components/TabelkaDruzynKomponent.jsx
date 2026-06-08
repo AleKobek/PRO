@@ -7,7 +7,7 @@ import {Bounce, toast} from "react-toastify";
 
 
 
-export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, czySzczegolyWNowejKarcie = false, pierwszaStronaDruzyn}) {
+export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, pierwszaStronaDruzyn}) {
 
     const navigate = useNavigate();
     const [druzynyNaStronie, ustawDruzynyNaStronie] = useState([])
@@ -100,7 +100,7 @@ export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, c
                     <th className="border border-gray-600 text-center text-xl" style={{width: "10%"}}>Ostatnia aktywność kapitana</th>
                     <th className="border border-gray-600 text-center">Członkowie</th>
                     <th className="border border-gray-600 text-center">Nastrój</th>
-                    <th className="text-sm" style={{width: "8%"}}>{czySzczegolyWNowejKarcie ? "Otwórz nową kartę ze szczegółami" : "Przejdź do szczegółów"}</th>
+                    <th className="text-sm" style={{width: "8%"}}>Otwórz nową kartę ze szczegółami</th>
                 </tr>
 
                 {druzynyNaStronie.map((druzyna) => {
@@ -149,11 +149,7 @@ export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, c
                             <td className="items-center border border-gray-600">
                                 <button
                                     className="bg-blue-600 text-white text-2xl p-2 hover:bg-blue-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
-                                    onClick={() => {
-                                        czySzczegolyWNowejKarcie
-                                            ? openInNewTab(druzyna.id ? `/druzyna/${druzyna.id}` : '#')
-                                            : navigate(druzyna.id ? `/druzyna/${druzyna.id}` : '#')
-                                    }}
+                                    onClick={() => openInNewTab(druzyna.id ? `/druzyna/${druzyna.id}` : '#')}
                                 >Szczegóły</button>
                             </td>
                         </tr>
