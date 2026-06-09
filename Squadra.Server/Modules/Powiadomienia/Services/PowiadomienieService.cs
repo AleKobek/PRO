@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Powiadomienia.DTO;
+using Squadra.Server.Modules.Powiadomienia.Models;
 using Squadra.Server.Modules.Powiadomienia.Repositories;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
@@ -50,8 +51,12 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         // sprawdzamy, czy odnosi się do istniejącego obiektu
 
         // odnośnie znajomych (nowe zaproszenie, zaakceptowano zaproszenie, odrzucono zaproszenie, usunięto ze znajomych)
-        if (powiadomienie.IdTypuPowiadomienia is 2 or 3 or 4 or 5)
-        {
+        if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia is 
+            TypPowiadomieniaEnum.ZaproszenieDoZnajomych 
+            or TypPowiadomieniaEnum.PrzyjecieZaproszeniaDoZnajomych 
+            or TypPowiadomieniaEnum.OdrzucenieZaproszeniaDoZnajomych 
+            or TypPowiadomieniaEnum.UsuniecieZnajomosci
+        ) {
             // nie będzie sytuacji tutaj, że to będzie null, ale aby się nie czepiał kompilator
             var idUzytkownika = powiadomienie.IdPowiazanegoObiektu ?? 1;
             // sprawdzamy, czy taki użytkownik istnieje
@@ -104,7 +109,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 // jak tu doszliśmy, wszystko jest git, chyba że nie podano powiązanego obiektu w konkretnych typach
         
                 // zaproszenie do znajomych
-                if (powiadomienie.IdTypuPowiadomienia == 2)
+                if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia == TypPowiadomieniaEnum.ZaproszenieDoZnajomych)
                 {
                 
                     if(powiadomienie.IdPowiazanegoObiektu == null) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie podano użytkownika, którego zaproszenie akceptujesz"));
@@ -127,7 +132,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                             // wysyłamy uzytkownikowi, który jest powiązany, że jego zaproszenie zostało zaakceptowane
                             await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
                                 // zaakceptowano zaproszenie
-                                3,
+                                (int)TypPowiadomieniaEnum.PrzyjecieZaproszeniaDoZnajomych,
                                 // wysyłamy to użytkownikowi, którego to zaproszenie dotyczy
                                 powiadomienie.IdPowiazanegoObiektu ?? 1, // już null odfiltrowaliśmy, ale aby się nie czepiał kompilator
                                 // powiązany jest użytkownik, który zaakceptował
@@ -143,7 +148,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                             // wysyłamy uzytkownikowi, który jest powiązany, że jego zaproszenie zostało odrzucone
                             await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
                                 // odrzucono zaproszenie
-                                4,
+                                (int)TypPowiadomieniaEnum.OdrzucenieZaproszeniaDoZnajomych,
                                 // wysyłamy to użytkownikowi, którego to zaproszenie dotyczy
                                 powiadomienie.IdPowiazanegoObiektu ?? 1, // już to odfiltrowaliśmy, ale aby się nie czepiał kompilator
                                 // powiązany jest użytkownik, który odrzucił
@@ -208,8 +213,11 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 
                 // szukamy, czy zaproszony użytkownik ma już takie zaproszenie
                 var powiadomieniaZaproszonego = await powiadomienieRepository.GetPowiadomieniaUzytkownika(idZapraszanego);
-                if (powiadomieniaZaproszonego.Any(p => p.IdTypuPowiadomienia == 2 && p.IdPowiazanegoObiektu == idZapraszajacego))
-                { 
+                if (powiadomieniaZaproszonego
+                    .Any(p => 
+                              (TypPowiadomieniaEnum)p.IdTypuPowiadomienia == TypPowiadomieniaEnum.ZaproszenieDoZnajomych 
+                              && p.IdPowiazanegoObiektu == idZapraszajacego)
+                ) { 
                     return ServiceResult<bool>.Conflict(
                         new ErrorItem("Użytkownik o id " + idZapraszanego + " ma już wysłane zaproszenie od Ciebie"));
                 }
@@ -249,7 +257,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                         new ErrorItem("Nie znaleziono profilu użytkownika o id " + idZapraszanego));
                 
                 var dto = new PowiadomienieCreateDto(
-                    2, 
+                    (int)TypPowiadomieniaEnum.ZaproszenieDoZnajomych, 
                     idZapraszanego, 
                     idZapraszajacego, // powiadomienie idzie do zapraszanego użytkownika, powiązany jest wysyłający
                     wynikSzukaniaPseudonimuZapraszajacego.Value.Pseudonim, 

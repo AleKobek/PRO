@@ -91,18 +91,4 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
         if(typPowiadomienia == null) throw new NieZnalezionoWBazieException("Typ powiadomienia o id " + idTypuPowiadomienia + " nie istnieje");
         return typPowiadomienia.Nazwa;
     }
-    
-    // w service będzie stwórz powiadomienie każdego typu, na razie mamy:
-    //  - systemowe,
-    //  - zaproszenie do znajomych,
-    //  - przyjęto zaproszenie do znajomych
-    //  - odrzucono zaproszenie do znajomych,
-}
-enum TypPowiadomieniaEnum
-{
-    Systemowe = 1,
-    ZaproszenieDoZnajomych = 2,
-    PrzyjecieZaproszeniaDoZnajomych = 3,
-    OdrzucenieZaproszeniaDoZnajomych = 4,
-    UsuniecieZnajomosci = 5
 }
