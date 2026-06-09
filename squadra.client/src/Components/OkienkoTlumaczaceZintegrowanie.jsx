@@ -12,7 +12,7 @@ export const OkienkoTlumaczaceZintegrowanie = (ref, ustawPokazOkienkoTlumaczenia
     <div className="flex flex-col">
         <h2 className="text-2xl font-bold mb-4">Łączenie konta i zintegrowane dane</h2>
         <p className="mb-4">
-            Użytkownik połączyć swoje konto z kontem na zewnętrznym serwisie, pobierającym statystyki dotyczące gier użytkownika, wybierając tę opcję na stronie "twoje konto".
+            Użytkownik połączyć swoje konto z kontem na zewnętrznym serwisie, pobierającym statystyki dotyczące gier użytkownika, wybierając tę opcję na stronie "edytuj konto".
             Pojęcie "zintegrowane dane" oznacza dane pobrane z zewnętrznego serwisu.
             Bez danych z zewnętrznego konta nie da się ustawiać wymagań w drużynie ani ich spełniać, ale
             wciąż dostępne jest tworzenie i dołączanie do drużyn niewymagających zintegrowanych danych.
