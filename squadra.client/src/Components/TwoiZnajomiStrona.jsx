@@ -8,6 +8,8 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
 import CzatZeZnajomymKomponent from "./CzatZeZnajomymKomponent";
 
 const TOAST_CONTAINER_ID = "twoi-znajomi-toast";
+const WYSOKOSC_NAGLOWKA = "60px";
+
 export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
 
     const { uzytkownik, ladowanie } = useAuth();
@@ -248,12 +250,12 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
     )
 
     if(znajomi.length===0) return (<>
-        <div id = "glowna" className="!p-0 !m-0">
+        <div id = "glowna" className="!p-0 !m-0 !overflow-hidden" style={{ height: `calc(100vh - ${WYSOKOSC_NAGLOWKA})` }}>
             {/* znajomi */}
-            <div className="flex flex-col py-4 h-full">
+            <div className="flex flex-col py-4 h-full min-h-0 overflow-hidden">
                 <h1>Twoi znajomi</h1>
                 {/* dodaj znajomego */}
-                <div className="flex flex-col items-center py-4">
+                <div className="flex flex-col items-center py-4 shrink-0">
                     <button
                         onClick={() => ustawPokazDodajZnajomego(v => !v)}
                         className="bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
@@ -264,12 +266,12 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
                     </button>
                 </div>
                 {/* lista znajomych */}
-                <div className="border-t-2 border-gray-400">
+                <div className="border-t-2 border-gray-400 flex-1 min-h-0 overflow-hidden">
                     {znajomi.length===0
                         ? <p className="p-4 font-light text-gray-700 text-center">
                             Lista znajomych jest pusta. <br/> Użyj przycisku "dodaj znajomego", aby to zmienić!
                         </p>
-                        : <ul className="overflow-y-auto">
+                        : <ul className="h-full overflow-y-auto">
                             {znajomi.map((znajomy) => (
                                 <ZnajomyNaLiscieKomponent key={znajomy.idZnajomego} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} przyWyborzeZnajomego={przyWyborzeZnajomego}/>
                             ))}
@@ -297,13 +299,13 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
     </>);
 
     return (<>
-        <div id = "glowna" className="!p-0 !m-0">
-            <div className="grid grid-cols-3 h-f">
+        <div id = "glowna" className="!p-0 !m-0 !overflow-hidden" style={{ height: `calc(100vh - ${WYSOKOSC_NAGLOWKA})` }}>
+            <div className="grid grid-cols-3 h-full min-h-0 overflow-hidden">
                 {/* znajomi */}
-                <div className="col-span-1 flex flex-col border-r-8 border-blue-500 py-4 h-full">
+                <div className="col-span-1 flex flex-col border-r-8 border-blue-500 py-4 h-full min-h-0 overflow-hidden">
                     <h1>Twoi znajomi</h1>
                     {/* dodaj znajomego */}
-                    <div className="flex flex-col items-center py-4">
+                    <div className="flex flex-col items-center py-4 shrink-0">
                         <button
                             onClick={() => ustawPokazDodajZnajomego(v => !v)}
                             className="bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
@@ -314,8 +316,8 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
                         </button>
                     </div>
                     {/* lista znajomych */}
-                    <div className="border-t-2 border-gray-400">
-                        <ul className="overflow-y-auto">
+                    <div className="border-t-2 border-gray-400 flex-1 min-h-0 overflow-hidden">
+                        <ul className="h-full overflow-y-auto">
                             {znajomi.map((znajomy) => (
                                 <ZnajomyNaLiscieKomponent key={znajomy.idZnajomego} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} przyWyborzeZnajomego={przyWyborzeZnajomego}/>
                             ))}
@@ -323,7 +325,7 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
                     </div>
                 </div>
                 {/* czat */}
-                <div className="flex flex-col col-span-2 w-full">
+                <div className="flex flex-col col-span-2 w-full min-h-0 overflow-hidden">
                     {userId && idZnajomegoZOtwartymCzatem && (
                         <CzatZeZnajomymKomponent
                             idZnajomegoZOtwartymCzatem={idZnajomegoZOtwartymCzatem}

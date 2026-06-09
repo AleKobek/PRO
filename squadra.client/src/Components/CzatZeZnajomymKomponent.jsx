@@ -292,24 +292,24 @@ export default function CzatZeZnajomymKomponent({
     }
 
     if(czyTrwaLadowanieCzatu) return (
-        <div className="col-span-2 flex flex-col w-full">
+        <div className="col-span-2 flex flex-col w-full h-full min-h-0 overflow-hidden">
             <h1 className="border-b-2 p-2 m-4">
                 Czat
             </h1>
-            <div className="flex flex-col items-center justify-center h-full">
+            <div className="flex flex-col items-center justify-center flex-1 min-h-0 overflow-hidden">
                 <p>Ładowanie...</p>
             </div>
         </div>
     )
 
     return(<>
-        <div className="grid grid-rows-6 flex-col overflow-y-auto w-full h-[859px] border-5">
-            <div className="row-span-5 min-h-0 flex flex-col">
-                <h2 className="border-b-2 p-2 bg-gray-100 item">
+        <div className="grid grid-rows-[minmax(0,1fr)_auto] w-full h-full min-h-0 overflow-hidden border-5">
+            <div className="min-h-0 flex flex-col overflow-hidden">
+                <h2 className="border-b-2 p-2 bg-gray-100 item shrink-0">
                     Czat
                 </h2>
                 {/* lista wiadomości */}
-                <ul ref={listaWiadomosciRef} className="overflow-y-auto flex flex-col gap-4 p-2">
+                <ul ref={listaWiadomosciRef} className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 p-2">
                     {
                         // jeśli czat jest pusty
                         czat.length === 0 ? (
@@ -336,9 +336,9 @@ export default function CzatZeZnajomymKomponent({
                 </ul>
             </div>
             {/* pole do wysyłania */}
-            <div className="row-span-1 border-t-4 border-gray-800 p-4 bg-gray-300 flex flex-col items-center justify-center">
-                <div className="flex flex-row items-center justify-center gap-2">
-                    <textarea className="w-[1100px] h-20 overflow-y-auto rounded-lg p-1 px-2 resize-none" maxLength={1000} value={wiadomoscDoWyslania} onChange={(e)=>ustawWiadomoscDoWyslania(e.target.value)}/>
+            <div className="border-t-4 border-gray-800 p-4 bg-gray-300 flex flex-col items-center justify-center shrink-0">
+                <div className="flex flex-row items-center justify-center gap-2 w-full">
+                    <textarea className="flex-1 min-w-0 w-full h-20 overflow-y-auto rounded-lg p-1 px-2 resize-none" maxLength={1000} value={wiadomoscDoWyslania} onChange={(e)=>ustawWiadomoscDoWyslania(e.target.value)}/>
                     <button
                         style={{ width: '64px', height: '64px', minWidth: '64px', minHeight: '64px', borderRadius: '50%' }}
                         className={czySieWysylaWiadomosc || wiadomoscDoWyslania.trim() === ""
