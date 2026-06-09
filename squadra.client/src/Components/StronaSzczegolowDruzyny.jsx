@@ -15,6 +15,7 @@ export default function StronaSzczegolowDruzyny() {
     const [daneDruzyny, ustawDaneDruzyny] = React.useState(null);
     const [czyZablokowanoDostep, ustawCzyZablokowanoDostep] = React.useState(false);
     const toastShownRef = useRef(false);
+    const [czyUsunietoDruzyne, ustawCzyUsunietoDruzyne] = React.useState(false);
 
 
     /*
@@ -109,21 +110,20 @@ export default function StronaSzczegolowDruzyny() {
                 try {
                     const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
                     if (!res.ok) {
-                        if (res.status === 403) {
-                            console.log(res)
-                            ustawCzyZablokowanoDostep(true)
+                        if (res.status === 403) ustawCzyZablokowanoDostep(true)
+                        else {
+                            toast.error('Wystąpił błąd podczas pobierania danych drużyny', {
+                                position: "top-center",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: false,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                                theme: "light",
+                                transition: Bounce,
+                            });
                         }
-                        toast.error('Wystąpił błąd podczas pobierania danych drużyny', {
-                            position: "top-center",
-                            autoClose: 5000,
-                            hideProgressBar: false,
-                            closeOnClick: false,
-                            pauseOnHover: true,
-                            draggable: true,
-                            progress: undefined,
-                            theme: "light",
-                            transition: Bounce,
-                        });
                         return null;
                     }
                     return await res.json();
@@ -241,9 +241,8 @@ export default function StronaSzczegolowDruzyny() {
             theme: "light",
             transition: Bounce,
         });
-        navigate('/twojeDruzyny', {
-            state: { pomyslnieUsunietoDruzyne: true }
-        });
+
+        ustawCzyUsunietoDruzyne(true);
     }
 
     const przyKliknieciuWysylaniaProsby = (idMiejsca) => {
@@ -466,10 +465,10 @@ export default function StronaSzczegolowDruzyny() {
 
     if(czyZablokowanoDostep) return (<>
             <div id = "glowna">
-                <h1 className="text-red-700">Blokada dostępu.</h1>
+                <h1 className="text-red-700 mt-40">Blokada dostępu.</h1>
                 <div className="flex justify-center">
                     <span className="text-center items-center text-2xl">
-                        Nie masz dostępu do danych tej drużyny, ponieważ jest prywatna.
+                        Nie masz dostępu do danych tej drużyny, ponieważ jest prywatna i do niej nie należysz.
                     </span>
                 </div>
             </div>
@@ -479,6 +478,15 @@ export default function StronaSzczegolowDruzyny() {
     if(ladowanie || !uzytkownik || !daneDruzyny) return (<>
             <div id = "glowna">
                 <h1>Ładowanie...</h1>
+            </div>
+        </>
+    )
+
+    if(czyUsunietoDruzyne) return (<>
+            <div id = "glowna">
+                <h1 className="mt-40">Pomyślnie usunięto drużynę:</h1>
+                <h2 className="text-xl mb-4 text-blue-700">{daneDruzyny.nazwa}</h2>
+                <h3 className="flex justify-center">Pozostanie w tabelce do momentu jej ponownego załadowania</h3>
             </div>
         </>
     )

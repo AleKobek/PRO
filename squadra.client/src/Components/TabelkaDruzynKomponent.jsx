@@ -78,7 +78,7 @@ export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, p
     },[aktualnaStrona, idDruzyn, liczbaDruzynNaStronie, liczbaStron])
 
     return (<div>
-        <span className="mr-2">Liczba drużyn na stronie:</span>
+        <span className="mr-2">Maksymalna liczba drużyn na stronie:</span>
         <select
             className="border border-gray-300 rounded-md p-1 mb-2"
             value={liczbaDruzynNaStronie}
