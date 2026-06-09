@@ -37,6 +37,7 @@ export default function WynikiWyszukiwaniaDruzyn() {
             <TabelkaDruzynKomponent
                 idDruzyn={idDruzyn}
                 brakDruzynWiadomosc="Brak dostępnch drużyn spełniających warunki wyszukiwania"
+                czySzczegolyWNowejKarcie={true}
                 pierwszaStronaDruzyn={pierwszaStronaDruzyn}
             />
         </div>

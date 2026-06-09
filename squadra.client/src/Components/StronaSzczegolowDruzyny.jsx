@@ -15,7 +15,6 @@ export default function StronaSzczegolowDruzyny() {
     const [daneDruzyny, ustawDaneDruzyny] = React.useState(null);
     const [czyZablokowanoDostep, ustawCzyZablokowanoDostep] = React.useState(false);
     const toastShownRef = useRef(false);
-    const [czyUsunietoDruzyne, ustawCzyUsunietoDruzyne] = React.useState(false);
     const [nieZnalezionoDruzyny, ustawNieZnalezionoDruzyny] = React.useState(false);
 
 
@@ -245,7 +244,9 @@ export default function StronaSzczegolowDruzyny() {
             transition: Bounce,
         });
 
-        ustawCzyUsunietoDruzyne(true);
+        navigate('/twojeDruzyny', {
+            state: { pomyslnieUsunietoDruzyne: true }
+        });
     }
 
     const przyKliknieciuWysylaniaProsby = (idMiejsca) => {
@@ -485,15 +486,6 @@ export default function StronaSzczegolowDruzyny() {
         </>
     )
 
-    if(czyUsunietoDruzyne) return (<>
-            <div id = "glowna">
-                <h1 className="mt-40">Pomyślnie usunięto drużynę:</h1>
-                <h2 className="text-xl mb-4 text-blue-700">{daneDruzyny.nazwa}</h2>
-                <h3 className="flex justify-center">Pozostanie w tabelce do momentu jej ponownego załadowania</h3>
-            </div>
-        </>
-    )
-
     if(nieZnalezionoDruzyny) return (<>
             <div id = "glowna">
                 <h1 className="mt-40 text-red-600">Błąd 404</h1>
@@ -513,6 +505,11 @@ export default function StronaSzczegolowDruzyny() {
     return (<>
         <div id = "glowna">
             <div className="flex flex-col justify-center items-center">
+                {daneDruzyny.statusCzlonkostwa !== "Brak" &&
+                    <button className={"przycisk-nawigacji"} onClick={() => {navigate('/twojeDruzyny')}}>
+                        Powrót do twoich drużyn
+                    </button>
+                }
                 <h2 className="text-2xl font-bold">Szczegóły drużyny:</h2>
                 <h3 className="text-xl mb-4 text-blue-700">{daneDruzyny.nazwa}</h3>
                 {/*  zwykłe dane jak opis, nastrój, platforma itp.  */}
