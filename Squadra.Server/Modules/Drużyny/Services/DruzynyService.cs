@@ -108,117 +108,156 @@ public class DruzynyService(
     public async Task<ServiceResult<DruzynaSzczegolyDto>> PodajSzczegolyDruzyny(int idDruzyny, int idUzytkownika)
     {
         if(idDruzyny <= 0) return ServiceResult<DruzynaSzczegolyDto>.BadRequest(new ErrorItem("Id drużyny musi być większe od 0"));
-        var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
-        
-        // pobieramy członków drużyny
-        var czlonkowieDruzynyRes = await GetCzlonkowieDruzynyDoWyswietlenia(idDruzyny);
-        if (!czlonkowieDruzynyRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(czlonkowieDruzynyRes.StatusCode, czlonkowieDruzynyRes.Errors);
-        var czlonkowieDruzyny = czlonkowieDruzynyRes.Value ?? new List<MiejsceWDruzynieSzczegolyDto>();
-        
-        var statusCzlonkostwa = czlonkowieDruzyny.Any(x => x.Czlonek?.IdUzytkownika == idUzytkownika) // sprawdzamy, czy użytkownik jest członkiem drużyny
-            ? czlonkowieDruzyny.First(x => x.Czlonek?.IdUzytkownika == idUzytkownika).CzyKapitan // jeżeli jest członkiem, to sprawdzamy, czy jest kapitanem
-                ? "Kapitan" 
-                : "Członek"
-            : "Brak"; // jeżeli nie jest członkiem
-        
-        // musimy potem jeszcze sprawdzać, czy ma zaproszenie do niej
-        if(!druzyna.CzyPubliczna && statusCzlonkostwa == "Brak") return ServiceResult<DruzynaSzczegolyDto>.Forbidden(new ErrorItem("Nie można pobrać szczegółów drużyny, ponieważ jest ona prywatna, a użytkownik nie jest jej członkiem"));
-        
-        // pobieramy grę, żeby mieć jej tytuł
-        var graRes = await wspieranaGraService.GetWspieranaGra(druzyna.GraId);
-        if (!graRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(graRes.StatusCode, graRes.Errors);
-        
-        // pobieramy nastrój rozgrywki
-        var nastrojRozgrywki = await druzynyRepository.GetNastrojRozgrywki(druzyna.NastrojRozgrywkiId);
-        
-        // pobieramy wymageny język i stopień biegłości, żeby mieć ich nazwy
-        var jezykRes = druzyna.WymaganyJezykId != null 
-            ? await jezykService.GetJezyk(druzyna.WymaganyJezykId ?? 0) // już odfiltrowaliśmy drużyny bez WymaganyJezykId, więc możemy bezpiecznie użyć ?? 0
-            : null;
-        
-        if (jezykRes is { Succeeded: false }) return ServiceResult<DruzynaSzczegolyDto>.Fail(jezykRes.StatusCode, jezykRes.Errors);
-        
-        var stopienBieglosciRes = druzyna.WymaganyStopienBieglosciJezykaId != null
-            ? await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(druzyna.WymaganyStopienBieglosciJezykaId ?? 0) // już odfiltrowaliśmy drużyny bez WymaganyStopienBieglosciJezykaId, więc możemy bezpiecznie użyć ?? 0
-            : null;
-        
-        if (stopienBieglosciRes is { Succeeded: false }) return ServiceResult<DruzynaSzczegolyDto>.Fail(stopienBieglosciRes.StatusCode, stopienBieglosciRes.Errors);
-        
-        
-        var jezykIStopienBiegłosci = jezykRes != null 
-            ? stopienBieglosciRes != null 
-                ? $"{jezykRes.Value.Nazwa} - {stopienBieglosciRes.Value.Nazwa}" // już odfiltrowaliśmy drużyny bez WymaganyJezykId i WymaganyStopienBieglosciJezykaId, więc możemy bezpiecznie użyć .Value
-                : jezykRes.Value.Nazwa // już odfiltrowaliśmy drużyny bez WymaganyJezykId, więc możemy bezpiecznie użyć .Value
-            : null; // jeżeli nie ma wymaganego języka, to zwracamy null
-        
-        // pobieramy wymagania drużyny
-        var wymaganiaRes = await statystykiService.GetWymaganiaDruzynyDoWyswietlenia(idDruzyny);
-        if (!wymaganiaRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(wymaganiaRes.StatusCode, wymaganiaRes.Errors);
-        
-        // pobieramy platformę, żeby mieć jej nazwę i logo
-        string? nazwaPlatformy = null;
-        byte[]? logoPlatformy = null;
-        if (druzyna.PlatformaId != null)
+        try
         {
-            var platformaRes = await platformaService.GetPlatforma(druzyna.PlatformaId ?? 0); // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć ?? 0
-            if (!platformaRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(platformaRes.StatusCode, platformaRes.Errors);
-            nazwaPlatformy = platformaRes.Value.Nazwa; // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć .Value
-            logoPlatformy = platformaRes.Value.Logo;
-        }
-        
-        var czyUzytkownikSpelniaWymaganiaCzlonkostwaRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(idDruzyny, idUzytkownika);
-        if (!czyUzytkownikSpelniaWymaganiaCzlonkostwaRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(wymaganiaRes.StatusCode, wymaganiaRes.Errors);
-        var czyUzytkownikSpelniaWymaganiaCzlonkostwa = czyUzytkownikSpelniaWymaganiaCzlonkostwaRes.Value;
-        
-        var czlonkowieDruzynyZeSprawdzonymiWymaganiami = new List<MiejsceWDruzynieSzczegolyDto>();
-        if(statusCzlonkostwa != "Brak") czlonkowieDruzynyZeSprawdzonymiWymaganiami.AddRange(czlonkowieDruzyny); // jak to nasza drużyna, nie musimy sprawdzać
-        else
-        {
-            // najpierw dodajemy zapełnione miejsca, bo dla nich nie musimy sprawdzać wymagań, więc od razu możemy je dodać do listy ze sprawdzonymi wymaganiami
-            czlonkowieDruzynyZeSprawdzonymiWymaganiami.AddRange(czlonkowieDruzyny.Where(x => x.Czlonek != null));
+            var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
 
-            foreach (var miejsceWDruzynie in czlonkowieDruzyny.Where(x => x.Czlonek == null))
+
+            // pobieramy członków drużyny
+            var czlonkowieDruzynyRes = await GetCzlonkowieDruzynyDoWyswietlenia(idDruzyny);
+            if (!czlonkowieDruzynyRes.Succeeded)
+                return ServiceResult<DruzynaSzczegolyDto>.Fail(czlonkowieDruzynyRes.StatusCode,
+                    czlonkowieDruzynyRes.Errors);
+            var czlonkowieDruzyny = czlonkowieDruzynyRes.Value ?? new List<MiejsceWDruzynieSzczegolyDto>();
+
+            var statusCzlonkostwa =
+                czlonkowieDruzyny.Any(x =>
+                    x.Czlonek?.IdUzytkownika == idUzytkownika) // sprawdzamy, czy użytkownik jest członkiem drużyny
+                    ? czlonkowieDruzyny.First(x => x.Czlonek?.IdUzytkownika == idUzytkownika)
+                        .CzyKapitan // jeżeli jest członkiem, to sprawdzamy, czy jest kapitanem
+                        ? "Kapitan"
+                        : "Członek"
+                    : "Brak"; // jeżeli nie jest członkiem
+
+            // musimy potem jeszcze sprawdzać, czy ma zaproszenie do niej
+            if (!druzyna.CzyPubliczna && statusCzlonkostwa == "Brak")
+                return ServiceResult<DruzynaSzczegolyDto>.Forbidden(new ErrorItem(
+                    "Nie można pobrać szczegółów drużyny, ponieważ jest ona prywatna, a użytkownik nie jest jej członkiem"));
+
+            // pobieramy grę, żeby mieć jej tytuł
+            var graRes = await wspieranaGraService.GetWspieranaGra(druzyna.GraId);
+            if (!graRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(graRes.StatusCode, graRes.Errors);
+
+            // pobieramy nastrój rozgrywki
+            var nastrojRozgrywki = await druzynyRepository.GetNastrojRozgrywki(druzyna.NastrojRozgrywkiId);
+
+            // pobieramy wymageny język i stopień biegłości, żeby mieć ich nazwy
+            var jezykRes = druzyna.WymaganyJezykId != null
+                ? await jezykService.GetJezyk(druzyna.WymaganyJezykId ??
+                                              0) // już odfiltrowaliśmy drużyny bez WymaganyJezykId, więc możemy bezpiecznie użyć ?? 0
+                : null;
+
+            if (jezykRes is { Succeeded: false })
+                return ServiceResult<DruzynaSzczegolyDto>.Fail(jezykRes.StatusCode, jezykRes.Errors);
+
+            var stopienBieglosciRes = druzyna.WymaganyStopienBieglosciJezykaId != null
+                ? await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(
+                    druzyna.WymaganyStopienBieglosciJezykaId ??
+                    0) // już odfiltrowaliśmy drużyny bez WymaganyStopienBieglosciJezykaId, więc możemy bezpiecznie użyć ?? 0
+                : null;
+
+            if (stopienBieglosciRes is { Succeeded: false })
+                return ServiceResult<DruzynaSzczegolyDto>.Fail(stopienBieglosciRes.StatusCode,
+                    stopienBieglosciRes.Errors);
+
+
+            var jezykIStopienBiegłosci = jezykRes != null
+                ? stopienBieglosciRes != null
+                    ? $"{jezykRes.Value.Nazwa} - {stopienBieglosciRes.Value.Nazwa}" // już odfiltrowaliśmy drużyny bez WymaganyJezykId i WymaganyStopienBieglosciJezykaId, więc możemy bezpiecznie użyć .Value
+                    : jezykRes.Value
+                        .Nazwa // już odfiltrowaliśmy drużyny bez WymaganyJezykId, więc możemy bezpiecznie użyć .Value
+                : null; // jeżeli nie ma wymaganego języka, to zwracamy null
+
+            // pobieramy wymagania drużyny
+            var wymaganiaRes = await statystykiService.GetWymaganiaDruzynyDoWyswietlenia(idDruzyny);
+            if (!wymaganiaRes.Succeeded)
+                return ServiceResult<DruzynaSzczegolyDto>.Fail(wymaganiaRes.StatusCode, wymaganiaRes.Errors);
+
+            // pobieramy platformę, żeby mieć jej nazwę i logo
+            string? nazwaPlatformy = null;
+            byte[]? logoPlatformy = null;
+            if (druzyna.PlatformaId != null)
             {
-                if(!czyUzytkownikSpelniaWymaganiaCzlonkostwa) 
-                {
-                    // jeżeli nie spełnia wymagań członkostwa, to nie spełnia też wymagań miejsca
-                    czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(miejsceWDruzynie with { CzyOgladajacySpelniaWymagania = false }); 
-                    continue;
-                }
-                
-                var czySpelniaWymaganiaRes =
-                    await CzyUzytkownikSpelniaWymaganieMiejsca(miejsceWDruzynie.IdMiejscaWDruzynie, idUzytkownika);
-                if (!czySpelniaWymaganiaRes.Succeeded)
-                    czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(new MiejsceWDruzynieSzczegolyDto(
-                        miejsceWDruzynie.IdMiejscaWDruzynie,
-                        miejsceWDruzynie.Czlonek,
-                        miejsceWDruzynie.Rola,
-                        miejsceWDruzynie.Wymaganie,
-                        miejsceWDruzynie.CzyKapitan,
-                        null // jeżeli nie udało się sprawdzić, to zostawiamy null, żeby frontend mógł zdecydować, co z tym zrobić
-                    ));
-
-                else czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(miejsceWDruzynie with { CzyOgladajacySpelniaWymagania = czySpelniaWymaganiaRes.Value });
+                var platformaRes =
+                    await platformaService.GetPlatforma(druzyna.PlatformaId ??
+                                                        0); // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć ?? 0
+                if (!platformaRes.Succeeded)
+                    return ServiceResult<DruzynaSzczegolyDto>.Fail(platformaRes.StatusCode, platformaRes.Errors);
+                nazwaPlatformy =
+                    platformaRes.Value
+                        .Nazwa; // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć .Value
+                logoPlatformy = platformaRes.Value.Logo;
             }
+
+            var czyUzytkownikSpelniaWymaganiaCzlonkostwaRes =
+                await CzyUzytkownikSpelniaWymaganiaDruzyny(idDruzyny, idUzytkownika);
+            if (!czyUzytkownikSpelniaWymaganiaCzlonkostwaRes.Succeeded)
+                return ServiceResult<DruzynaSzczegolyDto>.Fail(wymaganiaRes.StatusCode, wymaganiaRes.Errors);
+            var czyUzytkownikSpelniaWymaganiaCzlonkostwa = czyUzytkownikSpelniaWymaganiaCzlonkostwaRes.Value;
+
+            var czlonkowieDruzynyZeSprawdzonymiWymaganiami = new List<MiejsceWDruzynieSzczegolyDto>();
+            if (statusCzlonkostwa != "Brak")
+                czlonkowieDruzynyZeSprawdzonymiWymaganiami
+                    .AddRange(czlonkowieDruzyny); // jak to nasza drużyna, nie musimy sprawdzać
+            else
+            {
+                // najpierw dodajemy zapełnione miejsca, bo dla nich nie musimy sprawdzać wymagań, więc od razu możemy je dodać do listy ze sprawdzonymi wymaganiami
+                czlonkowieDruzynyZeSprawdzonymiWymaganiami.AddRange(czlonkowieDruzyny.Where(x => x.Czlonek != null));
+
+                foreach (var miejsceWDruzynie in czlonkowieDruzyny.Where(x => x.Czlonek == null))
+                {
+                    if (!czyUzytkownikSpelniaWymaganiaCzlonkostwa)
+                    {
+                        // jeżeli nie spełnia wymagań członkostwa, to nie spełnia też wymagań miejsca
+                        czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(miejsceWDruzynie with
+                        {
+                            CzyOgladajacySpelniaWymagania = false
+                        });
+                        continue;
+                    }
+
+                    var czySpelniaWymaganiaRes =
+                        await CzyUzytkownikSpelniaWymaganieMiejsca(miejsceWDruzynie.IdMiejscaWDruzynie, idUzytkownika);
+                    if (!czySpelniaWymaganiaRes.Succeeded)
+                        czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(new MiejsceWDruzynieSzczegolyDto(
+                            miejsceWDruzynie.IdMiejscaWDruzynie,
+                            miejsceWDruzynie.Czlonek,
+                            miejsceWDruzynie.Rola,
+                            miejsceWDruzynie.Wymaganie,
+                            miejsceWDruzynie.CzyKapitan,
+                            null // jeżeli nie udało się sprawdzić, to zostawiamy null, żeby frontend mógł zdecydować, co z tym zrobić
+                        ));
+
+                    else
+                        czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(miejsceWDruzynie with
+                        {
+                            CzyOgladajacySpelniaWymagania = czySpelniaWymaganiaRes.Value
+                        });
+                }
+            }
+
+
+            // składamy wszystko do kupy i zwracamy szczegóły drużyny
+            return ServiceResult<DruzynaSzczegolyDto>.Ok(new DruzynaSzczegolyDto(
+                druzyna.Nazwa,
+                graRes.Value.Tytul, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+                druzyna.Opis,
+                nastrojRozgrywki.Nazwa,
+                nastrojRozgrywki.Id,
+                czlonkowieDruzynyZeSprawdzonymiWymaganiami,
+                jezykIStopienBiegłosci,
+                wymaganiaRes.Value, // już się upewniliśmy, że wymaganiaRes.Value nie jest null, więc można bezpiecznie użyć .Value
+                druzyna.CzyPubliczna,
+                nazwaPlatformy,
+                logoPlatformy,
+                statusCzlonkostwa,
+                druzyna.CzyZintegrowano
+            ));
         }
-        
-       
-        // składamy wszystko do kupy i zwracamy szczegóły drużyny
-        return ServiceResult<DruzynaSzczegolyDto>.Ok(new DruzynaSzczegolyDto(
-            druzyna.Nazwa,
-            graRes.Value.Tytul, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
-            druzyna.Opis,
-            nastrojRozgrywki.Nazwa,
-            nastrojRozgrywki.Id,
-            czlonkowieDruzynyZeSprawdzonymiWymaganiami,
-            jezykIStopienBiegłosci,
-            wymaganiaRes.Value, // już się upewniliśmy, że wymaganiaRes.Value nie jest null, więc można bezpiecznie użyć .Value
-            druzyna.CzyPubliczna,
-            nazwaPlatformy,
-            logoPlatformy,
-            statusCzlonkostwa,
-            druzyna.CzyZintegrowano
-        ));
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<DruzynaSzczegolyDto>.NotFound(new ErrorItem(e.Message));
+        }
     }
     
     public async Task<ServiceResult<ICollection<MiejsceWDruzynieSzczegolyDto>>> GetCzlonkowieDruzynyDoWyswietlenia(int idDruzyny)

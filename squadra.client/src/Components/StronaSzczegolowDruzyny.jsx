@@ -16,6 +16,7 @@ export default function StronaSzczegolowDruzyny() {
     const [czyZablokowanoDostep, ustawCzyZablokowanoDostep] = React.useState(false);
     const toastShownRef = useRef(false);
     const [czyUsunietoDruzyne, ustawCzyUsunietoDruzyne] = React.useState(false);
+    const [nieZnalezionoDruzyny, ustawNieZnalezionoDruzyny] = React.useState(false);
 
 
     /*
@@ -110,7 +111,9 @@ export default function StronaSzczegolowDruzyny() {
                 try {
                     const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
                     if (!res.ok) {
-                        if (res.status === 403) ustawCzyZablokowanoDostep(true)
+                        console.log(res)
+                        if (res.status === 403) ustawCzyZablokowanoDostep(true);
+                        if (res.status === 404) ustawNieZnalezionoDruzyny(true)
                         else {
                             toast.error('Wystąpił błąd podczas pobierania danych drużyny', {
                                 position: "top-center",
@@ -475,7 +478,7 @@ export default function StronaSzczegolowDruzyny() {
         </>
     )
 
-    if(ladowanie || !uzytkownik || !daneDruzyny) return (<>
+    if(ladowanie || !uzytkownik) return (<>
             <div id = "glowna">
                 <h1>Ładowanie...</h1>
             </div>
@@ -487,6 +490,22 @@ export default function StronaSzczegolowDruzyny() {
                 <h1 className="mt-40">Pomyślnie usunięto drużynę:</h1>
                 <h2 className="text-xl mb-4 text-blue-700">{daneDruzyny.nazwa}</h2>
                 <h3 className="flex justify-center">Pozostanie w tabelce do momentu jej ponownego załadowania</h3>
+            </div>
+        </>
+    )
+
+    if(nieZnalezionoDruzyny) return (<>
+            <div id = "glowna">
+                <h1 className="mt-40 text-red-600">Błąd 404</h1>
+                <h2>Nie znaleziono w bazie drużyny o podanym id.</h2>
+                <h3>Nie istnieje lub została usunięta.</h3>
+            </div>
+        </>
+    )
+
+    if(!daneDruzyny) return (<>
+            <div id = "glowna">
+                <h1>Ładowanie...</h1>
             </div>
         </>
     )
