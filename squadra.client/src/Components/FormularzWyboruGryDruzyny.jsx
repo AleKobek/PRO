@@ -83,7 +83,9 @@ export default function FormularzWyboruGryDruzyny({
     return (<div className="flex flex-col items-center justify-center gap-5 border-4 border-gray-500 rounded-lg p-5 shadow-lg">
         <h3>Formularz wyboru gry</h3>
         <select
-            onChange={(e) => ustawIdWybranejGry(e.target.value)}>
+            onChange={(e) => ustawIdWybranejGry(e.target.value)}
+            className="border-2 border-gray-300 rounded-md p-2"
+        >
             {czyZintegrowano
                 ? gryUzytkownika.map((gra) => <option value={gra.idGry} key={gra.idGry}>{gra.tytul}</option>)
                 : wszystkieGry.map((gra) => <option value={gra.id} key={gra.id}>{gra.tytul}</option>)
