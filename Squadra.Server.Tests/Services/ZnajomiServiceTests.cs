@@ -93,9 +93,13 @@ public class ZnajomiServiceTests
         _mockRepository.Setup(r => r.GetZnajomiUzytkownika(userId)).ReturnsAsync(znajomi);
 
         _mockProfilService
-            .Setup(s => s.GetProfil(2))
-            .ReturnsAsync(ServiceResult<Modules.Profile.DTO.Profil.ProfilGetResDto>.Ok(
-                new Modules.Profile.DTO.Profil.ProfilGetResDto("Znajomy", null, null, null, new List<Modules.Profile.DTO.JezykStopien.JezykOrazStopienDto>(), null, "Online")));
+            .Setup(s => s.GetProfilMinInfo(2))
+            .ReturnsAsync(ServiceResult<Modules.Profile.DTO.Profil.ProfilMinInfoDto>.Ok(
+                new Modules.Profile.DTO.Profil.ProfilMinInfoDto(
+                    2,
+                    "Znajomy",
+                    null,
+                    "Online")));
 
         _mockStatystykiCzatuService
             .Setup(s => s.GetDataNajnowszejWiadomosci(userId, 2))
