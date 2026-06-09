@@ -300,10 +300,13 @@ export default function WyszukajDruzyne() {
                     </div>}
                 </div>
                 {/* wybór gry i platformy */}
+                <label>Tytuł gry i platforma
                 <div className="flex items-center justify-center gap-5">
                     <select
                         onChange={(e) => ustawIdWybranejGry(parseInt(e.target.value))}
                         value={idWybranejGry}
+                        className="border-2 border-gray-300 rounded-md p-2 w-full"
+
                     >
                         {czyZintegrowano
                             ? gryUzytkownikaZPlatformami.map((gra) => <option value={gra.id} key={gra.id}>{gra.tytul}</option>)
@@ -317,11 +320,13 @@ export default function WyszukajDruzyne() {
                         }}
                         value={idWybranejPlatformy}
                         disabled={idWybranejGry === null}
+                        className="border-2 border-gray-300 rounded-md p-2 w-full"
+
                     >
                         <option value = "" key = {-1}>Brak</option>
                         {aktualnaListaPlatform.map((platforma) => <option value={platforma.id} key={platforma.id}>{platforma.nazwa}</option>)}
                     </select>
-                </div>
+                </div></label>
                 <div className="flex-col items-center justify-center gap-2 w-[700px]">
                     <label>
                         Nazwa:
