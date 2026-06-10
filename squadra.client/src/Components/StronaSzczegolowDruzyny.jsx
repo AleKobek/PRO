@@ -1,11 +1,12 @@
 ﻿import '../App.css';
 
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL, CLIENT_URL} from "../config/api";
 import MiniAwatarKomponent from "./MiniAwatarKomponent";
+import {OkienkoTlumaczaceZintegrowanie} from "./OkienkoTlumaczaceZintegrowanie";
 export default function StronaSzczegolowDruzyny() {
 
     const navigate = useNavigate();
@@ -16,6 +17,8 @@ export default function StronaSzczegolowDruzyny() {
     const [czyZablokowanoDostep, ustawCzyZablokowanoDostep] = React.useState(false);
     const toastShownRef = useRef(false);
     const [nieZnalezionoDruzyny, ustawNieZnalezionoDruzyny] = React.useState(false);
+    const [pokazOkienkoTlumaczenia, ustawPokazOkienkoTlumaczenia] = useState(false);
+    const ref = React.useRef(null);
 
 
     /*
@@ -60,7 +63,8 @@ export default function StronaSzczegolowDruzyny() {
      "czyPubliczna": true,
      "nazwaPlatformy": "PC",
      "logoPlatformy": (tutaj logo),
-     "statusCzlonkostwa": "Kapitan" lub "Członek" lub "Brak"
+     "statusCzlonkostwa": "Kapitan" lub "Członek" lub "Brak",
+     "czyZintegrowano": true
    }
 
    */
@@ -552,6 +556,17 @@ export default function StronaSzczegolowDruzyny() {
                         Publiczność
                         <span>{daneDruzyny.czyPubliczna ? "Publiczna" : "Prywatna"}</span>
                     </label>
+                    {/* czy zintegrowano */}
+                    <label className="pole-w-szczegolach-druzyny"> <div className="flex items-center gap-1">
+                        Czy używa zintegrowanych danych:
+                        <img
+                            src="/img/znak-zapytania.svg"
+                            alt="znak zapytania"
+                            className="h-[1em] w-auto align-middle ml-2 cursor-pointer"
+                            onClick={() => ustawPokazOkienkoTlumaczenia(true)}
+                        /></div>
+                        <span>{daneDruzyny.czyZintegrowano ? "Tak" : "Nie"}</span>
+                    </label>
                 </div>
                 {/*  wymagania ogólne  */}
                 { daneDruzyny.wymaganiaDoWypisania?.length > 0 &&
@@ -608,6 +623,7 @@ export default function StronaSzczegolowDruzyny() {
                 </div>
             </div>
         </div>
+        {pokazOkienkoTlumaczenia && OkienkoTlumaczaceZintegrowanie(ref, ustawPokazOkienkoTlumaczenia)}
         <ToastContainer
             position="top-center"
             autoClose={5000}
