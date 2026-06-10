@@ -432,8 +432,10 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         var miejsceWDruzynie = await context.MiejsceWDruzynie.FindAsync(idMiejsca);
         if (miejsceWDruzynie == null) throw new NieZnalezionoWBazieException("Nie znaleziono miejsca w drużynie o id " + idMiejsca);
 
-        miejsceWDruzynie.UzytkownikId = idUzytkownika;
-        await context.SaveChangesAsync();
-        return true;
+        var rows = await context.Database.ExecuteSqlInterpolatedAsync( 
+            $"UPDATE Miejsce_w_druzynie SET id_uzytkownika = {idUzytkownika} WHERE Id = {idMiejsca} AND id_uzytkownika IS NULL"
+        );
+        // jeśli rows > 0, to znaczy że udało się dodać użytkownika na miejsce (czyli miejsce było wolne); jeśli rows == 0, to znaczy że miejsce było zajęte, więc nie dodaliśmy użytkownika
+        return rows > 0;
     }
 }
