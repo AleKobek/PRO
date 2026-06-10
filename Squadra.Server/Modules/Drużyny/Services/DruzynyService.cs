@@ -27,7 +27,32 @@ public class DruzynyService(
 {
     
     public static readonly int LiczbaDruzynNaStroneNaStart = 20;
-    
+
+
+    public async Task<ServiceResult<MiejsceWDruzynieDto>> GetMiejsceWDruzynie(int idMiejscaWDruzynie)
+    {
+        if (idMiejscaWDruzynie <= 0)
+            return ServiceResult<MiejsceWDruzynieDto>.BadRequest(
+                new ErrorItem("Id miejsca w drużynie musi być większe od 0"));
+        try
+        {
+            var miejsce = await druzynyRepository.GetMiejsceWDruzynie(idMiejscaWDruzynie);
+            return ServiceResult<MiejsceWDruzynieDto>.Ok(new MiejsceWDruzynieDto(
+                miejsce.Id,
+                miejsce.DruzynaId,
+                miejsce.UzytkownikId,
+                miejsce.RolaId,
+                miejsce.StatystykaId,
+                miejsce.WartoscStatystyki,
+                miejsce.WartoscLiczbowaStatystyki
+            ));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<MiejsceWDruzynieDto>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
     private async Task<ServiceResult<DruzynaDoTabelkiDto>> GetDruzynaDoTabelki(int idDruzyny)
     {
         try
