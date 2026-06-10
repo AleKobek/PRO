@@ -253,6 +253,31 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
+    
+    [HttpPut("/miejsce/{idMiejsca:int}")]
+    [EndpointSummary("Dołącza użytkownika na dane miejsce w drużynie")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.Conflict)]
+    public async Task<ActionResult> DolaczNaMiejsce(int idMiejsca)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.DodajUzytkownikaNaMiejsce(idMiejsca, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            409 => Conflict(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
 
     [HttpPost("wyszukaj")]
     [EndpointSummary("Wyszukuje drużyny spełniające podane kryteria")]

@@ -843,21 +843,35 @@ public class DruzynyService(
             if (idMiejsca <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id miejsca: " + idMiejsca)); 
             if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
             
+            // rozpoczynamy transakcję, aby mieć pewność, że nikt inny nie zajmie tego miejsca w międzyczasie
             var miejsce = await druzynyRepository.GetMiejsceWDruzynie(idMiejsca);
-            if(miejsce.UzytkownikId != null) return ServiceResult<bool>.BadRequest(new ErrorItem("To miejsce jest już zajęte"));
             
+            // sprawdzamy, czy miejsce nie jest już zajęte
+            if(miejsce.UzytkownikId != null) return ServiceResult<bool>.Conflict(new ErrorItem("To miejsce jest już zajęte"));
+            
+            // sprawdzamy, czy użytkownik nie należy już do tej drużyny
             if(await druzynyRepository.CzyUzytkownikNalezyDoDruzyny(idUzytkownika, miejsce.DruzynaId)) 
-                return ServiceResult<bool>.BadRequest(new ErrorItem("Użytkownik już należy do tej drużyny"));
+                return ServiceResult<bool>.Conflict(new ErrorItem("Użytkownik już należy do tej drużyny"));
             
+            // sprawdzamy, czy użytkownik spełnia wymagania drużyny
             var czyUzytkownikSpelniaWymaganiaDruzynyRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(miejsce.DruzynaId, idUzytkownika);
             if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Succeeded) return czyUzytkownikSpelniaWymaganiaDruzynyRes;
-            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Value) return ServiceResult<bool>.Ok(false);
+            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Value) return ServiceResult<bool>.Forbidden(new ErrorItem("Nie spełniasz wymagań tego miejsca"));
     
+            // sprawdzamy, czy użytkownik spełnia wymagania miejsca
             var czyUzytkownikSpelniaWymaganieMiejscaRes = await CzyUzytkownikSpelniaWymaganieMiejsca(idMiejsca, idUzytkownika);
             if (!czyUzytkownikSpelniaWymaganieMiejscaRes.Succeeded) return czyUzytkownikSpelniaWymaganieMiejscaRes;
-            if (!czyUzytkownikSpelniaWymaganieMiejscaRes.Value) return ServiceResult<bool>.Ok(false);
+            if (!czyUzytkownikSpelniaWymaganieMiejscaRes.Value) return ServiceResult<bool>.Forbidden(new ErrorItem("Nie spełniasz wymagań tego miejsca"));
             
-            return ServiceResult<bool>.Ok(await druzynyRepository.DodajUzytkownikaNaMiejsce(idMiejsca, idUzytkownika));
+            // dodajemy użytkownika na miejsce
+            var wynik = await druzynyRepository.DodajUzytkownikaNaMiejsce(idMiejsca, idUzytkownika);
+            
+            // jeżeli wynik jest false, to znaczy, że miejsce zajęło ktoś inny w międzyczasie, więc zwracamy konflikt
+            if(!wynik) return ServiceResult<bool>.Conflict(new ErrorItem("To miejsce jest już zajęte"));
+            
+            //TODO tutaj wysyłamy kapitanowi powiadomienie, że ktoś dołączył do drużyny
+            
+            return ServiceResult<bool>.NoContent(wynik);
         }
         catch (NieZnalezionoWBazieException e)
         {
