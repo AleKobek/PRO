@@ -82,7 +82,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     public async Task<ActionResult> StworzPowiadomienieSystemowe(int idUzytkownika, string tresc)
     {
         var result = await powiadomienieService.CreatePowiadomienie(new PowiadomienieCreateDto(
-            1, idUzytkownika, null, null, tresc));
+            1, idUzytkownika, null, null, null, null, tresc));
 
         return result.StatusCode switch
         {

@@ -5,6 +5,8 @@ public record PowiadomienieCreateDto(
     int IdUzytkownika, // dla którego jest powiadomienie
     int? IdPowiazanegoObiektu,
     string? NazwaPowiazanegoObiektu,
+    int? IdDrugiegoPowiazanegoObiektu,
+    string? NazwaDrugiegoPowiazanegoObiektu,
     string? Tresc
 );
 

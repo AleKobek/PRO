@@ -143,7 +143,7 @@ public class PowiadomienieRepositoryTests : IDisposable
     public async Task CreatePowiadomienie_WithValidData_CreatesNotification()
     {
         // Arrange
-        var dto = new PowiadomienieCreateDto(1, 5, null, null, "New system notification");
+        var dto = new PowiadomienieCreateDto(1, 5, null, null, null, null, "New system notification");
 
         // Act
         var result = await _repository.CreatePowiadomienie(dto);

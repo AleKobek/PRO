@@ -138,6 +138,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                                 // powiązany jest użytkownik, który zaakceptował
                                 uzytkownik.Id,
                                 wynikZnalezieniaProfilu.Value.Pseudonim,
+                                null,
+                                null,
                                 // treść zostanie sklejona na miejscu
                                 null
                             ));
@@ -154,6 +156,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                                 // powiązany jest użytkownik, który odrzucił
                                 uzytkownik.Id,
                                 wynikZnalezieniaProfilu.Value.Pseudonim,
+                                null,
+                                null,
                                 // treść zostanie sklejona na miejscu
                                 null
                             ));
@@ -261,6 +265,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                     idZapraszanego, 
                     idZapraszajacego, // powiadomienie idzie do zapraszanego użytkownika, powiązany jest wysyłający
                     wynikSzukaniaPseudonimuZapraszajacego.Value.Pseudonim, 
+                    null,
+                    null,
                     null);
 
                 // jest git

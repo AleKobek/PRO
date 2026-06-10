@@ -45,8 +45,8 @@ public class PowiadomienieControllerTests
 
         var notifications = new List<PowiadomienieDto>
         {
-            new PowiadomienieDto(1, 1, 1, null, null, "Notification 1", DateTime.Now.ToString("dd.MM.yyyy HH:mm")),
-            new PowiadomienieDto(2, 1, 1, null, null, "Notification 2", DateTime.Now.ToString("dd.MM.yyyy HH:mm"))
+            new PowiadomienieDto(1, 1, 1, null, null, null, null, "Notification 1", DateTime.Now.ToString("dd.MM.yyyy HH:mm")),
+            new PowiadomienieDto(2, 1, 1, null, null, null, null, "Notification 2", DateTime.Now.ToString("dd.MM.yyyy HH:mm"))
         };
         var result = ServiceResult<ICollection<PowiadomienieDto>>.Ok(notifications);
         _mockPowiadomienieService.Setup(s => s.GetPowiadomieniaUzytkownika(1)).ReturnsAsync(result);
@@ -83,7 +83,7 @@ public class PowiadomienieControllerTests
     public async Task GetPowiadomienie_WithValidId_ReturnsOkWithNotification()
     {
         // Arrange
-        var notification = new PowiadomienieDto(1, 1, 1, null, null, "Notification", DateTime.Now.ToString("dd.MM.yyyy HH:mm"));
+        var notification = new PowiadomienieDto(1, 1, 1, null, null, null, null, "Notification", DateTime.Now.ToString("dd.MM.yyyy HH:mm"));
         var result = ServiceResult<PowiadomienieDto>.Ok(notification);
         _mockPowiadomienieService.Setup(s => s.GetPowiadomienie(1, It.IsAny<ClaimsPrincipal>()))
             .ReturnsAsync(result);

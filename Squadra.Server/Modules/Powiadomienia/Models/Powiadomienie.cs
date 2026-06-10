@@ -9,6 +9,8 @@ public class Powiadomienie
     public int UzytkownikId { get; set; }
     public int? PowiazanyObiektId { get; set; }
     public string? PowiazanyObiektNazwa { get; set; }
+    public int? DrugiPowiazanyObiektId { get; set; }
+    public string? DrugiPowiazanyObiektNazwa { get; set; }
     // treść jest tylko dla systemowych, reszta jest tworzona na miejscu
     public string? Tresc { get; set; }
     public DateTime DataWyslania { get; set; }

@@ -83,6 +83,8 @@ public class ZnajomiController(IZnajomiService znajomiService,
             idUsuwanego, // wysyłamy to temu, który został usunięty
             uzytkownik.Id,
             wynikWyszukiwaniaProfilu.Value.Pseudonim,
+            null,
+            null,
             null
         ));
 

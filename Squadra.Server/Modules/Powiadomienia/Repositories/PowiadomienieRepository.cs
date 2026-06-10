@@ -25,6 +25,8 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
                 powiadomienie.UzytkownikId,
                 idPowiazanegoUzytkownika,
                 powiadomienie.PowiazanyObiektNazwa,
+                powiadomienie.DrugiPowiazanyObiektId,
+                powiadomienie.DrugiPowiazanyObiektNazwa,
                 powiadomienie.Tresc,
                 powiadomienie.DataWyslania.ToString("dd.MM.yyyy HH:mm")
             );
@@ -34,6 +36,8 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
             powiadomienie.Id,
             powiadomienie.TypPowiadomieniaId,
             powiadomienie.UzytkownikId,
+            null,
+            null,
             null,
             null,
             powiadomienie.Tresc,
@@ -57,9 +61,11 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
         {
             DataWyslania = DateTime.Now, // liczymy moment, w którym dotrze do bazy
             PowiazanyObiektId = powiadomienie.IdPowiazanegoObiektu,
+            DrugiPowiazanyObiektId = powiadomienie.IdDrugiegoPowiazanegoObiektu,
             Tresc = powiadomienie.Tresc,
             TypPowiadomieniaId = powiadomienie.IdTypuPowiadomienia,
             PowiazanyObiektNazwa = powiadomienie.NazwaPowiazanegoObiektu,
+            DrugiPowiazanyObiektNazwa = powiadomienie.NazwaDrugiegoPowiazanegoObiektu,
             UzytkownikId = powiadomienie.IdUzytkownika
         };
         await context.Powiadomienie.AddAsync(powiadomienieDoDodania);
