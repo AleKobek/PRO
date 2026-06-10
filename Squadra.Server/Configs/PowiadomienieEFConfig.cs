@@ -24,7 +24,7 @@ public class PowiadomienieEFConfig : IEntityTypeConfiguration<Powiadomienie>
         builder
             .Property(x => x.PowiazanyObiektNazwa)
             .HasColumnName("nazwa_powiazanego_obiektu")
-            .HasMaxLength(30);
+            .HasMaxLength(40);
 
         builder
             .Property(x => x.Tresc)
