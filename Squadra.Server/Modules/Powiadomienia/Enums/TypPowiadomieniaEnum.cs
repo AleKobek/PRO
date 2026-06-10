@@ -7,11 +7,9 @@ public enum TypPowiadomieniaEnum
     PrzyjecieZaproszeniaDoZnajomych = 3,
     OdrzucenieZaproszeniaDoZnajomych = 4,
     UsuniecieZnajomosci = 5,
-    ProsbaODolaczenie = 6,
-    PrzyjecieProsby = 7,
-    OdrzucenieProsby = 8,
-    UsuniecieZDruzyny = 9,
-    ZaproszenieDoDruzyny = 10,
-    PrzyjecieZaproszeniaDoDruzyny = 11,
-    OdrzucenieZaproszeniaDoDruzyny = 12
+    UzytkownikDolaczylDoDruzyny = 6,
+    UsuniecieZDruzyny = 7,
+    ZaproszenieDoDruzyny = 8,
+    PrzyjecieZaproszeniaDoDruzyny = 9,
+    OdrzucenieZaproszeniaDoDruzyny = 10
 }
