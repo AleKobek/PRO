@@ -29,6 +29,31 @@ public class DruzynyService(
     public static readonly int LiczbaDruzynNaStroneNaStart = 20;
 
 
+    public async Task<ServiceResult<DruzynaDto>> GetDruzyna(int id)
+    {
+        try
+        {
+            var druzyna = await druzynyRepository.GetDruzyna(id);
+            return ServiceResult<DruzynaDto>.Ok(new DruzynaDto(
+                druzyna.Id,
+                druzyna.Nazwa,
+                druzyna.GraId,
+                druzyna.KapitanId,
+                druzyna.CzyPubliczna,
+                druzyna.Opis,
+                druzyna.NastrojRozgrywkiId,
+                druzyna.WymaganyJezykId,
+                druzyna.WymaganyStopienBieglosciJezykaId,
+                druzyna.PlatformaId,
+                druzyna.CzyZintegrowano
+            ));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<DruzynaDto>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
     public async Task<ServiceResult<MiejsceWDruzynieDto>> GetMiejsceWDruzynie(int idMiejscaWDruzynie)
     {
         if (idMiejscaWDruzynie <= 0)
