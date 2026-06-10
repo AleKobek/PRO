@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Drużyny.Services;
 using Squadra.Server.Modules.Powiadomienia.DTO;
+using Squadra.Server.Modules.Powiadomienia.Enums;
 using Squadra.Server.Modules.Powiadomienia.Models;
 using Squadra.Server.Modules.Powiadomienia.Repositories;
 using Squadra.Server.Modules.Profile.Services;
@@ -19,7 +21,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
     IUzytkownikService uzytkownikService,
     IZnajomiService znajomiService,
     IZnajomiRepository znajomiRepository,
-    IProfilService profilService
+    IProfilService profilService,
+    IDruzynyService druzynyService
     ) : IPowiadomienieService
 {
     public async Task<ServiceResult<PowiadomienieDto>> GetPowiadomienie(int id, ClaimsPrincipal user) {

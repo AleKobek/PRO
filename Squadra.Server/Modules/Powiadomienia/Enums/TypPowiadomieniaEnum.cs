@@ -1,4 +1,4 @@
-﻿namespace Squadra.Server.Modules.Powiadomienia.Models;
+﻿namespace Squadra.Server.Modules.Powiadomienia.Enums;
 
 public enum TypPowiadomieniaEnum
 {

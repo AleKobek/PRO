@@ -2,6 +2,7 @@
 using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Powiadomienia.DTO;
+using Squadra.Server.Modules.Powiadomienia.Enums;
 using Squadra.Server.Modules.Powiadomienia.Models;
 
 namespace Squadra.Server.Modules.Powiadomienia.Repositories;
