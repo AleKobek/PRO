@@ -22,6 +22,20 @@ public class PowiadomienieEFConfig : IEntityTypeConfiguration<Powiadomienie>
             .IsRequired();
         
         builder
+            .Property(x => x.UzytkownikId)
+            .HasColumnName("id_uzytkownika")
+            .IsRequired();
+        
+        builder
+            .Property(x => x.TypPowiadomieniaId)
+            .HasColumnName("id_typu_powiadomienia")
+            .IsRequired();
+        
+        builder
+            .Property(x => x.PowiazanyObiektId)
+            .HasColumnName("id_powiazanego_obiektu");
+        
+        builder
             .Property(x => x.PowiazanyObiektNazwa)
             .HasColumnName("nazwa_powiazanego_obiektu")
             .HasMaxLength(40);
