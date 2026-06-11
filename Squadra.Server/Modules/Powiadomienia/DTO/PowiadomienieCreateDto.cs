@@ -7,11 +7,5 @@ public record PowiadomienieCreateDto(
     string? NazwaPowiazanegoObiektu,
     int? IdDrugiegoPowiazanegoObiektu,
     string? NazwaDrugiegoPowiazanegoObiektu,
-    string? Tresc
+    string? Tresc // dla powiadomień systemowych lub przenoszenia dodatkowych szczegółów do doklejenia do tekstu
 );
-
-// 1 - systemowe
-// 2 - nowe zaproszenie do znajomych
-// 3 - zaakceptowano zaproszenie do znajomych
-// 4 - odrzucono zaproszenie do znajomych
-// 5 - usunięto cię ze znajomych
