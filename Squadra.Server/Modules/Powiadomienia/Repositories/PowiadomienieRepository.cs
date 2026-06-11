@@ -15,32 +15,31 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
         if(powiadomienie == null) throw new NieZnalezionoWBazieException("Powiadomienie o id " + id + " nie istnieje");
         var typPowiadomienia = await context.TypPowiadomienia.FindAsync(powiadomienie.TypPowiadomieniaId);
         if(typPowiadomienia == null) throw new NieZnalezionoWBazieException("Typ powiadomienia o id " + id + " nie istnieje");
-        if (powiadomienie.PowiazanyObiektId != null && 
-            ((TypPowiadomieniaEnum)powiadomienie.TypPowiadomieniaId is TypPowiadomieniaEnum.ZaproszenieDoZnajomych or TypPowiadomieniaEnum.PrzyjecieZaproszeniaDoZnajomych or TypPowiadomieniaEnum.OdrzucenieZaproszeniaDoZnajomych or TypPowiadomieniaEnum.UsuniecieZnajomosci)) {
-            // te dwie linijki pod spodem robimy tylko po to, aby kompilator nie płakał
-            var idPowiazanegoUzytkownika = powiadomienie.PowiazanyObiektId ?? -1;
-            if (idPowiazanegoUzytkownika == -1) throw new NieZnalezionoWBazieException("Użytkownik o takim id nie istnieje");
+        
+        if(powiadomienie.PowiazanyObiektId == null && (TypPowiadomieniaEnum)powiadomienie.TypPowiadomieniaId is TypPowiadomieniaEnum.Systemowe)
             return new PowiadomienieDto(
                 powiadomienie.Id,
                 powiadomienie.TypPowiadomieniaId,
                 powiadomienie.UzytkownikId,
-                idPowiazanegoUzytkownika,
-                powiadomienie.PowiazanyObiektNazwa,
-                powiadomienie.DrugiPowiazanyObiektId,
-                powiadomienie.DrugiPowiazanyObiektNazwa,
+                null,
+                null,
+                null,
+                null,
                 powiadomienie.Tresc,
                 powiadomienie.DataWyslania.ToString("dd.MM.yyyy HH:mm")
             );
-        }
-        // jak tu dochodzimy, to jest systemowe
+        
+        // te dwie linijki pod spodem robimy tylko po to, aby kompilator nie płakał
+        var idPowiazanegoUzytkownika = powiadomienie.PowiazanyObiektId ?? -1;
+        if (idPowiazanegoUzytkownika == -1) throw new NieZnalezionoWBazieException("Użytkownik o takim id nie istnieje");
         return new PowiadomienieDto(
             powiadomienie.Id,
             powiadomienie.TypPowiadomieniaId,
             powiadomienie.UzytkownikId,
-            null,
-            null,
-            null,
-            null,
+            idPowiazanegoUzytkownika,
+            powiadomienie.PowiazanyObiektNazwa,
+            powiadomienie.DrugiPowiazanyObiektId,
+            powiadomienie.DrugiPowiazanyObiektNazwa,
             powiadomienie.Tresc,
             powiadomienie.DataWyslania.ToString("dd.MM.yyyy HH:mm")
         );
