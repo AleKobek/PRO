@@ -347,4 +347,33 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             // jest git
             return await CreatePowiadomienie(dto);
         }
+
+        public async Task<ServiceResult<bool>> WyslijPowiadomienieOWyjsciuZDruzyny(int idKapitana, int idOpuszczajacego, int idDruzyny, string nazwaDruzyny, string? nazwaRoli)
+        {
+
+            Console.WriteLine("#############################");
+            Console.WriteLine("WyslijPowiadomienieOWyjsciuZDruzyny: idKapitana=" + idKapitana + ", idOpuszczajacego=" + idOpuszczajacego + ", idDruzyny=" + idDruzyny);
+            
+            if(idKapitana <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id kapitana: " + idKapitana));
+            if(idOpuszczajacego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika opuszczającego: " + idOpuszczajacego));
+            if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+            
+            // pobieramy profil opuszczającego, aby mieć jego pseudonim do powiadomienia
+            var profilOpuszczajacegoRes = await profilService.GetProfil(idOpuszczajacego);
+            if (profilOpuszczajacegoRes.StatusCode != 200 || profilOpuszczajacegoRes.Value == null)
+                return ServiceResult<bool>.Fail(profilOpuszczajacegoRes.StatusCode, profilOpuszczajacegoRes.Errors);
+            
+            var dto = new PowiadomienieCreateDto(
+                (int)TypPowiadomieniaEnum.UzytkownikOpuscilDruzyne,
+                idKapitana, // powiadomienie idzie do kapitana
+                idOpuszczajacego, // powiązany jest opuszczający użytkownik
+                profilOpuszczajacegoRes.Value.Pseudonim,
+                idDruzyny, // powiązana jest drużyna, którą opuszczono
+                nazwaDruzyny,
+                nazwaRoli
+            );
+            
+            // jest git
+            return await CreatePowiadomienie(dto);
+        }
 }
