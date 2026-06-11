@@ -667,10 +667,22 @@ public class DruzynyService(
             var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
             if (druzyna.KapitanId == idUzytkownika) return ServiceResult<bool>.Forbidden(new ErrorItem("Kapitan drużyny nie może jej opuścić, musi ją usunąć"));
             
+            var rola = await druzynyRepository.GetRolaMiejscaWDruzynieUzytkownika(idDruzyny, idUzytkownika);
+
             var opuscDruzyneRes = await druzynyRepository.OpuscDruzyne(idDruzyny, idUzytkownika);
             if (!opuscDruzyneRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się opuścić drużyny")]);
+
+            // wysyłamy kapitanowi powiadomienie, że ktoś opuścił drużynę
+            var powiadomienieRes = await powiadomienieService.WyslijPowiadomienieOWyjsciuZDruzyny(
+                druzyna.KapitanId,
+                idUzytkownika,
+                druzyna.Id,
+                druzyna.Nazwa,
+                rola?.Nazwa
+            );
+            if (!powiadomienieRes.Succeeded) return ServiceResult<bool>.Fail(powiadomienieRes.StatusCode, powiadomienieRes.Errors);
             
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult<bool>.NoContent(true);
         }
         catch (NieZnalezionoWBazieException e)
         {
