@@ -1,6 +1,7 @@
 ﻿using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Models;
 using Squadra.Server.Modules.Platformy;
+using Squadra.Server.Modules.Statystyki.Models;
 
 namespace Squadra.Server.Modules.Drużyny.Repositories;
 
@@ -11,6 +12,7 @@ public interface IDruzynyRepository
     public Task<ICollection<Druzyna>> GetDruzyny(int[] idDruzyn);
     public Task<ICollection<MiejsceWDruzynie>> GetMiejscaWDruzynie(int idDruzyny);
     public Task<MiejsceWDruzynie> GetMiejsceWDruzynie(int idMiejsca);
+    public Task<Rola?> GetRolaMiejscaWDruzynieUzytkownika(int idDruzyny, int idUzytkownika);
     public Task<int> GetIdKapitanaDruzynyMiejsca(int idMiejsca);
     public Task<ICollection<NastrojRozgrywki>> GetNastrojeRozgrywki();
     public Task<NastrojRozgrywki> GetNastrojRozgrywki(int idNastroju);

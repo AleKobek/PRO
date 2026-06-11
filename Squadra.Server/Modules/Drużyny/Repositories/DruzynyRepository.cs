@@ -53,6 +53,20 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         return miejscaWDruzynie;
     }
     
+    public async Task<Rola?> GetRolaMiejscaWDruzynieUzytkownika(int idDruzyny, int idUzytkownika)
+    {
+        var druzyna = await context.Druzyna.FindAsync(idDruzyny);
+        if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
+        
+        var miejsceWDruzynie = await context.MiejsceWDruzynie
+            .Where(m => m.DruzynaId == idDruzyny && m.UzytkownikId == idUzytkownika)
+            .Include(m => m.Rola)
+            .FirstOrDefaultAsync();
+
+        if(miejsceWDruzynie == null) throw new NieZnalezionoWBazieException("Nie znaleziono miejsca w drużynie dla użytkownika o id " + idUzytkownika + " w drużynie o id " + idDruzyny);
+        return miejsceWDruzynie.Rola;
+    }
+    
     public async Task<MiejsceWDruzynie> GetMiejsceWDruzynie(int idMiejsca)
     {
         var miejsce = await context.MiejsceWDruzynie
