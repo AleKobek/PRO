@@ -323,4 +323,28 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             // jest git
             return await CreatePowiadomienie(dto);
         }
+        
+        public async Task<ServiceResult<bool>> WyslijPowiadomienieOUsunieciuZDruzyny(int idUsuwanego, int idDruzyny, string nazwaDruzyny)
+        {
+            if(idUsuwanego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika usuwanego: " + idUsuwanego));
+            if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+            
+            // pobieramy profil usuwanego, aby mieć jego pseudonim do powiadomienia
+            var profilUsuwanegoRes = await profilService.GetProfil(idUsuwanego);
+            if (profilUsuwanegoRes.StatusCode != 200 || profilUsuwanegoRes.Value == null)
+                return ServiceResult<bool>.Fail(profilUsuwanegoRes.StatusCode, profilUsuwanegoRes.Errors);
+            
+            var dto = new PowiadomienieCreateDto(
+                (int)TypPowiadomieniaEnum.UsuniecieZDruzyny,
+                idUsuwanego, // powiadomienie idzie do usuwanego użytkownika
+                idDruzyny, // powiązana jest drużyna, z której usunięto
+                nazwaDruzyny,
+                null, 
+                null,
+                null
+            );
+
+            // jest git
+            return await CreatePowiadomienie(dto);
+        }
 }
