@@ -3,6 +3,7 @@ using Squadra.Server.Modules.BibliotekaGier.Services;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Repositories;
 using Squadra.Server.Modules.Platformy.Services;
+using Squadra.Server.Modules.Powiadomienia.Services;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
@@ -22,7 +23,8 @@ public class DruzynyService(
     IStopienBieglosciJezykaService stopienBieglosciJezykaService,
     IStatystykiService statystykiService,
     IPlatformaService platformaService,
-    IBibliotekaGierService bibliotekaGierService
+    IBibliotekaGierService bibliotekaGierService,
+    IPowiadomienieService powiadomienieService
     ) : IDruzynyService
 {
     
@@ -867,9 +869,21 @@ public class DruzynyService(
             var wynik = await druzynyRepository.DodajUzytkownikaNaMiejsce(idMiejsca, idUzytkownika);
             
             // jeżeli wynik jest false, to znaczy, że miejsce zajęło ktoś inny w międzyczasie, więc zwracamy konflikt
-            if(!wynik) return ServiceResult<bool>.Conflict(new ErrorItem("To miejsce jest już zajęte"));
+            if(!wynik) return ServiceResult<bool>.Conflict(new ErrorItem("To miejsce jest już zajęte lub zostało usunięte"));
             
-            //TODO tutaj wysyłamy kapitanowi powiadomienie, że ktoś dołączył do drużyny
+            // wysyłamy powiadomienie do kapitana drużyny, że ktoś do niej dołączył
+            var druzynaRes = await GetDruzyna(miejsce.DruzynaId);
+            if(!druzynaRes.Succeeded) return ServiceResult<bool>.Fail(druzynaRes.StatusCode, druzynaRes.Errors);
+            var rola = miejsce.RolaId != null ? await statystykiService.GetRola(miejsce.RolaId ?? 1) : null;
+            var nazwaRoli = rola != null && rola.Succeeded ? rola.Value.Nazwa : null;
+            
+            await powiadomienieService.WyslijPowiadomienieODolaczeniuDoDruzyny(
+                idUzytkownika, 
+                druzynaRes.Value.KapitanId, 
+                miejsce.DruzynaId, 
+                druzynaRes.Value.Nazwa,
+                nazwaRoli
+            );
             
             return ServiceResult<bool>.NoContent(wynik);
         }
