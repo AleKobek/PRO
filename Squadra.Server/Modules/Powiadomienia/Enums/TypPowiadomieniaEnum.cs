@@ -11,5 +11,6 @@ public enum TypPowiadomieniaEnum
     UsuniecieZDruzyny = 7,
     ZaproszenieDoDruzyny = 8, // pierwszym powiązanym obiektem jest drużyna, drugim jest miejsce (bez nazwy). W treści jest rola miejsca
     PrzyjecieZaproszeniaDoDruzyny = 9,
-    OdrzucenieZaproszeniaDoDruzyny = 10
+    OdrzucenieZaproszeniaDoDruzyny = 10,
+    UzytkownikOpuscilDruzyne = 13,
 }
