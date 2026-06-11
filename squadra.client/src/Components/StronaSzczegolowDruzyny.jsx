@@ -398,6 +398,18 @@ export default function StronaSzczegolowDruzyny() {
             }
             // jak tu doszliśmy, udało się dołączyć. pobieramy nowe dane druzyny
             pobierzStatystykiDruzyny(idDruzyny);
+
+            toast.success(`Pomyślnie dołączono do drużyny!`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
 
         dolaczDoDruzyny();
