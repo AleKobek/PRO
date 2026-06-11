@@ -11,6 +11,7 @@ using Squadra.Server.Modules.Statystyki.Services;
 using Squadra.Server.Modules.Uzytkownicy.Services;
 using Squadra.Server.Modules.WspieraneGry.DTO;
 using Squadra.Server.Modules.WspieraneGry.Services;
+using Squadra.Server.Modules.Znajomosci.Services;
 
 namespace Squadra.Server.Modules.Drużyny.Services;
 
@@ -886,6 +887,60 @@ public class DruzynyService(
             );
             
             return ServiceResult<bool>.NoContent(wynik);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
+    public async Task<ServiceResult<bool>> ZaprosUzytkownikaNaMiejsce(int idMiejsca, int idZapraszanegoUzytkownika, int idZapraszajacegoUzytkownika)
+    {
+        if(idMiejsca <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id miejsca: " + idMiejsca));
+        if(idZapraszanegoUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id zapraszanego użytkownika: " + idZapraszanegoUzytkownika));
+        if(idZapraszajacegoUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id zapraszającego użytkownika: " + idZapraszajacegoUzytkownika));
+        
+        try
+        {
+            var miejsce = await druzynyRepository.GetMiejsceWDruzynie(idMiejsca);
+            // sprawdzamy, czy miejsce jest zajęte
+            if (miejsce.UzytkownikId != null) return ServiceResult<bool>.Conflict(new ErrorItem("To miejsce jest już zajęte"));
+            
+            var druzyna = await druzynyRepository.GetDruzyna(miejsce.DruzynaId);
+            // sprawdzamy, czy zapraszający jest kapitanem drużyny
+            if (druzyna.KapitanId != idZapraszajacegoUzytkownika)
+                return ServiceResult<bool>.Forbidden(new ErrorItem("Tylko kapitan drużyny może zapraszać użytkowników do drużyny"));
+            
+            // sprawdzamy, czy zapraszany użytkownik nie należy już do tej drużyny
+            if (await druzynyRepository.CzyUzytkownikNalezyDoDruzyny(idZapraszanegoUzytkownika, miejsce.DruzynaId))
+                return ServiceResult<bool>.Conflict(new ErrorItem("Użytkownik już należy do tej drużyny"));
+            
+            
+            // sprawdzamy, czy zapraszany użytkownik spełnia wymagania drużyny
+            var czyUzytkownikSpelniaWymaganiaDruzynyRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(miejsce.DruzynaId, idZapraszanegoUzytkownika);
+            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Succeeded) return czyUzytkownikSpelniaWymaganiaDruzynyRes;
+            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Value)
+                return ServiceResult<bool>.Forbidden(new ErrorItem("Zapraszany użytkownik nie spełnia wymagań drużyny"));
+            
+            // sprawdzamy, czy zapraszany użytkownik spełnia wymagania miejsca
+            var czyUzytkownikSpelniaWymaganieMiejscaRes = await CzyUzytkownikSpelniaWymaganieMiejsca(idMiejsca, idZapraszanegoUzytkownika);
+            if (!czyUzytkownikSpelniaWymaganieMiejscaRes.Succeeded) return czyUzytkownikSpelniaWymaganieMiejscaRes;
+            if (!czyUzytkownikSpelniaWymaganieMiejscaRes.Value)
+                return ServiceResult<bool>.Forbidden(new ErrorItem("Zapraszany użytkownik nie spełnia wymagań tego miejsca"));
+            
+            var rola = miejsce.RolaId != null ? await statystykiService.GetRola(miejsce.RolaId ?? 1) : null;
+            var nazwaRoli = rola != null && rola.Succeeded ? rola.Value.Nazwa : null;
+            
+            // wszystko powinno być git, wysyłamy zaproszenie
+            var wynik = await powiadomienieService.WyslijZaproszenieNaMiejsceWDruzynie(
+                idZapraszanegoUzytkownika,
+                miejsce.DruzynaId,
+                druzyna.Nazwa,
+                idMiejsca, 
+                nazwaRoli
+            );
+            if(!wynik.Succeeded) return ServiceResult<bool>.Fail(wynik.StatusCode, wynik.Errors);
+            return ServiceResult<bool>.NoContent(true);
         }
         catch (NieZnalezionoWBazieException e)
         {
