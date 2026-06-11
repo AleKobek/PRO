@@ -90,6 +90,20 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
         await context.SaveChangesAsync();
         return true;
     }
+    
+    public async Task<bool> DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(int idTypu, int idPowiazanegoObiektu, int? idDrugiegoPowiazanegoObiektu)
+    {
+        var powiadomienia = await context.Powiadomienie
+            .Where(x => 
+                x.TypPowiadomieniaId == idTypu 
+                && x.PowiazanyObiektId == idPowiazanegoObiektu
+                && x.DrugiPowiazanyObiektId == idDrugiegoPowiazanegoObiektu
+                )
+            .ToListAsync();
+        context.Powiadomienie.RemoveRange(powiadomienia);
+        await context.SaveChangesAsync();
+        return true;
+    }
 
     public async Task<string> GetNazwaTypuPowiadomienia(int idTypuPowiadomienia)
     {
