@@ -690,8 +690,21 @@ public class DruzynyService(
             var miejsce = await druzynyRepository.GetMiejsceWDruzynie(idMiejsca);
             if(miejsce.UzytkownikId == idUsuwajacegoUzytkownika) return ServiceResult<bool>.Forbidden(new ErrorItem("Kapitan drużyny nie może jej opuścić, musi ją usunąć"));
             
+            var usuwanyUzytkownikId = miejsce.UzytkownikId;
+            
             var opuscDruzyneRes = await druzynyRepository.OproznijMiejsceWDruzynie(idMiejsca);
             if (!opuscDruzyneRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć użytkownika z miejsca o id " + idMiejsca)]);
+            
+            // wysyłamy wyrzuconemu powiadomienie, że został wyrzucony z drużyny
+            var druzynaRes = await GetDruzyna(miejsce.DruzynaId);
+            if(!druzynaRes.Succeeded) return ServiceResult<bool>.Fail(druzynaRes.StatusCode, druzynaRes.Errors);
+
+            var powiadomienieRes = await powiadomienieService.WyslijPowiadomienieOUsunieciuZDruzyny(
+                usuwanyUzytkownikId ?? 0, // już odfiltrowaliśmy miejsca bez UzytkownikId, więc możemy bezpiecznie użyć ?? 0
+                miejsce.DruzynaId,
+                druzynaRes.Value.Nazwa
+            );
+            if (!powiadomienieRes.Succeeded) return ServiceResult<bool>.Fail(powiadomienieRes.StatusCode, powiadomienieRes.Errors);
             
             return ServiceResult<bool>.Ok(true);
         }
