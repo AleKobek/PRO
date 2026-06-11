@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Drużyny.Services;
 using Squadra.Server.Modules.Powiadomienia.DTO;
 using Squadra.Server.Modules.Powiadomienia.Repositories;
 using Squadra.Server.Modules.Powiadomienia.Services;
@@ -27,6 +28,7 @@ public class PowiadomienieServiceTests
     private readonly Mock<IZnajomiService> _mockZnajomiService;
     private readonly Mock<IZnajomiRepository> _mockZnajomiRepository;
     private readonly Mock<IProfilService> _mockProfilService;
+    private readonly Mock<IDruzynyService> _mockDruzynyService;
     private readonly PowiadomienieService _service;
 
     public PowiadomienieServiceTests()
@@ -37,6 +39,7 @@ public class PowiadomienieServiceTests
         _mockZnajomiService = new Mock<IZnajomiService>();
         _mockZnajomiRepository = new Mock<IZnajomiRepository>();
         _mockProfilService = new Mock<IProfilService>();
+        _mockDruzynyService = new Mock<IDruzynyService>();
         
         _service = new PowiadomienieService(
             _mockPowiadomienieRepository.Object,
@@ -44,7 +47,8 @@ public class PowiadomienieServiceTests
             _mockUzytkownikService.Object,
             _mockZnajomiService.Object,
             _mockZnajomiRepository.Object,
-            _mockProfilService.Object
+            _mockProfilService.Object,
+            _mockDruzynyService.Object
         );
     }
 
