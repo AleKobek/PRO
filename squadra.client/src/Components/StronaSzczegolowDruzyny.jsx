@@ -98,12 +98,14 @@ export default function StronaSzczegolowDruzyny() {
             return () => clearTimeout(timer);
         }
     },[location.state?.pomyslnieEdytowanoDruzyne])
-    
+
 
     useEffect(() => {
 
         const ac = new AbortController();
         let alive = true;
+
+
 
         const pobierzStatystykiDruzyny = async (idDruzyny) => {
             if (!idDruzyny) return;
@@ -234,6 +236,7 @@ export default function StronaSzczegolowDruzyny() {
                 theme: "light",
                 transition: Bounce,
             });
+            return;
         }
         // jak tu dotarliśmy, wszystko jest git
         toast.success(`Pomyślnie usunięto drużynę!`, {
@@ -253,8 +256,151 @@ export default function StronaSzczegolowDruzyny() {
         });
     }
 
-    const przyKliknieciuWysylaniaProsby = (idMiejsca) => {
+    const przyKliknieciuDolaczania = (idMiejsca) => {
+        if(!uzytkownik) return;
+        // sprawdzamy, czy już jest członkiem i czy miejsce jest puste .
+        if(daneDruzyny.statusCzlonkostwa !== "Brak"){
+            toast.error(`Już jesteś członkiem tej drużyny`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
+        let miejsce = daneDruzyny.czlonkowie.find((miejsce) => miejsce.idMiejscaWDruzynie === idMiejsca);
+        if(!miejsce){
+            toast.error(`Nie znaleziono miejsca w drużynie`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
+        if(miejsce.czlonek){
+            toast.error(`To miejsce jest już zajęte`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
+        if(miejsce.czyOgladajacySpelniaWymagania !== true){
+            toast.error(`Nie spełniasz wymagań tego miejsca`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
 
+        // po udanym dołączeniu pobieramy nowe dane drużyny
+        const pobierzStatystykiDruzyny = async (idDruzyny) => {
+            if (!idDruzyny) return;
+            if (!uzytkownik) return;
+
+            // pobieramy szczegóły danej drużyny
+            const fetchJsonAbort = async (url) => {
+                try {
+                    const res = await fetch(url, { method: 'GET', credentials: "include" });
+                    if (!res.ok) {
+                        console.log(res)
+                        if (res.status === 403) ustawCzyZablokowanoDostep(true);
+                        if (res.status === 404) ustawNieZnalezionoDruzyny(true)
+                        else {
+                            toast.error('Wystąpił błąd podczas pobierania danych drużyny', {
+                                position: "top-center",
+                                autoClose: 5000,
+                                hideProgressBar: false,
+                                closeOnClick: false,
+                                pauseOnHover: true,
+                                draggable: true,
+                                progress: undefined,
+                                theme: "light",
+                                transition: Bounce,
+                            });
+                        }
+                        return null;
+                    }
+                    return await res.json();
+                } catch (err) {
+                    if (err && err.name === 'AbortError') return null;
+                    console.error('Błąd pobierania:', err);
+                    toast.error('Wystąpił błąd podczas pobierania danych drużyny', {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    return null;
+                }
+            };
+
+            const data = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/szczegoly/${idDruzyny}`);
+
+            ustawDaneDruzyny(data);
+        }
+
+        const dolaczDoDruzyny = async () =>{
+            // tutaj wysyłamy żądanie do backendu o dołączenie do drużyny, a potem odświeżamy dane drużyny
+            const opcje = {
+                method: "PUT",
+                headers: {"Content-Type": "application/json"},
+                credentials: "include"
+            }
+            const res = await fetch(`${API_BASE_URL}/Druzyna/miejsce/dolacz/` + idMiejsca, opcje);
+            if(!res.ok){
+                const ct = res.headers.get("content-type") || "";
+                const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                    ? await res.json().catch(() => null)
+                    : await res.text().catch(() => "");
+
+                toast.error(`Wystąpił błąd podczas dołączania do drużyny: ${body}`, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                return;
+            }
+            // jak tu doszliśmy, udało się dołączyć. pobieramy nowe dane druzyny
+            pobierzStatystykiDruzyny(idDruzyny);
+        }
+
+        dolaczDoDruzyny();
     }
 
     const przyKliknieciuOpuszczaniaDruzyny = async () => {
@@ -457,10 +603,10 @@ export default function StronaSzczegolowDruzyny() {
                             ? <th className="px-4 py-2 border border-gray-500 text-gray-700">Zajęte</th>
                             : <th className="px-4 py-2 border border-gray-500">
                                 <button
-                                    onClick={przyKliknieciuWysylaniaProsby(miejsce.idMiejscaWDruzynie)}
+                                    onClick={() => przyKliknieciuDolaczania(miejsce.idMiejscaWDruzynie)}
                                     className="bg-green-700 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
                                     disabled={miejsce.czyOgladajacySpelniaWymagania !== true}
-                                >Wyślij prośbę o dołączenie</button>
+                                >Dołącz</button>
                             </th>
                         }
                     </tr>)
