@@ -299,4 +299,28 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             // jest git
             return await CreatePowiadomienie(dto);
         }
+        
+        // zostałeś zaproszony do drużyny X na rolę Y .
+        public async Task<ServiceResult<bool>> WyslijZaproszenieNaMiejsceWDruzynie(int idZapraszanego, int idDruzyny, string nazwaDruzyny, int idMiejsca, string? nazwaRoli)
+        {
+            if(idMiejsca <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id miejsca: " + idMiejsca));
+            if(idZapraszanego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id uzytkownika zapraszanego: " + idZapraszanego));
+            if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+            
+            // usuwamy stare zaproszenia na dane miejsce, aby nie było duplikatów
+            await powiadomienieRepository.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami((int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, idDruzyny, idMiejsca);
+            
+            var dto = new PowiadomienieCreateDto(
+                (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny,
+                idZapraszanego, // powiadomienie idzie do zapraszanego
+                idDruzyny, // powiązana jest drużyna, której kapitan zaprasza
+                nazwaDruzyny,
+                idMiejsca, // powiązane jest miejsce, na które zapraszany jest użytkownik
+                null, // nazwa miejsca jest zbędna, bo i tak nie będzie wyświetlana w powiadomieniu
+                nazwaRoli
+            );
+
+            // jest git
+            return await CreatePowiadomienie(dto);
+        }
 }
