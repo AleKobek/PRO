@@ -21,8 +21,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
     IUzytkownikService uzytkownikService,
     IZnajomiService znajomiService,
     IZnajomiRepository znajomiRepository,
-    IProfilService profilService,
-    IDruzynyService druzynyService
+    IProfilService profilService
     ) : IPowiadomienieService
 {
     public async Task<ServiceResult<PowiadomienieDto>> GetPowiadomienie(int id, ClaimsPrincipal user) {
@@ -276,6 +275,28 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 return ServiceResult<bool>.NoContent(await powiadomienieRepository.CreatePowiadomienie(dto));
         }
 
+        public async Task<ServiceResult<bool>> WyslijPowiadomienieODolaczeniuDoDruzyny(int idDolaczajacego, int idKapitana, int idDruzyny, string nazwaDruzyny, string? nazwaRoli)
+        {
+            if(idDolaczajacego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika dołączającego: " + idDolaczajacego));
+            if(idKapitana <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id kapitana: " + idKapitana));
+            if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+            
+            // pobieramy profil dolaczajacego, aby mieć jego pseudonim do powiadomienia
+            var profilDolaczajacegoRes = await profilService.GetProfil(idDolaczajacego);
+            if (profilDolaczajacegoRes.StatusCode != 200 || profilDolaczajacegoRes.Value == null)
+                return ServiceResult<bool>.Fail(profilDolaczajacegoRes.StatusCode, profilDolaczajacegoRes.Errors);
+            
+            var dto = new PowiadomienieCreateDto(
+                (int)TypPowiadomieniaEnum.UzytkownikDolaczylDoDruzyny,
+                idKapitana, // powiadomienie idzie do kapitana
+                idDolaczajacego, // powiązany jest dołączający
+                profilDolaczajacegoRes.Value.Pseudonim,
+                idDruzyny, // powiązana jest drużyna, do której dołączono
+                nazwaDruzyny,
+                nazwaRoli
+            );
 
-        // wydzielamy z funkcji zapraszającej zamianę loginu na id, bo potrzebujemy jej tylko w jednym wariancie
+            // jest git
+            return await CreatePowiadomienie(dto);
+        }
 }

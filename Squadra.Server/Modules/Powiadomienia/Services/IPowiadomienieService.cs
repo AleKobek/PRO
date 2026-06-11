@@ -13,4 +13,5 @@ public interface IPowiadomienieService
     public Task<ServiceResult<bool>> RozpatrzPowiadomienie(int id, bool? czyZaakceptowane, ClaimsPrincipal user);
     public Task<ServiceResult<bool>> WyslijZaproszenieDoZnajomychPoLoginie(int idZapraszajacego, string loginZaproszonego);
     public Task<ServiceResult<bool>> WyslijZaproszenieDoZnajomychPoId(int idZapraszajacego, int idZapraszanego);
+    public Task<ServiceResult<bool>> WyslijPowiadomienieODolaczeniuDoDruzyny(int idDolaczajacego, int idKapitana, int idDruzyny, string nazwaDruzyny, string? nazwaRoli);
 }
