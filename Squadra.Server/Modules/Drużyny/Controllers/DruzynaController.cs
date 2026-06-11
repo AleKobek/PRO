@@ -254,7 +254,7 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
         };
     }
     
-    [HttpPut("/miejsce/{idMiejsca:int}")]
+    [HttpPut("miejsce/dolacz/{idMiejsca:int}")]
     [EndpointSummary("Dołącza użytkownika na dane miejsce w drużynie")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
