@@ -60,7 +60,10 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     public async Task<ActionResult> RozpatrzPowiadomienie(int id, [FromBody] bool? czyZaakceptowane)
     {
-        var result = await powiadomienieService.RozpatrzPowiadomienie(id, czyZaakceptowane, User);
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await powiadomienieService.RozpatrzPowiadomienie(id, czyZaakceptowane, uzytkownik.Id);
         return result.StatusCode switch
         {
             204 => NoContent(),

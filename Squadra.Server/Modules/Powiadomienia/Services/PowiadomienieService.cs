@@ -115,7 +115,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         // robimy rozpatrzenie odpowiedzi na powiadomienie. Jeżeli jest to drugie, to reagujemy inaczej niż w przypadku reszty (na ten moment), bo wymagana jest akcja
         // jeżeli to typ "zaproszenie do znajomych", czyZaakceptowane nie jest null
 
-        public async Task<ServiceResult<bool>> RozpatrzPowiadomienie(int id, bool? czyZaakceptowane, ClaimsPrincipal user)
+        public async Task<ServiceResult<bool>> RozpatrzPowiadomienie(int id, bool? czyZaakceptowane, int idUzytkownika)
         {
             try
             {
@@ -129,9 +129,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                     string? Tresc,
                     DateTime DataWyslania
                  */
-                var uzytkownik = await userManager.GetUserAsync(user);
-                if(uzytkownik == null) return ServiceResult<bool>.Unauthorized(new ErrorItem("Nie jesteś zalogowany"));
-                if (powiadomienie.UzytkownikId != uzytkownik.Id)
+                
+                if (powiadomienie.UzytkownikId != idUzytkownika)
                 {
                     return ServiceResult<bool>.Forbidden(new ErrorItem("Nie możesz rozpatrzyć powiadomienia innego użytkownika"));
                 }
@@ -144,7 +143,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                     if(powiadomienie.IdPowiazanegoObiektu == null) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie podano użytkownika, którego zaproszenie akceptujesz"));
                 
                     // pobieramy naszą nazwę użytkownika, aby była w powiadomieniu dla drugiej strony
-                    var wynikZnalezieniaProfilu = await profilService.GetProfil(uzytkownik.Id);
+                    var wynikZnalezieniaProfilu = await profilService.GetProfil(idUzytkownika);
                     if(wynikZnalezieniaProfilu.StatusCode != 200) return ServiceResult<bool>.NotFound(wynikZnalezieniaProfilu.Errors[0]);
                     if(wynikZnalezieniaProfilu.Value == null) return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + powiadomienie.IdPowiazanegoObiektu.Value));
                 
@@ -165,7 +164,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                                 // wysyłamy to użytkownikowi, którego to zaproszenie dotyczy
                                 powiadomienie.IdPowiazanegoObiektu ?? 1, // już null odfiltrowaliśmy, ale aby się nie czepiał kompilator
                                 // powiązany jest użytkownik, który zaakceptował
-                                uzytkownik.Id,
+                                idUzytkownika,
                                 wynikZnalezieniaProfilu.Value.Pseudonim,
                                 null,
                                 null,
@@ -183,7 +182,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                                 // wysyłamy to użytkownikowi, którego to zaproszenie dotyczy
                                 powiadomienie.IdPowiazanegoObiektu ?? 1, // już to odfiltrowaliśmy, ale aby się nie czepiał kompilator
                                 // powiązany jest użytkownik, który odrzucił
-                                uzytkownik.Id,
+                                idUzytkownika,
                                 wynikZnalezieniaProfilu.Value.Pseudonim,
                                 null,
                                 null,
