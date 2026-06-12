@@ -634,7 +634,7 @@ export default function StronaSzczegolowDruzyny() {
                 <h1 className="text-red-700 mt-40">Blokada dostępu.</h1>
                 <div className="flex justify-center">
                     <span className="text-center items-center text-2xl">
-                        Nie masz dostępu do danych tej drużyny, ponieważ jest prywatna i do niej nie należysz.
+                        Nie masz dostępu do danych tej drużyny, ponieważ jest prywatna i ani do niej nie należysz, ani nie masz zaproszenia.
                     </span>
                 </div>
             </div>
@@ -748,11 +748,11 @@ export default function StronaSzczegolowDruzyny() {
                         daneDruzyny.statusCzlonkostwa === "Kapitan" &&
                         <ListaCzlonkowDlaKapitana/>
                     }
-                    {/* jeżeli nie jest kapitanem, ale jest i tak członkiem */}
-                    {daneDruzyny.statusCzlonkostwa === "Członek" &&
+                    {/* jeżeli nie jest kapitanem, ale jest i tak członkiem lub ma zaproszenie do prywatnej drużyny*/}
+                    {(daneDruzyny.statusCzlonkostwa === "Członek"|| (daneDruzyny.statusCzlonkostwa === "Brak" && !daneDruzyny.czyPubliczna)) &&
                         <ListaCzlonkowDlaCzlonka/>
                     }
-                    {daneDruzyny.statusCzlonkostwa === "Brak" &&
+                    {(daneDruzyny.statusCzlonkostwa === "Brak" && daneDruzyny.czyPubliczna) &&
                         <ListaCzlonkowDlaObcego/>
                     }
                 </div>
