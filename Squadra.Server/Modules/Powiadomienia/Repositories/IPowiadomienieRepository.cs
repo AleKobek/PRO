@@ -10,6 +10,6 @@ public interface IPowiadomienieRepository
     public Task<bool> CreatePowiadomienie(PowiadomienieCreateDto powiadomienie);
     public Task<bool> DeletePowiadomienie(int id);
     public Task<bool> DeletePowiadomieniaUzytkownika(int idUzytkownika);
-    public Task<bool> DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(int idTypu, int idPowiazanegoObiektu, int? idDrugiegoPowiazanegoObiektu);
+    public Task<bool> DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(int? idUzytkownika, int idTypu, int idPowiazanegoObiektu, int? idDrugiegoPowiazanegoObiektu);
     public Task<string> GetNazwaTypuPowiadomienia(int idTypuPowiadomienia);
 }

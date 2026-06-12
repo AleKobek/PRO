@@ -914,7 +914,7 @@ public class DruzynyService(
             var wynik = await druzynyRepository.DodajUzytkownikaNaMiejsce(idMiejsca, idUzytkownika);
             
             // usuwamy zaproszenia na dane miejsce, bo są nieaktualne
-            await powiadomienieService.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami((int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, miejsce.DruzynaId, idMiejsca);
+            await powiadomienieService.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(null, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, miejsce.DruzynaId, idMiejsca);
             
             // jeżeli wynik jest false, to znaczy, że miejsce zajęło ktoś inny w międzyczasie, więc zwracamy konflikt
             if(!wynik) return ServiceResult<bool>.Conflict(new ErrorItem("To miejsce jest już zajęte lub zostało usunięte"));

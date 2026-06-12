@@ -104,13 +104,14 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
         return true;
     }
     
-    public async Task<bool> DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(int idTypu, int idPowiazanegoObiektu, int? idDrugiegoPowiazanegoObiektu)
+    public async Task<bool> DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(int? idUzytkownika,int idTypu, int idPowiazanegoObiektu, int? idDrugiegoPowiazanegoObiektu)
     {
         var powiadomienia = await context.Powiadomienie
             .Where(x => 
                 x.TypPowiadomieniaId == idTypu 
                 && x.PowiazanyObiektId == idPowiazanegoObiektu
                 && x.DrugiPowiazanyObiektId == idDrugiegoPowiazanegoObiektu
+                && (idUzytkownika == null || x.UzytkownikId == idUzytkownika)
                 )
             .ToListAsync();
         context.Powiadomienie.RemoveRange(powiadomienia);
