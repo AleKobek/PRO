@@ -110,7 +110,7 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
             .Where(x => 
                 x.TypPowiadomieniaId == idTypu 
                 && x.PowiazanyObiektId == idPowiazanegoObiektu
-                && x.DrugiPowiazanyObiektId == idDrugiegoPowiazanegoObiektu
+                && (idDrugiegoPowiazanegoObiektu == null || x.DrugiPowiazanyObiektId == idDrugiegoPowiazanegoObiektu)
                 && (idUzytkownika == null || x.UzytkownikId == idUzytkownika)
                 )
             .ToListAsync();
