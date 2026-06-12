@@ -114,6 +114,115 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                     }
                 }
             }
+
+            // zaproszenie do drużyny
+            if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia == TypPowiadomieniaEnum.ZaproszenieDoDruzyny)
+            {
+                if(powiadomienie.IdPowiazanegoObiektu == null || powiadomienie.IdDrugiegoPowiazanegoObiektu == null)
+                {
+                    // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
+                    try
+                    {
+                        await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
+                    }
+                    catch (NieZnalezionoWBazieException e)
+                    {
+                        // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
+                    }
+                    return ServiceResult<bool>.NoContent(true); // zwracamy, że wszystko jest git, bo skoro nie ma powiadomienia, to nic nie trzeba rozpatrywać. front i tak ma je usunąć
+                }
+                
+                // pobieramy naszą nazwę użytkownika, aby była w powiadomieniu dla drugiej strony
+                var wynikZnalezieniaProfilu = await profilService.GetProfil(idUzytkownika);
+                if(wynikZnalezieniaProfilu.StatusCode != 200) return ServiceResult<bool>.NotFound(wynikZnalezieniaProfilu.Errors[0]);
+                if(wynikZnalezieniaProfilu.Value == null) return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + powiadomienie.IdPowiazanegoObiektu.Value));
+                
+                // pobieramy miejsce w drużynie
+                var miejsceRes = await druzynyService.GetMiejsceWDruzynie(powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1);
+                if (miejsceRes.StatusCode != 200 || miejsceRes.Value == null)
+                {
+                    // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
+                    try
+                    {
+                        await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
+                    }
+                    catch (NieZnalezionoWBazieException e)
+                    {
+                        // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
+                    }
+                    return ServiceResult<bool>.NoContent(true); // zwracamy, że wszystko jest git, bo skoro nie ma powiadomienia, to nic nie trzeba rozpatrywać. front i tak ma je usunąć
+                }
+            
+                // pobieramy drużynę, do której należy to miejsce
+                var druzynaRes = await druzynyService.GetDruzynaMiejsca(powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1);
+                if (druzynaRes.StatusCode != 200 || druzynaRes.Value == null)
+                {
+                    // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
+                    try
+                    {
+                        await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
+                    }
+                    catch (NieZnalezionoWBazieException e)
+                    {
+                        // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
+                    }
+                    return ServiceResult<bool>.NoContent(true); // zwracamy, że wszystko jest git, bo skoro nie ma powiadomienia, to nic nie trzeba rozpatrywać. front i tak ma je usunąć
+                }
+
+                string? nazwaRoli = null;
+                if(miejsceRes.Value.RolaId != null)
+                {
+                    var rolaRes = await statystykiService.GetRola(miejsceRes.Value.RolaId ?? 1);
+                    if(rolaRes.Succeeded && rolaRes.Value != null) nazwaRoli = rolaRes.Value.Nazwa;
+                }
+                
+                switch (czyZaakceptowane)
+                {
+                    case true:
+                    {
+                        var result = await druzynyService.DodajUzytkownikaNaMiejsce(powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1, powiadomienie.UzytkownikId); 
+                        // coś poszło nie tak
+                        if (!result.Succeeded) return result;
+                        
+                        // wszystko git
+                        // użytkownik X przyjął Twoje zaproszenie do drużyny Y na rolę Z.
+                        await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
+                            // zaakceptowano zaproszenie
+                            (int)TypPowiadomieniaEnum.PrzyjecieZaproszeniaDoDruzyny,
+                            // wysyłamy to kapitanowi drużyny, której to zaproszenie dotyczy
+                            druzynaRes.Value.KapitanId,
+                            // powiązany jest użytkownik, który zaakceptował
+                            idUzytkownika,
+                            wynikZnalezieniaProfilu.Value.Pseudonim,
+                            druzynaRes.Value.Id,
+                            druzynaRes.Value.Nazwa,
+                            nazwaRoli
+                        ));
+                        break;
+                    }
+                    case false:
+                    {
+                        // użytkownik X odrzucił Twoje zaproszenie do drużyny Y na rolę Z.
+                        await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
+                            // odrzucono zaproszenie
+                            (int)TypPowiadomieniaEnum.OdrzucenieZaproszeniaDoDruzyny,
+                            // wysyłamy to kapitanowi drużyny, której to zaproszenie dotyczy
+                            druzynaRes.Value.KapitanId,
+                            // powiązany jest użytkownik, który zaakceptował
+                            idUzytkownika,
+                            wynikZnalezieniaProfilu.Value.Pseudonim,
+                            druzynaRes.Value.Id,
+                            druzynaRes.Value.Nazwa,
+                            nazwaRoli
+                        ));
+                        break;
+                    }
+                    default:
+                    {
+                        return ServiceResult<bool>.BadRequest(new ErrorItem("Nie podano, czy zaakceptowano zaproszenie"));
+                    }
+                }
+            }
         
             // jak tu dochodzimy, wszystko zostało pomyślnie rozpatrzone i usuwamy
             try
