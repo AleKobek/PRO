@@ -140,7 +140,19 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia == TypPowiadomieniaEnum.ZaproszenieDoZnajomych)
                 {
                 
-                    if(powiadomienie.IdPowiazanegoObiektu == null) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie podano użytkownika, którego zaproszenie akceptujesz"));
+                    if(powiadomienie.IdPowiazanegoObiektu == null)
+                    {
+                        // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
+                        try
+                        {
+                            await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
+                        }
+                        catch (NieZnalezionoWBazieException e)
+                        {
+                            // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
+                        }
+                        return ServiceResult<bool>.NoContent(true); // zwracamy, że wszystko jest git, bo skoro nie ma powiadomienia, to nic nie trzeba rozpatrywać. front i tak ma je usunąć
+                    }
                 
                     // pobieramy naszą nazwę użytkownika, aby była w powiadomieniu dla drugiej strony
                     var wynikZnalezieniaProfilu = await profilService.GetProfil(idUzytkownika);
