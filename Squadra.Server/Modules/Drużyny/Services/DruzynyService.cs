@@ -56,6 +56,32 @@ public class DruzynyService(
             return ServiceResult<DruzynaDto>.NotFound(new ErrorItem(e.Message));
         }
     }
+
+    public async Task<ServiceResult<DruzynaDto>> GetDruzynaMiejsca(int idMiejsca)
+    {
+        if(idMiejsca < 1) return ServiceResult<DruzynaDto>.BadRequest(new ErrorItem("Nieprawidłowe id miejsca w drużynie: " + idMiejsca));
+        try
+        {
+            var druzyna = await druzynyRepository.GetDruzynaMiejsca(idMiejsca);
+            return ServiceResult<DruzynaDto>.Ok(new DruzynaDto(
+                druzyna.Id,
+                druzyna.Nazwa,
+                druzyna.GraId,
+                druzyna.KapitanId,
+                druzyna.CzyPubliczna,
+                druzyna.Opis,
+                druzyna.NastrojRozgrywkiId,
+                druzyna.WymaganyJezykId,
+                druzyna.WymaganyStopienBieglosciJezykaId,
+                druzyna.PlatformaId,
+                druzyna.CzyZintegrowano
+            ));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<DruzynaDto>.NotFound(new ErrorItem(e.Message));
+        }
+    }
     
     public async Task<ServiceResult<MiejsceWDruzynieDto>> GetMiejsceWDruzynie(int idMiejscaWDruzynie)
     {

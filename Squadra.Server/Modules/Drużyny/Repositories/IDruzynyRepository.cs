@@ -8,6 +8,7 @@ namespace Squadra.Server.Modules.Drużyny.Repositories;
 public interface IDruzynyRepository
 {
     public Task<Druzyna> GetDruzyna(int idDruzyny);
+    public Task<Druzyna> GetDruzynaMiejsca(int idMiejsca);
     public Task<ICollection<Druzyna>> GetDruzynyUzytkownika(int idUzytkownika);
     public Task<ICollection<Druzyna>> GetDruzyny(int[] idDruzyn);
     public Task<ICollection<MiejsceWDruzynie>> GetMiejscaWDruzynie(int idDruzyny);

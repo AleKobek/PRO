@@ -20,6 +20,16 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
         return druzyna;
     }
+
+    public async Task<Druzyna> GetDruzynaMiejsca(int idMiejsca)
+    {
+        var druzyna = await context.Druzyna
+            .Include(d => d.MiejsceWDruzynieCollection)
+            .Where(x => x.MiejsceWDruzynieCollection.Any(m => m.Id == idMiejsca))
+            .FirstOrDefaultAsync();
+        if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny dla miejsca o id " + idMiejsca);
+        return druzyna;
+    }
     
     public async Task<ICollection<Druzyna>> GetDruzynyUzytkownika(int idUzytkownika)
     {
