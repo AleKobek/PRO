@@ -344,6 +344,9 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             // usuwamy stare zaproszenia na dane miejsce, aby nie było duplikatów
             await powiadomienieRepository.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(null, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, idDruzyny, idMiejsca);
             
+            // usuwamy inne zaproszenia danego użytkownika do danej drużyny, bo je nadpisujemy
+            await DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(idZapraszanego, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, idDruzyny, null);
+            
             var dto = new PowiadomienieCreateDto(
                 (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny,
                 idZapraszanego, // powiadomienie idzie do zapraszanego
