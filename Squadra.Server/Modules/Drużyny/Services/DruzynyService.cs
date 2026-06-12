@@ -3,6 +3,7 @@ using Squadra.Server.Modules.BibliotekaGier.Services;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Repositories;
 using Squadra.Server.Modules.Platformy.Services;
+using Squadra.Server.Modules.Powiadomienia.Enums;
 using Squadra.Server.Modules.Powiadomienia.Services;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.Services;
@@ -893,6 +894,9 @@ public class DruzynyService(
             
             // dodajemy użytkownika na miejsce
             var wynik = await druzynyRepository.DodajUzytkownikaNaMiejsce(idMiejsca, idUzytkownika);
+            
+            // usuwamy zaproszenia na dane miejsce, bo są nieaktualne
+            await powiadomienieService.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami((int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, miejsce.DruzynaId, idMiejsca);
             
             // jeżeli wynik jest false, to znaczy, że miejsce zajęło ktoś inny w międzyczasie, więc zwracamy konflikt
             if(!wynik) return ServiceResult<bool>.Conflict(new ErrorItem("To miejsce jest już zajęte lub zostało usunięte"));
