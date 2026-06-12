@@ -36,6 +36,8 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         UZYTKOWNIK_DOLACZYL_DO_DRUZYNY: 6,
         USUNIETO_CIE_Z_DRUZYNY: 7,
         ZAPROSZENIE_DO_DRUZYNY: 8,
+        UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY: 9,
+        UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY: 10,
         UZYTKOWNIK_OPUSCIL_DRUZYNE: 13
     }),[]);
 
@@ -95,6 +97,28 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
                 ustawTrescPowiadomieniaCz1("Masz zaproszenie do drużyny: ");
                 break;
             }
+            case TypyPowiadomien.UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY:{
+                ustawTypPowiadomienia("Użytkownik przyjął zaproszenie do drużyny")
+                ustawTrescPowiadomieniaCz1("Uzytkownik ");
+                ustawTrescPowiadomieniaCz2(" przyjął zaproszenie do Twojej drużyny: ");
+                if(powiadomienie.tresc?.length > 0){
+                    ustawTrescPowiadomieniaCz3(" na rolę " + powiadomienie.tresc + "."); // tu będzie rola
+                } else {
+                    ustawTrescPowiadomieniaCz3(".");
+                }
+                break;
+            }
+            case TypyPowiadomien.UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY:{
+                ustawTypPowiadomienia("Użytkownik odrzucił zaproszenie do drużyny")
+                ustawTrescPowiadomieniaCz1("Uzytkownik ");
+                ustawTrescPowiadomieniaCz2(" odrzucił zaproszenie do Twojej drużyny: ");
+                if(powiadomienie.tresc?.length > 0){
+                    ustawTrescPowiadomieniaCz3(" na rolę " + powiadomienie.tresc + "."); // tu będzie rola
+                } else {
+                    ustawTrescPowiadomieniaCz3(".");
+                }
+                break;
+            }
             case TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE:{
                 ustawTypPowiadomienia("Użytkownik opuścił drużynę")
                 ustawTrescPowiadomieniaCz1("Uzytkownik ");
@@ -110,7 +134,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
             }
         }
 
-    }, [TypyPowiadomien.SYSTEMOWE, TypyPowiadomien.ZAPROSZENIE_DO_ZNAJOMYCH, TypyPowiadomien.ZAAKCEPTOWANIE_ZAPROSZENIA_DO_ZNAJOMYCH, TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH, TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH, powiadomienie.idTypuPowiadomienia, powiadomienie.nazwaPowiazanegoObiektu, powiadomienie.tresc, powiadomienie, TypyPowiadomien.UZYTKOWNIK_DOLACZYL_DO_DRUZYNY, TypyPowiadomien.USUNIETO_CIE_Z_DRUZYNY, TypyPowiadomien.ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE]);
+    }, [TypyPowiadomien.SYSTEMOWE, TypyPowiadomien.ZAPROSZENIE_DO_ZNAJOMYCH, TypyPowiadomien.ZAAKCEPTOWANIE_ZAPROSZENIA_DO_ZNAJOMYCH, TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH, TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH, powiadomienie.idTypuPowiadomienia, powiadomienie.nazwaPowiazanegoObiektu, powiadomienie.tresc, powiadomienie, TypyPowiadomien.UZYTKOWNIK_DOLACZYL_DO_DRUZYNY, TypyPowiadomien.USUNIETO_CIE_Z_DRUZYNY, TypyPowiadomien.ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE, TypyPowiadomien.UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY]);
 
 
     if(!powiadomienie) return (<></>);
@@ -165,7 +189,10 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
     // typy powiadomień: użytkownik dołączył do drużyny / opuścił drużynę
 
     if(powiadomienie.idTypuPowiadomienia === TypyPowiadomien.UZYTKOWNIK_DOLACZYL_DO_DRUZYNY
-        || powiadomienie.idTypuPowiadomienia === TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE)
+        || powiadomienie.idTypuPowiadomienia === TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE
+        || powiadomienie.idTypuPowiadomienia === TypyPowiadomien.UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY
+        || powiadomienie.idTypuPowiadomienia === TypyPowiadomien.UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY
+    )
         return (<li key={powiadomienie.id} className="p-2 border-b border-gray-200">
         <div className="flex flex-row justify-between items-center w-full">
             <div className="font-semibold">{typPowiadomienia}</div>
