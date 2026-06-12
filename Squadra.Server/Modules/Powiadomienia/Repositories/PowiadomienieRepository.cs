@@ -54,6 +54,21 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
             lista.Add(await GetPowiadomienie(powiadomienie.Id));
         return lista;
     }
+    
+    public async Task<bool> CzyUzytkownikMaZaproszenieDoDruzyny(int idUzytkownika, int idDruzyny)
+    {
+        var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
+        if(uzytkownik == null) throw new NieZnalezionoWBazieException("Użytkownik o id " + idUzytkownika + " nie istnieje");
+        
+        var druzyna = await context.Druzyna.FindAsync(idDruzyny);
+        if(druzyna == null) throw new NieZnalezionoWBazieException("Drużyna o id " + idDruzyny + " nie istnieje");
+        
+        return await context.Powiadomienie.AnyAsync(x => 
+            x.UzytkownikId == idUzytkownika 
+            && x.TypPowiadomieniaId == (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny 
+            && x.PowiazanyObiektId == idDruzyny
+        );
+    }
 
     public async Task<bool> CreatePowiadomienie(PowiadomienieCreateDto powiadomienie)
     {

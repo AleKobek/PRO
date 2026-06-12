@@ -42,6 +42,21 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         return ServiceResult<ICollection<PowiadomienieDto>>.Ok(await powiadomienieRepository.GetPowiadomieniaUzytkownika(idUzytkownika));
     }
 
+    public async Task<ServiceResult<bool>> CzyUzytkownikMaZaproszenieDoDruzyny(int idUzytkownika, int idDruzyny)
+    {
+        if(idUzytkownika < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika));
+        if(idDruzyny < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+        try
+        {
+            return ServiceResult<bool>.Ok(
+                await powiadomienieRepository.CzyUzytkownikMaZaproszenieDoDruzyny(idUzytkownika, idDruzyny));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
     public async Task<ServiceResult<bool>> CreatePowiadomienie(PowiadomienieCreateDto powiadomienie)
     {
         // okolicznościami tworzenia powiadomienia zajmują się inne klasy, tutaj tylko tworzymy
