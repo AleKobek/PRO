@@ -100,6 +100,16 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         return ServiceResult<bool>.NoContent(await powiadomienieRepository.DeletePowiadomieniaUzytkownika(idUzytkownika));
     }
 
+    public async Task<ServiceResult<bool>> DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(int idTypu, int idPowiazanegoObiektu, int? idDrugiegoPowiazanegoObiektu)
+    {
+        if(idTypu < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id typu powiadomienia: " + idTypu));
+        if(idPowiazanegoObiektu < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id powiązanego obiektu: " + idPowiazanegoObiektu));
+        if(idDrugiegoPowiazanegoObiektu < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id powiązanego obiektu: " + idPowiazanegoObiektu));
+        if (!Enum.IsDefined(typeof(TypPowiadomieniaEnum), idTypu)) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowy typ powiadomienia: " + idTypu));
+        
+        return ServiceResult<bool>.NoContent(await powiadomienieRepository.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(idTypu, idPowiazanegoObiektu, idDrugiegoPowiazanegoObiektu));
+    }
+
         // robimy rozpatrzenie odpowiedzi na powiadomienie. Jeżeli jest to drugie, to reagujemy inaczej niż w przypadku reszty (na ten moment), bo wymagana jest akcja
         // jeżeli to typ "zaproszenie do znajomych", czyZaakceptowane nie jest null
 
