@@ -11,7 +11,7 @@ namespace Squadra.Server.Modules.Powiadomienia.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class PowiadomienieController(IPowiadomienieService powiadomienieService,
+public class PowiadomienieController(IPowiadomienieService powiadomienieService, IRozpatrzPowiadomienieService rozpatrzPowiadomienieService,
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
     [HttpGet]
@@ -63,7 +63,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
         
-        var result = await powiadomienieService.RozpatrzPowiadomienie(id, czyZaakceptowane, uzytkownik.Id);
+        var result = await rozpatrzPowiadomienieService.RozpatrzPowiadomienie(id, czyZaakceptowane, uzytkownik.Id);
         return result.StatusCode switch
         {
             204 => NoContent(),

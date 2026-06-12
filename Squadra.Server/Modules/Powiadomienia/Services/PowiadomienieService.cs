@@ -2,10 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Modules.Drużyny.Services;
 using Squadra.Server.Modules.Powiadomienia.DTO;
 using Squadra.Server.Modules.Powiadomienia.Enums;
-using Squadra.Server.Modules.Powiadomienia.Models;
 using Squadra.Server.Modules.Powiadomienia.Repositories;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
@@ -111,121 +109,6 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         
         return ServiceResult<bool>.NoContent(await powiadomienieRepository.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(idUzytkownika, idTypu, idPowiazanegoObiektu, idDrugiegoPowiazanegoObiektu));
     }
-
-        // robimy rozpatrzenie odpowiedzi na powiadomienie. Jeżeli jest to drugie, to reagujemy inaczej niż w przypadku reszty (na ten moment), bo wymagana jest akcja
-        // jeżeli to typ "zaproszenie do znajomych", czyZaakceptowane nie jest null
-
-        public async Task<ServiceResult<bool>> RozpatrzPowiadomienie(int id, bool? czyZaakceptowane, int idUzytkownika)
-        {
-            try
-            {
-                var powiadomienie = await powiadomienieRepository.GetPowiadomienie(id);
-                /*
-                    int Id,
-                    int IdTypuPowiadomienia,
-                    int UzytkownikId,
-                    int? IdPowiazanegoObiektu,
-                    string? NazwaPowiazanegoObiektu, // pseudonim dla uzytkownika i nazwa dla gildii
-                    string? Tresc,
-                    DateTime DataWyslania
-                 */
-                
-                if (powiadomienie.UzytkownikId != idUzytkownika)
-                {
-                    return ServiceResult<bool>.Forbidden(new ErrorItem("Nie możesz rozpatrzyć powiadomienia innego użytkownika"));
-                }
-                // jak tu doszliśmy, wszystko jest git, chyba że nie podano powiązanego obiektu w konkretnych typach
-        
-                // zaproszenie do znajomych
-                if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia == TypPowiadomieniaEnum.ZaproszenieDoZnajomych)
-                {
-                
-                    if(powiadomienie.IdPowiazanegoObiektu == null)
-                    {
-                        // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
-                        try
-                        {
-                            await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
-                        }
-                        catch (NieZnalezionoWBazieException e)
-                        {
-                            // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
-                        }
-                        return ServiceResult<bool>.NoContent(true); // zwracamy, że wszystko jest git, bo skoro nie ma powiadomienia, to nic nie trzeba rozpatrywać. front i tak ma je usunąć
-                    }
-                
-                    // pobieramy naszą nazwę użytkownika, aby była w powiadomieniu dla drugiej strony
-                    var wynikZnalezieniaProfilu = await profilService.GetProfil(idUzytkownika);
-                    if(wynikZnalezieniaProfilu.StatusCode != 200) return ServiceResult<bool>.NotFound(wynikZnalezieniaProfilu.Errors[0]);
-                    if(wynikZnalezieniaProfilu.Value == null) return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + powiadomienie.IdPowiazanegoObiektu.Value));
-                
-                    switch (czyZaakceptowane)
-                    {
-                        case true:
-                        {
-                            var result = await znajomiService.CreateZnajomosc(powiadomienie.UzytkownikId, powiadomienie.IdPowiazanegoObiektu ?? 1); // aby się kompilator nie czepiał
-                            // coś poszło nie tak
-                            if (result.StatusCode != 201) return result;
-                        
-                        
-                            // wszystko git
-                            // wysyłamy uzytkownikowi, który jest powiązany, że jego zaproszenie zostało zaakceptowane
-                            await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
-                                // zaakceptowano zaproszenie
-                                (int)TypPowiadomieniaEnum.PrzyjecieZaproszeniaDoZnajomych,
-                                // wysyłamy to użytkownikowi, którego to zaproszenie dotyczy
-                                powiadomienie.IdPowiazanegoObiektu ?? 1, // już null odfiltrowaliśmy, ale aby się nie czepiał kompilator
-                                // powiązany jest użytkownik, który zaakceptował
-                                idUzytkownika,
-                                wynikZnalezieniaProfilu.Value.Pseudonim,
-                                null,
-                                null,
-                                // treść zostanie sklejona na miejscu
-                                null
-                            ));
-                            break;
-                        }
-                        case false:
-                        {
-                            // wysyłamy uzytkownikowi, który jest powiązany, że jego zaproszenie zostało odrzucone
-                            await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
-                                // odrzucono zaproszenie
-                                (int)TypPowiadomieniaEnum.OdrzucenieZaproszeniaDoZnajomych,
-                                // wysyłamy to użytkownikowi, którego to zaproszenie dotyczy
-                                powiadomienie.IdPowiazanegoObiektu ?? 1, // już to odfiltrowaliśmy, ale aby się nie czepiał kompilator
-                                // powiązany jest użytkownik, który odrzucił
-                                idUzytkownika,
-                                wynikZnalezieniaProfilu.Value.Pseudonim,
-                                null,
-                                null,
-                                // treść zostanie sklejona na miejscu
-                                null
-                            ));
-                            break;
-                        }
-                        default:
-                        {
-                            return ServiceResult<bool>.BadRequest(new ErrorItem("Nie podano, czy zaakceptowano zaproszenie"));
-                        }
-                    }
-                }
-            
-                // jak tu dochodzimy, wszystko zostało pomyślnie rozpatrzone i usuwamy
-                try
-                {
-                    await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
-                }
-                catch (NieZnalezionoWBazieException e)
-                {
-                    // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
-                }
-                return ServiceResult<bool>.NoContent(true);
-            }
-            catch (NieZnalezionoWBazieException e)
-            {
-                return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
-            }
-        }
 
         // najpierw zmieniamy login na id, potem wywołujemy zapraszanie po id
         public async Task<ServiceResult<bool>> WyslijZaproszenieDoZnajomychPoLoginie(int idZapraszajacego, string loginZaproszonego)
@@ -398,9 +281,6 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
 
         public async Task<ServiceResult<bool>> WyslijPowiadomienieOWyjsciuZDruzyny(int idKapitana, int idOpuszczajacego, int idDruzyny, string nazwaDruzyny, string? nazwaRoli)
         {
-
-            Console.WriteLine("#############################");
-            Console.WriteLine("WyslijPowiadomienieOWyjsciuZDruzyny: idKapitana=" + idKapitana + ", idOpuszczajacego=" + idOpuszczajacego + ", idDruzyny=" + idDruzyny);
             
             if(idKapitana <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id kapitana: " + idKapitana));
             if(idOpuszczajacego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika opuszczającego: " + idOpuszczajacego));
