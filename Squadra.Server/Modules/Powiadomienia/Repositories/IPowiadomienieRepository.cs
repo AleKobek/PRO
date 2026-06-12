@@ -6,7 +6,7 @@ public interface IPowiadomienieRepository
 {
     public Task<PowiadomienieDto> GetPowiadomienie(int id);
     public Task<ICollection<PowiadomienieDto>> GetPowiadomieniaUzytkownika(int idUzytkownika);
-    public Task<bool> CzyUzytkownikMaZaproszenieDoDruzyny(int idUzytkownika, int idDruzyny);
+    public Task<bool> CzyUzytkownikMaPowiadomienieDanegoTypuPowiazaneZObiektami(int idUzytkownika, int idTypu, int idPowiazanegoObiektu, int? idDrugiegoPowiazanegoObiektu);
     public Task<bool> CreatePowiadomienie(PowiadomienieCreateDto powiadomienie);
     public Task<bool> DeletePowiadomienie(int id);
     public Task<bool> DeletePowiadomieniaUzytkownika(int idUzytkownika);

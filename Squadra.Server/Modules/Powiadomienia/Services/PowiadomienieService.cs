@@ -42,14 +42,16 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         return ServiceResult<ICollection<PowiadomienieDto>>.Ok(await powiadomienieRepository.GetPowiadomieniaUzytkownika(idUzytkownika));
     }
 
-    public async Task<ServiceResult<bool>> CzyUzytkownikMaZaproszenieDoDruzyny(int idUzytkownika, int idDruzyny)
+    public async Task<ServiceResult<bool>> CzyUzytkownikMaPowiadomienieDanegoTypuPowiazaneZObiektami(int idUzytkownika, int idTypu, int idPowiazanegoObiektu, int? idDrugiegoPowiazanegoObiektu)
     {
         if(idUzytkownika < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika));
-        if(idDruzyny < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+        if(idPowiazanegoObiektu < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id powiązanego obiektu: " + idPowiazanegoObiektu));
+        if(idDrugiegoPowiazanegoObiektu < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id powiązanego obiektu: " + idPowiazanegoObiektu));
+        if (!Enum.IsDefined(typeof(TypPowiadomieniaEnum), idTypu)) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowy typ powiadomienia: " + idTypu));
         try
         {
             return ServiceResult<bool>.Ok(
-                await powiadomienieRepository.CzyUzytkownikMaZaproszenieDoDruzyny(idUzytkownika, idDruzyny));
+                await powiadomienieRepository.CzyUzytkownikMaPowiadomienieDanegoTypuPowiazaneZObiektami(idUzytkownika, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny ,idPowiazanegoObiektu, idDrugiegoPowiazanegoObiektu));
         }
         catch (NieZnalezionoWBazieException e)
         {
@@ -198,7 +200,14 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 }
             
                 // jak tu dochodzimy, wszystko zostało pomyślnie rozpatrzone i usuwamy
-                await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
+                try
+                {
+                    await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
+                }
+                catch (NieZnalezionoWBazieException e)
+                {
+                    // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
+                }
                 return ServiceResult<bool>.NoContent(true);
             }
             catch (NieZnalezionoWBazieException e)

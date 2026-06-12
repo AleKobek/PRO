@@ -12,7 +12,6 @@ using Squadra.Server.Modules.Statystyki.Services;
 using Squadra.Server.Modules.Uzytkownicy.Services;
 using Squadra.Server.Modules.WspieraneGry.DTO;
 using Squadra.Server.Modules.WspieraneGry.Services;
-using Squadra.Server.Modules.Znajomosci.Services;
 
 namespace Squadra.Server.Modules.Drużyny.Services;
 
@@ -186,7 +185,7 @@ public class DruzynyService(
             // musimy potem jeszcze sprawdzać, czy ma zaproszenie do niej
             if (!druzyna.CzyPubliczna && statusCzlonkostwa == "Brak")
             {
-                var zaproszenieRes = await powiadomienieService.CzyUzytkownikMaZaproszenieDoDruzyny(idUzytkownika, idDruzyny);
+                var zaproszenieRes = await powiadomienieService.CzyUzytkownikMaPowiadomienieDanegoTypuPowiazaneZObiektami(idUzytkownika, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny,idDruzyny, null);
                 if (!zaproszenieRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(zaproszenieRes.StatusCode, zaproszenieRes.Errors);
                 // jeżeli nie ma zaproszenia do tej drużyny, to nie może zobaczyć jej szczegółów, bo jest prywatna
                 if(!zaproszenieRes.Value) return ServiceResult<DruzynaSzczegolyDto>.Forbidden(new ErrorItem(
