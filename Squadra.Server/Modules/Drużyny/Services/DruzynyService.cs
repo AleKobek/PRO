@@ -922,19 +922,19 @@ public class DruzynyService(
             if (!czyUzytkownikSpelniaWymaganieMiejscaRes.Succeeded) return czyUzytkownikSpelniaWymaganieMiejscaRes;
             if (!czyUzytkownikSpelniaWymaganieMiejscaRes.Value) return ServiceResult<bool>.Forbidden(new ErrorItem("Nie spełniasz wymagań tego miejsca"));
             
+            // sprawdzamy, czy użytkownik ma zaproszenie na to miejsce. od tego zależą rzeczy potem
+            var czyDolaczylZZaproszeniaRes = await powiadomienieService.CzyUzytkownikMaPowiadomienieDanegoTypuPowiazaneZObiektami(
+                idUzytkownika,
+                (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny,
+                miejsce.DruzynaId,
+                idMiejsca
+            );            
+            if (!czyDolaczylZZaproszeniaRes.Succeeded) return ServiceResult<bool>.Fail(czyDolaczylZZaproszeniaRes.StatusCode, czyDolaczylZZaproszeniaRes.Errors);
+            
             // sprawdzamy, czy jest prywatna i ma zaproszenie do niej na to miejsce. jeśli nie ma, nie może dołączyć
             var druzyna = await druzynyRepository.GetDruzyna(miejsce.DruzynaId);
-            if (!druzyna.CzyPubliczna)
-            {
-                var powiadomienieRes = await powiadomienieService.CzyUzytkownikMaPowiadomienieDanegoTypuPowiazaneZObiektami(
-                    idUzytkownika,
-                    (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny,
-                    miejsce.DruzynaId,
-                    idMiejsca
-                );
-                if (!powiadomienieRes.Succeeded) return ServiceResult<bool>.Fail(powiadomienieRes.StatusCode, powiadomienieRes.Errors);
-                if (!powiadomienieRes.Value) return ServiceResult<bool>.Forbidden(new ErrorItem("To miejsce jest prywatne i nie masz zaproszenia, aby do niego dołączyć"));
-            }
+            if (!druzyna.CzyPubliczna && !czyDolaczylZZaproszeniaRes.Value) 
+                return ServiceResult<bool>.Forbidden(new ErrorItem("To miejsce jest prywatne i nie masz zaproszenia, aby do niego dołączyć"));
             
             // dodajemy użytkownika na miejsce
             var wynik = await druzynyRepository.DodajUzytkownikaNaMiejsce(idMiejsca, idUzytkownika);
@@ -945,19 +945,22 @@ public class DruzynyService(
             // jeżeli wynik jest false, to znaczy, że miejsce zajęło ktoś inny w międzyczasie, więc zwracamy konflikt
             if(!wynik) return ServiceResult<bool>.Conflict(new ErrorItem("To miejsce jest już zajęte lub zostało usunięte"));
             
-            // wysyłamy powiadomienie do kapitana drużyny, że ktoś do niej dołączył
-            var druzynaRes = await GetDruzyna(miejsce.DruzynaId);
-            if(!druzynaRes.Succeeded) return ServiceResult<bool>.Fail(druzynaRes.StatusCode, druzynaRes.Errors);
-            var rola = miejsce.RolaId != null ? await statystykiService.GetRola(miejsce.RolaId ?? 1) : null;
-            var nazwaRoli = rola != null && rola.Succeeded ? rola.Value.Nazwa : null;
-            
-            await powiadomienieService.WyslijPowiadomienieODolaczeniuDoDruzyny(
-                idUzytkownika, 
-                druzynaRes.Value.KapitanId, 
-                miejsce.DruzynaId, 
-                druzynaRes.Value.Nazwa,
-                nazwaRoli
-            );
+            // wysyłamy tylko, jak nie dołączył z zaproszenia, bo przy zaproszeniu powiadomienie będzie inne
+            if(!czyDolaczylZZaproszeniaRes.Value){
+                // wysyłamy powiadomienie do kapitana drużyny, że ktoś do niej dołączył
+                var druzynaRes = await GetDruzyna(miejsce.DruzynaId);
+                if (!druzynaRes.Succeeded) return ServiceResult<bool>.Fail(druzynaRes.StatusCode, druzynaRes.Errors);
+                var rola = miejsce.RolaId != null ? await statystykiService.GetRola(miejsce.RolaId ?? 1) : null;
+                var nazwaRoli = rola != null && rola.Succeeded ? rola.Value.Nazwa : null;
+
+                await powiadomienieService.WyslijPowiadomienieODolaczeniuDoDruzyny(
+                    idUzytkownika,
+                    druzynaRes.Value.KapitanId,
+                    miejsce.DruzynaId,
+                    druzynaRes.Value.Nazwa,
+                    nazwaRoli
+                );
+            }
             
             return ServiceResult<bool>.NoContent(wynik);
         }
