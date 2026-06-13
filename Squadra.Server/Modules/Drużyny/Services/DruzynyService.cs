@@ -1017,6 +1017,12 @@ public class DruzynyService(
             if (!druzyna.CzyPubliczna && !czyDolaczylZZaproszeniaRes.Value) 
                 return ServiceResult<bool>.Forbidden(new ErrorItem("To miejsce jest prywatne i nie masz zaproszenia, aby do niego dołączyć"));
             
+            // sprawdzamy, czy użytkownik nie przekracza limitu drużyn dla tej gry
+            var czyUzytkownikPrzepelniaLimitDruzynRes = await CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idUzytkownika, druzyna.GraId);
+            if (!czyUzytkownikPrzepelniaLimitDruzynRes.Succeeded) return czyUzytkownikPrzepelniaLimitDruzynRes;
+            if (czyUzytkownikPrzepelniaLimitDruzynRes.Value)
+                return ServiceResult<bool>.Forbidden(new ErrorItem("Użytkownik należy już do maksymalnej liczby drużyn dla tej gry"));
+            
             // dodajemy użytkownika na miejsce
             var wynik = await druzynyRepository.DodajUzytkownikaNaMiejsce(idMiejsca, idUzytkownika);
             
