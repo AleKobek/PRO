@@ -43,19 +43,11 @@ public class UsunKontoService (
             }
             
             // wyrzucamy go ze wszystkich drużyn
-            var wyrzucanieRes = await druzynyService.WyrzucUzytkownikaZeWszystkichDruzyn(id);
+            var wyrzucanieRes = await druzynyService.UsunWszystkieDruzynyDlaUzytkownika(id);
             if(!wyrzucanieRes.Succeeded)
             {
                 await transakcja.RollbackAsync();
                 return wyrzucanieRes;
-            }
-            
-            // usuwamy wszystkie drużyny, których jest kapitanem
-            var usuwanieRes = await druzynyService.UsunWszystkieDruzynyUzytkownika(id);
-            if(!usuwanieRes.Succeeded)
-            {
-                await transakcja.RollbackAsync();
-                return usuwanieRes;
             }
             
             var uzytkownikRes = await uzytkownikService.DeleteUzytkownik(id);

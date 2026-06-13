@@ -702,7 +702,7 @@ public class DruzynyService(
         }
     }
     
-    public async Task<ServiceResult<bool>> OpuscDruzyne(int idDruzyny, int idUzytkownika)
+    public async Task<ServiceResult<bool>> OpuscDruzyne(int idDruzyny, int idUzytkownika, bool czyPrzyUsuwaniuKonta = false)
     {
         try
         {
@@ -723,7 +723,8 @@ public class DruzynyService(
                 idUzytkownika,
                 druzyna.Id,
                 druzyna.Nazwa,
-                rola?.Nazwa
+                rola?.Nazwa,
+                czyPrzyUsuwaniuKonta
             );
             if (!powiadomienieRes.Succeeded) return ServiceResult<bool>.Fail(powiadomienieRes.StatusCode, powiadomienieRes.Errors);
             
@@ -770,16 +771,6 @@ public class DruzynyService(
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
-    
-    public async Task<ServiceResult<bool>> WyrzucUzytkownikaZeWszystkichDruzyn(int idUzytkownika)
-    {
-        if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
-        
-        var wyrzucUzytkownikaRes = await druzynyRepository.WyrzucUzytkownikaZeWszystkichDruzyn(idUzytkownika);
-        if (!wyrzucUzytkownikaRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się wyrzucić użytkownika ze wszystkich drużyn")]);
-        
-        return ServiceResult<bool>.Ok(true);
-    }
 
     public async Task<ServiceResult<bool>> PrzerwijIntegracjeUzytkownikaOdnosnieDruzyn(int idUzytkownika)
     {
@@ -793,12 +784,25 @@ public class DruzynyService(
         return ServiceResult<bool>.Ok(true);
     }
     
-    public async Task<ServiceResult<bool>> UsunWszystkieDruzynyUzytkownika(int idUzytkownika)
+    public async Task<ServiceResult<bool>> UsunWszystkieDruzynyDlaUzytkownika(int idUzytkownika)
     {
-        if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
+        if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika));
         
-        var result = await druzynyRepository.UsunWszystkieDruzynyUzytkownika(idUzytkownika);
-        if (!result) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć wszystkich drużyn użytkownika")]);
+        var druzynyUzytkownika = await druzynyRepository.GetDruzynyUzytkownika(idUzytkownika);
+        foreach (var druzyna in druzynyUzytkownika)
+        {
+            if (druzyna.KapitanId == idUzytkownika)
+            {
+                var usunDruzyneRes = await UsunDruzyne(druzyna.Id, idUzytkownika);
+                if (!usunDruzyneRes.Succeeded) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć drużyny o id " + druzyna.Id)]);
+            }
+            else
+            {
+                var opuscDruzyneRes = await OpuscDruzyne(druzyna.Id, idUzytkownika, true);
+                if (!opuscDruzyneRes.Succeeded) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się opuścić drużyny o id " + druzyna.Id)]);
+            }
+        }
+        
         return  ServiceResult<bool>.NoContent(true);
     }
 

@@ -176,7 +176,7 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
         
-        var result = await druzynyService.OpuscDruzyne(idDruzyny, uzytkownik.Id);
+        var result = await druzynyService.OpuscDruzyne(idDruzyny, uzytkownik.Id, false);
         return result.StatusCode switch
         {
             204 => NoContent(),
