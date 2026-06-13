@@ -90,7 +90,7 @@ public class ZnajomiRepositoryTests : IDisposable
         }
 
         // Act
-        var result = await _repository.GetZnajomiUzytkownika(userId);
+        var result = await _repository.GetZnajomosciUzytkownika(userId);
 
         // Assert
         Assert.NotNull(result);
@@ -109,7 +109,7 @@ public class ZnajomiRepositoryTests : IDisposable
         await _context.SaveChangesAsync();
         
         // Act
-        var result = await _repository.GetZnajomiUzytkownika(999);
+        var result = await _repository.GetZnajomosciUzytkownika(999);
 
         // Assert
         Assert.NotNull(result);

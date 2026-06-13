@@ -39,16 +39,16 @@ public class ZnajomiServiceTests
             new() { IdUzytkownika1 = userId, IdUzytkownika2 = 12 }
         };
 
-        _mockRepository.Setup(r => r.GetZnajomiUzytkownika(userId))
+        _mockRepository.Setup(r => r.GetZnajomosciUzytkownika(userId))
             .ReturnsAsync(expectedFriends);
 
-        var result = await _service.GetZnajomiUzytkownika(userId);
+        var result = await _service.GetZnajomosciUzytkownika(userId);
 
         Assert.True(result.Succeeded);
         Assert.Equal(200, result.StatusCode);
         Assert.NotNull(result.Value);
         Assert.Equal(2, result.Value.Count);
-        _mockRepository.Verify(r => r.GetZnajomiUzytkownika(userId), Times.Once);
+        _mockRepository.Verify(r => r.GetZnajomosciUzytkownika(userId), Times.Once);
     }
 
     [Theory]
@@ -56,21 +56,21 @@ public class ZnajomiServiceTests
     [InlineData(-5)]
     public async Task GetZnajomiUzytkownika_WithInvalidId_ReturnsBadRequest(int userId)
     {
-        var result = await _service.GetZnajomiUzytkownika(userId);
+        var result = await _service.GetZnajomosciUzytkownika(userId);
 
         Assert.False(result.Succeeded);
         Assert.Equal(400, result.StatusCode);
-        _mockRepository.Verify(r => r.GetZnajomiUzytkownika(It.IsAny<int>()), Times.Never);
+        _mockRepository.Verify(r => r.GetZnajomosciUzytkownika(It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
     public async Task GetZnajomiUzytkownika_WhenRepositoryThrowsNotFoundException_ReturnsNotFound()
     {
         var userId = 999;
-        _mockRepository.Setup(r => r.GetZnajomiUzytkownika(userId))
+        _mockRepository.Setup(r => r.GetZnajomosciUzytkownika(userId))
             .ThrowsAsync(new NieZnalezionoWBazieException("Uzytkownik nie istnieje"));
 
-        var result = await _service.GetZnajomiUzytkownika(userId);
+        var result = await _service.GetZnajomosciUzytkownika(userId);
 
         Assert.False(result.Succeeded);
         Assert.Equal(404, result.StatusCode);
@@ -90,7 +90,7 @@ public class ZnajomiServiceTests
             }
         };
 
-        _mockRepository.Setup(r => r.GetZnajomiUzytkownika(userId)).ReturnsAsync(znajomi);
+        _mockRepository.Setup(r => r.GetZnajomosciUzytkownika(userId)).ReturnsAsync(znajomi);
 
         _mockProfilService
             .Setup(s => s.GetProfilMinInfo(2))
@@ -124,9 +124,9 @@ public class ZnajomiServiceTests
         var userId1 = 1;
         var userId2 = 2;
 
-        _mockRepository.Setup(r => r.GetZnajomiUzytkownika(userId1))
+        _mockRepository.Setup(r => r.GetZnajomosciUzytkownika(userId1))
             .ReturnsAsync(new List<Znajomi>());
-        _mockRepository.Setup(r => r.GetZnajomiUzytkownika(userId2))
+        _mockRepository.Setup(r => r.GetZnajomosciUzytkownika(userId2))
             .ReturnsAsync(new List<Znajomi>());
         _mockRepository.Setup(r => r.CreateZnajomosc(userId1, userId2))
             .ReturnsAsync(true);

@@ -89,7 +89,7 @@ public class StatystykiCzatuService(IWiadomoscRepository wiadomoscRepository, IZ
             if (idObecnegoUzytkownika < 1)
                 return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idObecnegoUzytkownika + " nie istnieje"));
 
-            var znajomi = await znajomiRepository.GetZnajomiUzytkownika(idObecnegoUzytkownika);
+            var znajomi = await znajomiRepository.GetZnajomosciUzytkownika(idObecnegoUzytkownika);
             var czySaNowe = false;
             foreach (var znajomy in znajomi)
             {

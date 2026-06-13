@@ -14,13 +14,13 @@ public class ZnajomiService(
     IStatystykiCzatuService statystykiCzatuService) : IZnajomiService
 {
 
-    public async Task<ServiceResult<ICollection<ZnajomiDto>>> GetZnajomiUzytkownika(int id)
+    public async Task<ServiceResult<ICollection<ZnajomiDto>>> GetZnajomosciUzytkownika(int id)
     {
         if(id < 1) return ServiceResult<ICollection<ZnajomiDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + id));
         
         try
         {
-            var znajomi = await znajomiRepository.GetZnajomiUzytkownika(id);
+            var znajomi = await znajomiRepository.GetZnajomosciUzytkownika(id);
             return ServiceResult<ICollection<ZnajomiDto>>.Ok(znajomi.Select(x => new ZnajomiDto(
                 x.IdUzytkownika1,
                 x.IdUzytkownika2,
@@ -41,7 +41,7 @@ public class ZnajomiService(
     {
         if(id < 1) return ServiceResult<ICollection<ZnajomyDoListyDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + id));
         // najpierw z bazy znajomych pobieramy id wszystkich osób, które są w parze z naszym
-        ICollection<Znajomi> znajomi = await znajomiRepository.GetZnajomiUzytkownika(id);
+        ICollection<Znajomi> znajomi = await znajomiRepository.GetZnajomosciUzytkownika(id);
         List<ZnajomyDoListyDto> listaDoZwrocenia = new List<ZnajomyDoListyDto>();
         // dla każdego użytkownika bierzemy jego profil
         foreach (var uzytkownik in znajomi)
@@ -124,10 +124,10 @@ public class ZnajomiService(
             
             // trzeba tutaj oddzielnie sprawdzić, czy żaden użytkownik nie przekroczył maksymalnej liczby znajomych
             // bo powiadomienia mogą być wysyłane asynchronicznie i wtedy może się okazać, że obaj użytkownicy przekroczyli limit
-            var znajomiUzytkownika1 = await znajomiRepository.GetZnajomiUzytkownika(idUzytkownika1);
+            var znajomiUzytkownika1 = await znajomiRepository.GetZnajomosciUzytkownika(idUzytkownika1);
             if (znajomiUzytkownika1.Count >= MaxLiczbaZnajomych)
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Uzytkownik o id " + idUzytkownika1 + " osiągnął maksymalną liczbę znajomych: " + MaxLiczbaZnajomych));
-            var znajomiUzytkownika2 = await znajomiRepository.GetZnajomiUzytkownika(idUzytkownika2);
+            var znajomiUzytkownika2 = await znajomiRepository.GetZnajomosciUzytkownika(idUzytkownika2);
             if (znajomiUzytkownika2.Count >= MaxLiczbaZnajomych)
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Uzytkownik o id " + idUzytkownika2 + " osiągnął maksymalną liczbę znajomych: " + MaxLiczbaZnajomych));
             

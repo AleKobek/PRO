@@ -13,7 +13,7 @@ public class ZnajomiRepository(
     IWiadomoscRepository wiadomoscRepository) : IZnajomiRepository
 {
     
-    public async Task<ICollection<Znajomi>> GetZnajomiUzytkownika(int id)
+    public async Task<ICollection<Znajomi>> GetZnajomosciUzytkownika(int id)
     {
         if (id < 1) throw new NieZnalezionoWBazieException("Użytkownik o id " + id + " nie istnieje");
         

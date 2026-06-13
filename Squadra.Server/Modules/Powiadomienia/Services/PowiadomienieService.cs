@@ -177,7 +177,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 }
                 
                 // sprawdzamy, czy zapraszajacy nie ma już maksymalnej liczby znajomych
-                var znajomiZapraszajacego = await znajomiService.GetZnajomiUzytkownika(idZapraszajacego);
+                var znajomiZapraszajacego = await znajomiService.GetZnajomosciUzytkownika(idZapraszajacego);
                 if (!znajomiZapraszajacego.Succeeded)
                     return ServiceResult<bool>.BadRequest(znajomiZapraszajacego.Errors[0]);
                 if (znajomiZapraszajacego.Value != null && znajomiZapraszajacego.Value.Count >= ZnajomiService.MaxLiczbaZnajomych)
@@ -187,7 +187,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 }
                 
                 // sprawdzamy, czy zapraszany nie ma już maksymalnej liczby znajomych
-                var znajomiZapraszanego = await znajomiService.GetZnajomiUzytkownika(idZapraszanego);
+                var znajomiZapraszanego = await znajomiService.GetZnajomosciUzytkownika(idZapraszanego);
                 if (!znajomiZapraszanego.Succeeded)
                     return ServiceResult<bool>.BadRequest(znajomiZapraszanego.Errors[0]);
                 if (znajomiZapraszanego.Value != null && znajomiZapraszanego.Value.Count >= ZnajomiService.MaxLiczbaZnajomych)

@@ -412,7 +412,7 @@ public class PowiadomienieServiceTests
             .ReturnsAsync(new List<Powiadomienie>());
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(inviteeId, inviterId))
             .ReturnsAsync(false);
-        _mockZnajomiService.Setup(s => s.GetZnajomiUzytkownika(inviterId))
+        _mockZnajomiService.Setup(s => s.GetZnajomosciUzytkownika(inviterId))
             .ReturnsAsync(friendsResult);
 
         // Act
@@ -441,9 +441,9 @@ public class PowiadomienieServiceTests
             .ReturnsAsync(new List<Powiadomienie>());
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(inviteeId, inviterId))
             .ReturnsAsync(false);
-        _mockZnajomiService.Setup(s => s.GetZnajomiUzytkownika(inviterId))
+        _mockZnajomiService.Setup(s => s.GetZnajomosciUzytkownika(inviterId))
             .ReturnsAsync(inviterFriendsResult);
-        _mockZnajomiService.Setup(s => s.GetZnajomiUzytkownika(inviteeId))
+        _mockZnajomiService.Setup(s => s.GetZnajomosciUzytkownika(inviteeId))
             .ReturnsAsync(inviteeFriendsResult);
 
         // Act
@@ -474,9 +474,9 @@ public class PowiadomienieServiceTests
             .ReturnsAsync(new List<Powiadomienie>());
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(inviteeId, inviterId))
             .ReturnsAsync(false);
-        _mockZnajomiService.Setup(s => s.GetZnajomiUzytkownika(inviterId))
+        _mockZnajomiService.Setup(s => s.GetZnajomosciUzytkownika(inviterId))
             .ReturnsAsync(inviterFriendsResult);
-        _mockZnajomiService.Setup(s => s.GetZnajomiUzytkownika(inviteeId))
+        _mockZnajomiService.Setup(s => s.GetZnajomosciUzytkownika(inviteeId))
             .ReturnsAsync(inviteeFriendsResult);
         _mockProfilService.Setup(s => s.GetProfil(inviterId))
             .ReturnsAsync(profileResult);
