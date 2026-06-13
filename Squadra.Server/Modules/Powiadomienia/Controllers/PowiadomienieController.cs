@@ -29,27 +29,6 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
             : StatusCode(result.StatusCode, new { errors = result.Errors });
     }
 
-    [HttpGet("{id:int}")]
-    [EndpointSummary("Zwraca dane powiadomienia o podanym id")]
-    [ProducesResponseType(typeof(PowiadomienieDto), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult<PowiadomienieDto>> GetPowiadomienie(int id)
-    {
-        var result = await powiadomienieService.GetPowiadomienie(id, User);
-        return result.StatusCode switch
-        {
-            200 => Ok(result.Value),
-            400 => BadRequest(result.Errors[0].Message),
-            401 => Unauthorized(result.Errors[0].Message),
-            403 => StatusCode(StatusCodes.Status403Forbidden,result.Errors[0].Message),
-            404 => NotFound(result.Errors[0].Message),
-            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
-        };
-    }
-
     [HttpPut("{id:int}")]
     [EndpointSummary("Rozpatruje powiadomienie o podanym id")]
     [EndpointDescription("W przypadku powiadomień wymagających akceptacji, należy w body przekazać czy zostało zaakceptowane czy odrzucone.")]
