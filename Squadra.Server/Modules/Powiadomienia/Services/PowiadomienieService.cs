@@ -15,7 +15,6 @@ using Squadra.Server.Modules.Znajomosci.Services;
 namespace Squadra.Server.Modules.Powiadomienia.Services;
 
 public class PowiadomienieService(IPowiadomienieRepository powiadomienieRepository,
-    UserManager<Uzytkownik> userManager,
     IUzytkownikService uzytkownikService,
     IZnajomiService znajomiService,
     IZnajomiRepository znajomiRepository,
@@ -137,13 +136,11 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                         new ErrorItem("Nie podano loginu użytkownika, któremu wysyłasz zaproszenie"));
 
                 // pobieramy zapraszanego użytkownika
-                var zapraszanyUzytkownik = await userManager.FindByNameAsync(loginZaproszonego);
+                var zapraszanyUzytkownikRes = await uzytkownikService.GetUzytkownik(loginZaproszonego);
                 
-                if (zapraszanyUzytkownik == null)
-                    return ServiceResult<bool>.NotFound(
-                        new ErrorItem("Użytkownik o loginie " + loginZaproszonego + " nie istnieje"));
+                if (!zapraszanyUzytkownikRes.Succeeded) return ServiceResult<bool>.Fail(zapraszanyUzytkownikRes.StatusCode, zapraszanyUzytkownikRes.Errors);
                 
-                var idZapraszanego = zapraszanyUzytkownik.Id;
+                var idZapraszanego = zapraszanyUzytkownikRes.Value.Id;
                 
                 // jest git
                 return await WyslijZaproszenieDoZnajomychPoId(idZapraszajacego, idZapraszanego);
