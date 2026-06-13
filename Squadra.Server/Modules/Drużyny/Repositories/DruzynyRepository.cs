@@ -133,7 +133,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
 
     }
 
-    public async Task<bool> CzyUzytkownikSpelniaWymaganiaDruzyny(int idDruzyny, int idUzytkownika)
+    public async Task<bool> CzyUzytkownikSpelniaWymaganeStatystykiDruzyny(int idDruzyny, int idUzytkownika)
     {
         var wymaganiaDruzyny = await context.WymaganaStatystykaDruzyny
             .Where(m => m.DruzynaId == idDruzyny)
@@ -429,7 +429,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         List<int> przefiltrowaneDruzyny = [];
         foreach (var druzyna in druzyny)
         {
-            if (!await CzyUzytkownikSpelniaWymaganiaDruzyny(druzyna.Id, idUzytkownika)) continue;
+            if (!await CzyUzytkownikSpelniaWymaganeStatystykiDruzyny(druzyna.Id, idUzytkownika)) continue;
             
             var miejscaWDruzynie = druzyna.MiejsceWDruzynieCollection.Where(m => m.UzytkownikId == null).ToList();
             
