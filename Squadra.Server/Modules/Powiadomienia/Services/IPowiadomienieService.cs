@@ -18,4 +18,5 @@ public interface IPowiadomienieService
     public Task<ServiceResult<bool>> WyslijZaproszenieNaMiejsceWDruzynie(int idZapraszanego, int idDruzyny, string nazwaDruzyny, int idMiejsca, string? nazwaRoli);
     public Task<ServiceResult<bool>> WyslijPowiadomienieOUsunieciuZDruzyny(int idUsuwanego, int idDruzyny, string nazwaDruzyny);
     public Task<ServiceResult<bool>> WyslijPowiadomienieOWyjsciuZDruzyny(int idKapitana, int idOpuszczajacego, int idDruzyny, string nazwaDruzyny, string? nazwaRoli);
+    public Task<ServiceResult<bool>> WyslijPowiadomienieORozwiazaniuDruzyny(int idOdbiorcy, string nazwaDruzyny);
 }

@@ -320,4 +320,21 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             // jest git
             return await CreatePowiadomienie(dto);
         }
+        
+        public async Task<ServiceResult<bool>> WyslijPowiadomienieORozwiazaniuDruzyny(int idOdbiorcy, string nazwaDruzyny)
+        {
+            if(idOdbiorcy <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id odbiorcy: " + idOdbiorcy));
+            
+            var dto = new PowiadomienieCreateDto(
+                (int)TypPowiadomieniaEnum.DruzynaZostalaRozwiazana,
+                idOdbiorcy, 
+                null,
+                nazwaDruzyny,
+                null,
+                null,
+                null
+            );
+            
+            return await CreatePowiadomienie(dto);
+        }
 }
