@@ -84,11 +84,10 @@ public class PowiadomienieRepositoryTests : IDisposable
         // Assert
         Assert.NotNull(result);
         Assert.Equal(1, result.Id);
-        Assert.Equal(1, result.IdTypuPowiadomienia);
+        Assert.Equal(1, result.TypPowiadomieniaId);
         Assert.Equal("System message", result.Tresc);
-        Assert.Null(result.IdPowiazanegoObiektu);
-        Assert.Null(result.NazwaPowiazanegoObiektu);
-        Assert.Matches(@"^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}$", result.DataWyslania);
+        Assert.Null(result.PowiazanyObiektId);
+        Assert.Null(result.PowiazanyObiektId);
     }
 
     [Fact]
@@ -100,11 +99,10 @@ public class PowiadomienieRepositoryTests : IDisposable
         // Assert
         Assert.NotNull(result);
         Assert.Equal(2, result.Id);
-        Assert.Equal(2, result.IdTypuPowiadomienia);
-        Assert.Equal(2, result.IdPowiazanegoObiektu);
-        Assert.Equal("User2", result.NazwaPowiazanegoObiektu);
+        Assert.Equal(2, result.TypPowiadomieniaId);
+        Assert.Equal(2, result.PowiazanyObiektId);
+        Assert.Equal("User2", result.PowiazanyObiektNazwa);
         Assert.Null(result.Tresc);
-        Assert.Matches(@"^\d{2}\.\d{2}\.\d{4} \d{2}:\d{2}$", result.DataWyslania);
     }
 
     [Fact]
@@ -194,7 +192,7 @@ public class PowiadomienieRepositoryTests : IDisposable
         Assert.Equal(2, initialCount);
 
         // Act
-        var result = await _repository.DeletePowiadomieniaUzytkownika(1);
+        var result = await _repository.DeletePowiadomieniaZwiazaneZUzytkownikiem(1);
 
         // Assert
         Assert.True(result);

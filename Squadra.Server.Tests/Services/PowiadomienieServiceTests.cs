@@ -2,8 +2,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Modules.Drużyny.Services;
 using Squadra.Server.Modules.Powiadomienia.DTO;
+using Squadra.Server.Modules.Powiadomienia.Models;
 using Squadra.Server.Modules.Powiadomienia.Repositories;
 using Squadra.Server.Modules.Powiadomienia.Services;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
@@ -28,7 +28,6 @@ public class PowiadomienieServiceTests
     private readonly Mock<IZnajomiService> _mockZnajomiService;
     private readonly Mock<IZnajomiRepository> _mockZnajomiRepository;
     private readonly Mock<IProfilService> _mockProfilService;
-    private readonly Mock<IDruzynyService> _mockDruzynyService;
     private readonly PowiadomienieService _service;
 
     public PowiadomienieServiceTests()
@@ -39,7 +38,6 @@ public class PowiadomienieServiceTests
         _mockZnajomiService = new Mock<IZnajomiService>();
         _mockZnajomiRepository = new Mock<IZnajomiRepository>();
         _mockProfilService = new Mock<IProfilService>();
-        _mockDruzynyService = new Mock<IDruzynyService>();
         
         _service = new PowiadomienieService(
             _mockPowiadomienieRepository.Object,
@@ -47,8 +45,7 @@ public class PowiadomienieServiceTests
             _mockUzytkownikService.Object,
             _mockZnajomiService.Object,
             _mockZnajomiRepository.Object,
-            _mockProfilService.Object,
-            _mockDruzynyService.Object
+            _mockProfilService.Object
         );
     }
 
@@ -85,6 +82,29 @@ public class PowiadomienieServiceTests
         return new ClaimsPrincipal(new ClaimsIdentity(claims));
     }
 
+    private static Powiadomienie StworzPowiadomienieEncje(
+        int id,
+        int idTypuPowiadomienia,
+        int uzytkownikId,
+        int? idPowiazanegoObiektu,
+        string? nazwaPowiazanegoObiektu,
+        int? idDrugiegoPowiazanegoObiektu,
+        string? nazwaDrugiegoPowiazanegoObiektu,
+        string? tresc = null,
+        DateTime? dataWyslania = null)
+        => new()
+        {
+            Id = id,
+            TypPowiadomieniaId = idTypuPowiadomienia,
+            UzytkownikId = uzytkownikId,
+            PowiazanyObiektId = idPowiazanegoObiektu,
+            PowiazanyObiektNazwa = nazwaPowiazanegoObiektu,
+            DrugiPowiazanyObiektId = idDrugiegoPowiazanegoObiektu,
+            DrugiPowiazanyObiektNazwa = nazwaDrugiegoPowiazanegoObiektu,
+            Tresc = tresc,
+            DataWyslania = dataWyslania ?? DateTime.Now
+        };
+
     private static PowiadomienieDto PowiadomienieDto(
         int id,
         int idTypuPowiadomienia,
@@ -120,53 +140,7 @@ public class PowiadomienieServiceTests
     }
 
     #region GetPowiadomienie Tests
-
-    [Fact]
-    public async Task GetPowiadomienie_WhenUserNotAuthenticated_ReturnsUnauthorized()
-    {
-        // Arrange
-        var notificationId = 1;
-        var user = CreateClaimsPrincipal(1);
-        var notification = PowiadomienieDto(notificationId, 2, 1, 2, "TestUser", null, null, "Test");
-        
-        _mockPowiadomienieRepository.Setup(r => r.GetPowiadomienie(notificationId))
-            .ReturnsAsync(notification);
-        _mockUserManager.Setup(um => um.GetUserAsync(user))
-            .ReturnsAsync((Uzytkownik?)null);
-
-        // Act
-        var result = await _service.GetPowiadomienie(notificationId, user);
-
-        // Assert
-        Assert.False(result.Succeeded);
-        Assert.Equal(401, result.StatusCode);
-        Assert.Contains("zalogowany", result.Errors[0].Message);
-    }
-
-    [Fact]
-    public async Task GetPowiadomienie_WhenUserTriesToAccessOthersNotification_ReturnsForbidden()
-    {
-        // Arrange
-        var notificationId = 1;
-        var userId = 1;
-        var otherUserId = 2;
-        var user = CreateClaimsPrincipal(userId);
-        var notification = PowiadomienieDto(notificationId, 2, otherUserId, 3, "TestUser", null, null, "Test");
-        var uzytkownik = new Uzytkownik { Id = userId };
-        
-        _mockPowiadomienieRepository.Setup(r => r.GetPowiadomienie(notificationId))
-            .ReturnsAsync(notification);
-        _mockUserManager.Setup(um => um.GetUserAsync(user))
-            .ReturnsAsync(uzytkownik);
-
-        // Act
-        var result = await _service.GetPowiadomienie(notificationId, user);
-
-        // Assert
-        Assert.False(result.Succeeded);
-        Assert.Equal(403, result.StatusCode);
-        Assert.Contains("innego użytkownika", result.Errors[0].Message);
-    }
+    
 
     [Fact]
     public async Task GetPowiadomienie_WhenUserOwnsNotification_ReturnsOk()
@@ -175,7 +149,7 @@ public class PowiadomienieServiceTests
         var notificationId = 1;
         var userId = 1;
         var user = CreateClaimsPrincipal(userId);
-        var notification = PowiadomienieDto(notificationId, 2, userId, 2, "TestUser", null, null, "Test");
+        var notification = StworzPowiadomienieEncje(notificationId, 2, userId, 2, "TestUser", null, null, "Test");
         var uzytkownik = new Uzytkownik { Id = userId };
         
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomienie(notificationId))
@@ -184,7 +158,7 @@ public class PowiadomienieServiceTests
             .ReturnsAsync(uzytkownik);
 
         // Act
-        var result = await _service.GetPowiadomienie(notificationId, user);
+        var result = await _service.GetPowiadomienie(notificationId);
 
         // Assert
         Assert.True(result.Succeeded);
@@ -202,10 +176,10 @@ public class PowiadomienieServiceTests
     {
         // Arrange
         var userId = 1;
-        var notifications = new List<PowiadomienieDto>
+        var notifications = new List<Powiadomienie>
         {
-            new PowiadomienieDto(1, 2, userId, 2, "User1", 1, "Team1", "Test1", DateTime.Now.ToString("dd.MM.yyyy HH:mm")),
-            new PowiadomienieDto(2, 3, userId, 2, "User2", 2, "Team2", "Test2", DateTime.Now.ToString("dd.MM.yyyy HH:mm"))
+            StworzPowiadomienieEncje(1, 2, userId, 2, "User1", 1, "Team1", "Test1", DateTime.Now),
+            StworzPowiadomienieEncje(2, 3, userId, 2, "User2", 2, "Team2", "Test2", DateTime.Now)
         };
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomieniaUzytkownika(userId))
             .ReturnsAsync(notifications);
@@ -378,9 +352,9 @@ public class PowiadomienieServiceTests
         var inviteeId = 2;
         var inviteeLogin = "invitee";
         var invitee = new Uzytkownik { Id = inviteeId, UserName = inviteeLogin };
-        var existingNotifications = new List<PowiadomienieDto>
+        var existingNotifications = new List<Powiadomienie>
         {
-            new PowiadomienieDto(1, 2, inviteeId, inviterId, "Inviter", null, null, null, DateTime.Now.ToString("dd.MM.yyyy HH:mm"))
+            StworzPowiadomienieEncje(1, 2, inviteeId, inviterId, "Inviter", null, null, null, DateTime.Now)
         };
         
         _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))
@@ -409,7 +383,7 @@ public class PowiadomienieServiceTests
         _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))
             .ReturnsAsync(invitee);
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomieniaUzytkownika(inviteeId))
-            .ReturnsAsync(new List<PowiadomienieDto>());
+            .ReturnsAsync(new List<Powiadomienie>());
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(inviteeId, inviterId))
             .ReturnsAsync(true);
 
@@ -435,7 +409,7 @@ public class PowiadomienieServiceTests
         _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))
             .ReturnsAsync(invitee);
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomieniaUzytkownika(inviteeId))
-            .ReturnsAsync(new List<PowiadomienieDto>());
+            .ReturnsAsync(new List<Powiadomienie>());
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(inviteeId, inviterId))
             .ReturnsAsync(false);
         _mockZnajomiService.Setup(s => s.GetZnajomiUzytkownika(inviterId))
@@ -464,7 +438,7 @@ public class PowiadomienieServiceTests
         _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))
             .ReturnsAsync(invitee);
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomieniaUzytkownika(inviteeId))
-            .ReturnsAsync(new List<PowiadomienieDto>());
+            .ReturnsAsync(new List<Powiadomienie>());
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(inviteeId, inviterId))
             .ReturnsAsync(false);
         _mockZnajomiService.Setup(s => s.GetZnajomiUzytkownika(inviterId))
@@ -497,7 +471,7 @@ public class PowiadomienieServiceTests
         _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))
             .ReturnsAsync(invitee);
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomieniaUzytkownika(inviteeId))
-            .ReturnsAsync(new List<PowiadomienieDto>());
+            .ReturnsAsync(new List<Powiadomienie>());
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(inviteeId, inviterId))
             .ReturnsAsync(false);
         _mockZnajomiService.Setup(s => s.GetZnajomiUzytkownika(inviterId))

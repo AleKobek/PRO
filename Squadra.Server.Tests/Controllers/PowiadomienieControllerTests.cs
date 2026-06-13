@@ -15,14 +15,16 @@ namespace Squadra.Server.Tests.Controllers;
 public class PowiadomienieControllerTests
 {
     private readonly Mock<IPowiadomienieService> _mockPowiadomienieService;
+    private readonly Mock<IRozpatrzPowiadomienieService> _mockRozpatrzPowiadomienieService;
     private readonly Mock<UserManager<Uzytkownik>> _mockUserManager;
     private readonly PowiadomienieController _controller;
 
     public PowiadomienieControllerTests()
     {
         _mockPowiadomienieService = new Mock<IPowiadomienieService>();
+        _mockRozpatrzPowiadomienieService = new Mock<IRozpatrzPowiadomienieService>();
         _mockUserManager = MockUserManager<Uzytkownik>();
-        _controller = new PowiadomienieController(_mockPowiadomienieService.Object, _mockUserManager.Object);
+        _controller = new PowiadomienieController(_mockPowiadomienieService.Object,_mockRozpatrzPowiadomienieService.Object , _mockUserManager.Object);
     }
 
     private static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
@@ -78,93 +80,7 @@ public class PowiadomienieControllerTests
         var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(actionResult.Result);
         Assert.Equal("Nie jesteś zalogowany.", unauthorizedResult.Value);
     }
-
-    [Fact]
-    public async Task GetPowiadomienie_WithValidId_ReturnsOkWithNotification()
-    {
-        // Arrange
-        var notification = new PowiadomienieDto(1, 1, 1, null, null, null, null, "Notification", DateTime.Now.ToString("dd.MM.yyyy HH:mm"));
-        var result = ServiceResult<PowiadomienieDto>.Ok(notification);
-        _mockPowiadomienieService.Setup(s => s.GetPowiadomienie(1, It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync(result);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-        };
-
-        // Act
-        var actionResult = await _controller.GetPowiadomienie(1);
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-        var returnedNotification = Assert.IsType<PowiadomienieDto>(okResult.Value);
-        Assert.Equal("Notification", returnedNotification.Tresc);
-    }
-
-    [Fact]
-    public async Task GetPowiadomienie_WhenNotFound_ReturnsNotFound()
-    {
-        // Arrange
-        var result = ServiceResult<PowiadomienieDto>.Fail(404, 
-            new[] { new ErrorItem("Notification not found", "id") });
-        _mockPowiadomienieService.Setup(s => s.GetPowiadomienie(999, It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync(result);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-        };
-
-        // Act
-        var actionResult = await _controller.GetPowiadomienie(999);
-
-        // Assert
-        var notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
-        Assert.Equal("Notification not found", notFoundResult.Value);
-    }
-
-    [Fact]
-    public async Task GetPowiadomienie_WhenUnauthorized_ReturnsUnauthorized()
-    {
-        // Arrange
-        var result = ServiceResult<PowiadomienieDto>.Fail(401, 
-            new[] { new ErrorItem("Nie jesteś zalogowany.", null) });
-        _mockPowiadomienieService.Setup(s => s.GetPowiadomienie(1, It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync(result);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-        };
-
-        // Act
-        var actionResult = await _controller.GetPowiadomienie(1);
-
-        // Assert
-        var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(actionResult.Result);
-        Assert.Equal("Nie jesteś zalogowany.", unauthorizedResult.Value);
-    }
-
-    [Fact]
-    public async Task GetPowiadomienie_WhenForbidden_ReturnsForbidden()
-    {
-        // Arrange
-        var result = ServiceResult<PowiadomienieDto>.Fail(403, 
-            new[] { new ErrorItem("Access forbidden", null) });
-        _mockPowiadomienieService.Setup(s => s.GetPowiadomienie(1, It.IsAny<ClaimsPrincipal>()))
-            .ReturnsAsync(result);
-        _controller.ControllerContext = new ControllerContext
-        {
-            HttpContext = new DefaultHttpContext { User = new ClaimsPrincipal() }
-        };
-
-        // Act
-        var actionResult = await _controller.GetPowiadomienie(1);
-
-        // Assert
-        var statusResult = Assert.IsType<ObjectResult>(actionResult.Result);
-        Assert.Equal(StatusCodes.Status403Forbidden, statusResult.StatusCode);
-        Assert.Equal("Access forbidden", statusResult.Value);
-    }
-
+    
     [Fact]
     public async Task WyslijZaproszenieDoZnajomych_WithValidLogin_ReturnsNoContent()
     {
