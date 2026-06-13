@@ -43,10 +43,10 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
             // jak tu doszliśmy, wszystko jest git, chyba że nie podano powiązanego obiektu w konkretnych typach
     
             // zaproszenie do znajomych
-            if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia == TypPowiadomieniaEnum.ZaproszenieDoZnajomych)
+            if ((TypPowiadomieniaEnum)powiadomienie.TypPowiadomieniaId == TypPowiadomieniaEnum.ZaproszenieDoZnajomych)
             {
             
-                if(powiadomienie.IdPowiazanegoObiektu == null)
+                if(powiadomienie.PowiazanyObiektId == null)
                 {
                     // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
                     try
@@ -63,13 +63,13 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 // pobieramy naszą nazwę użytkownika, aby była w powiadomieniu dla drugiej strony
                 var wynikZnalezieniaProfilu = await profilService.GetProfil(idUzytkownika);
                 if(wynikZnalezieniaProfilu.StatusCode != 200) return ServiceResult<bool>.NotFound(wynikZnalezieniaProfilu.Errors[0]);
-                if(wynikZnalezieniaProfilu.Value == null) return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + powiadomienie.IdPowiazanegoObiektu.Value));
+                if(wynikZnalezieniaProfilu.Value == null) return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + powiadomienie.PowiazanyObiektId));
             
                 switch (czyZaakceptowane)
                 {
                     case true:
                     {
-                        var result = await znajomiService.CreateZnajomosc(powiadomienie.UzytkownikId, powiadomienie.IdPowiazanegoObiektu ?? 1); // aby się kompilator nie czepiał
+                        var result = await znajomiService.CreateZnajomosc(powiadomienie.UzytkownikId, powiadomienie.PowiazanyObiektId ?? 1); // aby się kompilator nie czepiał
                         // coś poszło nie tak
                         if (result.StatusCode != 201) return result;
                         
@@ -79,7 +79,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                             // zaakceptowano zaproszenie
                             (int)TypPowiadomieniaEnum.PrzyjecieZaproszeniaDoZnajomych,
                             // wysyłamy to użytkownikowi, którego to zaproszenie dotyczy
-                            powiadomienie.IdPowiazanegoObiektu ?? 1, // już null odfiltrowaliśmy, ale aby się nie czepiał kompilator
+                            powiadomienie.PowiazanyObiektId ?? 1, // już null odfiltrowaliśmy, ale aby się nie czepiał kompilator
                             // powiązany jest użytkownik, który zaakceptował
                             idUzytkownika,
                             wynikZnalezieniaProfilu.Value.Pseudonim,
@@ -97,7 +97,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                             // odrzucono zaproszenie
                             (int)TypPowiadomieniaEnum.OdrzucenieZaproszeniaDoZnajomych,
                             // wysyłamy to użytkownikowi, którego to zaproszenie dotyczy
-                            powiadomienie.IdPowiazanegoObiektu ?? 1, // już to odfiltrowaliśmy, ale aby się nie czepiał kompilator
+                            powiadomienie.PowiazanyObiektId ?? 1, // już to odfiltrowaliśmy, ale aby się nie czepiał kompilator
                             // powiązany jest użytkownik, który odrzucił
                             idUzytkownika,
                             wynikZnalezieniaProfilu.Value.Pseudonim,
@@ -116,9 +116,9 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
             }
 
             // zaproszenie do drużyny
-            if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia == TypPowiadomieniaEnum.ZaproszenieDoDruzyny)
+            if ((TypPowiadomieniaEnum)powiadomienie.TypPowiadomieniaId == TypPowiadomieniaEnum.ZaproszenieDoDruzyny)
             {
-                if(powiadomienie.IdPowiazanegoObiektu == null || powiadomienie.IdDrugiegoPowiazanegoObiektu == null)
+                if(powiadomienie.PowiazanyObiektId == null || powiadomienie.DrugiPowiazanyObiektId == null)
                 {
                     // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
                     try
@@ -135,10 +135,10 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 // pobieramy naszą nazwę użytkownika, aby była w powiadomieniu dla drugiej strony
                 var wynikZnalezieniaProfilu = await profilService.GetProfil(idUzytkownika);
                 if(wynikZnalezieniaProfilu.StatusCode != 200) return ServiceResult<bool>.NotFound(wynikZnalezieniaProfilu.Errors[0]);
-                if(wynikZnalezieniaProfilu.Value == null) return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + powiadomienie.IdPowiazanegoObiektu.Value));
+                if(wynikZnalezieniaProfilu.Value == null) return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + powiadomienie.PowiazanyObiektId));
                 
                 // pobieramy miejsce w drużynie
-                var miejsceRes = await druzynyService.GetMiejsceWDruzynie(powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1);
+                var miejsceRes = await druzynyService.GetMiejsceWDruzynie(powiadomienie.PowiazanyObiektId ?? 1);
                 if (miejsceRes.StatusCode != 200 || miejsceRes.Value == null)
                 {
                     // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
@@ -154,7 +154,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 }
             
                 // pobieramy drużynę, do której należy to miejsce
-                var druzynaRes = await druzynyService.GetDruzynaMiejsca(powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1);
+                var druzynaRes = await druzynyService.GetDruzynaMiejsca(powiadomienie.PowiazanyObiektId ?? 1);
                 if (druzynaRes.StatusCode != 200 || druzynaRes.Value == null)
                 {
                     // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
@@ -180,7 +180,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 {
                     case true:
                     {
-                        var result = await druzynyService.DodajUzytkownikaNaMiejsce(powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1, powiadomienie.UzytkownikId); 
+                        var result = await druzynyService.DodajUzytkownikaNaMiejsce(powiadomienie.PowiazanyObiektId ?? 1, powiadomienie.UzytkownikId); 
                         // coś poszło nie tak
                         if (!result.Succeeded) return result;
                         

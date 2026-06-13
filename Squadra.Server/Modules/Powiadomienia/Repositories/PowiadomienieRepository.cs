@@ -9,44 +9,21 @@ namespace Squadra.Server.Modules.Powiadomienia.Repositories;
 
 public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepository
 {
-    public async Task<PowiadomienieDto> GetPowiadomienie(int id)
+    public async Task<Powiadomienie> GetPowiadomienie(int id)
     {
         var powiadomienie = await context.Powiadomienie.FindAsync(id);
         if(powiadomienie == null) throw new NieZnalezionoWBazieException("Powiadomienie o id " + id + " nie istnieje");
         var typPowiadomienia = await context.TypPowiadomienia.FindAsync(powiadomienie.TypPowiadomieniaId);
         if(typPowiadomienia == null) throw new NieZnalezionoWBazieException("Typ powiadomienia o id " + id + " nie istnieje");
-        
-        if(powiadomienie.PowiazanyObiektId == null && (TypPowiadomieniaEnum)powiadomienie.TypPowiadomieniaId is TypPowiadomieniaEnum.Systemowe)
-            return new PowiadomienieDto(
-                powiadomienie.Id,
-                powiadomienie.TypPowiadomieniaId,
-                powiadomienie.UzytkownikId,
-                null,
-                null,
-                null,
-                null,
-                powiadomienie.Tresc,
-                powiadomienie.DataWyslania.ToString("dd.MM.yyyy HH:mm")
-            );
-        
-        return new PowiadomienieDto(
-            powiadomienie.Id,
-            powiadomienie.TypPowiadomieniaId,
-            powiadomienie.UzytkownikId,
-            powiadomienie.PowiazanyObiektId,
-            powiadomienie.PowiazanyObiektNazwa,
-            powiadomienie.DrugiPowiazanyObiektId,
-            powiadomienie.DrugiPowiazanyObiektNazwa,
-            powiadomienie.Tresc,
-            powiadomienie.DataWyslania.ToString("dd.MM.yyyy HH:mm")
-        );
+
+        return powiadomienie;
     }
 
-    public async Task<ICollection<PowiadomienieDto>> GetPowiadomieniaUzytkownika(int idUzytkownika)
+    public async Task<ICollection<Powiadomienie>> GetPowiadomieniaUzytkownika(int idUzytkownika)
     {
         var powiadomienia = await context.Powiadomienie.Where(x => x.UzytkownikId == idUzytkownika).ToListAsync();
         powiadomienia.Sort((x, y) => y.DataWyslania.CompareTo(x.DataWyslania));
-        var lista = new List<PowiadomienieDto>();
+        var lista = new List<Powiadomienie>();
         foreach (var powiadomienie in powiadomienia) 
             lista.Add(await GetPowiadomienie(powiadomienie.Id));
         return lista;

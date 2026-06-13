@@ -30,14 +30,36 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         if (powiadomienie.UzytkownikId != uzytkownik.Id)
         {
             return ServiceResult<PowiadomienieDto>.Forbidden(new ErrorItem("Nie możesz pobrać powiadomienia innego użytkownika"));
-        } 
-        return ServiceResult<PowiadomienieDto>.Ok(powiadomienie);
+        }
+        
+        return ServiceResult<PowiadomienieDto>.Ok(new PowiadomienieDto(
+            powiadomienie.Id,
+            powiadomienie.TypPowiadomieniaId,
+            powiadomienie.UzytkownikId,
+            powiadomienie.PowiazanyObiektId,
+            powiadomienie.PowiazanyObiektNazwa,
+            powiadomienie.DrugiPowiazanyObiektId,
+            powiadomienie.DrugiPowiazanyObiektNazwa,
+            powiadomienie.Tresc,
+            powiadomienie.DataWyslania.ToString("dd.MM.yyyy HH:mm")
+        ));
     }
 
     public async Task<ServiceResult<ICollection<PowiadomienieDto>>> GetPowiadomieniaUzytkownika(int idUzytkownika)
     {
         // czy to dobry użytkownik sprawdzamy już w controllerze, bo mamy od razu id
-        return ServiceResult<ICollection<PowiadomienieDto>>.Ok(await powiadomienieRepository.GetPowiadomieniaUzytkownika(idUzytkownika));
+        var powiadomienia = await powiadomienieRepository.GetPowiadomieniaUzytkownika(idUzytkownika);
+        return ServiceResult<ICollection<PowiadomienieDto>>.Ok(powiadomienia.Select(x => new PowiadomienieDto(
+            x.Id,
+            x.TypPowiadomieniaId,
+            x.UzytkownikId,
+            x.PowiazanyObiektId,
+            x.PowiazanyObiektNazwa,
+            x.DrugiPowiazanyObiektId,
+            x.DrugiPowiazanyObiektNazwa,
+            x.Tresc,
+            x.DataWyslania.ToString("dd.MM.yyyy HH:mm")
+        )).ToList());
     }
 
     public async Task<ServiceResult<bool>> CzyUzytkownikMaPowiadomienieDanegoTypuPowiazaneZObiektami(int idUzytkownika, int idTypu, int idPowiazanegoObiektu, int? idDrugiegoPowiazanegoObiektu)
@@ -149,8 +171,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 var powiadomieniaZaproszonego = await powiadomienieRepository.GetPowiadomieniaUzytkownika(idZapraszanego);
                 if (powiadomieniaZaproszonego
                     .Any(p => 
-                              (TypPowiadomieniaEnum)p.IdTypuPowiadomienia == TypPowiadomieniaEnum.ZaproszenieDoZnajomych 
-                              && p.IdPowiazanegoObiektu == idZapraszajacego)
+                              (TypPowiadomieniaEnum)p.TypPowiadomieniaId == TypPowiadomieniaEnum.ZaproszenieDoZnajomych 
+                              && p.PowiazanyObiektId == idZapraszajacego)
                 ) { 
                     return ServiceResult<bool>.Conflict(
                         new ErrorItem("Użytkownik o id " + idZapraszanego + " ma już wysłane zaproszenie od Ciebie"));
