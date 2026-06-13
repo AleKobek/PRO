@@ -31,4 +31,5 @@ public interface IDruzynyService
     public Task<ServiceResult<TabelkaDruzynResDto>> WyszukajDruzyny(WyszukajDruzyneReqDto req, int idUzytkownika);
     public Task<ServiceResult<bool>> DodajUzytkownikaNaMiejsce(int idMiejsca, int idUzytkownika);
     public Task<ServiceResult<bool>> ZaprosUzytkownikaNaMiejsce(int idMiejsca, int idZapraszanegoUzytkownika, int idZapraszajacegoUzytkownika);
+    public Task<ServiceResult<bool>> ZaprosUzytkownikaNaMiejscePoLoginie(int idMiejsca, string login, int idZapraszajacegoUzytkownika);
 }

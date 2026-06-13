@@ -1041,4 +1041,11 @@ public class DruzynyService(
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
+
+    public async Task<ServiceResult<bool>> ZaprosUzytkownikaNaMiejscePoLoginie(int idMiejsca, string login, int idZapraszajacegoUzytkownika)
+    {
+        var uzytkownikRes = await uzytkownikService.GetUzytkownik(login);
+        if (!uzytkownikRes.Succeeded) return ServiceResult<bool>.Fail(uzytkownikRes.StatusCode, uzytkownikRes.Errors);
+        return await ZaprosUzytkownikaNaMiejsce(idMiejsca, uzytkownikRes.Value.Id, idZapraszajacegoUzytkownika);
+    }
 }
