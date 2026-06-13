@@ -54,6 +54,23 @@ public class BibliotekaGierService(IBibliotekaGierRepository bibliotekaGierRepos
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
+    
+    public async Task<ServiceResult<bool>> CzyUzytkownikMaDanaGre(int idUzytkownika, int idGry)
+    {
+        if(idUzytkownika <= 0)
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id uzytkownika: " + idUzytkownika));
+        if(idGry <= 0)            
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id gry: " + idGry));
+        try
+        {
+            var wynik = await bibliotekaGierRepository.CzyUzytkownikMaDanaGre(idUzytkownika, idGry);
+            return ServiceResult<bool>.Ok(wynik);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
 
     
     public async Task<ServiceResult<bool>> UpdateBibliotekeGierUzytkownika(

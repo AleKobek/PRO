@@ -57,6 +57,22 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
         return graNaPlatformie != null;
     }
     
+    public async Task<bool> CzyUzytkownikMaDanaGre(int idUzytkownika, int idGry)
+    {
+        var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
+        if (uzytkownik is null)
+            throw new NieZnalezionoWBazieException("Użytkownik o id " + idUzytkownika + " nie istnieje.");
+        
+        var gra = await context.WspieranaGra.FindAsync(idGry);
+        if (gra is null)            
+            throw new NieZnalezionoWBazieException("Gra o id " + idGry + " nie istnieje.");
+        
+        var graUzytkownika = await context.GraUzytkownika
+            .FirstOrDefaultAsync(gu => gu.UzytkownikId == idUzytkownika && gu.GraId == idGry);
+        
+        return graUzytkownika != null;
+    }
+    
     public async Task<bool> UpdateBibliotekeGierUzytkownika(int idUzytkownika, List<GraUzytkownikaNaPlatformie> noweGryNaPlatformie, List<GraUzytkownika> noweGry)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
