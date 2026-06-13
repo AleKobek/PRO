@@ -12,6 +12,8 @@ using Squadra.Server.Modules.Statystyki.Services;
 using Squadra.Server.Modules.Uzytkownicy.Services;
 using Squadra.Server.Modules.WspieraneGry.DTO;
 using Squadra.Server.Modules.WspieraneGry.Services;
+using Squadra.Server.Modules.Znajomosci.DTO;
+using Squadra.Server.Modules.Znajomosci.Services;
 
 namespace Squadra.Server.Modules.Drużyny.Services;
 
@@ -25,7 +27,8 @@ public class DruzynyService(
     IStatystykiService statystykiService,
     IPlatformaService platformaService,
     IBibliotekaGierService bibliotekaGierService,
-    IPowiadomienieService powiadomienieService
+    IPowiadomienieService powiadomienieService,
+    IZnajomiService znajomiService
     ) : IDruzynyService
 {
     
@@ -508,6 +511,57 @@ public class DruzynyService(
         }
     }
     
+    public async Task<ServiceResult<ICollection<ProfilMinInfoDto>>> GetZnajomiSpelniajacyWarunkiMiejsca(int idMiejsca, int idUzytkownika)
+    {
+        if(idMiejsca <= 0) return ServiceResult<ICollection<ProfilMinInfoDto>>.BadRequest(new ErrorItem("Podano nieprawidłowe id drużyny: " + idMiejsca));
+        if(idUzytkownika <= 0) return ServiceResult<ICollection<ProfilMinInfoDto>>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
+        try
+        {
+            var druzyna = await druzynyRepository.GetDruzynaMiejsca(idMiejsca);
+            var miejscaWDruzynie = await druzynyRepository.GetMiejscaWDruzynie(druzyna.Id);
+                
+            if(druzyna.KapitanId != idUzytkownika) 
+                return ServiceResult<ICollection<ProfilMinInfoDto>>.Forbidden(new ErrorItem("Tylko kapitan drużyny może sprawdzić, którzy znajomi spełniają wymagania miejsca w drużynie"));
+            
+            var znajomiRes = await znajomiService.GetZnajomosciUzytkownika(idUzytkownika);
+            if(!znajomiRes.Succeeded) return ServiceResult<ICollection<ProfilMinInfoDto>>.Fail(znajomiRes.StatusCode, znajomiRes.Errors);
+            var znajomi = znajomiRes.Value ?? new List<ZnajomiDto>(); // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+            var znajomiSpelniajacyWarunki = new List<ProfilMinInfoDto>();
+            foreach (var znajomosc in znajomi)
+            {
+                var idZnajomego = idUzytkownika == znajomosc.IdUzytkownika1 ? znajomosc.IdUzytkownika2 : znajomosc.IdUzytkownika1;
+                
+                if(miejscaWDruzynie.Any(x => x.UzytkownikId == idZnajomego)) continue; // jeżeli znajomy jest już w drużynie, to nie dodajemy go do listy
+                
+                var czyPrzekraczaMaksLiczbeDruzynRes = await CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idZnajomego, druzyna.GraId);
+                if(!czyPrzekraczaMaksLiczbeDruzynRes.Succeeded || czyPrzekraczaMaksLiczbeDruzynRes.Value) continue; // jeżeli przekracza maks liczbę drużyn, to nie dodajemy go do listy
+                
+                // jeżeli drużyna jest zintegrowana, to musimy sprawdzić dodatkowe wymagania
+                if(druzyna.CzyZintegrowano){
+                    var czySpelniaWymaganiaRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(druzyna.Id, idZnajomego);
+                    if (!czySpelniaWymaganiaRes.Succeeded || !czySpelniaWymaganiaRes.Value)
+                        continue; // jeżeli nie spełnia wymagań, to nie dodajemy go do listy
+
+                    var czySpelniaWymaganiaMiejscaRes =
+                        await CzyUzytkownikSpelniaWymaganieMiejsca(idMiejsca, idZnajomego);
+                    if (!czySpelniaWymaganiaMiejscaRes.Succeeded || !czySpelniaWymaganiaMiejscaRes.Value)
+                        continue; // jeżeli nie spełnia wymagań, to nie dodajemy go do listy
+                }
+                
+                // spełnia wszystkie wymagania, więc pobieramy jego profil i dodajemy go do listy
+                var profilRes = await profilService.GetProfilMinInfo(idZnajomego);
+                if(!profilRes.Succeeded || profilRes.Value == null) continue; // jeżeli nie udało się pobrać profilu, to nie dodajemy go do listy
+                znajomiSpelniajacyWarunki.Add(profilRes.Value);
+            }
+
+            return ServiceResult<ICollection<ProfilMinInfoDto>>.Ok(znajomiSpelniajacyWarunki);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+         return ServiceResult<ICollection<ProfilMinInfoDto>>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
     public async Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganiaDruzyny(int idDruzyny, int idUzytkownika)
     {
         if(idDruzyny <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id drużyny: " + idDruzyny));
@@ -527,8 +581,17 @@ public class DruzynyService(
                 if (!czyMaTeGreNaPlatformieRes.Succeeded) return czyMaTeGreNaPlatformieRes;
                 if (!czyMaTeGreNaPlatformieRes.Value) return ServiceResult<bool>.Ok(false);
             }
+            else
+            {
+                var czyMaTeGreRes = await bibliotekaGierService.CzyUzytkownikMaDanaGre(
+                    idUzytkownika, 
+                    druzyna.GraId
+                );
+                if (!czyMaTeGreRes.Succeeded) return czyMaTeGreRes;
+                if (!czyMaTeGreRes.Value) return ServiceResult<bool>.Ok(false);
+            }
             
-            var spelniaWymaganie = await druzynyRepository.CzyUzytkownikSpelniaWymaganiaDruzyny(idDruzyny, idUzytkownika); 
+            var spelniaWymaganie = await druzynyRepository.CzyUzytkownikSpelniaWymaganeStatystykiDruzyny(idDruzyny, idUzytkownika); 
             return ServiceResult<bool>.Ok(spelniaWymaganie);
         }
         catch (NieZnalezionoWBazieException e)

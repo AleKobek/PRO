@@ -1,5 +1,6 @@
 ﻿using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Platformy;
+using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Shared.Services;
 
 namespace Squadra.Server.Modules.Drużyny.Services;
@@ -17,6 +18,7 @@ public interface IDruzynyService
     public Task<ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>> GetDaneDoFormularzaDruzynyBezStatystyk(int idGry);
     public Task<ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>> GetDaneDoFormularzaWyszukiwaniaDruzyny(int idUzytkownika);
     public Task<ServiceResult<ICollection<NastrojRozgrywkiDto>>> GetNastrojeRozgrywki();
+    public Task<ServiceResult<ICollection<ProfilMinInfoDto>>> GetZnajomiSpelniajacyWarunkiMiejsca(int idMiejsca, int idUzytkownika);
     public Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganieMiejsca(int idMiejsca, int idUzytkownika);
     public Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganiaDruzyny(int idDruzyny, int idUzytkownika);
     public Task<ServiceResult<bool>> CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(int idGry, int idUzytkownika);

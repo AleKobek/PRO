@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Services;
+using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Uzytkownicy.Models;
 
 namespace Squadra.Server.Modules.Drużyny.Controllers;
@@ -129,6 +130,28 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    [HttpGet("znajomi-spelniajacy-warunki-miejsca/{idMiejsca:int}")]
+    [EndpointSummary("Zwraca listę znajomych zalogowanego użytkownika, którzy spełniają warunki danego miejsca.")]
+    [ProducesResponseType(typeof(IEnumerable<ProfilMinInfoDto>), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<IEnumerable<ProfilMinInfoDto>>> GetZnajomiSpelniajacyWarunkiMiejsca(int idMiejsca)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetZnajomiSpelniajacyWarunkiMiejsca(idMiejsca, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
