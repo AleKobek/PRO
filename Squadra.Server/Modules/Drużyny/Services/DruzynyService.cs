@@ -646,8 +646,8 @@ public class DruzynyService(
             
             var graRes = await wspieranaGraService.GetWspieranaGra(druzynaReq.IdGry);
             if (!graRes.Succeeded) return ServiceResult<bool>.Fail(graRes.StatusCode, graRes.Errors);
-
-            var czyUzytkownikPrzekraczaMaksLiczbeDruzynRes = await CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(druzynaReq.IdGry, idKapitana);
+            
+            var czyUzytkownikPrzekraczaMaksLiczbeDruzynRes = await CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idKapitana, druzynaReq.IdGry);
             if (!czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Succeeded) return ServiceResult<bool>.Fail(czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.StatusCode, czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Errors);
             if (czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Value) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie można stworzyć drużyny, ponieważ użytkownik może być w maksymalnie " + DruzynyRepository.MaksymalnaLiczbaDruzynGraczaDlaGry +" drużynach dla danej gry"));
             
