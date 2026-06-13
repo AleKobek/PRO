@@ -38,7 +38,9 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         ZAPROSZENIE_DO_DRUZYNY: 8,
         UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY: 9,
         UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY: 10,
-        UZYTKOWNIK_OPUSCIL_DRUZYNE: 13
+        UZYTKOWNIK_OPUSCIL_DRUZYNE: 13,
+        DRUZYNA_ZOSTALA_USUNIETA: 14,
+        UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO: 15
     }),[]);
 
     // ustawiamy treść powiadomienia na podstawie typu powiadomienia
@@ -129,12 +131,34 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
                 }
                 break;
             }
+            case TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA:{
+                ustawTypPowiadomienia("Drużyna została usunięta")
+                ustawTrescPowiadomieniaCz1("Drużyna ");
+                ustawTrescPowiadomieniaCz2(", do której należałeś, została usunięta.");
+                break;
+            }
+            case TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO:{
+                ustawTypPowiadomienia("Użytkownik opuścił drużynę")
+                ustawTrescPowiadomieniaCz1("Członek Twojej drużyny, która nosi nazwę ");
+                if(powiadomienie.tresc?.length > 0){
+                    ustawTrescPowiadomieniaCz2(", usunął konto i ją opuścił. Miał rolę " + powiadomienie.tresc + "."); // tu będzie rola
+                } else {
+                    ustawTrescPowiadomieniaCz2("usunął konto i ją opuścił.");
+                }
+                break;
+            }
             default:{
                 ustawTypPowiadomienia("Nieznany typ powiadomienia");
             }
         }
 
-    }, [TypyPowiadomien.SYSTEMOWE, TypyPowiadomien.ZAPROSZENIE_DO_ZNAJOMYCH, TypyPowiadomien.ZAAKCEPTOWANIE_ZAPROSZENIA_DO_ZNAJOMYCH, TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH, TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH, powiadomienie.idTypuPowiadomienia, powiadomienie.nazwaPowiazanegoObiektu, powiadomienie.tresc, powiadomienie, TypyPowiadomien.UZYTKOWNIK_DOLACZYL_DO_DRUZYNY, TypyPowiadomien.USUNIETO_CIE_Z_DRUZYNY, TypyPowiadomien.ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE, TypyPowiadomien.UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY]);
+    }, [powiadomienie.idTypuPowiadomienia, powiadomienie.nazwaPowiazanegoObiektu, powiadomienie.tresc, powiadomienie,
+        TypyPowiadomien.SYSTEMOWE, TypyPowiadomien.ZAPROSZENIE_DO_ZNAJOMYCH, TypyPowiadomien.ZAAKCEPTOWANIE_ZAPROSZENIA_DO_ZNAJOMYCH,
+        TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH, TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH,
+        TypyPowiadomien.UZYTKOWNIK_DOLACZYL_DO_DRUZYNY, TypyPowiadomien.USUNIETO_CIE_Z_DRUZYNY, TypyPowiadomien.ZAPROSZENIE_DO_DRUZYNY,
+        TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE, TypyPowiadomien.UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY,
+        TypyPowiadomien.UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA,
+        TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO]);
 
 
     if(!powiadomienie) return (<></>);
@@ -186,7 +210,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         </li>);
     }
 
-    // typy powiadomień: użytkownik dołączył do drużyny / opuścił drużynę
+    // typy powiadomień: użytkownik dołączył do drużyny / opuścił drużynę, przyjął / odrzucił zaproszenie do drużyny
 
     if(powiadomienie.idTypuPowiadomienia === TypyPowiadomien.UZYTKOWNIK_DOLACZYL_DO_DRUZYNY
         || powiadomienie.idTypuPowiadomienia === TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE
@@ -215,6 +239,46 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         </div>
         <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
     </li>)
+
+    if(
+        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA
+    ) return (
+        <li key={powiadomienie.id} className="p-2 border-b border-gray-200">
+            <div className="flex flex-row justify-between items-center w-full">
+                <div className="font-semibold">{typPowiadomienia}</div>
+                <button onClick={() => przyRozpatrzaniuPowiadomienia(powiadomienie.id, null)}>
+                    <img
+                        src = "/img/x.svg"
+                        alt = "x"
+                        className="w-4 h-4 cursor-pointer"
+                    />
+                </button>
+            </div>
+            <span className="text-sm text-gray-600">{trescPowiadomieniaCz1}</span>
+            <span className="text-sm text-gray-800 font-bold">{powiadomienie.nazwaPowiazanegoObiektu}</span>
+            <span className="text-sm text-gray-600">{trescPowiadomieniaCz2}</span>
+            <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
+        </li>);
+
+    if(powiadomienie.idTypuPowiadomienia === TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO)
+        return (<li key={powiadomienie.id} className="p-2 border-b border-gray-200">
+            <div className="flex flex-row justify-between items-center w-full">
+                <div className="font-semibold">{typPowiadomienia}</div>
+                <button onClick={() => przyRozpatrzaniuPowiadomienia(powiadomienie.id, null)}>
+                    <img
+                        src = "/img/x.svg"
+                        alt = "x"
+                        className="w-4 h-4 cursor-pointer"
+                    />
+                </button>
+            </div>
+            <div className="text-sm text-gray-600">
+                {trescPowiadomieniaCz1}
+                <a href={`${CLIENT_URL}/druzyna/`+powiadomienie.idPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
+                {trescPowiadomieniaCz2}
+            </div>
+            <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
+        </li>)
 
     // typy powiadomień: zaakceptowano / odrzucono zaproszenie do znajomych, usunięto cię ze znajomych
     return (<li key={powiadomienie.id} className="p-2 border-b border-gray-200">
