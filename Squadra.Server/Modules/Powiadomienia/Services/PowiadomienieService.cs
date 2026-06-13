@@ -22,15 +22,9 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
     IProfilService profilService
     ) : IPowiadomienieService
 {
-    public async Task<ServiceResult<PowiadomienieDto>> GetPowiadomienie(int id, ClaimsPrincipal user) {
+    public async Task<ServiceResult<PowiadomienieDto>> GetPowiadomienie(int id) {
         if(id < 1) return ServiceResult<PowiadomienieDto>.BadRequest(new ErrorItem("Nieprawidłowe id powiadomienia: " + id));
         var powiadomienie = await powiadomienieRepository.GetPowiadomienie(id);
-        var uzytkownik = await userManager.GetUserAsync(user);
-        if(uzytkownik == null) return ServiceResult<PowiadomienieDto>.Unauthorized(new ErrorItem("Nie jesteś zalogowany"));
-        if (powiadomienie.UzytkownikId != uzytkownik.Id)
-        {
-            return ServiceResult<PowiadomienieDto>.Forbidden(new ErrorItem("Nie możesz pobrać powiadomienia innego użytkownika"));
-        }
         
         return ServiceResult<PowiadomienieDto>.Ok(new PowiadomienieDto(
             powiadomienie.Id,
