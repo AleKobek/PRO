@@ -545,7 +545,7 @@ public class DruzynyService(
         
         try{
             
-            return ServiceResult<bool>.Ok(await druzynyRepository.CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idGry, idUzytkownika));
+            return ServiceResult<bool>.Ok(await druzynyRepository.CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idUzytkownika, idGry));
             
         }catch(NieZnalezionoWBazieException e)
         {
