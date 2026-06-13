@@ -1072,6 +1072,10 @@ public class DruzynyService(
             if (await druzynyRepository.CzyUzytkownikNalezyDoDruzyny(idZapraszanegoUzytkownika, miejsce.DruzynaId))
                 return ServiceResult<bool>.Conflict(new ErrorItem("Użytkownik już należy do tej drużyny"));
             
+            var czyUzytkownikPrzepelniaLimitDruzynRes = await CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idZapraszanegoUzytkownika, druzyna.GraId);
+            if (!czyUzytkownikPrzepelniaLimitDruzynRes.Succeeded) return czyUzytkownikPrzepelniaLimitDruzynRes;
+            if (czyUzytkownikPrzepelniaLimitDruzynRes.Value)
+                return ServiceResult<bool>.Forbidden(new ErrorItem("Zapraszany użytkownik należy już do maksymalnej liczby drużyn dla tej gry"));
             
             // sprawdzamy, czy zapraszany użytkownik spełnia wymagania drużyny
             var czyUzytkownikSpelniaWymaganiaDruzynyRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(miejsce.DruzynaId, idZapraszanegoUzytkownika);
