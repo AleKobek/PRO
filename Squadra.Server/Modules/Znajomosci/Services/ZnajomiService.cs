@@ -14,17 +14,24 @@ public class ZnajomiService(
     IStatystykiCzatuService statystykiCzatuService) : IZnajomiService
 {
 
-    public async Task<ServiceResult<ICollection<Znajomi>>> GetZnajomiUzytkownika(int id)
+    public async Task<ServiceResult<ICollection<ZnajomiDto>>> GetZnajomiUzytkownika(int id)
     {
-        if(id < 1) return ServiceResult<ICollection<Znajomi>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + id));
+        if(id < 1) return ServiceResult<ICollection<ZnajomiDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + id));
         
         try
         {
-            return ServiceResult<ICollection<Znajomi>>.Ok(await znajomiRepository.GetZnajomiUzytkownika(id));
+            var znajomi = await znajomiRepository.GetZnajomiUzytkownika(id);
+            return ServiceResult<ICollection<ZnajomiDto>>.Ok(znajomi.Select(x => new ZnajomiDto(
+                x.IdUzytkownika1,
+                x.IdUzytkownika2,
+                x.DataNawiazaniaZnajomosci,
+                x.OstatnieOtwarcieCzatuUzytkownika1,
+                x.OstatnieOtwarcieCzatuUzytkownika2
+            )).ToList());
         }
         catch (NieZnalezionoWBazieException e)
         {
-            return ServiceResult<ICollection<Znajomi>>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<ICollection<ZnajomiDto>>.NotFound(new ErrorItem(e.Message));
         }
     }
     
