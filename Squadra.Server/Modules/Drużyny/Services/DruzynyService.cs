@@ -677,8 +677,22 @@ public class DruzynyService(
             var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
             if (druzyna.KapitanId != idUsuwajacegoUzytkownika) return ServiceResult<bool>.Forbidden(new ErrorItem("Tylko kapitan drużyny może ją usunąć"));
             
+            var czlonkowieDruzyny = await druzynyRepository.GetMiejscaWDruzynie(idDruzyny);
+            
             var usunDruzyneRes = await druzynyRepository.UsunDruzyne(idDruzyny);
             if (!usunDruzyneRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć drużyny")]);
+            
+            // wysyłamy powiadomienia do wszystkich członków drużyny, że drużyna została usunięta
+            foreach (var miejsce in czlonkowieDruzyny)
+            {
+                if (miejsce.UzytkownikId == null) continue; // jeżeli miejsce jest puste, to nie wysyłamy powiadomienia
+                if(miejsce.UzytkownikId == idUsuwajacegoUzytkownika) continue; // nie wysyłamy powiadomienia do osoby, która usunęła drużynę
+                var powiadomienieRes = await powiadomienieService.WyslijPowiadomienieORozwiazaniuDruzyny(
+                    miejsce.UzytkownikId ?? 0, // już odfiltrowaliśmy miejsca bez UzytkownikId, więc możemy bezpiecznie użyć ?? 0
+                    druzyna.Nazwa
+                );
+                // nie przerywamy pętli jeżeli wysyłanie powiadomienia się nie powiedzie - coś jest nie tak z miejscem, ale drużyna i tak została usunięta, więc nie ma co robić w tej sytuacji
+            }
             
             return ServiceResult<bool>.Ok(true);
         }
