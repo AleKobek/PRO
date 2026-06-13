@@ -170,7 +170,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
             .Where(d => d.GraId == idGry && d.MiejsceWDruzynieCollection.Any(m => m.UzytkownikId == idUzytkownika))
             .CountAsync();
         
-        return liczbaDruzynGracza > MaksymalnaLiczbaDruzynGraczaDlaGry;
+        return liczbaDruzynGracza >= MaksymalnaLiczbaDruzynGraczaDlaGry; // jeżeli jest równe, to zaraz przkeroczy, bo dołączyłby do kolejnej drużyny, więc >=
     }
     
     public async Task<bool> CzyUzytkownikNalezyDoDruzyny(int idUzytkownika, int idDruzyny)
