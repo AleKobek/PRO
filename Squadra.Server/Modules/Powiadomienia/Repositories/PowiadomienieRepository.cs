@@ -29,14 +29,11 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
                 powiadomienie.DataWyslania.ToString("dd.MM.yyyy HH:mm")
             );
         
-        // te dwie linijki pod spodem robimy tylko po to, aby kompilator nie płakał
-        var idPowiazanegoUzytkownika = powiadomienie.PowiazanyObiektId ?? -1;
-        if (idPowiazanegoUzytkownika == -1) throw new NieZnalezionoWBazieException("Użytkownik o takim id nie istnieje");
         return new PowiadomienieDto(
             powiadomienie.Id,
             powiadomienie.TypPowiadomieniaId,
             powiadomienie.UzytkownikId,
-            idPowiazanegoUzytkownika,
+            powiadomienie.PowiazanyObiektId,
             powiadomienie.PowiazanyObiektNazwa,
             powiadomienie.DrugiPowiazanyObiektId,
             powiadomienie.DrugiPowiazanyObiektNazwa,
