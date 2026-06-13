@@ -28,7 +28,7 @@ public class UsunKontoService (
                 return znajomosciRes;
             }
             
-            var powiadomieniaRes = await powiadomienieService.DeletePowiadomieniaUzytkownika(id);
+            var powiadomieniaRes = await powiadomienieService.DeletePowiadomieniaZwiazaneZUzytkownikiem(id);
             if (!powiadomieniaRes.Succeeded) 
             {
                 await transakcja.RollbackAsync();

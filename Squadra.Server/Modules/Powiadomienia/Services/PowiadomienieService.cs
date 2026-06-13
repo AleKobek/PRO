@@ -103,7 +103,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         
     }
 
-    public async Task<ServiceResult<bool>> DeletePowiadomieniaUzytkownika(int idUzytkownika)
+    public async Task<ServiceResult<bool>> DeletePowiadomieniaZwiazaneZUzytkownikiem(int idUzytkownika)
     {
         if(idUzytkownika < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika));
         // sprawdzamy, czy taki użytkownik istnieje
@@ -113,7 +113,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             return ServiceResult<bool>.NotFound(uzytkownik.Errors[0]);
         
         // jak tu dochodzimy, wszystko jest git
-        return ServiceResult<bool>.NoContent(await powiadomienieRepository.DeletePowiadomieniaUzytkownika(idUzytkownika));
+        return ServiceResult<bool>.NoContent(await powiadomienieRepository.DeletePowiadomieniaZwiazaneZUzytkownikiem(idUzytkownika));
     }
 
     public async Task<ServiceResult<bool>> DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(int? idUzytkownika, int idTypu, int idPowiazanegoObiektu, int? idDrugiegoPowiazanegoObiektu)
