@@ -610,6 +610,8 @@ export default function StronaSzczegolowDruzyny() {
                     type="text"
                     value={loginZapraszanego}
                     className="border-2 border-gray-300 rounded-md p-2 mb-2"
+                    onChange={(e) => ustawLoginZapraszanego(e.target.value)}
+                    autoFocus={true}
                     maxLength={64}
                 />
                 <button
