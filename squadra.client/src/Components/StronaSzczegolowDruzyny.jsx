@@ -464,9 +464,94 @@ export default function StronaSzczegolowDruzyny() {
         });
     }
 
-    const przyKliknieciuZaproszeniaDoDruzynyPoId = (idMiejsca, idUzytkownika) => {
+    const przyKliknieciuZaproszeniaDoDruzynyPoId = async (idMiejsca, idUzytkownika) => {
+        if(!idMiejsca) return;
+        if(!idUzytkownika) return;
+        if(czySieWysylaZaproszenie) return;
+        ustawCzySieWysylaZaproszenie(true);
+
+        const toastOptions = {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce
+        };
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/Druzyna/miejsce/zapros/${idMiejsca}/${idUzytkownika}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: "include"
+            });
+
+            const ct = res.headers.get("content-type") || "";
+            const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                ? await res.json().catch(() => null)
+                : await res.text().catch(() => "");
+            if (!res.ok) {
+                toast.error(body.message ?? (body.errors && body.errors[0].message) ?? body ?? `Wystąpił błąd podczas wysyłania zaproszenia`, toastOptions);
+                return;
+            }
+            toast.success("Pomyślnie wysłano zaproszenie!", toastOptions);
+        } catch (err) {
+            console.error('Błąd wysyłania zaproszenia:', err);
+            toast.error('Wystąpił błąd podczas wysyłania zaproszenia. Spróbuj ponownie później.', toastOptions);
+        }finally {
+            ustawCzySieWysylaZaproszenie(false);
+            ustawIdMiejscaDoZaproszenia(null);
+            ustawPokazPanelZapraszania(false);
+        }
+
     }
-    const przyKliknieciuZaproszeniaDoDruzynyPoLoginie = (idMiejsca, login) => {
+    const przyKliknieciuZaproszeniaDoDruzynyPoLoginie = async (idMiejsca, login) => {
+        if(!idMiejsca) return;
+        if(!login || login.trim().length === 0) return;
+        if(czySieWysylaZaproszenie) return;
+        ustawCzySieWysylaZaproszenie(true);
+
+        const toastOptions = {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+            transition: Bounce
+        };
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/Druzyna/miejsce/zapros/${idMiejsca}/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: "include",
+                body: JSON.stringify(login.trim())
+            });
+
+            const ct = res.headers.get("content-type") || "";
+            const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                ? await res.json().catch(() => null)
+                : await res.text().catch(() => "");
+            if (!res.ok) {
+                toast.error(body.message ?? (body.errors && body.errors[0].message) ?? body ?? `Wystąpił błąd podczas wysyłania zaproszenia`, toastOptions);
+                return;
+            }
+            toast.success("Pomyślnie wysłano zaproszenie!", toastOptions);
+        } catch (err) {
+            console.error('Błąd wysyłania zaproszenia:', err);
+            toast.error('Wystąpił błąd podczas wysyłania zaproszenia. Spróbuj ponownie później.', toastOptions);
+        }finally {
+            ustawCzySieWysylaZaproszenie(false);
+            ustawIdMiejscaDoZaproszenia(null);
+            ustawLoginZapraszanego(null);
+            ustawPokazPanelZapraszania(false);
+        }
     }
 
     const przyKliknieciuWyrzuceniaZDruzyny = async (idMiejsca) => {
