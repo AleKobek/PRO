@@ -25,6 +25,7 @@ export default function StronaSzczegolowDruzyny() {
     const [loginZapraszanego, ustawLoginZapraszanego] = useState(null);
     const [idMiejscaDoZaproszenia, ustawIdMiejscaDoZaproszenia] = useState(null);
     const [listaZnajomych, ustawListeZnajomych] = useState(null);
+    const [czySieWysylaZaproszenie, ustawCzySieWysylaZaproszenie] = useState(false);
 
     /*
 
@@ -613,7 +614,8 @@ export default function StronaSzczegolowDruzyny() {
                 />
                 <button
                     onClick={() => przyKliknieciuZaproszeniaDoDruzynyPoLoginie(idMiejscaDoZaproszenia, loginZapraszanego)}
-                    className="bg-green-700 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                    className={!loginZapraszanego || loginZapraszanego.trim().length ===0 ? "zablokowany-przycisk" : "bg-green-700 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"}
+                    disabled={!loginZapraszanego || loginZapraszanego.trim().length ===0}
                 >Zaproś po loginie</button>
             </div>
         </div>)
