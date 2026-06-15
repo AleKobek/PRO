@@ -1,9 +1,10 @@
-﻿import {useEffect, useRef, useState} from "react";
+﻿import React, {useEffect, useRef, useState} from "react";
 import {NavLink, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import Powiadomienie from "./Powiadomienie";
 import {API_BASE_URL} from "../config/api";
 import SelectStatusowNaNaglowkuKomponent from "./SelectStatusowNaNaglowkuKomponent";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 
 export default function NaglowekZalogowano({
                                            czySaNoweWiadomosci = false,
@@ -276,12 +277,28 @@ export default function NaglowekZalogowano({
 
         const res = await fetch(`${API_BASE_URL}/Powiadomienie/` + id, opcje);
         if(!res.ok) {
-            return;
+            const ct = res.headers.get("content-type") || "";
+            const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                ? await res.json().catch(() => null)
+                : await res.text().catch(() => "");
+            toast.error(body.message ?? body.errors[0].message ?? `Wystąpił błąd podczas rozpatrywania powiadomienia`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
         }
-        // jeśli git, usuwamy rozpatrzone powiadomienie z listy
-        const tempPowiadomienia = powiadomienia.filter(item => item.id !== id)
-        ustawPowiadomienia([...tempPowiadomienia]);
-        if(tempPowiadomienia.length === 0) ustawMaPowiadomienia(false);
+
+        if(res.status !== 400){
+            const tempPowiadomienia = powiadomienia.filter(item => item.id !== id)
+            ustawPowiadomienia([...tempPowiadomienia]);
+            if (tempPowiadomienia.length === 0) ustawMaPowiadomienia(false);
+        }
     }
     
     
@@ -341,6 +358,20 @@ export default function NaglowekZalogowano({
         </div>
         {/* overlay powiadomień, renderujemy na wierzchu tej samej strony */}
         {pokazPowiadomienia && <PanelPowiadomien />}
+        {<ToastContainer
+            containerId="naglowek-toast-container"
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />}
     </>)
 
 
