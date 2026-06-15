@@ -657,7 +657,9 @@ export default function StronaSzczegolowDruzyny() {
                 </button>
             </div>
             <div className="flex flex-col">
-                <h2 className="text-2xl font-bold mb-4">Dostępni znajomi do zaproszenia</h2>
+                <span className="text-center text-4xl font-bold mt-5 mb-1">Zaproś do drużyny</span>
+                <span className="text-center">Dana osoba może mieć jedno zaproszenie na drużynę i na jedno miejsce może istnieć tylko jedno zaproszenie. Nowe zastępują stare.</span>
+                <h2 className="text-2xl font-bold my-4">Dostępni znajomi do zaproszenia</h2>
                 {!listaZnajomych && <div className="text-center text-2xl">
                     Ładowanie listy znajomych...
                 </div>}
