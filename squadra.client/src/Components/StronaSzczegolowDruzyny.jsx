@@ -592,7 +592,7 @@ export default function StronaSzczegolowDruzyny() {
                     {listaZnajomych.map((znajomy) => (
                         <li key={znajomy.idUzytkownika} className="flex flex-row items-center text-3xl gap-3 p-2">
                             <AwatarComponent
-                                obraz={znajomy.awatar}
+                                obraz={znajomy.awatar ?? ""}
                                 wysokosc={100}
                                 pseudonim={znajomy.pseudonim}
                                 status={znajomy.nazwaStatusu}
