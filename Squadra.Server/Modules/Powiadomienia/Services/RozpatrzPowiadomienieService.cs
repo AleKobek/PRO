@@ -49,15 +49,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 if(powiadomienie.PowiazanyObiektId == null)
                 {
                     // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
-                    try
-                    {
-                        await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
-                    }
-                    catch (NieZnalezionoWBazieException e)
-                    {
-                        // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
-                    }
-                    return ServiceResult<bool>.NoContent(true); // zwracamy, że wszystko jest git, bo skoro nie ma powiadomienia, to nic nie trzeba rozpatrywać. front i tak ma je usunąć
+                    return await UsunRozpatrywanePowiadomienie(powiadomienie.Id);
                 }
             
                 // pobieramy naszą nazwę użytkownika, aby była w powiadomieniu dla drugiej strony
@@ -121,15 +113,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 if(powiadomienie.PowiazanyObiektId == null || powiadomienie.DrugiPowiazanyObiektId == null)
                 {
                     // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
-                    try
-                    {
-                        await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
-                    }
-                    catch (NieZnalezionoWBazieException e)
-                    {
-                        // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
-                    }
-                    return ServiceResult<bool>.NoContent(true); // zwracamy, że wszystko jest git, bo skoro nie ma powiadomienia, to nic nie trzeba rozpatrywać. front i tak ma je usunąć
+                    return await UsunRozpatrywanePowiadomienie(powiadomienie.Id);
                 }
                 
                 // pobieramy naszą nazwę użytkownika, aby była w powiadomieniu dla drugiej strony
@@ -142,31 +126,14 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 if (miejsceRes.StatusCode != 200 || miejsceRes.Value == null)
                 {
                     // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
-                    try
-                    {
-                        await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
-                    }
-                    catch (NieZnalezionoWBazieException e)
-                    {
-                        // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
-                    }
-                    return ServiceResult<bool>.NoContent(true); // zwracamy, że wszystko jest git, bo skoro nie ma powiadomienia, to nic nie trzeba rozpatrywać. front i tak ma je usunąć
+                    return await UsunRozpatrywanePowiadomienie(powiadomienie.Id);
                 }
             
                 // pobieramy drużynę, do której należy to miejsce
                 var druzynaRes = await druzynyService.GetDruzynaMiejsca(powiadomienie.PowiazanyObiektId ?? 1);
                 if (druzynaRes.StatusCode != 200 || druzynaRes.Value == null)
                 {
-                    // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
-                    try
-                    {
-                        await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
-                    }
-                    catch (NieZnalezionoWBazieException e)
-                    {
-                        // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
-                    }
-                    return ServiceResult<bool>.NoContent(true); // zwracamy, że wszystko jest git, bo skoro nie ma powiadomienia, to nic nie trzeba rozpatrywać. front i tak ma je usunąć
+                    return await UsunRozpatrywanePowiadomienie(powiadomienie.Id);
                 }
 
                 string? nazwaRoli = null;
@@ -223,21 +190,25 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                     }
                 }
             }
-        
-            // jak tu dochodzimy, wszystko zostało pomyślnie rozpatrzone i usuwamy
-            try
-            {
-                await powiadomienieRepository.DeletePowiadomienie(powiadomienie.Id);
-            }
-            catch (NieZnalezionoWBazieException e)
-            {
-                // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
-            }
-            return ServiceResult<bool>.NoContent(true);
+
+            return await UsunRozpatrywanePowiadomienie(powiadomienie.Id);
         }
         catch (NieZnalezionoWBazieException e)
         {
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
+    }
+    
+    private async Task<ServiceResult<bool>> UsunRozpatrywanePowiadomienie(int id)
+    {
+        try
+        {
+            await powiadomienieRepository.DeletePowiadomienie(id);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            // nic nie robimy, bo skoro nie ma powiadomienia, to coś innego je usunęło i tyle
+        }
+        return ServiceResult<bool>.NoContent(true);
     }
 }
