@@ -289,7 +289,7 @@ export default function NaglowekZalogowano({
         <header>
             <title>Squadra</title>
         </header>
-        <div className ="menu relative z-[9999]" id = "menu">
+        <div className ="menu relative z-[2000]" id = "menu">
             <div className="flex items-center flex-row  gap-3 h-full">
                 <span className="logo">Squadra</span>
                 <img src="/img/gamepad-2.svg" alt="gamepad" className="h-[clamp(28px,3vw,52px)] w-auto" />
