@@ -302,7 +302,7 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
         };
     }
     
-    [HttpPut("miejsce/zapros/{idMiejsca:int}/{idUzytkownika:int}")]
+    [HttpPost("miejsce/zapros/{idMiejsca:int}/{idUzytkownika:int}")]
     [EndpointSummary("Zaprasza użytkownika na dane miejsce w drużynie")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -327,7 +327,7 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
         };
     }
     
-    [HttpPut("miejsce/zapros/{idMiejsca:int}/login")]
+    [HttpPost("miejsce/zapros/{idMiejsca:int}/login")]
     [EndpointSummary("Zaprasza użytkownika na dane miejsce w drużynie po jego loginie")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
