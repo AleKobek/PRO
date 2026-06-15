@@ -54,8 +54,18 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
             
                 // pobieramy naszą nazwę użytkownika, aby była w powiadomieniu dla drugiej strony
                 var wynikZnalezieniaProfilu = await profilService.GetProfil(idUzytkownika);
-                if(wynikZnalezieniaProfilu.StatusCode != 200) return ServiceResult<bool>.NotFound(wynikZnalezieniaProfilu.Errors[0]);
-                if(wynikZnalezieniaProfilu.Value == null) return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + powiadomienie.PowiazanyObiektId));
+                if(wynikZnalezieniaProfilu.StatusCode != 200)
+                {
+                    // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
+                    await UsunRozpatrywanePowiadomienie(powiadomienie.Id);
+                    return ServiceResult<bool>.NotFound(wynikZnalezieniaProfilu.Errors[0]);
+                }
+                if(wynikZnalezieniaProfilu.Value == null)
+                {
+                    // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
+                    await UsunRozpatrywanePowiadomienie(powiadomienie.Id);
+                    return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + powiadomienie.PowiazanyObiektId));
+                }
             
                 switch (czyZaakceptowane)
                 {
@@ -118,8 +128,18 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 
                 // pobieramy naszą nazwę użytkownika, aby była w powiadomieniu dla drugiej strony
                 var wynikZnalezieniaProfilu = await profilService.GetProfil(idUzytkownika);
-                if(wynikZnalezieniaProfilu.StatusCode != 200) return ServiceResult<bool>.NotFound(wynikZnalezieniaProfilu.Errors[0]);
-                if(wynikZnalezieniaProfilu.Value == null) return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + powiadomienie.PowiazanyObiektId));
+                if(wynikZnalezieniaProfilu.StatusCode != 200)
+                {
+                    // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
+                    await UsunRozpatrywanePowiadomienie(powiadomienie.Id);
+                    return ServiceResult<bool>.NotFound(wynikZnalezieniaProfilu.Errors[0]);
+                }
+                if(wynikZnalezieniaProfilu.Value == null)
+                {
+                    // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
+                    await UsunRozpatrywanePowiadomienie(powiadomienie.Id);
+                    return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + powiadomienie.PowiazanyObiektId));
+                }
                 
                 // pobieramy miejsce w drużynie
                 var miejsceRes = await druzynyService.GetMiejsceWDruzynie(powiadomienie.PowiazanyObiektId ?? 1);
