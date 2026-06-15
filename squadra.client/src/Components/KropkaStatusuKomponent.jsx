@@ -1,6 +1,8 @@
 ﻿import {useMemo} from "react";
 
-export default function KropkaStatusuKomponent({status}){
+export default function KropkaStatusuKomponent({status, wysokoscAwatara}){
+
+    const wysokoscKropki = wysokoscAwatara/15 * 4;
 
     const classNameStatusu = useMemo(() => {
         const Status = {
@@ -29,7 +31,7 @@ export default function KropkaStatusuKomponent({status}){
         }
     },[status]);
 
-    const kropkaClass = `absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 h-6 w-6 rounded-full border border-black ${classNameStatusu}`;
+    const kropkaClass = `absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 rounded-full border border-black ${classNameStatusu}`;
 
-    return(<span className={status && kropkaClass}/>)
+    return(<span className={status && kropkaClass} style={{ width: wysokoscKropki, height: wysokoscKropki }}/>)
 }

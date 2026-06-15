@@ -5,7 +5,6 @@ import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL, CLIENT_URL} from "../config/api";
-import MiniAwatarKomponent from "./MiniAwatarKomponent";
 import {OkienkoTlumaczaceZintegrowanie} from "./OkienkoTlumaczaceZintegrowanie";
 import AwatarComponent from "./AwatarComponent";
 export default function StronaSzczegolowDruzyny() {
@@ -657,7 +656,7 @@ export default function StronaSzczegolowDruzyny() {
                 </button>
             </div>
             <div className="flex flex-col">
-                <span className="text-center text-4xl font-bold mt-5 mb-1">Zaproś do drużyny</span>
+                <span className="text-center text-4xl font-bold mt-5 mb-1 w-6">Zaproś do drużyny</span>
                 <span className="text-center">Dana osoba może mieć jedno zaproszenie na drużynę i na jedno miejsce może istnieć tylko jedno zaproszenie. Nowe zastępują stare.</span>
                 <h2 className="text-2xl font-bold my-4">Dostępni znajomi do zaproszenia</h2>
                 {!listaZnajomych && <div className="text-center text-2xl">
@@ -680,7 +679,7 @@ export default function StronaSzczegolowDruzyny() {
                         <li key={znajomy.idUzytkownika} className="flex flex-row items-center text-3xl gap-3 p-2">
                             <AwatarComponent
                                 obraz={znajomy.awatar ?? ""}
-                                wysokosc={100}
+                                wysokosc={60}
                                 pseudonim={znajomy.pseudonim}
                                 status={znajomy.nazwaStatusu}
                             />
@@ -728,9 +727,11 @@ export default function StronaSzczegolowDruzyny() {
                         {/* członek */}
                         {miejsce.czlonek ? <th className="flex items-center gap-2 px-4 py-2">
                             {miejsce.czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-50 h-50"/> : <div className="pl-9"/>}
-                            <MiniAwatarKomponent
+                            <AwatarComponent
                                 obraz={miejsce.czlonek.awatar}
-                                status={miejsce.czlonek.nazwaStatusu}/>
+                                status={miejsce.czlonek.nazwaStatusu}
+                                wysokosc={40}
+                            />
                             <a
                                 className="text-sm hover:underline"
                                 href={`${CLIENT_URL}/profil/` + miejsce.czlonek.idUzytkownika}>{miejsce.czlonek.pseudonim}</a>
@@ -778,9 +779,11 @@ export default function StronaSzczegolowDruzyny() {
                         {/* członek */}
                         {miejsce.czlonek ? <th className="flex items-center gap-2 px-4 py-2">
                             {miejsce.czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-50 h-50"/> : <div className="pl-9"/>}
-                            <MiniAwatarKomponent
+                            <AwatarComponent
                                 obraz={miejsce.czlonek.awatar}
-                                status={miejsce.czlonek.nazwaStatusu}/>
+                                status={miejsce.czlonek.nazwaStatusu}
+                                wysokosc={40}
+                            />
                             <a
                                 className="text-sm hover:underline"
                                 href={`${CLIENT_URL}/profil/` + miejsce.czlonek.idUzytkownika}>{miejsce.czlonek.pseudonim}</a>
@@ -813,9 +816,11 @@ export default function StronaSzczegolowDruzyny() {
                         {/* członek */}
                         {miejsce.czlonek ? <th className="flex items-center gap-2 px-4 py-2">
                             {miejsce.czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-50 h-50"/> : <div className="pl-9"/>}
-                            <MiniAwatarKomponent
+                            <AwatarComponent
                                 obraz={miejsce.czlonek.awatar}
-                                status={miejsce.czlonek.nazwaStatusu}/>
+                                status={miejsce.czlonek.nazwaStatusu}
+                                wysokosc={40}
+                            />
                             <a
                                 className="text-sm hover:underline"
                                 href={`${CLIENT_URL}/profil/` + miejsce.czlonek.idUzytkownika}>{miejsce.czlonek.pseudonim}</a>
