@@ -7,6 +7,7 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL, CLIENT_URL} from "../config/api";
 import MiniAwatarKomponent from "./MiniAwatarKomponent";
 import {OkienkoTlumaczaceZintegrowanie} from "./OkienkoTlumaczaceZintegrowanie";
+import AwatarComponent from "./AwatarComponent";
 export default function StronaSzczegolowDruzyny() {
 
     const navigate = useNavigate();
@@ -18,8 +19,12 @@ export default function StronaSzczegolowDruzyny() {
     const toastShownRef = useRef(false);
     const [nieZnalezionoDruzyny, ustawNieZnalezionoDruzyny] = React.useState(false);
     const [pokazOkienkoTlumaczenia, ustawPokazOkienkoTlumaczenia] = useState(false);
+    const [pokazPanelZapraszania, ustawPokazPanelZapraszania] = useState(false);
     const ref = React.useRef(null);
 
+    const [loginZapraszanego, ustawLoginZapraszanego] = useState(null);
+    const [idMiejscaDoZaproszenia, ustawIdMiejscaDoZaproszenia] = useState(null);
+    const [listaZnajomych, ustawListeZnajomych] = useState(null);
 
     /*
 
@@ -69,8 +74,6 @@ export default function StronaSzczegolowDruzyny() {
 
    */
 
-    // tutaj będzie  .
-    // przycisk edycji będzie chował panel szczegółów i pokazywał panel edycji .
 
     useEffect(() => {
         if(!daneDruzyny) document.title = `Szczegóły drużyny`;
@@ -460,8 +463,9 @@ export default function StronaSzczegolowDruzyny() {
         });
     }
 
-    const przyKliknieciuZaproszeniaDoDruzyny = (idMiejsca) => {
-
+    const przyKliknieciuZaproszeniaDoDruzynyPoId = (idMiejsca, idUzytkownika) => {
+    }
+    const przyKliknieciuZaproszeniaDoDruzynyPoLoginie = (idMiejsca, login) => {
     }
 
     const przyKliknieciuWyrzuceniaZDruzyny = async (idMiejsca) => {
@@ -502,6 +506,119 @@ export default function StronaSzczegolowDruzyny() {
         ustawDaneDruzyny(tempDaneDruzyny);
     }
 
+
+    const pobierzZnajomychDoListy = async (idMiejsca) => {
+        const fetchJsonAbort = async (url) => {
+            try {
+                const res = await fetch(url, { method: 'GET', credentials: "include" });
+                if (!res.ok) {
+                    const ct = res.headers.get("content-type") || "";
+                    const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                        ? await res.json().catch(() => null)
+                        : await res.text().catch(() => "");
+                    toast.error(`${body.message ?? body.errors[0].message ?? "Wystąpił błąd podczas pobierania listy znajomych"}`, {
+                        position: "top-center",
+                        autoClose: 5000,
+                        hideProgressBar: false,
+                        closeOnClick: false,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "light",
+                        transition: Bounce,
+                    });
+                    return null;
+                }
+                return await res.json();
+            } catch (err) {
+                if (err && err.name === 'AbortError') return null;
+                console.error('Błąd pobierania:', err);
+                toast.error('Wystąpił błąd podczas pobierania listy znajomych', {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+                return null;
+            }
+        };
+
+        const data = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/znajomi-spelniajacy-warunki-miejsca/${idMiejsca}`);
+        ustawListeZnajomych(data);
+    }
+
+    const PanelZapraszania = () => {
+        if(!pokazPanelZapraszania) return null;
+        if(!idMiejscaDoZaproszenia) return null;
+
+        return (<div
+            ref={ref}
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[800px] pt-2 p-10 overflow-y-auto
+                rounded-md shadow-lg justify-center items-center bg-amber-50 border-2 border-amber-400"
+            style={{zIndex: 2001}}
+        >
+            <div className="flex justify-end">
+                <button onClick={() => {
+                    ustawListeZnajomych(null)
+                    ustawPokazPanelZapraszania(false)
+                }}
+                        className="cursor-pointer text-red-600">Zamknij
+                </button>
+            </div>
+            <div className="flex flex-col">
+                <h2 className="text-2xl font-bold mb-4">Dostępni znajomi do zaproszenia</h2>
+                {!listaZnajomych && <div className="text-center text-2xl">
+                    Ładowanie listy znajomych...
+                </div>}
+                {listaZnajomych != null && listaZnajomych.length === 0 && <div className="text-center">
+                    Brak znajomych dostępnych do zaproszenia
+                </div>}
+                {listaZnajomych != null && listaZnajomych.length > 0 && <ul className="h-[520px] overflow-y-auto border-2 border-gray-300 rounded-md p-2">
+                {/*
+                    Dane przyjdą w formie:
+                    {
+                    "idUzytkownika": 1,
+                    "pseudonim": "Leczo",
+                    "Awatar": tutaj awatar,
+                    "nazwaStatusu": "Dostepny",
+                    }
+                */}
+                    {listaZnajomych.map((znajomy) => (
+                        <li key={znajomy.idUzytkownika} className="flex flex-row items-center text-3xl gap-3 p-2">
+                            <AwatarComponent
+                                obraz={znajomy.awatar}
+                                wysokosc={100}
+                                pseudonim={znajomy.pseudonim}
+                                status={znajomy.nazwaStatusu}
+                            />
+                            <a href={`${CLIENT_URL}/profil/`+ znajomy.idUzytkownika}>{znajomy.pseudonim}</a>
+                            <button
+                                onClick={() => przyKliknieciuZaproszeniaDoDruzynyPoId(idMiejscaDoZaproszenia, znajomy.idUzytkownika)}
+                                className="bg-green-700 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                            >Zaproś</button>
+                        </li>
+                    ))}
+                </ul>}
+                <h2 className="text-center text-xl font-bold mt-5 mb-1">Zaproś użytkownika po loginie</h2>
+                <input
+                    type="text"
+                    value={loginZapraszanego}
+                    className="border-2 border-gray-300 rounded-md p-2 mb-2"
+                    maxLength={64}
+                />
+                <button
+                    onClick={() => przyKliknieciuZaproszeniaDoDruzynyPoLoginie(idMiejscaDoZaproszenia, loginZapraszanego)}
+                    className="bg-green-700 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                >Zaproś po loginie</button>
+            </div>
+        </div>)
+    }
+
     // obok miejsca w drużynie jest przycisk zaproszenia lub usunięcia z drużyny
     const ListaCzlonkowDlaKapitana = () =>{
         return (<div>
@@ -538,7 +655,11 @@ export default function StronaSzczegolowDruzyny() {
                                     disabled={miejsce.czyKapitan}
                                 >Wyrzuć</button>
                                 : <button
-                                    onClick={() => przyKliknieciuZaproszeniaDoDruzyny(miejsce.idMiejscaWDruzynie)}
+                                    onClick={() => {
+                                        ustawIdMiejscaDoZaproszenia(miejsce.idMiejscaWDruzynie)
+                                        pobierzZnajomychDoListy(miejsce.idMiejscaWDruzynie);
+                                        ustawPokazPanelZapraszania(true)
+                                    }}
                                     className="bg-green-700 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
                                 >Zaproś</button>
                             }</th>
@@ -782,6 +903,7 @@ export default function StronaSzczegolowDruzyny() {
             </div>
         </div>
         {pokazOkienkoTlumaczenia && OkienkoTlumaczaceZintegrowanie(ref, ustawPokazOkienkoTlumaczenia)}
+        {pokazPanelZapraszania && <PanelZapraszania/>}
         <ToastContainer
             position="top-center"
             autoClose={5000}
