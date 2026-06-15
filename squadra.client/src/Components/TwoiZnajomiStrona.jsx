@@ -187,6 +187,7 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
                     value={loginDoZaproszenia}
                     onChange={(e)=>ustawLoginDoZaproszenia(e.target.value)}
                     autoFocus={true}
+                    maxLength={64}
                 />
                 <button
                     className={czySieWysylaZaproszenie || !loginDoZaproszenia.trim() ?
