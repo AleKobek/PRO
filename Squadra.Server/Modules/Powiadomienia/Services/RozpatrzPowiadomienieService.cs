@@ -138,11 +138,11 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 {
                     // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
                     await UsunRozpatrywanePowiadomienie(powiadomienie.Id);
-                    return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + powiadomienie.PowiazanyObiektId));
+                    return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu użytkownika o id " + idUzytkownika));
                 }
                 
                 // pobieramy miejsce w drużynie
-                var miejsceRes = await druzynyService.GetMiejsceWDruzynie(powiadomienie.PowiazanyObiektId ?? 1);
+                var miejsceRes = await druzynyService.GetMiejsceWDruzynie(powiadomienie.DrugiPowiazanyObiektId ?? 1);
                 if (miejsceRes.StatusCode != 200 || miejsceRes.Value == null)
                 {
                     // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
@@ -150,7 +150,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 }
             
                 // pobieramy drużynę, do której należy to miejsce
-                var druzynaRes = await druzynyService.GetDruzynaMiejsca(powiadomienie.PowiazanyObiektId ?? 1);
+                var druzynaRes = await druzynyService.GetDruzynaMiejsca(powiadomienie.DrugiPowiazanyObiektId ?? 1);
                 if (druzynaRes.StatusCode != 200 || druzynaRes.Value == null)
                 {
                     return await UsunRozpatrywanePowiadomienie(powiadomienie.Id);
@@ -167,7 +167,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 {
                     case true:
                     {
-                        var result = await druzynyService.DodajUzytkownikaNaMiejsce(powiadomienie.PowiazanyObiektId ?? 1, powiadomienie.UzytkownikId); 
+                        var result = await druzynyService.DodajUzytkownikaNaMiejsce(powiadomienie.DrugiPowiazanyObiektId ?? 1, powiadomienie.UzytkownikId); 
                         // coś poszło nie tak
                         if (!result.Succeeded) return result;
                         
