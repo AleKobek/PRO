@@ -655,8 +655,8 @@ export default function StronaSzczegolowDruzyny() {
                         className="cursor-pointer text-red-600">Zamknij
                 </button>
             </div>
-            <div className="flex flex-col">
-                <span className="text-center text-4xl font-bold mt-5 mb-1 w-6">Zaproś do drużyny</span>
+            <div className="flex flex-col justify-center items-center">
+                <span className="text-center text-4xl font-bold mt-5 mb-1">Zaproś do drużyny</span>
                 <span className="text-center">Dana osoba może mieć jedno zaproszenie na drużynę i na jedno miejsce może istnieć tylko jedno zaproszenie. Nowe zastępują stare.</span>
                 <h2 className="text-2xl font-bold my-4">Dostępni znajomi do zaproszenia</h2>
                 {!listaZnajomych && <div className="text-center text-2xl">
@@ -686,7 +686,7 @@ export default function StronaSzczegolowDruzyny() {
                             <a href={`${CLIENT_URL}/profil/`+ znajomy.idUzytkownika}>{znajomy.pseudonim}</a>
                             <button
                                 onClick={() => przyKliknieciuZaproszeniaDoDruzynyPoId(idMiejscaDoZaproszenia, znajomy.idUzytkownika)}
-                                className="bg-green-700 hover:bg-green-500 text-white font-bold py-2 px-4 rounded"
+                                className="bg-green-700 hover:bg-green-500 text-white font-bold text-lg py-1 px-3 rounded"
                             >Zaproś</button>
                         </li>
                     ))}
@@ -695,7 +695,7 @@ export default function StronaSzczegolowDruzyny() {
                 <input
                     type="text"
                     value={loginZapraszanego}
-                    className="border-2 border-gray-300 rounded-md p-2 mb-2"
+                    className="border-2 border-gray-300 rounded-md p-2 mb-2 w-3/4"
                     onChange={(e) => ustawLoginZapraszanego(e.target.value)}
                     autoFocus={true}
                     maxLength={64}
