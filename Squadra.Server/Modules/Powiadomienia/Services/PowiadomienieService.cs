@@ -115,6 +115,13 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         return ServiceResult<bool>.NoContent(await powiadomienieRepository.DeletePowiadomieniaZwiazaneZUzytkownikiem(idUzytkownika));
     }
 
+    public async Task<ServiceResult<bool>> UsunPowiadomieniaZwiazaneZDruzyna(int idDruzyny)
+    {
+        if(idDruzyny < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+        
+        return ServiceResult<bool>.NoContent(await powiadomienieRepository.UsunPowiadomieniaZwiazaneZDruzyna(idDruzyny));
+    }
+
     public async Task<ServiceResult<bool>> DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(int? idUzytkownika, int idTypu, int idPowiazanegoObiektu, int? idDrugiegoPowiazanegoObiektu)
     {
         if(idTypu < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id typu powiadomienia: " + idTypu));
