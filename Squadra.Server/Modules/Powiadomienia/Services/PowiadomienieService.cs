@@ -18,7 +18,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
     IUzytkownikService uzytkownikService,
     IZnajomiService znajomiService,
     IZnajomiRepository znajomiRepository,
-    IProfilService profilService
+    IProfilService profilService,
+    IUsuwanieNadmiaruPowiadomienService usuwanieNadmiaruPowiadomienService
     ) : IPowiadomienieService
 {
     public async Task<ServiceResult<PowiadomienieDto>> GetPowiadomienie(int id) {
@@ -97,8 +98,10 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 return ServiceResult<bool>.NotFound(wynikZnalezieniaUzytkownika.Errors[0]);
         }
         // jak tu dochodzimy, wszystko jest git
-
-        return ServiceResult<bool>.NoContent(await powiadomienieRepository.CreatePowiadomienie(powiadomienie));
+        await powiadomienieRepository.CreatePowiadomienie(powiadomienie);
+        // usuwamy powiadomienia przekraczające limit
+        await usuwanieNadmiaruPowiadomienService.UsunNadmiarowePowiadomieniaUzytkownika(powiadomienie.IdUzytkownika);
+        return ServiceResult<bool>.NoContent(true);
         
     }
 
@@ -131,6 +134,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         
         return ServiceResult<bool>.NoContent(await powiadomienieRepository.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(idUzytkownika, idTypu, idPowiazanegoObiektu, idDrugiegoPowiazanegoObiektu));
     }
+    
 
         // najpierw zmieniamy login na id, potem wywołujemy zapraszanie po id
         public async Task<ServiceResult<bool>> WyslijZaproszenieDoZnajomychPoLoginie(int idZapraszajacego, string loginZaproszonego)

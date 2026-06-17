@@ -9,6 +9,7 @@ public static class PowiadomieniaModule
         services.AddScoped<IPowiadomienieService, PowiadomienieService>();
         services.AddScoped<IPowiadomienieRepository, PowiadomienieRepository>();
         services.AddScoped<IRozpatrzPowiadomienieService, RozpatrzPowiadomienieService>();
+        services.AddScoped<IUsuwanieNadmiaruPowiadomienService, UsuwanieNadmiaruPowiadomienService>();
         return services;
     }
 }

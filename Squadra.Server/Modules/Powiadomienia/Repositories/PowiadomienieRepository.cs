@@ -9,6 +9,8 @@ namespace Squadra.Server.Modules.Powiadomienia.Repositories;
 
 public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepository
 {
+    public static readonly int MaksymalnaLiczbaPowiadomien = 250;
+    
     public async Task<Powiadomienie> GetPowiadomienie(int id)
     {
         var powiadomienie = await context.Powiadomienie.FindAsync(id);
@@ -29,6 +31,18 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
         return lista;
     }
     
+    public async Task<ICollection<Powiadomienie>> PodajPowiadomieniaUzytkownikaPrzekraczajaceLimit(int idUzytkownika)
+    {
+        var liczbaPowiadomien = await context.Powiadomienie.CountAsync(x => x.UzytkownikId == idUzytkownika);
+        if(liczbaPowiadomien <= MaksymalnaLiczbaPowiadomien) return new List<Powiadomienie>();
+        var powiadomieniaDoUsuniecia = await context.Powiadomienie
+            .Where(x => x.UzytkownikId == idUzytkownika)
+            .OrderBy(x => x.DataWyslania)
+            .Take(liczbaPowiadomien - MaksymalnaLiczbaPowiadomien)
+            .ToListAsync();
+        return powiadomieniaDoUsuniecia;
+    }
+
     public async Task<bool> CzyUzytkownikMaPowiadomienieDanegoTypuPowiazaneZObiektami(int idUzytkownika, int idTypu, int idPowiazanegoObiektu, int? idDrugiegoPowiazanegoObiektu)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
@@ -70,6 +84,13 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
         return true;
     }
     
+    public async Task<bool> UsunPowiadomienia(ICollection<Powiadomienie> powiadomienia)
+    {
+        context.Powiadomienie.RemoveRange(powiadomienia);
+        await context.SaveChangesAsync();
+        return true;
+    }
+
     public async Task<bool> DeletePowiadomieniaZwiazaneZUzytkownikiem(int idUzytkownika)
     {
         var powiadomienia = await context.Powiadomienie.Where(x => 
