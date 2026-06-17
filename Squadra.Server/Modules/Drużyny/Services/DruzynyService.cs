@@ -745,6 +745,11 @@ public class DruzynyService(
             var usunDruzyneRes = await druzynyRepository.UsunDruzyne(idDruzyny);
             if (!usunDruzyneRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć drużyny")]);
             
+            // usuwamy wszystkie powiadomienia związane z drużyną, żeby nie było powiadomień o drużynie, która już nie istnieje
+            // czyli to będą zaproszenia do tej drużyny i u kapitana powiadomienia że ktoś dołączył/opuścił, ktoś odrzucił/zaakceptował zaproszenie .
+            var powiadomieniaRes = await powiadomienieService.UsunPowiadomieniaZwiazaneZDruzyna(idDruzyny);
+            if (!powiadomieniaRes.Succeeded) return ServiceResult<bool>.Fail(powiadomieniaRes.StatusCode, powiadomieniaRes.Errors);
+            
             // wysyłamy powiadomienia do wszystkich członków drużyny, że drużyna została usunięta
             foreach (var miejsce in czlonkowieDruzyny)
             {
