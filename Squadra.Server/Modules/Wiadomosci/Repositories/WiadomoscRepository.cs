@@ -7,6 +7,7 @@ namespace Squadra.Server.Modules.Wiadomosci.Repositories;
 
 public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
 {
+    public static readonly int MaksymalnaLiczbaWiadomosciNaCzaciePrywatnym = 300;
     
     public async Task<WiadomoscDto> GetWiadomosc(int id)
     {
@@ -58,6 +59,7 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
             IdTypuWiadomosci = wiadomosc.IdTypuWiadomosci
         };
         await context.Wiadomosc.AddAsync(wiadomoscDoDodania);
+        await UsunWiadomosciPrzekraczajaceLimit(idNadawcy, idOdbiorcy); // usuwamy nadmiarowe wiadomości, jeżeli jest ich za dużo
         return await context.SaveChangesAsync() > 0; // zwracamy true, jeżeli dodano więcej niż 0 rekordów, czyli się udało
     }
 
@@ -69,6 +71,21 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
                                   (x.IdNadawcy == idUzytkownika2 && x.IdOdbiorcy == idUzytkownika1))
             .ToListAsync();
         context.Wiadomosc.RemoveRange(wiadomosci);
+        await context.SaveChangesAsync();
+        return true;
+    }
+    
+    private async Task<bool> UsunWiadomosciPrzekraczajaceLimit(int idUzytkownika1, int idUzytkownika2)
+    {
+        
+        var wiadomosci = await context.Wiadomosc
+            .Where(x => (x.IdNadawcy == idUzytkownika1 && x.IdOdbiorcy == idUzytkownika2) ||
+                                  (x.IdNadawcy == idUzytkownika2 && x.IdOdbiorcy == idUzytkownika1))
+            .OrderByDescending(x => x.DataWyslania)
+            .ToListAsync();
+        if (wiadomosci.Count <= MaksymalnaLiczbaWiadomosciNaCzaciePrywatnym) return true;
+        var wiadomosciDoUsuniecia = wiadomosci.Skip(MaksymalnaLiczbaWiadomosciNaCzaciePrywatnym).ToList();
+        context.Wiadomosc.RemoveRange(wiadomosciDoUsuniecia);
         await context.SaveChangesAsync();
         return true;
     }
