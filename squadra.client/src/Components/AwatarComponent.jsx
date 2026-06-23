@@ -12,7 +12,7 @@ export default function AwatarComponent({obraz, wysokosc, status}) {
 
     const gruboscObramowania =
         wysokosc > 40
-        ? wysokosc > 60
+        ? wysokosc > 70
             ? "border-4"
             : "border-2"
         : "border";

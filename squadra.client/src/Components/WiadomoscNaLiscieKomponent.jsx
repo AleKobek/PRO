@@ -15,7 +15,7 @@ export default function WiadomoscNaLiscieKomponent({wiadomosc, awatarNadawcy, ps
 
     // zżynamy z discorda, bo musi być awatar i pseudonim, bo potem na czacie gildii będzie potrzebne
     return(<li className= {"flex justify-start w-full gap-2"} key = {wiadomosc.id}>
-        <AwatarComponent obraz={awatarNadawcy} wysokosc={100} status={""}/>
+        <AwatarComponent obraz={awatarNadawcy} wysokosc={70} status={""}/>
         <div className="flex-1 min-w-0 ml-2">
             <div className="flex flex-row gap-2 items-center">
                 <span className="font-semibold text-2xl">{pseudonimNadawcy}</span>
