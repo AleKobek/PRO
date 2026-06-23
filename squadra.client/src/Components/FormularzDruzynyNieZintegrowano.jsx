@@ -182,7 +182,6 @@ export default function FormularzDruzynyNieZintegrowano({
             ustawWszystkieJezyki(dane.jezyki);
             ustawWszystkieStopnie(dane.stopnieBieglosciJezyka);
             ustawRole(dane.role ?? []);
-            ustawIdRoliDoDodania(dane.role[0]?.id ?? null);
         };
 
         podajNieZintegrowaneDane();
