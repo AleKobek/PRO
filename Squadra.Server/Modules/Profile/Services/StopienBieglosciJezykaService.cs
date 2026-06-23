@@ -1,4 +1,5 @@
-﻿using Squadra.Server.Modules.Profile.DTO.JezykStopien;
+﻿using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Profile.Repositories;
 using Squadra.Server.Modules.Shared.Services;
 
@@ -11,10 +12,19 @@ public class StopienBieglosciJezykaService(IStopienBieglosciJezykaRepository sto
         return ServiceResult<ICollection<StopienBieglosciJezykaDto>>.Ok(await stopienBieglosciJezykaRepository.GetStopnieBieglosciJezyka());
     }
 
-    public async Task<ServiceResult<StopienBieglosciJezykaDto?>> GetStopienBieglosciJezyka(int id)
+    public async Task<ServiceResult<StopienBieglosciJezykaDto>> GetStopienBieglosciJezyka(int id)
     {
-        if (id < 1) return ServiceResult<StopienBieglosciJezykaDto?>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator stopnia bieglosci jezyka: " + id));
-        return ServiceResult<StopienBieglosciJezykaDto?>.Ok(await stopienBieglosciJezykaRepository.GetStopienBieglosciJezyka(id));
+        try
+        {
+            if (id < 1)
+                return ServiceResult<StopienBieglosciJezykaDto>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator stopnia bieglosci jezyka: " + id));
+           
+            return ServiceResult<StopienBieglosciJezykaDto>.Ok(await stopienBieglosciJezykaRepository.GetStopienBieglosciJezyka(id));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<StopienBieglosciJezykaDto>.NotFound(new ErrorItem(e.Message));
+        }
     }
 
 }

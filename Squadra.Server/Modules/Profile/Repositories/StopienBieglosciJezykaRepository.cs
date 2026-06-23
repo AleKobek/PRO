@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
+using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Profile.Models;
 
@@ -19,9 +20,10 @@ public class StopienBieglosciJezykaRepository(AppDbContext appDbContext) : IStop
         return stopnieBieglosciDoZwrocenia;
     }
 
-    public async Task<StopienBieglosciJezykaDto?> GetStopienBieglosciJezyka(int id)
+    public async Task<StopienBieglosciJezykaDto> GetStopienBieglosciJezyka(int id)
     {
         var stopienBieglosci = await appDbContext.StopienBieglosciJezyka.FindAsync(id);
-        return stopienBieglosci != null ? new StopienBieglosciJezykaDto(stopienBieglosci.Id, stopienBieglosci.Nazwa, stopienBieglosci.Wartosc) : null;
+        if(stopienBieglosci == null) throw new NieZnalezionoWBazieException("Nie znaleziono stopnia bieglosci jezyka o id: " + id);
+        return new StopienBieglosciJezykaDto(stopienBieglosci.Id, stopienBieglosci.Nazwa, stopienBieglosci.Wartosc);
     }
 }

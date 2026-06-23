@@ -7,5 +7,5 @@ public interface IStopienBieglosciJezykaService
 {
     public Task<ServiceResult<ICollection<StopienBieglosciJezykaDto>>> GetStopnieBieglosciJezyka();
 
-    public Task<ServiceResult<StopienBieglosciJezykaDto?>> GetStopienBieglosciJezyka(int id);
+    public Task<ServiceResult<StopienBieglosciJezykaDto>> GetStopienBieglosciJezyka(int id);
 }
