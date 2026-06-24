@@ -128,9 +128,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         // pierwszym i jedynym powiązanym obiektem jest drużyna
         if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia is 
             TypPowiadomieniaEnum.UsuniecieZDruzyny 
-            or TypPowiadomieniaEnum.DruzynaZostalaRozwiazana 
             or TypPowiadomieniaEnum.UzytkownikOpuscilDruzyneBoUsunalKonto
-            or TypPowiadomieniaEnum.DruzynaZostalaUsunietaAutomatycznie
         ){
             try
             { 
