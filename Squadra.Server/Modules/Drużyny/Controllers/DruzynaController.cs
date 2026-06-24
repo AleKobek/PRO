@@ -88,7 +88,11 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
      [ProducesResponseType(404)]
      public async Task<ActionResult<DaneDoFormularzaDruzynyBezStatystykDto>> GetDaneDoFormularzaDruzynyBezStatystyk(int idGry)
     {
-        var result = await druzynyService.GetDaneDoFormularzaDruzynyBezStatystyk(idGry);
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetDaneDoFormularzaDruzynyBezStatystyk(idGry, uzytkownik.Id);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),

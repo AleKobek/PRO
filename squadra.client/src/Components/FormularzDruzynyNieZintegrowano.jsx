@@ -48,51 +48,24 @@ export default function FormularzDruzynyNieZintegrowano({
           "logo": "tutaj mnóstwo znaków"
         }
       ],
-      "jezyki": [
+      "jezykiOrazStopnie": [
         {
-          "id": 1,
-          "nazwa": "polski"
-        },
-        {
-          "id": 2,
-          "nazwa": "angielski"
-        },
-        {
-          "id": 3,
-          "nazwa": "niemiecki"
-        },
-        {
-          "id": 4,
-          "nazwa": "francuski"
-        },
-        {
-          "id": 5,
-          "nazwa": "hiszpański"
-        },
-        {
-          "id": 6,
-          "nazwa": "japoński"
-        },
-        {
-          "id": 7,
-          "nazwa": "rosyjski"
-        }
-      ],
-      "stopnieBieglosciJezyka": [
-        {
-          "id": 1,
-          "nazwa": "Podstawowy",
-          "wartosc": 1
-        },
-        {
-          "id": 2,
-          "nazwa": "Średnio-zaawansowany",
-          "wartosc": 2
-        },
-        {
-          "id": 3,
-          "nazwa": "Zaawansowany",
-          "wartosc": 3
+          "jezyk": {
+            "id": 2,
+            "nazwa": "angielski"
+          },
+          "stopnie": [
+            {
+              "id": 1,
+              "nazwa": "Podstawowy",
+              "wartosc": 1
+            },
+            {
+              "id": 2,
+              "nazwa": "Średnio-zaawansowany",
+              "wartosc": 2
+            }
+          ]
         }
       ],
       "role": [
@@ -120,8 +93,7 @@ export default function FormularzDruzynyNieZintegrowano({
     // pobrane dane z bazy
     const [nastrojeRozgrywki, ustawNastrojeRozgrywki] = useState([]);
     const [platformy, ustawPlatformy] = useState([]);
-    const [wszystkieJezyki, ustawWszystkieJezyki] = useState([]);
-    const [wszystkieStopnie, ustawWszystkieStopnie] = useState([]);
+    const [jezykiIStopnie, ustawJezykiIStopnie] = useState([]);
     const [role, ustawRole] = useState([]);
 
     // dane z formularza
@@ -179,8 +151,7 @@ export default function FormularzDruzynyNieZintegrowano({
             ustawNastrojeRozgrywki(dane.nastrojeRozgrywki);
             ustawIdWybranegoNastroju(dane.nastrojeRozgrywki[0].id)
             ustawPlatformy(dane.platformy);
-            ustawWszystkieJezyki(dane.jezyki);
-            ustawWszystkieStopnie(dane.stopnieBieglosciJezyka);
+            ustawJezykiIStopnie(dane.jezykiOrazStopnie);
             ustawRole(dane.role ?? []);
         };
 
@@ -291,6 +262,11 @@ export default function FormularzDruzynyNieZintegrowano({
         });
     }
 
+    const aktualnaListaStopni = useMemo(() =>{
+        if(idWymaganegoJezyka === null) return [];
+        return jezykiIStopnie.find((x) => x.jezyk.id === idWymaganegoJezyka)?.stopnie ?? [];
+    }, [idWymaganegoJezyka, jezykiIStopnie]);
+
     const czyZablokowane = useMemo(() =>{
         return (!uzytkownik || !idGryDruzyny
             || miejscaWDruzynie.length === 0 || miejscaWDruzynie.length > 8
@@ -342,11 +318,13 @@ export default function FormularzDruzynyNieZintegrowano({
                                     onChange={(e) => {
                                         if(e.target.value === "") ustawIdWymaganegoJezyka(null);
                                         else ustawIdWymaganegoJezyka(parseInt(e.target.value))
-                                    }}>
+                                    }}
+                                    disabled={jezykiIStopnie.length === 0}
+                                >
                                     <option value = "" key = {-1}>Brak</option>
                                     {
-                                        wszystkieJezyki.map((jezyk) =>
-                                            <option value={jezyk.id} key={jezyk.id}>{jezyk.nazwa}</option>
+                                        jezykiIStopnie.map((jezykIStopien) =>
+                                            <option value={jezykIStopien.jezyk.id} key={jezykIStopien.jezyk.id}>{jezykIStopien.jezyk.nazwa}</option>
                                         )
                                     }
                                 </select>
@@ -357,11 +335,11 @@ export default function FormularzDruzynyNieZintegrowano({
                                         if(e.target.value === "") ustawIdMinimalnegoStopniaJezyka(null);
                                         else ustawIdMinimalnegoStopniaJezyka(parseInt(e.target.value))
                                     }}
-                                    disabled={idWymaganegoJezyka === null}
+                                    disabled={idWymaganegoJezyka === null || aktualnaListaStopni.length === 0}
                                 >
-                                    <option value = "" key = {-1}>Brak</option>
+                                    {aktualnaListaStopni.length === 0 && <option value="" key={-1}>Brak</option>}
                                     {
-                                        wszystkieStopnie.map((stopien) =>
+                                        aktualnaListaStopni.map((stopien) =>
                                             <option value={stopien.id} key={stopien.id}>{stopien.nazwa}</option>)
                                     }
                                 </select>

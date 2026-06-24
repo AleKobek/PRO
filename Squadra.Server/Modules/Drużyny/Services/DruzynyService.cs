@@ -5,6 +5,7 @@ using Squadra.Server.Modules.Drużyny.Repositories;
 using Squadra.Server.Modules.Platformy.Services;
 using Squadra.Server.Modules.Powiadomienia.Enums;
 using Squadra.Server.Modules.Powiadomienia.Services;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
@@ -422,7 +423,7 @@ public class DruzynyService(
     }
 
     // funkcja zwracająca dane do formularza bez statystyk, nie spersonalizowane
-    public async Task<ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>> GetDaneDoFormularzaDruzynyBezStatystyk(int idGry)
+    public async Task<ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>> GetDaneDoFormularzaDruzynyBezStatystyk(int idGry, int idUzytkownika)
     {
         // sprawdzamy, czy podane id jest okej
         var graRes = await wspieranaGraService.GetWspieranaGra(idGry);
@@ -432,11 +433,8 @@ public class DruzynyService(
         var platformyRes = await wspieranaGraService.GetPlatformyGry(idGry);
         if (!platformyRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(platformyRes.StatusCode, platformyRes.Errors);
         
-        var jezykiRes = await jezykService.GetJezyki();
-        if (!jezykiRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(jezykiRes.StatusCode, jezykiRes.Errors);
-        
-        var stopnieRes = await stopienBieglosciJezykaService.GetStopnieBieglosciJezyka();
-        if (!stopnieRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(stopnieRes.StatusCode, stopnieRes.Errors);
+        var jezykiOrazStopnieRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
+        if (!jezykiOrazStopnieRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(jezykiOrazStopnieRes.StatusCode, jezykiOrazStopnieRes.Errors);
         
         var roleRes = await statystykiService.GetRoleGry(idGry);
         if (!roleRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(roleRes.StatusCode, roleRes.Errors);
@@ -445,8 +443,7 @@ public class DruzynyService(
             new DaneDoFormularzaDruzynyBezStatystykDto(
                 nastroje.Select(x => new NastrojRozgrywkiDto(x.Id, x.Nazwa)).ToList(),
                 platformyRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
-                jezykiRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
-                stopnieRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
+                jezykiOrazStopnieRes.Value, // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
                 roleRes.Value // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             )
         );
