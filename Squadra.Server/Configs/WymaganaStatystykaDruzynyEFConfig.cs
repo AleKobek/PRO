@@ -12,6 +12,14 @@ public class WymaganaStatystykaDruzynyEFConfig : IEntityTypeConfiguration<Wymaga
         builder.HasKey(x => new  { x.DruzynaId, x.StatystykaId });
         
         builder
+            .Property(x => x.DruzynaId)
+            .HasColumnName("id_druzyny");
+        
+        builder
+            .Property(x => x.StatystykaId)
+            .HasColumnName("id_statystyki");
+        
+        builder
             .HasOne(x => x.Druzyna)
             .WithMany(x => x.WymaganaStatystykaDruzynyCollection)
             .HasForeignKey(x => x.DruzynaId)
