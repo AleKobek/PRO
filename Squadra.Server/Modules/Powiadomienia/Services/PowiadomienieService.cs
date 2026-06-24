@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Drużyny.Repositories;
 using Squadra.Server.Modules.Powiadomienia.DTO;
 using Squadra.Server.Modules.Powiadomienia.Enums;
 using Squadra.Server.Modules.Powiadomienia.Repositories;
@@ -19,7 +20,8 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
     IZnajomiService znajomiService,
     IZnajomiRepository znajomiRepository,
     IProfilService profilService,
-    IUsuwanieNadmiaruPowiadomienService usuwanieNadmiaruPowiadomienService
+    IUsuwanieNadmiaruPowiadomienService usuwanieNadmiaruPowiadomienService,
+    IDruzynyRepository druzynyRepository // importujemy repozytorium, aby nie powodować zapętlenia, a i tak jedyne co potrzebujemy to proste pobieranie z bazy
     ) : IPowiadomienieService
 {
     public async Task<ServiceResult<PowiadomienieDto>> GetPowiadomienie(int id) {
@@ -97,6 +99,70 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             if (wynikZnalezieniaUzytkownika.StatusCode != 200)
                 return ServiceResult<bool>.NotFound(wynikZnalezieniaUzytkownika.Errors[0]);
         }
+        
+        // pierwszym powiązanym obiektem jest użytkownik, drugim powiązanym obiektem jest drużyna
+        if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia is 
+            TypPowiadomieniaEnum.UzytkownikDolaczylDoDruzyny 
+            or TypPowiadomieniaEnum.PrzyjecieZaproszeniaDoDruzyny 
+            or TypPowiadomieniaEnum.OdrzucenieZaproszeniaDoDruzyny 
+            or TypPowiadomieniaEnum.UzytkownikOpuscilDruzyne
+        ){
+            // nie będzie sytuacji tutaj, że to będzie null, ale aby się nie czepiał kompilator
+            var idUzytkownika = powiadomienie.IdPowiazanegoObiektu ?? 1;
+            // sprawdzamy, czy taki użytkownik istnieje
+            var wynikZnalezieniaUzytkownika = await uzytkownikService.GetUzytkownik(idUzytkownika);
+            if (wynikZnalezieniaUzytkownika.StatusCode != 200)
+                return ServiceResult<bool>.NotFound(wynikZnalezieniaUzytkownika.Errors[0]);
+            
+            // sprawdzamy, czy taka drużyna istnieje
+            try
+            {
+                var idDruzyny = powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1;
+                var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
+            }
+            catch (NieZnalezionoWBazieException e)
+            {
+                return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+            }
+            
+        }
+        
+        // pierwszym i jedynym powiązanym obiektem jest drużyna
+        if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia is 
+            TypPowiadomieniaEnum.UsuniecieZDruzyny 
+            or TypPowiadomieniaEnum.DruzynaZostalaRozwiazana 
+            or TypPowiadomieniaEnum.UzytkownikOpuscilDruzyneBoUsunalKonto
+            or TypPowiadomieniaEnum.DruzynaZostalaUsunietaAutomatycznie
+        ){
+            try
+            { 
+                // nie będzie sytuacji tutaj, że to będzie null, ale aby się nie czepiał kompilator
+                var idDruzyny = powiadomienie.IdPowiazanegoObiektu ?? 1;
+                var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
+                var miejsce = await druzynyRepository.GetMiejsceWDruzynie(idDruzyny);
+            }
+            catch (NieZnalezionoWBazieException e)
+            {
+                return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+            }
+        }
+        
+        // pierwszym powiązanym obiektem jest drużyna, drugim jest miejsce
+        if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia is TypPowiadomieniaEnum.ZaproszenieDoDruzyny)
+        {
+            // nie będzie sytuacji tutaj, że to będzie null, ale aby się nie czepiał kompilator
+            var idDruzyny = powiadomienie.IdPowiazanegoObiektu ?? 1;
+            // sprawdzamy, czy taka drużyna istnieje
+            var wynikZnalezieniaDruzyny = await profilService.GetProfil(idDruzyny);
+            if (wynikZnalezieniaDruzyny.StatusCode != 200)
+                return ServiceResult<bool>.NotFound(wynikZnalezieniaDruzyny.Errors[0]);
+            var idMiejsca = powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1;
+            // sprawdzamy, czy taka drużyna istnieje
+            var wynikZnalezieniaMiejsca = await profilService.GetProfil(idDruzyny);
+            if (wynikZnalezieniaMiejsca.StatusCode != 200)
+                return ServiceResult<bool>.NotFound(wynikZnalezieniaDruzyny.Errors[0]);
+        }
+        
         // jak tu dochodzimy, wszystko jest git
         await powiadomienieRepository.CreatePowiadomienie(powiadomienie);
         // usuwamy powiadomienia przekraczające limit
