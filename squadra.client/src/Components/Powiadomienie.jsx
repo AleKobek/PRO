@@ -58,31 +58,31 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
             case TypyPowiadomien.ZAPROSZENIE_DO_ZNAJOMYCH:{
                 ustawTypPowiadomienia("Zaproszenie do znajomych")
                 ustawTrescPowiadomieniaCz1("Uzytkownik ");
-                ustawTrescPowiadomieniaCz2(" wysłał Ci zaproszenie do znajomych.");
+                ustawTrescPowiadomieniaCz2(" wysłał(a) Ci zaproszenie do znajomych.");
                 break;
             }
             case TypyPowiadomien.ZAAKCEPTOWANIE_ZAPROSZENIA_DO_ZNAJOMYCH:{
                 ustawTypPowiadomienia("Zaakceptowanie zaproszenia do znajomych")
                 ustawTrescPowiadomieniaCz1("Uzytkownik ");
-                ustawTrescPowiadomieniaCz2(" zaakceptował Twoje zaproszenie do znajomych.");
+                ustawTrescPowiadomieniaCz2(" zaakceptował(a) Twoje zaproszenie do znajomych.");
                 break;
             }
             case TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH:{
                 ustawTypPowiadomienia("Odrzucenie zaproszenia do znajomych")
                 ustawTrescPowiadomieniaCz1("Uzytkownik ");
-                ustawTrescPowiadomieniaCz2(" odrzucił Twoje zaproszenie do znajomych.");
+                ustawTrescPowiadomieniaCz2(" odrzucił(a) Twoje zaproszenie do znajomych.");
                 break;
             }
             case TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH:{
                 ustawTypPowiadomienia("Usunięto cię ze znajomych")
                 ustawTrescPowiadomieniaCz1("Uzytkownik ");
-                ustawTrescPowiadomieniaCz2(" usunął cię ze znajomych.");
+                ustawTrescPowiadomieniaCz2(" usunął(-ęła) cię ze znajomych.");
                 break;
             }
             case TypyPowiadomien.UZYTKOWNIK_DOLACZYL_DO_DRUZYNY:{
                 ustawTypPowiadomienia("Użytkownik dołączył do drużyny")
                 ustawTrescPowiadomieniaCz1("Uzytkownik ");
-                ustawTrescPowiadomieniaCz2(" dołączył do Twojej drużyny: ");
+                ustawTrescPowiadomieniaCz2(" dołączył(a) do Twojej drużyny: ");
                 if(powiadomienie.tresc?.length > 0){
                     ustawTrescPowiadomieniaCz3(" jako " + powiadomienie.tresc + "."); // tu będzie rola
                 } else {
@@ -103,7 +103,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
             case TypyPowiadomien.UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY:{
                 ustawTypPowiadomienia("Użytkownik przyjął zaproszenie do drużyny")
                 ustawTrescPowiadomieniaCz1("Uzytkownik ");
-                ustawTrescPowiadomieniaCz2(" przyjął zaproszenie do Twojej drużyny: ");
+                ustawTrescPowiadomieniaCz2(" przyjął(-ęła) zaproszenie do Twojej drużyny: ");
                 if(powiadomienie.tresc?.length > 0){
                     ustawTrescPowiadomieniaCz3(" na rolę " + powiadomienie.tresc + "."); // tu będzie rola
                 } else {
@@ -114,7 +114,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
             case TypyPowiadomien.UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY:{
                 ustawTypPowiadomienia("Użytkownik odrzucił zaproszenie do drużyny")
                 ustawTrescPowiadomieniaCz1("Uzytkownik ");
-                ustawTrescPowiadomieniaCz2(" odrzucił zaproszenie do Twojej drużyny: ");
+                ustawTrescPowiadomieniaCz2(" odrzucił(a) zaproszenie do Twojej drużyny: ");
                 if(powiadomienie.tresc?.length > 0){
                     ustawTrescPowiadomieniaCz3(" na rolę " + powiadomienie.tresc + "."); // tu będzie rola
                 } else {
@@ -126,16 +126,16 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
                 ustawTypPowiadomienia("Użytkownik opuścił drużynę")
                 ustawTrescPowiadomieniaCz1("Uzytkownik ");
                 if(powiadomienie.tresc?.length > 0){
-                    ustawTrescPowiadomieniaCz2("("+ powiadomienie.tresc +") opuścił Twoją drużynę: ");
+                    ustawTrescPowiadomieniaCz2("("+ powiadomienie.tresc +") opuścił(a) Twoją drużynę: ");
                 }else {
-                    ustawTrescPowiadomieniaCz2(" opuścił Twoją drużynę: ");
+                    ustawTrescPowiadomieniaCz2(" opuścił(a) Twoją drużynę: ");
                 }
                 break;
             }
             case TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA:{
                 ustawTypPowiadomienia("Drużyna została usunięta")
                 ustawTrescPowiadomieniaCz1("Drużyna ");
-                ustawTrescPowiadomieniaCz2(", do której należałeś, została usunięta.");
+                ustawTrescPowiadomieniaCz2(", do której należałeś(-aś), została usunięta.");
                 break;
             }
             case TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO:{
@@ -161,11 +161,11 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
 
     }, [powiadomienie.idTypuPowiadomienia, powiadomienie.nazwaPowiazanegoObiektu, powiadomienie.tresc, powiadomienie,
         TypyPowiadomien.SYSTEMOWE, TypyPowiadomien.ZAPROSZENIE_DO_ZNAJOMYCH, TypyPowiadomien.ZAAKCEPTOWANIE_ZAPROSZENIA_DO_ZNAJOMYCH,
-        TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH, TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH,
-        TypyPowiadomien.UZYTKOWNIK_DOLACZYL_DO_DRUZYNY, TypyPowiadomien.USUNIETO_CIE_Z_DRUZYNY, TypyPowiadomien.ZAPROSZENIE_DO_DRUZYNY,
-        TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE, TypyPowiadomien.UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY,
-        TypyPowiadomien.UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA,
-        TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO]);
+        TypyPowiadomien.ODRZUCENIE_ZAPROSZENIA_DO_ZNAJOMYCH, TypyPowiadomien.USUNIETO_CIE_ZE_ZNAJOMYCH, TypyPowiadomien.UZYTKOWNIK_DOLACZYL_DO_DRUZYNY,
+        TypyPowiadomien.USUNIETO_CIE_Z_DRUZYNY, TypyPowiadomien.ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE,
+        TypyPowiadomien.UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY,
+        TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA, TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO,
+        TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE]);
 
 
     if(!powiadomienie) return (<></>);
