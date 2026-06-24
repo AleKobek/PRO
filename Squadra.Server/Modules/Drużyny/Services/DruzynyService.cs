@@ -533,12 +533,12 @@ public class DruzynyService(
                 var czyPrzekraczaMaksLiczbeDruzynRes = await CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idZnajomego, druzyna.GraId);
                 if(!czyPrzekraczaMaksLiczbeDruzynRes.Succeeded || czyPrzekraczaMaksLiczbeDruzynRes.Value) continue; // jeżeli przekracza maks liczbę drużyn, to nie dodajemy go do listy
                 
-                // jeżeli drużyna jest zintegrowana, to musimy sprawdzić dodatkowe wymagania
+                var czySpelniaWymaganiaRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(druzyna.Id, idZnajomego);
+                                    if (!czySpelniaWymaganiaRes.Succeeded || !czySpelniaWymaganiaRes.Value)
+                                        continue; // jeżeli nie spełnia wymagań, to nie dodajemy go do listy
+                
+                // jeżeli drużyna jest zintegrowana, to musimy sprawdzić też wymagania miejsca
                 if(druzyna.CzyZintegrowano){
-                    var czySpelniaWymaganiaRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(druzyna.Id, idZnajomego);
-                    if (!czySpelniaWymaganiaRes.Succeeded || !czySpelniaWymaganiaRes.Value)
-                        continue; // jeżeli nie spełnia wymagań, to nie dodajemy go do listy
-
                     var czySpelniaWymaganiaMiejscaRes =
                         await CzyUzytkownikSpelniaWymaganieMiejsca(idMiejsca, idZnajomego);
                     if (!czySpelniaWymaganiaMiejscaRes.Succeeded || !czySpelniaWymaganiaMiejscaRes.Value)
@@ -566,29 +566,67 @@ public class DruzynyService(
         try 
         { 
             var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
-            if (!druzyna.CzyZintegrowano) return ServiceResult<bool>.Ok(true); // jeżeli drużyna nie jest zintegrowana, to każdy spełnia jej wymagania
             
             // sprawdzamy, czy ma daną grę na danej platformie
-            if(druzyna.PlatformaId != null){
-                var czyMaTeGreNaPlatformieRes = await bibliotekaGierService.CzyUzytkownikMaDanaGreNaDanejPlatformie(
-                    idUzytkownika, 
-                    druzyna.GraId,
-                    druzyna.PlatformaId ?? 0 // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć ?? 0
-                ); 
-                if (!czyMaTeGreNaPlatformieRes.Succeeded) return czyMaTeGreNaPlatformieRes;
-                if (!czyMaTeGreNaPlatformieRes.Value) return ServiceResult<bool>.Ok(false);
-            }
-            else
-            {
-                var czyMaTeGreRes = await bibliotekaGierService.CzyUzytkownikMaDanaGre(
-                    idUzytkownika, 
-                    druzyna.GraId
-                );
-                if (!czyMaTeGreRes.Succeeded) return czyMaTeGreRes;
-                if (!czyMaTeGreRes.Value) return ServiceResult<bool>.Ok(false);
+            if(druzyna.CzyZintegrowano){
+                if (druzyna.PlatformaId != null)
+                {
+                    var czyMaTeGreNaPlatformieRes = await bibliotekaGierService.CzyUzytkownikMaDanaGreNaDanejPlatformie(
+                        idUzytkownika,
+                        druzyna.GraId,
+                        druzyna.PlatformaId ??
+                        0 // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć ?? 0
+                    );
+                    if (!czyMaTeGreNaPlatformieRes.Succeeded) return czyMaTeGreNaPlatformieRes;
+                    if (!czyMaTeGreNaPlatformieRes.Value) return ServiceResult<bool>.Ok(false);
+                }
+                else
+                {
+                    var czyMaTeGreRes = await bibliotekaGierService.CzyUzytkownikMaDanaGre(
+                        idUzytkownika,
+                        druzyna.GraId
+                    );
+                    if (!czyMaTeGreRes.Succeeded) return czyMaTeGreRes;
+                    if (!czyMaTeGreRes.Value) return ServiceResult<bool>.Ok(false);
+                }
             }
             
-            var spelniaWymaganie = await druzynyRepository.CzyUzytkownikSpelniaWymaganeStatystykiDruzyny(idDruzyny, idUzytkownika); 
+            // sprawdzamy, czy spełnia wymagania języka i stopnia trudności
+            
+            Console.WriteLine("#####################################################################");
+            if (idUzytkownika == 8) Console.WriteLine(druzyna.WymaganyJezykId);
+
+            if (druzyna.WymaganyJezykId != null)
+            {
+
+                var jezykiRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
+                if (!jezykiRes.Succeeded) return ServiceResult<bool>.Fail(jezykiRes.StatusCode, jezykiRes.Errors);
+
+                var jezykISopien = jezykiRes.Value.FirstOrDefault(x => x.Jezyk.Id == druzyna.WymaganyJezykId);
+                if(jezykISopien == null) return ServiceResult<bool>.Ok(false);
+            
+                if (idUzytkownika == 8)
+                {
+                    Console.WriteLine("#####################################################################");
+                    Console.WriteLine("Język i stopnie: " + jezykISopien.Jezyk.Nazwa + " - " +
+                                      string.Join(", ", jezykISopien.Stopnie.Select(x => x.Nazwa)));
+                }
+                
+                if (druzyna.WymaganyStopienBieglosciJezykaId != null)
+                {
+                    var stopien = jezykISopien.Stopnie.FirstOrDefault(x => x.Id == druzyna.WymaganyStopienBieglosciJezykaId);
+                    if (idUzytkownika == 8)
+                    {
+                        Console.WriteLine("#####################################################################");
+                        Console.WriteLine("Stopień biegłości: " + (stopien != null ? stopien.Nazwa : "brak"));
+                    }
+                    if (stopien == null) return ServiceResult<bool>.Ok(false);
+
+                }
+
+            }
+            
+            var spelniaWymaganie = !druzyna.CzyZintegrowano || await druzynyRepository.CzyUzytkownikSpelniaWymaganeStatystykiDruzyny(idDruzyny, idUzytkownika); 
             return ServiceResult<bool>.Ok(spelniaWymaganie);
         }
         catch (NieZnalezionoWBazieException e)
@@ -669,6 +707,22 @@ public class DruzynyService(
                     await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(
                         druzynaReq.IdWymaganegoStopniaBieglosciJezyka ?? 0);
                 if (!stopienRes.Succeeded) return ServiceResult<bool>.Fail(stopienRes.StatusCode, stopienRes.Errors);
+                if(druzynaReq.IdWymaganegoJezyka == null) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie można ustawić wymaganego stopnia biegłości języka bez ustawienia wymaganego języka"));
+            }
+            
+            // sprawdzamy, czy spełnia wymagania języka
+            if (druzynaReq.IdWymaganegoJezyka != null)
+            {
+                var jezykiOrazStopnieRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idKapitana);
+                if (!jezykiOrazStopnieRes.Succeeded) return ServiceResult<bool>.Fail(jezykiOrazStopnieRes.StatusCode, jezykiOrazStopnieRes.Errors);
+                var jezykiOrazStopnie = jezykiOrazStopnieRes.Value ?? new List<JezykOrazRowneLubNizszeStopnieDto>();
+                
+                var jezyk = jezykiOrazStopnie.FirstOrDefault(x => x.Jezyk.Id == druzynaReq.IdWymaganegoJezyka);
+                if (jezyk == null) 
+                    return ServiceResult<bool>.BadRequest(new ErrorItem("Kapitan drużyny nie spełnia wymagań języka, który ustawił jako wymagany w drużynie"));
+                
+                if (druzynaReq.IdWymaganegoStopniaBieglosciJezyka != null && jezyk.Stopnie.All(x => x.Id != druzynaReq.IdWymaganegoStopniaBieglosciJezyka))
+                    return ServiceResult<bool>.BadRequest(new ErrorItem("Kapitan drużyny nie spełnia wymagań stopnia biegłości języka, który ustawił jako wymagany w drużynie"));
             }
 
             if (druzynaReq.IdRoliKapitana != null)
