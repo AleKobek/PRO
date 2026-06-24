@@ -40,7 +40,8 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY: 10,
         UZYTKOWNIK_OPUSCIL_DRUZYNE: 13,
         DRUZYNA_ZOSTALA_USUNIETA: 14,
-        UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO: 15
+        UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO: 15,
+        DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE: 16
     }),[]);
 
     // ustawiamy treść powiadomienia na podstawie typu powiadomienia
@@ -145,6 +146,12 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
                 } else {
                     ustawTrescPowiadomieniaCz2("usunął konto i ją opuścił.");
                 }
+                break;
+            }
+            case TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE:{
+                ustawTypPowiadomienia("Twoja drużyna została usunięta")
+                ustawTrescPowiadomieniaCz1("Twoja drużyna ");
+                ustawTrescPowiadomieniaCz2(" została usunięta przez Twój brak aktywności.");
                 break;
             }
             default:{
