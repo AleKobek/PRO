@@ -305,6 +305,26 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
+    [HttpPut("czat/ostatnie-otwarcie/{idDruzyny:int}")]
+    [EndpointSummary("Aktualizuje datę ostatniego otwarcia czatu dla zalogowanego użytkownika w danej drużynie")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult> UpdateDataOstatniegoOtwarciaCzatu(int idDruzyny)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.UpdateDataOstatniegoOtwarciaCzatu(idDruzyny, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
     
     [HttpPost("miejsce/zapros/{idMiejsca:int}/{idUzytkownika:int}")]
     [EndpointSummary("Zaprasza użytkownika na dane miejsce w drużynie")]

@@ -32,6 +32,7 @@ public interface IDruzynyService
     public Task<ServiceResult<bool>> UpdateDruzyna(int idDruzyny, int idUzytkownika, DruzynaUpdateDto druzynaReq);
     public Task<ServiceResult<TabelkaDruzynResDto>> WyszukajDruzyny(WyszukajDruzyneReqDto req, int idUzytkownika);
     public Task<ServiceResult<bool>> DodajUzytkownikaNaMiejsce(int idMiejsca, int idUzytkownika);
+    public Task<ServiceResult<bool>> UpdateDataOstatniegoOtwarciaCzatu(int idDruzyny, int idUzytkownika);
     public Task<ServiceResult<bool>> ZaprosUzytkownikaNaMiejsce(int idMiejsca, int idZapraszanegoUzytkownika, int idZapraszajacegoUzytkownika);
     public Task<ServiceResult<bool>> ZaprosUzytkownikaNaMiejscePoLoginie(int idMiejsca, string login, int idZapraszajacegoUzytkownika);
 }

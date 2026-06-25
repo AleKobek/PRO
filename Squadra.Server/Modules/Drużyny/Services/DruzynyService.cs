@@ -1116,6 +1116,25 @@ public class DruzynyService(
         }
     }
 
+    public async Task<ServiceResult<bool>> UpdateDataOstatniegoOtwarciaCzatu(int idDruzyny, int idUzytkownika)
+    {
+        if (idDruzyny <= 0)
+            return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id drużyny: " + idDruzyny));
+        if (idUzytkownika <= 0)
+            return ServiceResult<bool>.BadRequest(
+                new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika));
+        try
+        {
+            var wynik = await druzynyRepository.UpdateDataOstatniegoOtwarciaCzatu(idDruzyny, idUzytkownika);
+            if (!wynik) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się zaktualizować daty ostatniego otwarcia czatu")]);
+            return ServiceResult<bool>.NoContent(true);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
     public async Task<ServiceResult<bool>> ZaprosUzytkownikaNaMiejsce(int idMiejsca, int idZapraszanegoUzytkownika, int idZapraszajacegoUzytkownika)
     {
         if(idMiejsca <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id miejsca: " + idMiejsca));

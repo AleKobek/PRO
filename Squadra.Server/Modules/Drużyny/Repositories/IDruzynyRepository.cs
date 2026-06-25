@@ -33,4 +33,5 @@ public interface IDruzynyRepository
     public Task<ICollection<int>> WyszukajIdDruzyn(WyszukajDruzyneReqDto req, int idUzytkownika, ICollection<JezykOrazStopienDto> jezykiUzytkownika);
     public Task<bool> CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(int idUzytkownika, int idGry);
     public Task<bool> DodajUzytkownikaNaMiejsce(int idMiejsca, int idUzytkownika);
+    public Task<bool> UpdateDataOstatniegoOtwarciaCzatu(int idDruzyny, int idUzytkownika);
 }
