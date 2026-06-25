@@ -372,7 +372,7 @@ export default function WyszukajDruzyne() {
                                         }}
                                         disabled={jezykiIStopnie.length === 0}
                                     >
-                                        <option value = "" key = {-1}>Brak</option>
+                                        <option value = "" key = {-1}>Dowolny posiadany</option>
                                         {
                                             jezykiIStopnie.map((jezykIStopien) =>
                                                 <option value={jezykIStopien.jezyk.id} key={jezykIStopien.jezyk.id}>{jezykIStopien.jezyk.nazwa}</option>
@@ -388,7 +388,7 @@ export default function WyszukajDruzyne() {
                                         }}
                                         disabled={idWymaganegoJezyka === null || aktualnaListaStopni.length === 0}
                                     >
-                                        {aktualnaListaStopni.length === 0 && <option value="" key={-1}>Brak</option>}
+                                        {aktualnaListaStopni.length === 0 && <option value="" key={-1}>Dowolny posiadany</option>}
                                         {
                                             aktualnaListaStopni.map((stopien) =>
                                                 <option value={stopien.id} key={stopien.id}>{stopien.nazwa}</option>)
