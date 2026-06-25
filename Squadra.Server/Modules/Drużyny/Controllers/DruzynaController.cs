@@ -404,7 +404,10 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult<ICollection<DruzynaDoTabelkiDto>>> GetDruzynyDoTabelki(int[] idDruzyn)
     {
-        var result = await druzynyService.GetDruzynyDoTabelki(idDruzyn);
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetDruzynyDoTabelki(idDruzyn, null);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),

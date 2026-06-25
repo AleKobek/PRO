@@ -11,6 +11,7 @@ using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Statystyki.Services;
 using Squadra.Server.Modules.Uzytkownicy.Services;
+using Squadra.Server.Modules.Wiadomosci.Services;
 using Squadra.Server.Modules.WspieraneGry.DTO;
 using Squadra.Server.Modules.WspieraneGry.Services;
 using Squadra.Server.Modules.Znajomosci.DTO;
@@ -29,7 +30,8 @@ public class DruzynyService(
     IPlatformaService platformaService,
     IBibliotekaGierService bibliotekaGierService,
     IPowiadomienieService powiadomienieService,
-    IZnajomiService znajomiService
+    IZnajomiService znajomiService,
+    IStatystykiCzatuService statystykiCzatuService
     ) : IDruzynyService
 {
     
@@ -111,7 +113,7 @@ public class DruzynyService(
         }
     }
 
-    private async Task<ServiceResult<DruzynaDoTabelkiDto>> GetDruzynaDoTabelki(int idDruzyny)
+    private async Task<ServiceResult<DruzynaDoTabelkiDto>> GetDruzynaDoTabelki(int idDruzyny, int? idUzytkownika = null)
     {
         try
         {
@@ -141,6 +143,15 @@ public class DruzynyService(
             var czlonkowieDruzyny = czlonkowieDruzynyRes.Value ?? new List<MiejsceWDruzynieSzczegolyDto>();
 
             var nastrojRozgrywki = await druzynyRepository.GetNastrojRozgrywki(druzyna.NastrojRozgrywkiId);
+            
+            var czySaNoweWiadomosci = false;
+            if (idUzytkownika != null)
+            {
+                var dataOstatniegoOdczytuCzatu = await druzynyRepository.GetDataOstatniegoOtwarciaCzatuUzytkownika(idUzytkownika.Value, idDruzyny);
+                var czySaNoweWiadomosciRes = await statystykiCzatuService.CzySaNoweWiadomosciWDruzynie(idDruzyny, dataOstatniegoOdczytuCzatu);
+                if(!czySaNoweWiadomosciRes.Succeeded) return ServiceResult<DruzynaDoTabelkiDto>.Fail(czySaNoweWiadomosciRes.StatusCode, czySaNoweWiadomosciRes.Errors);
+                czySaNoweWiadomosci = czySaNoweWiadomosciRes.Value;
+            }
 
             return ServiceResult<DruzynaDoTabelkiDto>.Ok(new DruzynaDoTabelkiDto(
                 druzyna.Id,
@@ -151,7 +162,8 @@ public class DruzynyService(
                 czlonkowieDruzyny
                     .Select(x => new MiejsceWDruzynieWTabelceDto(x.Czlonek, x.Rola, x.CzyKapitan))
                     .ToList(),
-                nastrojRozgrywki.Nazwa
+                nastrojRozgrywki.Nazwa,
+                czySaNoweWiadomosci
             ));
         }
         catch (NieZnalezionoWBazieException e)
@@ -166,19 +178,19 @@ public class DruzynyService(
         var druzyny = await druzynyRepository.GetDruzynyUzytkownika(idUzytkownika);
         var idDruzyn = druzyny.Select(x => x.Id).ToArray();
         var idDruzynNaStrone = idDruzyn.Take(LiczbaDruzynNaStroneNaStart).ToArray();
-        var druzynyDoTabelki = await GetDruzynyDoTabelki(idDruzynNaStrone);
+        var druzynyDoTabelki = await GetDruzynyDoTabelki(idDruzynNaStrone, idUzytkownika);
         if(!druzynyDoTabelki.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(druzynyDoTabelki.StatusCode, druzynyDoTabelki.Errors);
                 
         return ServiceResult<TabelkaDruzynResDto>.Ok(new TabelkaDruzynResDto(idDruzyn, druzynyDoTabelki.Value ?? []));
     }
 
-    public async Task<ServiceResult<ICollection<DruzynaDoTabelkiDto>>> GetDruzynyDoTabelki(int[] idDruzyn)
+    public async Task<ServiceResult<ICollection<DruzynaDoTabelkiDto>>> GetDruzynyDoTabelki(int[] idDruzyn, int? idUzytkownika = null)
     {
         var druzyny = await druzynyRepository.GetDruzyny(idDruzyn);
         var druzynyDoTabelki = new List<DruzynaDoTabelkiDto>();
         foreach (var druzyna in druzyny)
         {
-            var druzynaDoTabelkiRes = await GetDruzynaDoTabelki(druzyna.Id);
+            var druzynaDoTabelkiRes = await GetDruzynaDoTabelki(druzyna.Id, idUzytkownika);
             if (!druzynaDoTabelkiRes.Succeeded) return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Fail(druzynaDoTabelkiRes.StatusCode, druzynaDoTabelkiRes.Errors);
             druzynyDoTabelki.Add(druzynaDoTabelkiRes.Value); // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
         }

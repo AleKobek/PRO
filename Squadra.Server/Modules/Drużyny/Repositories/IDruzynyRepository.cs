@@ -18,6 +18,7 @@ public interface IDruzynyRepository
     public Task<int> GetIdKapitanaDruzynyMiejsca(int idMiejsca);
     public Task<ICollection<NastrojRozgrywki>> GetNastrojeRozgrywki();
     public Task<NastrojRozgrywki> GetNastrojRozgrywki(int idNastroju);
+    public Task<DateTime?> GetDataOstatniegoOtwarciaCzatuUzytkownika(int idUzytkownika, int idDruzyny);
     public Task<bool> CzyUzytkownikSpelniaWymaganieMiejsca(int idMiejsca, int idUzytkownika);
     public Task<bool> CzyUzytkownikSpelniaWymaganeStatystykiDruzyny(int idDruzyny, int idUzytkownika);
     public  Task<bool> CzyUzytkownikNalezyDoDruzyny(int idUzytkownika, int idDruzyny);

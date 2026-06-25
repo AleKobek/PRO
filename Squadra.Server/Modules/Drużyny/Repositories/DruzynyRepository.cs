@@ -109,6 +109,14 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         if (nastroj == null) throw new NieZnalezionoWBazieException("Nie znaleziono nastroju o id " + idNastroju);
         return nastroj;
     }
+    
+    public async Task<DateTime?> GetDataOstatniegoOtwarciaCzatuUzytkownika(int idUzytkownika, int idDruzyny)
+    {
+        var miejsceWDruzynie = await context.MiejsceWDruzynie
+            .Where(m => m.DruzynaId == idDruzyny && m.UzytkownikId == idUzytkownika).FirstOrDefaultAsync();
+        if (miejsceWDruzynie == null) throw new NieZnalezionoWBazieException("Nie znaleziono miejsca w drużynie dla użytkownika o id " + idUzytkownika + " w drużynie o id " + idDruzyny);
+        return miejsceWDruzynie.OstatnieOtwarcieCzatu;
+    }
 
     public async Task<bool> CzyUzytkownikSpelniaWymaganieMiejsca(int idMiejsca, int idUzytkownika)
     {

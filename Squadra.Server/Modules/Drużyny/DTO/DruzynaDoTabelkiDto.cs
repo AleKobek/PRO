@@ -7,5 +7,6 @@ public record DruzynaDoTabelkiDto(
     string OstatniaAktywnoscKapitana, // string w formacie "X dni Y godzin Z minut temu"
     int MinutyOdOstatniejAktywnosciKapitana, // do porównywania
     ICollection<MiejsceWDruzynieWTabelceDto> Czlonkowie,
-    string NazwaNastroju
+    string NazwaNastroju,
+    bool CzySaNoweWiadomosci = false
 );
