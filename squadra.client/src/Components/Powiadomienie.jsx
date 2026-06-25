@@ -248,7 +248,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
     </li>)
 
     if(
-        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA
+        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA || TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE
     ) return (
         <li key={powiadomienie.id} className="p-2 border-b border-gray-200">
             <div className="flex flex-row justify-between items-center w-full">
