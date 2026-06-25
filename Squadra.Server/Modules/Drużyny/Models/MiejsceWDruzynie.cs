@@ -12,6 +12,7 @@ public class MiejsceWDruzynie
     public int? StatystykaId { get; set; }
     public string? WartoscStatystyki { get; set; }
     public double? WartoscLiczbowaStatystyki { get; set; }
+    public DateTime? OstatnieOtwarcieCzatu { get; set; }
     
     public virtual Druzyna Druzyna { get; set; } = null!;
     public virtual Uzytkownik? Uzytkownik { get; set; }
