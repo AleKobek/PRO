@@ -67,7 +67,7 @@ public class IntegracjeZewnetrzneService(
     }
 
     // czyścimy jego dane z zewnętrznego serwisu oraz jego id na zewnętrznym serwisie
-    public async Task<ServiceResult<bool>> PrzerwijIntegracjeUzytkownika(int idUzytkownika)
+    public async Task<ServiceResult<bool>> PrzerwijIntegracjeUzytkownika(int idUzytkownika, bool czyPrzyUsuwaniuKonta = false)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
         if (uzytkownik == null)
@@ -75,7 +75,10 @@ public class IntegracjeZewnetrzneService(
         
         var idNaZewnetrznymSerwisie = uzytkownik.IdNaZewnetrznymSerwisie;
         if (idNaZewnetrznymSerwisie == null)
+        {
+            if(czyPrzyUsuwaniuKonta) return ServiceResult<bool>.Ok(true);
             return ServiceResult<bool>.BadRequest(new ErrorItem("Użytkownik o id: " + idUzytkownika + " nie jest połączony z zewnętrznym serwisem."));
+        }
         
         // Jeśli transakcja już istnieje (np. z UsunKonto), nie otwieramy nowej
         var czyToNowaTransakcja = context.Database.CurrentTransaction == null;

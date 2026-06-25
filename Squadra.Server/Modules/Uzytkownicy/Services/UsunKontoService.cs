@@ -28,7 +28,7 @@ public class UsunKontoService (
                 return znajomosciRes;
             }
             
-            var integracjeRes = await integracjeZewnetrzneService.PrzerwijIntegracjeUzytkownika(id);
+            var integracjeRes = await integracjeZewnetrzneService.PrzerwijIntegracjeUzytkownika(id, true);
             if(!integracjeRes.Succeeded) 
             {
                 await transakcja.RollbackAsync();

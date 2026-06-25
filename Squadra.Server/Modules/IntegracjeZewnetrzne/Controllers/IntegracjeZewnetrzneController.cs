@@ -42,7 +42,7 @@ public class IntegracjeZewnetrzneController(
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
 
-        var result = await integracjeZewnetrzneService.PrzerwijIntegracjeUzytkownika(uzytkownik.Id);
+        var result = await integracjeZewnetrzneService.PrzerwijIntegracjeUzytkownika(uzytkownik.Id, false);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),
