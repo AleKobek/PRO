@@ -55,14 +55,18 @@ public class ZnajomiRepository(
             x.IdUzytkownika1 == idUzytkownika1 && x.IdUzytkownika2 == idUzytkownika2) || x.IdUzytkownika2 == idUzytkownika1 && x.IdUzytkownika1 == idUzytkownika2
         ).FirstOrDefaultAsync();
         if(znajomosc == null) throw new NieZnalezionoWBazieException("Znajomosc między użytkownikiem: " + idUzytkownika1 + " a użytkownikiem: " + idUzytkownika2 + " nie istnieje");
-        // zaczynamy transakcję
-        await using var transaction = await context.Database.BeginTransactionAsync();
+        
+        // Jeśli transakcja już istnieje (np. z UsunKonto), nie otwieramy nowej
+        var czyToNowaTransakcja = context.Database.CurrentTransaction == null;
+        var transakcja = czyToNowaTransakcja 
+            ? await context.Database.BeginTransactionAsync() 
+            : null;
         
         await wiadomoscRepository.DeleteWiadomosciUzytkownikow(idUzytkownika1, idUzytkownika2); // usuwamy ich wiadomości
         context.Znajomi.Remove(znajomosc); // usuwamy samą znajomość
         
         // kończymy transakcję
-        await transaction.CommitAsync();
+        if (czyToNowaTransakcja) await transakcja!.CommitAsync();
         return await context.SaveChangesAsync() > 0;
     }
 
