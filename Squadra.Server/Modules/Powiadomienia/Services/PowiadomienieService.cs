@@ -135,7 +135,6 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 // nie będzie sytuacji tutaj, że to będzie null, ale aby się nie czepiał kompilator
                 var idDruzyny = powiadomienie.IdPowiazanegoObiektu ?? 1;
                 var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
-                var miejsce = await druzynyRepository.GetMiejsceWDruzynie(idDruzyny);
             }
             catch (NieZnalezionoWBazieException e)
             {
@@ -146,17 +145,20 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         // pierwszym powiązanym obiektem jest drużyna, drugim jest miejsce
         if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia is TypPowiadomieniaEnum.ZaproszenieDoDruzyny)
         {
-            // nie będzie sytuacji tutaj, że to będzie null, ale aby się nie czepiał kompilator
-            var idDruzyny = powiadomienie.IdPowiazanegoObiektu ?? 1;
-            // sprawdzamy, czy taka drużyna istnieje
-            var wynikZnalezieniaDruzyny = await profilService.GetProfil(idDruzyny);
-            if (wynikZnalezieniaDruzyny.StatusCode != 200)
-                return ServiceResult<bool>.NotFound(wynikZnalezieniaDruzyny.Errors[0]);
-            var idMiejsca = powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1;
-            // sprawdzamy, czy taka drużyna istnieje
-            var wynikZnalezieniaMiejsca = await profilService.GetProfil(idDruzyny);
-            if (wynikZnalezieniaMiejsca.StatusCode != 200)
-                return ServiceResult<bool>.NotFound(wynikZnalezieniaDruzyny.Errors[0]);
+            try
+            {    
+                // sprawdzamy, czy taka drużyna istnieje
+                var idDruzyny = powiadomienie.IdPowiazanegoObiektu ?? 1;
+                var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
+                
+                // sprawdzamy, czy takie miejsce istnieje
+                var idMiejsca = powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1;
+                var wynikZnalezieniaMiejsca = await profilService.GetProfil(idDruzyny);
+            }
+            catch (NieZnalezionoWBazieException e)
+            {
+                return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+            }
         }
         
         // jak tu dochodzimy, wszystko jest git
