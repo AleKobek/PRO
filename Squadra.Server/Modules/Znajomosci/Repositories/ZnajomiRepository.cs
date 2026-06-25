@@ -69,7 +69,11 @@ public class ZnajomiRepository(
     public async Task<bool> DeleteZnajomosciUzytkownika(int idUzytkownika)
     {
         var znajomosci = await context.Znajomi.Where(x => x.IdUzytkownika1 == idUzytkownika || x.IdUzytkownika2 == idUzytkownika).ToListAsync();
-        foreach (var znajomosc in znajomosci) await DeleteZnajomosc(idUzytkownika, znajomosc.IdUzytkownika2);
+        foreach (var znajomosc in znajomosci)
+        {
+            if(idUzytkownika == znajomosc.IdUzytkownika1) await DeleteZnajomosc(idUzytkownika, znajomosc.IdUzytkownika2);
+            else await DeleteZnajomosc(idUzytkownika, znajomosc.IdUzytkownika1);
+        }
         await context.SaveChangesAsync();
         return true;
     }
