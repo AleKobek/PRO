@@ -48,6 +48,14 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         return wiadomosci.Max(x => x.DataWyslania);
     }
     
+    public async Task<DateTime?> GetDataNajnowszejWiadomosciWDruzynie(int idDruzyny) {
+        var wiadomosci = await context.Wiadomosc
+            .Where(x => x.IdTypuWiadomosci == (int)TypWiadomosciEnum.Druzynowa && x.IdOdbiorcy == idDruzyny)
+            .ToListAsync();
+        if(wiadomosci.Count == 0) return null;
+        return wiadomosci.Max(x => x.DataWyslania);
+    }
+    
     public async Task<bool> CreateWiadomosc(int idOdbiorcy, WiadomoscCreateDto wiadomosc, int idNadawcy)
     {
         var wiadomoscDoDodania = new Models.Wiadomosc

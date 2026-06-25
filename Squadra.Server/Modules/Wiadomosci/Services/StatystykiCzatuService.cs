@@ -115,4 +115,31 @@ public class StatystykiCzatuService(IWiadomoscRepository wiadomoscRepository, IZ
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
+    
+    // get data najnowszej wiadomości w drużynie, czy są nowe wiadomości w tej drużynie od następującej daty.
+
+    public async Task<ServiceResult<DateTime?>> GetDataNajnowszejWiadomosciWDruzynie(int idDruzyny)
+    {
+        // nie musimy sprawdzać, czy drużyna istnieje, bo ta funkcja zostanie wywołana przez inne funkcje, które już sprawdzają, czy drużyna istnieje
+        
+        if (idDruzyny < 1) return ServiceResult<DateTime?>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny)); // na wszelki wypadek
+        
+        return ServiceResult<DateTime?>.Ok(await wiadomoscRepository.GetDataNajnowszejWiadomosciWDruzynie(idDruzyny));
+        
+    }
+    
+    public async Task<ServiceResult<bool>> CzySaNoweWiadomosciWDruzynie(int idDruzyny, DateTime? dataOstatniegoOtwarciaCzatu)
+    {
+        // nie musimy sprawdzać, czy drużyna istnieje, bo ta funkcja zostanie wywołana przez inne funkcje, które już sprawdzają, czy drużyna istnieje
+        
+        if (idDruzyny < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny)); // na wszelki wypadek
+        
+        var dataNajnowszejWiadomosci = await wiadomoscRepository.GetDataNajnowszejWiadomosciWDruzynie(idDruzyny);
+        
+        if (dataNajnowszejWiadomosci == null) return ServiceResult<bool>.Ok(false); // jeżeli nie ma żadnych wiadomości, to na pewno nie ma nowych
+        
+        if (dataOstatniegoOtwarciaCzatu == null) return ServiceResult<bool>.Ok(true); // jeżeli użytkownik nigdy nie otworzył czatu z tą drużyną a jest jakaś wiadomość, to na pewno jest nowa wiadomość
+        
+        return ServiceResult<bool>.Ok(dataNajnowszejWiadomosci > dataOstatniegoOtwarciaCzatu);
+    }
 }
