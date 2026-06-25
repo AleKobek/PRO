@@ -1025,7 +1025,10 @@ public class DruzynyService(
         if(req.IdRol.Length == 0 && roleGry.Value.Count > 0) return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Jeżeli gra ma role, to należy podać id przynajmniej jednej roli"));
         
         // wszystko powinno być git, można szukać drużyn
-        var idDruzyn = await druzynyRepository.WyszukajIdDruzyn(req, idUzytkownika);
+        var jezykiUzytkownikaRes = await jezykService.GetJezykiProfilu(idUzytkownika);
+        if(!jezykiUzytkownikaRes.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(jezykiUzytkownikaRes.StatusCode, jezykiUzytkownikaRes.Errors);
+        
+        var idDruzyn = await druzynyRepository.WyszukajIdDruzyn(req, idUzytkownika, jezykiUzytkownikaRes.Value);
         var idDruzynNaStrone = idDruzyn.Take(LiczbaDruzynNaStroneNaStart).ToList();
         var druzynyRes = await GetDruzynyDoTabelki(idDruzynNaStrone.ToArray());
         if(!druzynyRes.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(druzynyRes.StatusCode, druzynyRes.Errors);

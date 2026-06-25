@@ -5,6 +5,7 @@ using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Models;
 using Squadra.Server.Modules.Platformy;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Statystyki.Models;
 using Squadra.Server.Modules.Statystyki.Repositories;
 
@@ -381,15 +382,13 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         return true;
     }
     
-    public async Task<ICollection<int>> WyszukajIdDruzyn(WyszukajDruzyneReqDto req, int idUzytkownika)
+    public async Task<ICollection<int>> WyszukajIdDruzyn(WyszukajDruzyneReqDto req, int idUzytkownika, ICollection<JezykOrazStopienDto> jezykiUzytkownika)
     {
-        // preferencje zintegrowania = [zintegrowane, niezintegrowane, wszystkie]
-        var druzyny = await context.Druzyna
+        
+        var druzynyPrzedFiltrowaniemJezyka = await context.Druzyna
             .Where(d => d.GraId == req.IdGry
                         && (req.IdPlatformy == null || d.PlatformaId == req.IdPlatformy)
                         && (req.IdNastrojuRozgrywki == null || d.NastrojRozgrywkiId == req.IdNastrojuRozgrywki)
-                        && (req.IdJezyka == null || d.WymaganyJezykId == req.IdJezyka)
-                        && (req.IdStopnia == null || d.WymaganyStopienBieglosciJezykaId == req.IdStopnia)
                         && (
                                 req.PreferencjeZintegrowania == "wszystkie" 
                                 ||(req.PreferencjeZintegrowania == "zintegrowane" && d.CzyZintegrowano) 
@@ -400,6 +399,29 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
             )
             .Include(d => d.MiejsceWDruzynieCollection)
             .ToListAsync();
+
+        // filtrujemy co do języka. są następujące opcje:
+        //      język drużyny jest null
+        //      LUB użytkownik wybrał język, jest ten sam język i stopień:
+        //              -> jest wybrany i drużyny jest null lub równy/niższy od niego
+        //              -> nie jest wybrany i drużyny jest równy/niższy od tych co ma.
+        //      LUB użytkownik nie wybrał języka i bierze te które ma.
+        var druzyny = druzynyPrzedFiltrowaniemJezyka.Where(druzyna => druzyna.WymaganyJezykId == null
+                                                                      // użytkownik nie wybrał języka, więc sami sprawdzamy czy ma wymagany język i stopień
+                                                                      || req.IdJezyka == null && (
+                                                                          // czy posiada ten język
+                                                                          jezykiUzytkownika.FirstOrDefault(ju => ju.Jezyk.Id == druzyna.WymaganyJezykId) != null &&
+                                                                          // jeżeli drużyna nie ma wymaganego stopnia, to użytkownik spełnia wymaganie stopnia
+                                                                          (druzyna.WymaganyStopienBieglosciJezykaId == null
+                                                                           // jest wymagany stopień, to sprawdzamy czy użytkownik ma ten sam lub wyższy stopień
+                                                                           || jezykiUzytkownika.FirstOrDefault(ju => ju.Jezyk.Id == druzyna.WymaganyJezykId)!.Stopien.Id >= druzyna.WymaganyStopienBieglosciJezykaId))
+                                                                      // użytkownik wybrał język, czyli w drużynie musi być ten sam język.
+                                                                      || (req.IdJezyka != null && druzyna.WymaganyJezykId == req.IdJezyka &&
+                                                                          // nie wybrał stopnia, więc sami sprawdzamy czy ma wymagany stopień
+                                                                          ((req.IdStopnia == null && jezykiUzytkownika.FirstOrDefault(ju => ju.Jezyk.Id == req.IdJezyka) != null && jezykiUzytkownika.FirstOrDefault(ju => ju.Jezyk.Id == req.IdJezyka)!.Stopien.Id >= druzyna.WymaganyStopienBieglosciJezykaId)
+                                                                           // wybrał stopień, więc sprawdzamy czy jest równy lub wyższy od wymaganego
+                                                                           || druzyna.WymaganyStopienBieglosciJezykaId <= req.IdStopnia)))
+            .ToList();
 
         // jeżeli nie ma wymagań, obchodzą nas tylko role i wolne miejsca
         if(req.PreferencjeZintegrowania == "niezintegrowane")

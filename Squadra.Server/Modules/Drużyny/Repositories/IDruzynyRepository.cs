@@ -1,6 +1,7 @@
 ﻿using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Models;
 using Squadra.Server.Modules.Platformy;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Statystyki.Models;
 
 namespace Squadra.Server.Modules.Drużyny.Repositories;
@@ -29,7 +30,7 @@ public interface IDruzynyRepository
     public Task<bool> UsunWszystkieDruzynyUzytkownika(int idUzytkownika);
     public Task<bool> UsunWszystkieZintegrowaneDruzynyUzytkownika(int idUzytkownika);
     public Task<bool> UpdateDruzyna(int idDruzyny, DruzynaUpdateDto druzynaReq);
-    public Task<ICollection<int>> WyszukajIdDruzyn(WyszukajDruzyneReqDto req, int idUzytkownika);
+    public Task<ICollection<int>> WyszukajIdDruzyn(WyszukajDruzyneReqDto req, int idUzytkownika, ICollection<JezykOrazStopienDto> jezykiUzytkownika);
     public Task<bool> CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(int idUzytkownika, int idGry);
     public Task<bool> DodajUzytkownikaNaMiejsce(int idMiejsca, int idUzytkownika);
 }
