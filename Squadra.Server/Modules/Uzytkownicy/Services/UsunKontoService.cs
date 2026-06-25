@@ -28,13 +28,6 @@ public class UsunKontoService (
                 return znajomosciRes;
             }
             
-            var powiadomieniaRes = await powiadomienieService.DeletePowiadomieniaZwiazaneZUzytkownikiem(id);
-            if (!powiadomieniaRes.Succeeded) 
-            {
-                await transakcja.RollbackAsync();
-                return powiadomieniaRes;
-            }
-            
             var integracjeRes = await integracjeZewnetrzneService.PrzerwijIntegracjeUzytkownika(id);
             if(!integracjeRes.Succeeded) 
             {
@@ -48,6 +41,13 @@ public class UsunKontoService (
             {
                 await transakcja.RollbackAsync();
                 return wyrzucanieRes;
+            }
+            
+            var powiadomieniaRes = await powiadomienieService.DeletePowiadomieniaZwiazaneZUzytkownikiem(id);
+            if (!powiadomieniaRes.Succeeded) 
+            {
+                await transakcja.RollbackAsync();
+                return powiadomieniaRes;
             }
             
             var uzytkownikRes = await uzytkownikService.DeleteUzytkownik(id);
