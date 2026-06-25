@@ -108,7 +108,41 @@ export default function StronaSzczegolowDruzyny() {
         const ac = new AbortController();
         let alive = true;
 
+        const aktualizujDateOtwarciaCzatu = async () => {
+            // przerywamy działanie funkcji
+            if (!alive) return;
 
+            const opcje = {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+            };
+
+            const res = await fetch(`${API_BASE_URL}/Druzyna/czat/ostatnie-otwarcie/${idDruzyny}`, opcje);
+
+            // Odczyt body różni się zależnie od typu odpowiedzi
+            // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
+            const ct = res.headers.get("content-type") || "";
+            const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                ? await res.json().catch(() => null)
+                : await res.text().catch(() => "");
+
+            if (!res.ok) {
+                toast.error(`${body.message ?? body.errors[0].message ?? "Wystąpił błąd podczas aktualizowania daty ostatniego otwarcia czatu"}`, {
+                    position: "top-center",
+                    autoClose: 5000,
+                    hideProgressBar: false,
+                    closeOnClick: false,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "light",
+                    transition: Bounce,
+                });
+            }
+        }
 
         const pobierzStatystykiDruzyny = async (idDruzyny) => {
             if (!idDruzyny) return;
@@ -163,6 +197,7 @@ export default function StronaSzczegolowDruzyny() {
             if (!data) return;
 
             ustawDaneDruzyny(data);
+            if(data.statusCzlonkostwa === "Kapitan" || data.statusCzlonkostwa === "Członek") aktualizujDateOtwarciaCzatu();
         }
         
         if(!daneDruzyny) pobierzStatystykiDruzyny(idDruzyny);
