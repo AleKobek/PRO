@@ -119,6 +119,17 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         return true;
     }
     
+    // przy usuwaniu drużyny usuwamy też wszystkie wiadomości na czacie
+    public async Task<bool> DeleteWiadomosciDruzyny(int idDruzyny)
+    {
+        var wiadomosci = await context.Wiadomosc
+            .Where(x => x.IdTypuWiadomosci == (int)TypWiadomosciEnum.Druzynowa &&x.IdOdbiorcy == idDruzyny)
+            .ToListAsync();
+        context.Wiadomosc.RemoveRange(wiadomosci);
+        await context.SaveChangesAsync();
+        return true;
+    }
+    
     private async Task<bool> UsunWiadomosciDruzynyPrzekraczajaceLimit(int idDruzyny)
     {
         

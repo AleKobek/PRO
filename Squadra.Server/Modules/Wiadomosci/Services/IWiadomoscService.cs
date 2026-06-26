@@ -11,4 +11,5 @@ public interface IWiadomoscService
     public Task<ServiceResult<bool>> CreateWiadomoscPrywatna(int idOdbiorcy, string tresc, int idObecnegoUzytkownika);
     public Task<ServiceResult<bool>> CreateWiadomoscDruzynowa(int idDruzyny, string tresc, int idObecnegoUzytkownika);
     public Task<ServiceResult<bool>> DeleteWiadomosciPrywatneUzytkownikow(int idUzytkownika1, int idUzytkownika2);
+    public Task<ServiceResult<bool>> DeleteWiadomosciDruzyny(int idDruzyny);
 }

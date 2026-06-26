@@ -147,4 +147,12 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
+
+    public async Task<ServiceResult<bool>> DeleteWiadomosciDruzyny(int idDruzyny)
+    {
+        if(idDruzyny < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+        // nie musimy sprawdzać, czy drużyna istnieje, ponieważ będzie to wywoływane tylko przez usuwanie drużyny, a tam jest sprawdzane
+        return ServiceResult<bool>.Ok(await wiadomoscRepository.DeleteWiadomosciDruzyny(idDruzyny));
+    }
+
 }
