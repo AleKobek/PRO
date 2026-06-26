@@ -12,7 +12,7 @@ import {OkienkoTlumaczaceZintegrowanie} from "./OkienkoTlumaczaceZintegrowanie";
 export default function EdytujKonto() {
 
     const navigate = useNavigate();
-    const { uzytkownik, ladowanie } = useAuth();
+    const { uzytkownik, ustawUzytkownika, ladowanie } = useAuth();
 
     const [login, ustawLogin] = useState("");
     const [staryLogin, ustawStaryLogin] = useState("");
@@ -45,6 +45,8 @@ export default function EdytujKonto() {
     const [pokazOkienkoTlumaczenia, ustawPokazOkienkoTlumaczenia] = useState(false);
     const ref = React.useRef(null);
 
+    const [pokazUsunKonto, ustawPokazUsunKonto] = useState(false);
+    const [czyZablokowaneUsun, ustawCzyZablokowaneUsun] = useState(true);
 
     useEffect(() => {
         document.title = `Squadra`;
@@ -105,6 +107,20 @@ export default function EdytujKonto() {
             ac.abort(); // przerywamy fetch
         };
     }, [login, staryEmail, uzytkownik]);
+
+    // timer odliczający 5 sekund po otworzeniu panelu usunięcia konta
+    useEffect(() => {
+        if(!pokazUsunKonto) return;
+        if(!czyZablokowaneUsun) return;
+
+        // jeżeli panel jest pokazany, po pięciu sekundach odblokowujemy przycisk usuwania
+        const timer = setTimeout(() => {
+            ustawCzyZablokowaneUsun(false);
+        }, 5000);
+
+        return () => clearTimeout(timer);
+
+    },[czyZablokowaneUsun, pokazUsunKonto])
 
     const czyZablokowaneWyslijKonta = useMemo(() =>{
         return(
@@ -236,6 +252,78 @@ export default function EdytujKonto() {
             transition: Bounce,
         });
     }
+
+    const przyUsuwaniuKonta = async () => {
+        if(czyZablokowaneUsun) return;
+        if(!uzytkownik) return;
+
+        const opcje = {
+            method: "DELETE",
+            headers: {"Content-Type": "application/json"},
+            credentials: "include"
+        }
+
+        const res = await fetch(`${API_BASE_URL}/Uzytkownik/`, opcje);
+        if(!res.ok){
+            const ct = res.headers.get("content-type") || "";
+            const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                ? await res.json().catch(() => null)
+                : await res.text().catch(() => "");
+
+            toast.error(`Wystąpił błąd podczas usuwania konta: ${body}`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
+
+        navigate('/login');
+    }
+
+    const PanelUsunKonto = () => (
+        <div
+            ref={ref}
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] p-10 overflow-y-auto bg-red-200 border-2 border-red-900
+            rounded-md shadow-lg justify-center items-center"
+            style={{ zIndex: 5000 }}
+        >
+            <div className="flex flex-col">
+
+                <div className="flex flex-col items-center gap-2">
+                    <span className="text-4xl text-center font-bold"> Czy na pewno chcesz usunąć konto? Tej operacji nie da się odwrócić!<br/></span>
+                    <span>Za 5 sekund przycisk się odblokuje</span>
+                </div>
+                <div className="flex justify-center items-center gap-8 mt-7 text-xl font-semibold">
+                    {/* przycisk anulowania */}
+                    <button
+                        onClick={() => {
+                            ustawCzyZablokowaneUsun(true);
+                            ustawPokazUsunKonto(false)
+                        }}
+                        className="bg-red-900 text-white rounded-md px-6 py-3.5 hover:bg-red-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105">
+                        Anuluj
+                    </button>
+                    {/* przycisk potwierdzenia */}
+                    <button
+                        className={czyZablokowaneUsun ?
+                            "text-black bg-gray-300 rounded-md px-4 py-3 border border-black shadow-md cursor-not-allowed" :
+                            "bg-green-900 text-white rounded-md px-5 py-3.5 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"}
+                        disabled={czyZablokowaneUsun}
+                        onClick={przyUsuwaniuKonta}
+                    >
+                        Potwierdź
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
     
     if(ladowanie) return (<>
             <NaglowekZalogowano/>
@@ -304,7 +392,18 @@ export default function EdytujKonto() {
                 />
             </h3>
             <EdytujIntegracjeWKoncieKomponent zewnetrzneId={zewnetrzneId} ustawZewnetrzneId={ustawZewnetrzneId} zewnetrznyLogin={zewnetrznyLogin} ustawZewnetrznyLogin={ustawZewnetrznyLogin} ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia}/>
+            <br/>
+            <button
+                className="block !mx-auto bg-red-900 !text-[25px] text-white rounded-md !px-3 !py-1 !my-4 hover:bg-red-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
+                onClick={() => {
+                    ustawCzyZablokowaneUsun(true);
+                    ustawPokazUsunKonto(v => !v)
+                }}
+            >
+                Usuń konto
+            </button>
         </div>
         {pokazOkienkoTlumaczenia && OkienkoTlumaczaceZintegrowanie(ref, ustawPokazOkienkoTlumaczenia)}
+        {pokazUsunKonto && <PanelUsunKonto/>}
     </>);
 }
