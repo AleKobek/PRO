@@ -25,6 +25,16 @@ public class WiadomoscEFConfig : IEntityTypeConfiguration<Wiadomosc>
             .Property(x => x.DataWyslania)
             .HasColumnName("data_wyslania")
             .IsRequired();
+        
+        builder
+            .Property(x => x.IdNadawcy)
+            .HasColumnName("id_nadawcy")
+            .IsRequired();
+        
+        builder
+            .Property(x => x.IdOdbiorcy)
+            .HasColumnName("id_odbiorcy")
+            .IsRequired();
 
         builder
             .HasOne(x => x.Nadawca)
@@ -33,14 +43,6 @@ public class WiadomoscEFConfig : IEntityTypeConfiguration<Wiadomosc>
             .HasConstraintName("Wiadomosc_Nadawca")
             .OnDelete(DeleteBehavior.Restrict);
         
-        
-        builder
-            .HasOne(x => x.Odbiorca)
-            .WithMany(x => x.WiadomosciOdebraneCollection)
-            .HasForeignKey(x => x.IdOdbiorcy)
-            .HasConstraintName("Wiadomosc_Odbiorca")
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder
             .HasOne(x => x.TypWiadomosci)
             .WithMany(x => x.WiadomosciCollection)

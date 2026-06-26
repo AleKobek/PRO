@@ -14,7 +14,6 @@ public class Wiadomosc
     public int IdTypuWiadomosci { get; set; }
     
     public virtual Uzytkownik Nadawca { get; set; } = null!;
-    public virtual Uzytkownik Odbiorca { get; set; } = null!;
     public virtual TypWiadomosci TypWiadomosci { get; set; } = null!;
 
 }

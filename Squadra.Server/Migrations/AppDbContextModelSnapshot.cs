@@ -1147,10 +1147,12 @@ namespace Squadra.Server.Migrations
                         .HasColumnName("data_wyslania");
 
                     b.Property<int>("IdNadawcy")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id_nadawcy");
 
                     b.Property<int>("IdOdbiorcy")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("id_odbiorcy");
 
                     b.Property<int>("IdTypuWiadomosci")
                         .HasColumnType("int");
@@ -1164,8 +1166,6 @@ namespace Squadra.Server.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdNadawcy");
-
-                    b.HasIndex("IdOdbiorcy");
 
                     b.HasIndex("IdTypuWiadomosci");
 
@@ -1645,13 +1645,6 @@ namespace Squadra.Server.Migrations
                         .IsRequired()
                         .HasConstraintName("Wiadomosc_Nadawca");
 
-                    b.HasOne("Squadra.Server.Modules.Uzytkownicy.Models.Uzytkownik", "Odbiorca")
-                        .WithMany("WiadomosciOdebraneCollection")
-                        .HasForeignKey("IdOdbiorcy")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired()
-                        .HasConstraintName("Wiadomosc_Odbiorca");
-
                     b.HasOne("Squadra.Server.Modules.Wiadomosci.Models.TypWiadomosci", "TypWiadomosci")
                         .WithMany("WiadomosciCollection")
                         .HasForeignKey("IdTypuWiadomosci")
@@ -1660,8 +1653,6 @@ namespace Squadra.Server.Migrations
                         .HasConstraintName("Wiadomosc_Typ_Wiadomosci");
 
                     b.Navigation("Nadawca");
-
-                    b.Navigation("Odbiorca");
 
                     b.Navigation("TypWiadomosci");
                 });
@@ -1815,8 +1806,6 @@ namespace Squadra.Server.Migrations
                     b.Navigation("UzytkownikPlatformaCollection");
 
                     b.Navigation("WiadomosciNadaneCollection");
-
-                    b.Navigation("WiadomosciOdebraneCollection");
 
                     b.Navigation("ZnajomiJakoDrugiCollection");
 
