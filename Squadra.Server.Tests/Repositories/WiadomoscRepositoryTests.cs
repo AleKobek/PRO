@@ -92,7 +92,7 @@ public class WiadomoscRepositoryTests : IDisposable
     public async Task GetWiadomosci_BetweenTwoUsers_ReturnsConversationSortedAscending()
     {
         // Act
-        var result = await _repository.GetWiadomosci(1, 2);
+        var result = await _repository.GetWiadomosciPrywatne(1, 2);
 
         // Assert
         Assert.NotNull(result);
@@ -107,7 +107,7 @@ public class WiadomoscRepositoryTests : IDisposable
     public async Task GetWiadomosci_NoConversation_ReturnsEmptyList()
     {
         // Act
-        var result = await _repository.GetWiadomosci(1, 999);
+        var result = await _repository.GetWiadomosciPrywatne(1, 999);
 
         // Assert
         Assert.NotNull(result);
@@ -142,11 +142,11 @@ public class WiadomoscRepositoryTests : IDisposable
         var userId2 = 2;
 
         // Act
-        var result = await _repository.DeleteWiadomosciUzytkownikow(userId1, userId2);
+        var result = await _repository.DeleteWiadomosciPrywatneUzytkownikow(userId1, userId2);
 
         // Assert
         Assert.True(result);
-        var remainingMessages = await _repository.GetWiadomosci(userId1, userId2);
+        var remainingMessages = await _repository.GetWiadomosciPrywatne(userId1, userId2);
         Assert.Empty(remainingMessages);
 
         // Verify message to user 3 is still there

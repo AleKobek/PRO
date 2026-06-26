@@ -62,7 +62,7 @@ public class ZnajomiRepository(
             ? await context.Database.BeginTransactionAsync() 
             : null;
         
-        await wiadomoscRepository.DeleteWiadomosciUzytkownikow(idUzytkownika1, idUzytkownika2); // usuwamy ich wiadomości
+        await wiadomoscRepository.DeleteWiadomosciPrywatneUzytkownikow(idUzytkownika1, idUzytkownika2); // usuwamy ich wiadomości
         context.Znajomi.Remove(znajomosc); // usuwamy samą znajomość
         
         // kończymy transakcję

@@ -110,7 +110,7 @@ public class WiadomoscControllerTests
         ];
 
         _mockWiadomoscService
-            .Setup(s => s.GetWiadomosci(user.Id, 2))
+            .Setup(s => s.GetWiadomosciPrywatne(user.Id, 2))
             .ReturnsAsync(ServiceResult<ICollection<WiadomoscDto>>.Ok(messages));
 
         var actionResult = await _controller.GetWiadomosci(2);

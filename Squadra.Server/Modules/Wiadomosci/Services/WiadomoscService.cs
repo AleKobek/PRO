@@ -27,7 +27,7 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
     }
     
     // w kontrolerze sprawdzamy, czy idUzytkownika1 lub idUzytkownika2 to id obecnego użytkownika
-    public async Task<ServiceResult<ICollection<WiadomoscDto>>> GetWiadomosci(int idUzytkownika1, int idUzytkownika2)
+    public async Task<ServiceResult<ICollection<WiadomoscDto>>> GetWiadomosciPrywatne(int idUzytkownika1, int idUzytkownika2)
     {
         try
         {
@@ -35,7 +35,7 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
             if(idUzytkownika2 < 1) return ServiceResult<ICollection<WiadomoscDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika2));
             if(idUzytkownika1 == idUzytkownika2) return ServiceResult<ICollection<WiadomoscDto>>.BadRequest(new ErrorItem("Nie można pobrać wiadomości między tym samym użytkownikiem"));
             
-            return ServiceResult<ICollection<WiadomoscDto>>.Ok(await wiadomoscRepository.GetWiadomosci(idUzytkownika1, idUzytkownika2));
+            return ServiceResult<ICollection<WiadomoscDto>>.Ok(await wiadomoscRepository.GetWiadomosciPrywatne(idUzytkownika1, idUzytkownika2));
         }
         catch (NieZnalezionoWBazieException e)
         {
@@ -67,14 +67,14 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
         }
     }
     
-    public async Task<ServiceResult<bool>> DeleteWiadomosciUzytkownikow(int idUzytkownika1, int idUzytkownika2)
+    public async Task<ServiceResult<bool>> DeleteWiadomosciPrywatneUzytkownikow(int idUzytkownika1, int idUzytkownika2)
     {
         try
         {
             if(idUzytkownika1 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika1));
             if(idUzytkownika2 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika2));
             if(idUzytkownika1 == idUzytkownika2) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie można usunąć wiadomości między tym samym użytkownikiem"));
-            return ServiceResult<bool>.Ok(await wiadomoscRepository.DeleteWiadomosciUzytkownikow(idUzytkownika1, idUzytkownika2));
+            return ServiceResult<bool>.Ok(await wiadomoscRepository.DeleteWiadomosciPrywatneUzytkownikow(idUzytkownika1, idUzytkownika2));
         }
         catch (NieZnalezionoWBazieException e)
         {

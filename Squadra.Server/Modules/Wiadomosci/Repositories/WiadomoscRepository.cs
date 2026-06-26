@@ -22,10 +22,11 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         );
     }
 
-    public async Task<ICollection<WiadomoscDto>> GetWiadomosci(int idUzytkownika1, int idUzytkownika2)
+    public async Task<ICollection<WiadomoscDto>> GetWiadomosciPrywatne(int idUzytkownika1, int idUzytkownika2)
     {
         var wiadomosci = await context.Wiadomosc
-            .Where(x => (x.IdNadawcy == idUzytkownika1 && x.IdOdbiorcy == idUzytkownika2) ||
+            .Where(x => (x.IdTypuWiadomosci == (int)TypWiadomosciEnum.Prywatna &&
+                                   x.IdNadawcy == idUzytkownika1 && x.IdOdbiorcy == idUzytkownika2) ||
                                   (x.IdNadawcy == idUzytkownika2 && x.IdOdbiorcy == idUzytkownika1))
             .ToListAsync();
         wiadomosci.Sort((x,y) => x.DataWyslania.CompareTo(y.DataWyslania));
@@ -39,9 +40,10 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
     }
     
     // nie obchodzi nas, kto jest nadawcą, a kto odbiorcą, więc bierzemy max z obu
-    public async Task<DateTime?> GetDataNajnowszejWiadomosci(int idUzytkownika1, int idUzytkownika2) {
+    public async Task<DateTime?> GetDataNajnowszejWiadomosciPrywatnej(int idUzytkownika1, int idUzytkownika2) {
         var wiadomosci = await context.Wiadomosc
-            .Where(x => (x.IdNadawcy == idUzytkownika1 && x.IdOdbiorcy == idUzytkownika2) ||
+            .Where(x => (x.IdTypuWiadomosci == (int)TypWiadomosciEnum.Prywatna &&
+                                   x.IdNadawcy == idUzytkownika1 && x.IdOdbiorcy == idUzytkownika2) ||
                                   (x.IdNadawcy == idUzytkownika2 && x.IdOdbiorcy == idUzytkownika1))
             .ToListAsync();
         if(wiadomosci.Count == 0) return null;
@@ -67,15 +69,16 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
             IdTypuWiadomosci = wiadomosc.IdTypuWiadomosci
         };
         await context.Wiadomosc.AddAsync(wiadomoscDoDodania);
-        await UsunWiadomosciPrzekraczajaceLimit(idNadawcy, idOdbiorcy); // usuwamy nadmiarowe wiadomości, jeżeli jest ich za dużo
+        await UsunWiadomosciPrywatnePrzekraczajaceLimit(idNadawcy, idOdbiorcy); // usuwamy nadmiarowe wiadomości, jeżeli jest ich za dużo
         return await context.SaveChangesAsync() > 0; // zwracamy true, jeżeli dodano więcej niż 0 rekordów, czyli się udało
     }
 
     // przy usuwaniu znajomości usuwamy też wszystkie wiadomości między tymi użytkownikami
-    public async Task<bool> DeleteWiadomosciUzytkownikow(int idUzytkownika1, int idUzytkownika2)
+    public async Task<bool> DeleteWiadomosciPrywatneUzytkownikow(int idUzytkownika1, int idUzytkownika2)
     {
         var wiadomosci = await context.Wiadomosc
-            .Where(x => (x.IdNadawcy == idUzytkownika1 && x.IdOdbiorcy == idUzytkownika2) ||
+            .Where(x => (x.IdTypuWiadomosci == (int)TypWiadomosciEnum.Prywatna &&
+                                   x.IdNadawcy == idUzytkownika1 && x.IdOdbiorcy == idUzytkownika2) ||
                                   (x.IdNadawcy == idUzytkownika2 && x.IdOdbiorcy == idUzytkownika1))
             .ToListAsync();
         context.Wiadomosc.RemoveRange(wiadomosci);
@@ -83,11 +86,12 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         return true;
     }
     
-    private async Task<bool> UsunWiadomosciPrzekraczajaceLimit(int idUzytkownika1, int idUzytkownika2)
+    private async Task<bool> UsunWiadomosciPrywatnePrzekraczajaceLimit(int idUzytkownika1, int idUzytkownika2)
     {
         
         var wiadomosci = await context.Wiadomosc
-            .Where(x => (x.IdNadawcy == idUzytkownika1 && x.IdOdbiorcy == idUzytkownika2) ||
+            .Where(x => (x.IdTypuWiadomosci == (int)TypWiadomosciEnum.Prywatna &&
+                                   x.IdNadawcy == idUzytkownika1 && x.IdOdbiorcy == idUzytkownika2) ||
                                   (x.IdNadawcy == idUzytkownika2 && x.IdOdbiorcy == idUzytkownika1))
             .OrderByDescending(x => x.DataWyslania)
             .ToListAsync();

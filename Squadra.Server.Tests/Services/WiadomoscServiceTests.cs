@@ -126,11 +126,11 @@ public class WiadomoscServiceTests
             new WiadomoscDto(userId1, userId2, "01.01.2026 12:30", "Message 1", 1),
             new WiadomoscDto(userId2, userId1, "01.01.2026 12:31", "Message 2", 1)
         };
-        _mockWiadomoscRepository.Setup(r => r.GetWiadomosci(userId1, userId2))
+        _mockWiadomoscRepository.Setup(r => r.GetWiadomosciPrywatne(userId1, userId2))
             .ReturnsAsync(messages);
 
         // Act
-        var result = await _service.GetWiadomosci(userId1, userId2);
+        var result = await _service.GetWiadomosciPrywatne(userId1, userId2);
 
         // Assert
         Assert.True(result.Succeeded);
@@ -147,7 +147,7 @@ public class WiadomoscServiceTests
         var userId2 = 2;
 
         // Act
-        var result = await _service.GetWiadomosci(userId1, userId2);
+        var result = await _service.GetWiadomosciPrywatne(userId1, userId2);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -162,7 +162,7 @@ public class WiadomoscServiceTests
         var userId2 = 0;
 
         // Act
-        var result = await _service.GetWiadomosci(userId1, userId2);
+        var result = await _service.GetWiadomosciPrywatne(userId1, userId2);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -176,7 +176,7 @@ public class WiadomoscServiceTests
         var userId = 1;
 
         // Act
-        var result = await _service.GetWiadomosci(userId, userId);
+        var result = await _service.GetWiadomosciPrywatne(userId, userId);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -190,11 +190,11 @@ public class WiadomoscServiceTests
         // Arrange
         var userId1 = 1;
         var userId2 = 999;
-        _mockWiadomoscRepository.Setup(r => r.GetWiadomosci(userId1, userId2))
+        _mockWiadomoscRepository.Setup(r => r.GetWiadomosciPrywatne(userId1, userId2))
             .ThrowsAsync(new NieZnalezionoWBazieException("Użytkownik nie istnieje"));
 
         // Act
-        var result = await _service.GetWiadomosci(userId1, userId2);
+        var result = await _service.GetWiadomosciPrywatne(userId1, userId2);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -336,16 +336,16 @@ public class WiadomoscServiceTests
         // Arrange
         var userId1 = 1;
         var userId2 = 2;
-        _mockWiadomoscRepository.Setup(r => r.DeleteWiadomosciUzytkownikow(userId1, userId2))
+        _mockWiadomoscRepository.Setup(r => r.DeleteWiadomosciPrywatneUzytkownikow(userId1, userId2))
             .ReturnsAsync(true);
 
         // Act
-        var result = await _service.DeleteWiadomosciUzytkownikow(userId1, userId2);
+        var result = await _service.DeleteWiadomosciPrywatneUzytkownikow(userId1, userId2);
 
         // Assert
         Assert.True(result.Succeeded);
         Assert.Equal(200, result.StatusCode);
-        _mockWiadomoscRepository.Verify(r => r.DeleteWiadomosciUzytkownikow(userId1, userId2), Times.Once);
+        _mockWiadomoscRepository.Verify(r => r.DeleteWiadomosciPrywatneUzytkownikow(userId1, userId2), Times.Once);
     }
 
     [Fact]
@@ -356,7 +356,7 @@ public class WiadomoscServiceTests
         var userId2 = 2;
 
         // Act
-        var result = await _service.DeleteWiadomosciUzytkownikow(userId1, userId2);
+        var result = await _service.DeleteWiadomosciPrywatneUzytkownikow(userId1, userId2);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -371,7 +371,7 @@ public class WiadomoscServiceTests
         var userId2 = -1;
 
         // Act
-        var result = await _service.DeleteWiadomosciUzytkownikow(userId1, userId2);
+        var result = await _service.DeleteWiadomosciPrywatneUzytkownikow(userId1, userId2);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -385,7 +385,7 @@ public class WiadomoscServiceTests
         var userId = 1;
 
         // Act
-        var result = await _service.DeleteWiadomosciUzytkownikow(userId, userId);
+        var result = await _service.DeleteWiadomosciPrywatneUzytkownikow(userId, userId);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -399,11 +399,11 @@ public class WiadomoscServiceTests
         // Arrange
         var userId1 = 1;
         var userId2 = 999;
-        _mockWiadomoscRepository.Setup(r => r.DeleteWiadomosciUzytkownikow(userId1, userId2))
+        _mockWiadomoscRepository.Setup(r => r.DeleteWiadomosciPrywatneUzytkownikow(userId1, userId2))
             .ThrowsAsync(new NieZnalezionoWBazieException("Użytkownik nie istnieje"));
 
         // Act
-        var result = await _service.DeleteWiadomosciUzytkownikow(userId1, userId2);
+        var result = await _service.DeleteWiadomosciPrywatneUzytkownikow(userId1, userId2);
 
         // Assert
         Assert.False(result.Succeeded);

@@ -52,7 +52,7 @@ public class WiadomoscController(
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
-        var result = await wiadomoscService.GetWiadomosci(uzytkownik.Id, idZnajomego);
+        var result = await wiadomoscService.GetWiadomosciPrywatne(uzytkownik.Id, idZnajomego);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),

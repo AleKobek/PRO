@@ -158,7 +158,7 @@ public class ZnajomiRepositoryTests : IDisposable
         // Arrange - use a friendship that doesn't rely on transactions
         var userId1 = 1;
         var userId2 = 2;
-        _mockWiadomoscRepository.Setup(r => r.DeleteWiadomosciUzytkownikow(userId1, userId2))
+        _mockWiadomoscRepository.Setup(r => r.DeleteWiadomosciPrywatneUzytkownikow(userId1, userId2))
             .ReturnsAsync(true);
 
         // Verify friendship exists before deletion
@@ -179,7 +179,7 @@ public class ZnajomiRepositoryTests : IDisposable
         }
 
         // Assert - messages deletion was called
-        _mockWiadomoscRepository.Verify(r => r.DeleteWiadomosciUzytkownikow(userId1, userId2), Times.Once);
+        _mockWiadomoscRepository.Verify(r => r.DeleteWiadomosciPrywatneUzytkownikow(userId1, userId2), Times.Once);
     }
 
     [Fact]

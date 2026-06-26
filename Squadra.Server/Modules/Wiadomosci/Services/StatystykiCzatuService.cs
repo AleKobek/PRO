@@ -30,7 +30,7 @@ public class StatystykiCzatuService(IWiadomoscRepository wiadomoscRepository, IZ
 
             // jest git
             return ServiceResult<DateTime?>.Ok(
-                await wiadomoscRepository.GetDataNajnowszejWiadomosci(idUzytkownika1, idUzytkownika2));
+                await wiadomoscRepository.GetDataNajnowszejWiadomosciPrywatnej(idUzytkownika1, idUzytkownika2));
         }
         catch (NieZnalezionoWBazieException e)
         {
@@ -55,7 +55,7 @@ public class StatystykiCzatuService(IWiadomoscRepository wiadomoscRepository, IZ
                     new ErrorItem("Nie można sprawdzić wiadomości między tym samym użytkownikiem"));
 
             var dataNajnowszejWiadomosci =
-                await wiadomoscRepository.GetDataNajnowszejWiadomosci(idObecnegoUzytkownika, idZnajomego);
+                await wiadomoscRepository.GetDataNajnowszejWiadomosciPrywatnej(idObecnegoUzytkownika, idZnajomego);
             if (dataNajnowszejWiadomosci == null)
                 return ServiceResult<bool>.Ok(false); // jeżeli nie ma żadnych wiadomości, to na pewno nie ma nowych
 
