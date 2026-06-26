@@ -14,7 +14,8 @@ public class DeleteDruzynaService(
     IDruzynyRepository druzynyRepository,
     IDruzynyService druzynyService,
     IStatystykiService statystykiService,
-    IPowiadomienieService powiadomienieService
+    IPowiadomienieService powiadomienieService,
+    IWiadomoscService wiadomoscService
 ) : IDeleteDruzynaService
 {
     public async Task<ServiceResult<bool>> UsunDruzyne(int idDruzyny, int idUsuwajacegoUzytkownika)
@@ -43,6 +44,15 @@ public class DeleteDruzynaService(
 
             // usuwamy wszystkie miejsca w drużynie, żeby nie było miejsc w drużynie, która już nie istnieje
             await druzynyRepository.DeleteMiejscaWDruzynie(idDruzyny);
+            
+            // usuwamy wszystkie wiadomości na czacie drużyny, żeby nie było wiadomości w drużynie, która już nie istnieje
+            var czatDruzynowyRes = await wiadomoscService.DeleteWiadomosciDruzyny(idDruzyny);
+            if (!czatDruzynowyRes.Succeeded)
+            {
+                await transakcja.RollbackAsync();
+                return czatDruzynowyRes;
+            }
+
 
             // usuwamy wszystkie powiadomienia związane z drużyną, żeby nie było powiadomień o drużynie, która już nie istnieje
             // czyli to będą zaproszenia do tej drużyny i u kapitana powiadomienia że ktoś dołączył/opuścił, ktoś odrzucił/zaakceptował zaproszenie .
