@@ -12,7 +12,7 @@ public class UsunKontoService (
     IIntegracjeZewnetrzneService integracjeZewnetrzneService,
     IPowiadomienieService powiadomienieService,
     IZnajomiService znajomiService,
-    IDruzynyService druzynyService,
+    IDeleteDruzynaService deleteDruzynaService,
     AppDbContext context) : IUsunKontoService
 {
     public async Task<ServiceResult<bool>> UsunKonto(int id)
@@ -36,7 +36,7 @@ public class UsunKontoService (
             }
             
             // wyrzucamy go ze wszystkich drużyn
-            var wyrzucanieRes = await druzynyService.UsunWszystkieDruzynyDlaUzytkownika(id);
+            var wyrzucanieRes = await deleteDruzynaService.UsunWszystkieDruzynyDlaUzytkownika(id);
             if(!wyrzucanieRes.Succeeded)
             {
                 await transakcja.RollbackAsync();

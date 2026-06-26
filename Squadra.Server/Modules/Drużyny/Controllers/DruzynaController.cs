@@ -12,7 +12,11 @@ namespace Squadra.Server.Modules.Drużyny.Controllers;
 [Authorize]
 [Route("api/[controller]")]
 [ApiController]
-public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytkownik> userManager) : ControllerBase
+public class DruzynaController(
+    IDruzynyService druzynyService, 
+    IDeleteDruzynaService deleteDruzynaService,
+    UserManager<Uzytkownik> userManager
+) : ControllerBase
 {
      
     [HttpGet("twoje")]
@@ -247,7 +251,7 @@ public class DruzynaController(IDruzynyService druzynyService, UserManager<Uzytk
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
         
-        var result = await druzynyService.UsunDruzyne(idDruzyny, uzytkownik.Id);
+        var result = await deleteDruzynaService.UsunDruzyne(idDruzyny, uzytkownik.Id);
         return result.StatusCode switch
         {
             204 => NoContent(),

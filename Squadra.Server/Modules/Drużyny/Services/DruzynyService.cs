@@ -1,4 +1,6 @@
-﻿using Squadra.Server.Exceptions;
+﻿using Microsoft.EntityFrameworkCore.Storage;
+using Squadra.Server.Context;
+using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.BibliotekaGier.Services;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Repositories;
@@ -20,6 +22,7 @@ using Squadra.Server.Modules.Znajomosci.Services;
 namespace Squadra.Server.Modules.Drużyny.Services;
 
 public class DruzynyService(
+    AppDbContext context,
     IDruzynyRepository druzynyRepository,
     IWspieranaGraService wspieranaGraService,
     IUzytkownikService uzytkownikService,
@@ -794,45 +797,6 @@ public class DruzynyService(
         }
     }
     
-    public async Task<ServiceResult<bool>> UsunDruzyne(int idDruzyny, int idUsuwajacegoUzytkownika)
-    {
-        try
-        {
-            if (idDruzyny <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id drużyny: " + idDruzyny)); 
-            
-            var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
-            if (druzyna.KapitanId != idUsuwajacegoUzytkownika) return ServiceResult<bool>.Forbidden(new ErrorItem("Tylko kapitan drużyny może ją usunąć"));
-            
-            var czlonkowieDruzyny = await druzynyRepository.GetMiejscaWDruzynie(idDruzyny);
-            
-            var usunDruzyneRes = await druzynyRepository.UsunDruzyne(idDruzyny);
-            if (!usunDruzyneRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć drużyny")]);
-            
-            // usuwamy wszystkie powiadomienia związane z drużyną, żeby nie było powiadomień o drużynie, która już nie istnieje
-            // czyli to będą zaproszenia do tej drużyny i u kapitana powiadomienia że ktoś dołączył/opuścił, ktoś odrzucił/zaakceptował zaproszenie .
-            var powiadomieniaRes = await powiadomienieService.UsunPowiadomieniaZwiazaneZDruzyna(idDruzyny);
-            if (!powiadomieniaRes.Succeeded) return ServiceResult<bool>.Fail(powiadomieniaRes.StatusCode, powiadomieniaRes.Errors);
-            
-            // wysyłamy powiadomienia do wszystkich członków drużyny, że drużyna została usunięta
-            foreach (var miejsce in czlonkowieDruzyny)
-            {
-                if (miejsce.UzytkownikId == null) continue; // jeżeli miejsce jest puste, to nie wysyłamy powiadomienia
-                if(miejsce.UzytkownikId == idUsuwajacegoUzytkownika) continue; // nie wysyłamy powiadomienia do osoby, która usunęła drużynę
-                var powiadomienieRes = await powiadomienieService.WyslijPowiadomienieORozwiazaniuDruzyny(
-                    miejsce.UzytkownikId ?? 0, // już odfiltrowaliśmy miejsca bez UzytkownikId, więc możemy bezpiecznie użyć ?? 0
-                    druzyna.Nazwa
-                );
-                // nie przerywamy pętli jeżeli wysyłanie powiadomienia się nie powiedzie - coś jest nie tak z miejscem, ale drużyna i tak została usunięta, więc nie ma co robić w tej sytuacji
-            }
-            
-            return ServiceResult<bool>.Ok(true);
-        }
-        catch (NieZnalezionoWBazieException e)
-        {
-            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
-        }
-    }
-    
     public async Task<ServiceResult<bool>> OpuscDruzyne(int idDruzyny, int idUzytkownika, bool czyPrzyUsuwaniuKonta = false)
     {
         try
@@ -915,27 +879,6 @@ public class DruzynyService(
         return ServiceResult<bool>.Ok(true);
     }
     
-    public async Task<ServiceResult<bool>> UsunWszystkieDruzynyDlaUzytkownika(int idUzytkownika)
-    {
-        if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika));
-        
-        var druzynyUzytkownika = await druzynyRepository.GetDruzynyUzytkownika(idUzytkownika);
-        foreach (var druzyna in druzynyUzytkownika)
-        {
-            if (druzyna.KapitanId == idUzytkownika)
-            {
-                var usunDruzyneRes = await UsunDruzyne(druzyna.Id, idUzytkownika);
-                if (!usunDruzyneRes.Succeeded) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć drużyny o id " + druzyna.Id)]);
-            }
-            else
-            {
-                var opuscDruzyneRes = await OpuscDruzyne(druzyna.Id, idUzytkownika, true);
-                if (!opuscDruzyneRes.Succeeded) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się opuścić drużyny o id " + druzyna.Id)]);
-            }
-        }
-        
-        return  ServiceResult<bool>.NoContent(true);
-    }
 
     public async Task<ServiceResult<bool>> UpdateDruzyna(int idDruzyny, int idUzytkownika, DruzynaUpdateDto druzynaReq)
     {

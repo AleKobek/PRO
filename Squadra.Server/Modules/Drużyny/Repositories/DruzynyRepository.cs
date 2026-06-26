@@ -274,46 +274,20 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
     
     public async Task<bool> UsunDruzyne(int idDruzyny)
     {
-        // jeśli istnieje zewnętrzna transakcja, użyjemy jej; w przeciwnym razie utworzymy nową
-        IDbContextTransaction? transakcja = context.Database.CurrentTransaction;
-        var createdTransaction = false;
-        if (transakcja == null)
-        {
-            transakcja = await context.Database.BeginTransactionAsync();
-            createdTransaction = true;
-        }
-
         var druzyna = await context.Druzyna.FindAsync(idDruzyny);
-        if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
-        try
-        {
-            // usuwamy wymagane statystyki drużyny
-            await statystykiRepository.UsunWymaganeStatystykiDruzyny(idDruzyny);
-            // usuwamy wszystkie miejsca w drużynie
-            var miejscaWDruzynie = await context.MiejsceWDruzynie.Where(m => m.DruzynaId == idDruzyny).ToListAsync();
-            context.MiejsceWDruzynie.RemoveRange(miejscaWDruzynie);
-            // usuwamy drużynę
-            context.Druzyna.Remove(druzyna);
-            await context.SaveChangesAsync();
+        if(druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
+        context.Druzyna.Remove(druzyna);
+        await context.SaveChangesAsync();
+        return true;
+    }
 
-            if (createdTransaction)
-            {
-                await transakcja.CommitAsync();
-            }
-
-            return true;
-        }
-        catch (Exception e)
-        {
-            if (createdTransaction)
-            {
-                await transakcja.RollbackAsync();
-                Console.WriteLine("Wystąpił błąd podczas usuwania drużyny: " + e.Message);
-                return false;
-            }
-            // jeśli nie utworzyliśmy transakcji tutaj, rzucamy wyjątek dalej aby zewnętrzna transakcja mogła go obsłużyć/rollbackować
-            throw;
-        }
+    public async Task<bool> DeleteMiejscaWDruzynie(int idDruzyny)
+    {
+        // nie musimy sprawdzać, czy drużyna istnieje, bo funkcje wyżej już to sprawdzają
+        var miejscaWDruzynie = await context.MiejsceWDruzynie.Where(m => m.DruzynaId == idDruzyny).ToListAsync();
+        context.MiejsceWDruzynie.RemoveRange(miejscaWDruzynie);
+        await context.SaveChangesAsync();
+        return true;
     }
     
     public async Task<bool> OpuscDruzyne(int idDruzyny, int idUzytkownika)

@@ -9,6 +9,7 @@ public static class DruzynyModule
     {
         services.AddScoped<IDruzynyService, DruzynyService>();
         services.AddScoped<IDruzynyRepository, DruzynyRepository>();
+        services.AddScoped<IDeleteDruzynaService, DeleteDruzynaService>();
         
         return services;
     }
