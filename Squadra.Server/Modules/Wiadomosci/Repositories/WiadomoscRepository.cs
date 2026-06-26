@@ -38,6 +38,21 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
             wiadomosc.IdTypuWiadomosci
         )).ToList();
     }
+
+    public async Task<ICollection<WiadomoscDto>> GetWiadomosciNaCzacieDruzyny(int idDruzyny)
+    {
+        var wiadomosci = await context.Wiadomosc
+            .Where(x => x.IdTypuWiadomosci == (int)TypWiadomosciEnum.Druzynowa && x.IdOdbiorcy == idDruzyny)
+            .ToListAsync();
+        wiadomosci.Sort((x,y) => x.DataWyslania.CompareTo(y.DataWyslania));
+        return wiadomosci.Select(wiadomosc => new WiadomoscDto(
+            wiadomosc.IdNadawcy,
+            wiadomosc.IdOdbiorcy,
+            wiadomosc.DataWyslania.ToString("dd.MM.yyyy HH:mm"),
+            wiadomosc.Tresc,
+            wiadomosc.IdTypuWiadomosci
+        )).ToList();
+    }
     
     // nie obchodzi nas, kto jest nadawcą, a kto odbiorcą, więc bierzemy max z obu
     public async Task<DateTime?> GetDataNajnowszejWiadomosciPrywatnej(int idUzytkownika1, int idUzytkownika2) {

@@ -7,6 +7,7 @@ public interface IWiadomoscService
 {
     public Task<ServiceResult<WiadomoscDto>> GetWiadomosc(int idWiadomosci, int idObecnegoUzytkownika);
     public Task<ServiceResult<ICollection<WiadomoscDto>>> GetWiadomosciPrywatne(int idUzytkownika1, int idUzytkownika2);
+    public Task<ServiceResult<CzatDruzynowyDto>> GetWiadomosciNaCzacieDruzyny(int idDruzyny, int idCzytajacego);
     public Task<ServiceResult<bool>> CreateWiadomosc(int idOdbiorcy, WiadomoscCreateDto wiadomosc, int idObecnegoUzytkownika);
     public Task<ServiceResult<bool>> DeleteWiadomosciPrywatneUzytkownikow(int idUzytkownika1, int idUzytkownika2);
 }

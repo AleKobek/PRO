@@ -1,5 +1,9 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Drużyny.DTO;
+using Squadra.Server.Modules.Drużyny.Services;
+using Squadra.Server.Modules.Profile.DTO.Profil;
+using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Wiadomosci.DTO;
 using Squadra.Server.Modules.Wiadomosci.Repositories;
@@ -8,7 +12,9 @@ using Squadra.Server.Modules.Znajomosci.Repositories;
 namespace Squadra.Server.Modules.Wiadomosci.Services;
 
 public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
-    IZnajomiRepository znajomiRepository) : IWiadomoscService
+    IZnajomiRepository znajomiRepository,
+    IDruzynyService druzynyService,
+    IProfilService profilService) : IWiadomoscService
 {
     public async Task<ServiceResult<WiadomoscDto>> GetWiadomosc(int idWiadomosci, int idObecnegoUzytkownika)
     {
@@ -42,6 +48,35 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
             return ServiceResult<ICollection<WiadomoscDto>>.NotFound(new ErrorItem(e.Message));
         }
     }
+
+    public async Task<ServiceResult<CzatDruzynowyDto>> GetWiadomosciNaCzacieDruzyny(int idDruzyny, int idCzytajacego)
+    {
+        if(idDruzyny < 1) return ServiceResult<CzatDruzynowyDto>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+        
+        // sprawdzamy, czy użytkownik należy do drużyny, bo tylko członkowie drużyny mogą czytać czat drużyny
+        var czyUzytkownikNalezyDoDruzynyRes = await druzynyService.CzyUzytkownikNalezyDoDruzyny(idCzytajacego, idDruzyny);
+        if(!czyUzytkownikNalezyDoDruzynyRes.Succeeded) return ServiceResult<CzatDruzynowyDto>.Fail(czyUzytkownikNalezyDoDruzynyRes.StatusCode, czyUzytkownikNalezyDoDruzynyRes.Errors);
+
+        if(!czyUzytkownikNalezyDoDruzynyRes.Value)
+            return ServiceResult<CzatDruzynowyDto>.Forbidden(new ErrorItem("Brak dostępu do czatu drużyny o id " + idDruzyny));
+        
+        // bierzemy wiadomości z czatu drużyny
+        var wiadomosci = await wiadomoscRepository.GetWiadomosciNaCzacieDruzyny(idDruzyny);
+        
+        // bierzemy osoby, które brały udział w czacie
+        var idNadawcow = wiadomosci.Select(x => x.IdNadawcy).Distinct().ToList();
+        var nadawcy = new List<ProfilMinInfoDto>();
+        foreach(var id in idNadawcow)
+        {
+            var profilRes = await profilService.GetProfilMinInfo(id);
+            if(profilRes.Succeeded && profilRes.Value != null) 
+                nadawcy.Add(profilRes.Value);
+            // jeżeli nie znaleziono tego użytkownika, bo usunął konto, to nie dodajemy i na froncie będziemy wyświetlać "Nieznany użytkownik" lub coś takiego
+        }
+        
+        return ServiceResult<CzatDruzynowyDto>.Ok(new CzatDruzynowyDto(nadawcy, wiadomosci));
+    }
+
     
     public async Task<ServiceResult<bool>> CreateWiadomosc(int idOdbiorcy, WiadomoscCreateDto wiadomosc, int idObecnegoUzytkownika)
     {
