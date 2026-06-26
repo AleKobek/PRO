@@ -16,8 +16,9 @@ namespace Squadra.Server.Modules.Znajomosci.Controllers;
 [ApiController]
 public class ZnajomiController(IZnajomiService znajomiService, 
     IPowiadomienieService powiadomienieService, 
-    UserManager<Uzytkownik> userManager,
-    IProfilService profilService) : ControllerBase
+    IProfilService profilService,
+    IDeleteZnajomoscService deleteZnajomoscService,
+    UserManager<Uzytkownik> userManager) : ControllerBase
 {
     [HttpGet]
     [EndpointSummary("Zwraca listę znajomych danego użytkownika")]
@@ -69,7 +70,7 @@ public class ZnajomiController(IZnajomiService znajomiService,
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
         
-        var result = await znajomiService.DeleteZnajomosc(uzytkownik.Id, idUsuwanego);
+        var result = await deleteZnajomoscService.DeleteZnajomosc(uzytkownik.Id, idUsuwanego);
         
         if(result.StatusCode == 404) return NotFound(result.Errors[0].Message);
         

@@ -1,4 +1,5 @@
-﻿using Squadra.Server.Exceptions;
+﻿using Squadra.Server.Context;
+using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Wiadomosci.Services;
@@ -9,6 +10,7 @@ using Squadra.Server.Modules.Znajomosci.Repositories;
 namespace Squadra.Server.Modules.Znajomosci.Services;
 
 public class ZnajomiService(
+    AppDbContext context,
     IZnajomiRepository znajomiRepository,
     IProfilService profilService, 
     IStatystykiCzatuService statystykiCzatuService) : IZnajomiService
@@ -133,44 +135,6 @@ public class ZnajomiService(
             
 
             return ServiceResult<bool>.Created(await znajomiRepository.CreateZnajomosc(idUzytkownika1, idUzytkownika2));
-        }
-        catch (NieZnalezionoWBazieException e)
-        {
-            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
-        }
-    }
-
-    public async Task<ServiceResult<bool>> DeleteZnajomosc(int idUzytkownikaInicjujacego, int idUzytkownika2)
-    {
-        try
-        {
-            if (idUzytkownikaInicjujacego < 1)
-                return ServiceResult<bool>.BadRequest(
-                    new ErrorItem("Nieprawidłowe id użytkownika inicjującego: " + idUzytkownikaInicjujacego));
-            if (idUzytkownika2 < 1)
-                return ServiceResult<bool>.BadRequest(
-                    new ErrorItem("Nieprawidłowe id usuwanego znajomego: " + idUzytkownika2));
-            
-            // historię wiadomości usuwa repozytorium, bo tam jest transakcja
-            
-            return ServiceResult<bool>.NoContent(await znajomiRepository.DeleteZnajomosc(idUzytkownikaInicjujacego, idUzytkownika2));
-        }
-        catch (NieZnalezionoWBazieException e)
-        {
-            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
-        }
-    }
-    
-    public async Task<ServiceResult<bool>> DeleteZnajomosciUzytkownika(int idUzytkownika)
-    {
-        try
-        {
-            if (idUzytkownika < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika));
-            
-            var res = await profilService.GetProfil(idUzytkownika); // jeżeli użytkownik nie istnieje, to profil też nie
-            if(!res.Succeeded) return ServiceResult<bool>.NotFound(res.Errors[0]);
-            
-            return ServiceResult<bool>.NoContent(await znajomiRepository.DeleteZnajomosciUzytkownika(idUzytkownika));
         }
         catch (NieZnalezionoWBazieException e)
         {

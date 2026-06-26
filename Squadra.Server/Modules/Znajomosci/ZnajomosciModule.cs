@@ -9,6 +9,7 @@ public static class ZnajomosciModule
     {
         services.AddScoped<IZnajomiService, ZnajomiService>();
         services.AddScoped<IZnajomiRepository, ZnajomiRepository>();
+        services.AddScoped<IDeleteZnajomoscService, DeleteZnajomoscService>();
 
         return services;
     }

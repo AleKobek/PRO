@@ -12,6 +12,16 @@ public class ZnajomiRepository(
     IProfilRepository profilRepository,
     IWiadomoscRepository wiadomoscRepository) : IZnajomiRepository
 {
+
+    public async Task<Znajomi> GetZnajomosc(int idUzytkownika1, int idUzytkownika2)
+    {
+        var znajomosc = await context.Znajomi.Where(x => (
+                x.IdUzytkownika1 == idUzytkownika1 && x.IdUzytkownika2 == idUzytkownika2) || x.IdUzytkownika2 == idUzytkownika1 && x.IdUzytkownika1 == idUzytkownika2
+        ).FirstOrDefaultAsync();
+        if(znajomosc == null) throw new NieZnalezionoWBazieException("Znajomosc między użytkownikiem: " + idUzytkownika1 + " a użytkownikiem: " + idUzytkownika2 + " nie istnieje");
+        return znajomosc;
+    }
+
     
     public async Task<ICollection<Znajomi>> GetZnajomosciUzytkownika(int id)
     {
@@ -55,31 +65,10 @@ public class ZnajomiRepository(
             x.IdUzytkownika1 == idUzytkownika1 && x.IdUzytkownika2 == idUzytkownika2) || x.IdUzytkownika2 == idUzytkownika1 && x.IdUzytkownika1 == idUzytkownika2
         ).FirstOrDefaultAsync();
         if(znajomosc == null) throw new NieZnalezionoWBazieException("Znajomosc między użytkownikiem: " + idUzytkownika1 + " a użytkownikiem: " + idUzytkownika2 + " nie istnieje");
-        
-        // Jeśli transakcja już istnieje (np. z UsunKonto), nie otwieramy nowej
-        var czyToNowaTransakcja = context.Database.CurrentTransaction == null;
-        var transakcja = czyToNowaTransakcja 
-            ? await context.Database.BeginTransactionAsync() 
-            : null;
-        
-        await wiadomoscRepository.DeleteWiadomosciPrywatneUzytkownikow(idUzytkownika1, idUzytkownika2); // usuwamy ich wiadomości
+
         context.Znajomi.Remove(znajomosc); // usuwamy samą znajomość
         
-        // kończymy transakcję
-        if (czyToNowaTransakcja) await transakcja!.CommitAsync();
         return await context.SaveChangesAsync() > 0;
-    }
-
-    public async Task<bool> DeleteZnajomosciUzytkownika(int idUzytkownika)
-    {
-        var znajomosci = await context.Znajomi.Where(x => x.IdUzytkownika1 == idUzytkownika || x.IdUzytkownika2 == idUzytkownika).ToListAsync();
-        foreach (var znajomosc in znajomosci)
-        {
-            if(idUzytkownika == znajomosc.IdUzytkownika1) await DeleteZnajomosc(idUzytkownika, znajomosc.IdUzytkownika2);
-            else await DeleteZnajomosc(idUzytkownika, znajomosc.IdUzytkownika1);
-        }
-        await context.SaveChangesAsync();
-        return true;
     }
     
     public async Task<bool> CzyJestZnajomosc(int idUzytkownika1, int idUzytkownika2)

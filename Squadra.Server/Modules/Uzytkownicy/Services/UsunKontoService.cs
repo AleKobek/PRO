@@ -11,8 +11,8 @@ public class UsunKontoService (
     IUzytkownikService uzytkownikService,
     IIntegracjeZewnetrzneService integracjeZewnetrzneService,
     IPowiadomienieService powiadomienieService,
-    IZnajomiService znajomiService,
     IDeleteDruzynaService deleteDruzynaService,
+    IDeleteZnajomoscService deleteZnajomoscService,
     AppDbContext context) : IUsunKontoService
 {
     public async Task<ServiceResult<bool>> UsunKonto(int id)
@@ -21,7 +21,7 @@ public class UsunKontoService (
         
         try
         {
-            var znajomosciRes = await znajomiService.DeleteZnajomosciUzytkownika(id);
+            var znajomosciRes = await deleteZnajomoscService.DeleteZnajomosciUzytkownika(id);
             if (!znajomosciRes.Succeeded) 
             {
                 await transakcja.RollbackAsync();
