@@ -670,7 +670,7 @@ public class DruzynyService(
         
         try{
             
-            return ServiceResult<bool>.Ok(await druzynyRepository.CzyUzytkownikNalezyDoDruzyny(idDruzyny, idUzytkownika));
+            return ServiceResult<bool>.Ok(await druzynyRepository.CzyUzytkownikNalezyDoDruzyny(idUzytkownika, idDruzyny));
             
         }catch(NieZnalezionoWBazieException e)
         {
