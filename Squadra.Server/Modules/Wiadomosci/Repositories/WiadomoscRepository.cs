@@ -86,6 +86,7 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         };
         await context.Wiadomosc.AddAsync(wiadomoscDoDodania);
         if(wiadomosc.IdTypuWiadomosci == (int)TypWiadomosciEnum.Prywatna) await UsunWiadomosciPrywatnePrzekraczajaceLimit(idNadawcy, idOdbiorcy); // usuwamy nadmiarowe wiadomości, jeżeli jest ich za dużo
+        if(wiadomosc.IdTypuWiadomosci == (int)TypWiadomosciEnum.Prywatna) await UsunWiadomosciDruzynyPrzekraczajaceLimit(idOdbiorcy); // usuwamy nadmiarowe wiadomości, jeżeli jest ich za dużo
         return await context.SaveChangesAsync() > 0; // zwracamy true, jeżeli dodano więcej niż 0 rekordów, czyli się udało
     }
 
@@ -113,6 +114,20 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
             .ToListAsync();
         if (wiadomosci.Count <= MaksymalnaLiczbaWiadomosciNaCzaciePrywatnym) return true;
         var wiadomosciDoUsuniecia = wiadomosci.Skip(MaksymalnaLiczbaWiadomosciNaCzaciePrywatnym).ToList();
+        context.Wiadomosc.RemoveRange(wiadomosciDoUsuniecia);
+        await context.SaveChangesAsync();
+        return true;
+    }
+    
+    private async Task<bool> UsunWiadomosciDruzynyPrzekraczajaceLimit(int idDruzyny)
+    {
+        
+        var wiadomosci = await context.Wiadomosc
+            .Where(x => x.IdTypuWiadomosci == (int)TypWiadomosciEnum.Druzynowa &&x.IdOdbiorcy == idDruzyny)
+            .OrderByDescending(x => x.DataWyslania)
+            .ToListAsync();
+        if (wiadomosci.Count <= MaksymalnaLiczbaWiadomosciNaCzacieDruzynowym) return true;
+        var wiadomosciDoUsuniecia = wiadomosci.Skip(MaksymalnaLiczbaWiadomosciNaCzacieDruzynowym).ToList();
         context.Wiadomosc.RemoveRange(wiadomosciDoUsuniecia);
         await context.SaveChangesAsync();
         return true;
