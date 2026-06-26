@@ -128,4 +128,28 @@ public class WiadomoscController(
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
         };
     }
+    
+    [HttpPost("druzynowa/{idDruzyny:int}")]
+    [EndpointSummary("Wysyła wiadomość do do drużyny")]
+    [EndpointDescription("Tworzy nową wiadomość i wysyła ją na czat wybranej drużyny")]
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult> CreateWiadomoscDruzynowa(int idDruzyny, [FromBody] string tresc)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await wiadomoscService.CreateWiadomoscDruzynowa(idDruzyny, tresc, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            201 => Created(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(StatusCodes.Status403Forbidden, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
 }

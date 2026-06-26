@@ -102,6 +102,37 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
         }
     }
     
+    public async Task<ServiceResult<bool>> CreateWiadomoscDruzynowa(int idDruzyny, string tresc, int idObecnegoUzytkownika)
+    {
+        try
+        {
+            if(tresc.IsNullOrEmpty())
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Treść wiadomości nie może być pusta"));
+            
+            if(tresc.Length > 1000)   
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Treść wiadomości nie może przekraczać 1000 znaków"));
+            
+            // sprawdzamy, czy drużyna o podanym id istnieje
+            var druzyna = await druzynyService.GetDruzyna(idDruzyny);
+            if(!druzyna.Succeeded) return ServiceResult<bool>.Fail(druzyna.StatusCode, druzyna.Errors);
+            if (druzyna.Value == null)
+                return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono drużyny o id " + idDruzyny));
+            
+            // sprawdzamy, czy użytkownik należy do drużyny, bo tylko członkowie drużyny mogą wysyłać wiadomości na czat drużyny
+            var czyUzytkownikNalezyDoDruzynyRes = await druzynyService.CzyUzytkownikNalezyDoDruzyny(idObecnegoUzytkownika, idDruzyny);
+            if(!czyUzytkownikNalezyDoDruzynyRes.Succeeded) return ServiceResult<bool>.Fail(czyUzytkownikNalezyDoDruzynyRes.StatusCode, czyUzytkownikNalezyDoDruzynyRes.Errors);
+
+            if(!czyUzytkownikNalezyDoDruzynyRes.Value)
+                return ServiceResult<bool>.Forbidden(new ErrorItem("Brak dostępu do czatu drużyny o id " + idDruzyny));
+            
+            return ServiceResult<bool>.Created(await wiadomoscRepository.CreateWiadomosc(idDruzyny, new WiadomoscCreateDto(tresc, (int)TypWiadomosciEnum.Druzynowa), idObecnegoUzytkownika));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
     public async Task<ServiceResult<bool>> DeleteWiadomosciPrywatneUzytkownikow(int idUzytkownika1, int idUzytkownika2)
     {
         try
