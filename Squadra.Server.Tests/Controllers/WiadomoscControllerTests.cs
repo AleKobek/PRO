@@ -140,7 +140,7 @@ public class WiadomoscControllerTests
             .Setup(s => s.CzySaNoweWiadomosciOdZnajomych(user.Id))
             .ReturnsAsync(ServiceResult<bool>.Ok(true));
 
-        var actionResult = await _controller.CzySaNoweWiadomosci();
+        var actionResult = await _controller.CzySaNoweWiadomosciOdZnajomych();
 
         var okResult = Assert.IsType<OkObjectResult>(actionResult);
         Assert.True((bool)okResult.Value!);
@@ -151,7 +151,7 @@ public class WiadomoscControllerTests
     {
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync((Uzytkownik?)null);
 
-        var actionResult = await _controller.CzySaNoweWiadomosci();
+        var actionResult = await _controller.CzySaNoweWiadomosciOdZnajomych();
 
         var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(actionResult);
         Assert.Equal("Nie jesteś zalogowany.", unauthorizedResult.Value);

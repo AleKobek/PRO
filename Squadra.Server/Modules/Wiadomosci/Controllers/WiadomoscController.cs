@@ -40,14 +40,14 @@ public class WiadomoscController(
         };
     }
 
-    [HttpGet("konwersacja/{idZnajomego:int}")]
+    [HttpGet("czat-prywatny/{idZnajomego:int}")]
     [EndpointSummary("Pobiera wszystkie wiadomości między zalogowanym użytkownikiem a uzytkownikiem o podanym id")]
     [ProducesResponseType(typeof(IEnumerable<WiadomoscDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult> GetWiadomosci(int idZnajomego)
+    public async Task<ActionResult> GetWiadomosciPrywatne(int idZnajomego)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
@@ -69,7 +69,7 @@ public class WiadomoscController(
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    public async Task<ActionResult> CzySaNoweWiadomosci()
+    public async Task<ActionResult> CzySaNoweWiadomosciOdZnajomych()
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)

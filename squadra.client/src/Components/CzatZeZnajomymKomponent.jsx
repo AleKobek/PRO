@@ -285,7 +285,7 @@ export default function CzatZeZnajomymKomponent({
     };
 
     const podajCzat = async (ac) => {
-        const data = await fetchJsonAbort(`${API_BASE_URL}/Wiadomosc/konwersacja/${idZnajomegoZOtwartymCzatem}`, ac, " czatu");
+        const data = await fetchJsonAbort(`${API_BASE_URL}/Wiadomosc/czat-prywatny/${idZnajomegoZOtwartymCzatem}`, ac, " czatu");
         if(!data) ustawCzat([]);
         else ustawCzat(data);
         await aktualizujDateOtwarciaCzatu()
