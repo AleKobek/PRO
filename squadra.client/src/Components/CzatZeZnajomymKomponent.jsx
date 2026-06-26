@@ -194,12 +194,9 @@ export default function CzatZeZnajomymKomponent({
                 },
                 credentials: "include",
                 signal: ac.signal,
-                body: JSON.stringify({
-                    tresc: wiadomoscDoWyslania,
-                    idTypuWiadomosci: 1,
-                })
+                body: JSON.stringify(wiadomoscDoWyslania)
             }
-            const res = await fetch(`${API_BASE_URL}/Wiadomosc/${idZnajomegoZOtwartymCzatem}`, opcje);
+            const res = await fetch(`${API_BASE_URL}/Wiadomosc/prywatna/${idZnajomegoZOtwartymCzatem}`, opcje);
             const ct = res.headers.get("content-type") || "";
             const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
                 ? await res.json().catch(() => null)

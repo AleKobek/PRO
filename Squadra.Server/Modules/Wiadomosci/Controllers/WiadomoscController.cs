@@ -108,18 +108,18 @@ public class WiadomoscController(
         };
     }
     
-    [HttpPost("{idOdbiorcy:int}")]
+    [HttpPost("prywatna/{idOdbiorcy:int}")]
     [EndpointSummary("Wysyła wiadomość do znajomego")]
     [EndpointDescription("Tworzy nową wiadomość i wysyła ją do wybranego użytkownika")]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    public async Task<ActionResult> CreateWiadomosc(int idOdbiorcy, WiadomoscCreateDto wiadomosc)
+    public async Task<ActionResult> CreateWiadomoscPrywatna(int idOdbiorcy, [FromBody] string tresc)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
-        var result = await wiadomoscService.CreateWiadomosc(idOdbiorcy, wiadomosc, uzytkownik.Id);
+        var result = await wiadomoscService.CreateWiadomoscPrywatna(idOdbiorcy, tresc, uzytkownik.Id);
         return result.StatusCode switch
         {
             201 => Created(),

@@ -78,23 +78,23 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
     }
 
     
-    public async Task<ServiceResult<bool>> CreateWiadomosc(int idOdbiorcy, WiadomoscCreateDto wiadomosc, int idObecnegoUzytkownika)
+    public async Task<ServiceResult<bool>> CreateWiadomoscPrywatna(int idOdbiorcy, string tresc, int idObecnegoUzytkownika)
     {
         try
         {
             if(idObecnegoUzytkownika == idOdbiorcy) 
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Nadawca i odbiorca wiadomości nie mogą być tym samym użytkownikiem"));
             
-            if(wiadomosc.Tresc.IsNullOrEmpty())
+            if(tresc.IsNullOrEmpty())
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Treść wiadomości nie może być pusta"));
             
-            if(wiadomosc.Tresc.Length > 1000)   
+            if(tresc.Length > 1000)   
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Treść wiadomości nie może przekraczać 1000 znaków"));
             
             if(!await znajomiRepository.CzyJestZnajomosc(idObecnegoUzytkownika, idOdbiorcy))
                 return ServiceResult<bool>.BadRequest(new ErrorItem("Nie można wysłać wiadomości do użytkownika, który nie jest Twoim znajomym"));
             
-            return ServiceResult<bool>.Created(await wiadomoscRepository.CreateWiadomosc(idOdbiorcy, wiadomosc, idObecnegoUzytkownika));
+            return ServiceResult<bool>.Created(await wiadomoscRepository.CreateWiadomosc(idOdbiorcy, new WiadomoscCreateDto(tresc, (int)TypWiadomosciEnum.Prywatna), idObecnegoUzytkownika));
         }
         catch (NieZnalezionoWBazieException e)
         {
