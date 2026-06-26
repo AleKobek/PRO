@@ -8,6 +8,7 @@ namespace Squadra.Server.Modules.Wiadomosci.Repositories;
 public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
 {
     public static readonly int MaksymalnaLiczbaWiadomosciNaCzaciePrywatnym = 300;
+    public static readonly int MaksymalnaLiczbaWiadomosciNaCzacieDruzynowym = 200;
     
     public async Task<WiadomoscDto> GetWiadomosc(int id)
     {
@@ -84,7 +85,7 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
             IdTypuWiadomosci = wiadomosc.IdTypuWiadomosci
         };
         await context.Wiadomosc.AddAsync(wiadomoscDoDodania);
-        await UsunWiadomosciPrywatnePrzekraczajaceLimit(idNadawcy, idOdbiorcy); // usuwamy nadmiarowe wiadomości, jeżeli jest ich za dużo
+        if(wiadomosc.IdTypuWiadomosci == (int)TypWiadomosciEnum.Prywatna) await UsunWiadomosciPrywatnePrzekraczajaceLimit(idNadawcy, idOdbiorcy); // usuwamy nadmiarowe wiadomości, jeżeli jest ich za dużo
         return await context.SaveChangesAsync() > 0; // zwracamy true, jeżeli dodano więcej niż 0 rekordów, czyli się udało
     }
 
