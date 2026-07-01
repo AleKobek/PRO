@@ -532,6 +532,7 @@ export default function StronaSzczegolowDruzyny() {
             <table className="w-full border-collapse border-2 border-black">
                 <thead>
                 <tr className="bg-gray-200">
+                    <th className="border border-black px-4 py-2">Numer</th>
                     <th className="border border-black px-4 py-2">Członek</th>
                     <th className="border border-black px-4 py-2">Rola</th>
                     <th className="border border-black px-4 py-2">Wymaganie</th>
@@ -541,6 +542,8 @@ export default function StronaSzczegolowDruzyny() {
                 <tbody className="divide-y divide-gray-500 text-md px-4 py-2">
                 {daneDruzyny.czlonkowie.map((miejsce) => {
                     return (<tr key={miejsce.idMiejscaWDruzynie} >
+                        {/* numer miejsca */}
+                        <th className="px-4 py-2 border border-gray-500">{miejsce.numerMiejsca}</th>
                         {/* członek */}
                         {miejsce.czlonek ? <th className="flex items-center gap-2 px-4 py-2">
                             {miejsce.czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-50 h-50"/> : <div className="pl-9"/>}
@@ -585,6 +588,7 @@ export default function StronaSzczegolowDruzyny() {
             <table className="w-full border-collapse border-2 border-black">
                 <thead>
                 <tr className="bg-gray-200">
+                    <th className="border border-black px-4 py-2">Numer</th>
                     <th className="border border-black px-4 py-2">Członek</th>
                     <th className="border border-black px-4 py-2">Rola</th>
                     <th className="border border-black px-4 py-2">Wymaganie</th>
@@ -593,6 +597,8 @@ export default function StronaSzczegolowDruzyny() {
                 <tbody className="divide-y divide-gray-500 text-md px-4 py-2">
                 {daneDruzyny.czlonkowie.map((miejsce) => {
                     return (<tr key={miejsce.idMiejscaWDruzynie} >
+                        {/* numer miejsca */}
+                        <th className="px-4 py-2 border border-gray-500">{miejsce.numerMiejsca}</th>
                         {/* członek */}
                         {miejsce.czlonek ? <th className="flex items-center gap-2 px-4 py-2">
                             {miejsce.czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-50 h-50"/> : <div className="pl-9"/>}
@@ -621,6 +627,7 @@ export default function StronaSzczegolowDruzyny() {
             <table className="w-full border-collapse border-2 border-black">
                 <thead>
                 <tr className="bg-gray-200">
+                    <th className="border border-black px-4 py-2">Numer</th>
                     <th className="border border-black px-4 py-2">Członek</th>
                     <th className="border border-black px-4 py-2">Rola</th>
                     <th className="border border-black px-4 py-2">Wymaganie</th>
@@ -630,6 +637,8 @@ export default function StronaSzczegolowDruzyny() {
                 <tbody className="divide-y divide-gray-500 text-md px-4 py-2">
                 {daneDruzyny.czlonkowie.map((miejsce) => {
                     return (<tr key={miejsce.idMiejscaWDruzynie} >
+                        {/* numer miejsca */}
+                        <th className="px-4 py-2 border border-gray-500">{miejsce.numerMiejsca}</th>
                         {/* członek */}
                         {miejsce.czlonek ? <th className="flex items-center gap-2 px-4 py-2">
                             {miejsce.czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-50 h-50"/> : <div className="pl-9"/>}

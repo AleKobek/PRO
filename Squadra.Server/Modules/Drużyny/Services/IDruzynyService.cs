@@ -10,6 +10,7 @@ public interface IDruzynyService
     public Task<ServiceResult<DruzynaDto>> GetDruzyna(int id);
     public Task<ServiceResult<DruzynaDto>> GetDruzynaMiejsca(int idMiejsca);
     public Task<ServiceResult<MiejsceWDruzynieDto>> GetMiejsceWDruzynie(int idMiejscaWDruzynie);
+    public Task<ServiceResult<int>> GetNumerMiejsca(int idMiejsca);
     public Task<ServiceResult<TabelkaDruzynResDto>> GetWszystkieDruzynyUzytkownikaDoTabelki(int idUzytkownika);
     public Task<ServiceResult<ICollection<DruzynaDoTabelkiDto>>> GetDruzynyDoTabelki(int[] idDruzyn, int? idUzytkownika);
     public Task<ServiceResult<DruzynaSzczegolyDto>> PodajSzczegolyDruzyny(int idDruzyny, int idUzytkownika);

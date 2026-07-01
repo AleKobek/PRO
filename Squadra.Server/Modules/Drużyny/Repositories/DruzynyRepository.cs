@@ -64,6 +64,24 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         return miejscaWDruzynie;
     }
     
+    public async Task<int> GetIdMiejscaKapitanaDruzyny(int idDruzyny)
+    {
+        var druzyna = await context.Druzyna.FindAsync(idDruzyny);
+        if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
+
+        var miejsceWDruzynie = await context.MiejsceWDruzynie.FirstOrDefaultAsync(x => x.DruzynaId == idDruzyny && x.UzytkownikId == druzyna.KapitanId);
+        if (miejsceWDruzynie == null) throw new NieZnalezionoWBazieException("Nie znaleziono miejsca w drużynie dla kapitana o id "+ druzyna.KapitanId + " w drużynie o id " + idDruzyny);
+        return miejsceWDruzynie.Id;
+    }
+
+    public async Task<int> GetNumerMiejsca(int idMiejsca)
+    {
+        var miejsce = await context.MiejsceWDruzynie.FindAsync(idMiejsca);
+        if (miejsce == null) throw new NieZnalezionoWBazieException("Nie znaleziono miejsca w drużynie o id " + idMiejsca);
+        var idMiejscaKapitana = await GetIdMiejscaKapitanaDruzyny(miejsce.DruzynaId);
+        return miejsce.Id - idMiejscaKapitana + 1; // miejsce kapitana ma numer 1, potem 2 itd.
+    }
+    
     public async Task<Rola?> GetRolaMiejscaWDruzynieUzytkownika(int idDruzyny, int idUzytkownika)
     {
         var druzyna = await context.Druzyna.FindAsync(idDruzyny);

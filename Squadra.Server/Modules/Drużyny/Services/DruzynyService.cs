@@ -116,6 +116,21 @@ public class DruzynyService(
         }
     }
 
+    public async Task<ServiceResult<int>> GetNumerMiejsca(int idMiejsca)
+    {
+        if(idMiejsca < 1) return ServiceResult<int>.BadRequest(new ErrorItem("Nieprawidłowe id miejsca w drużynie: " + idMiejsca));
+        try
+        {
+            var numerMiejsca = await druzynyRepository.GetNumerMiejsca(idMiejsca);
+            return ServiceResult<int>.Ok(numerMiejsca);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<int>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
+
     private async Task<ServiceResult<DruzynaDoTabelkiDto>> GetDruzynaDoTabelki(int idDruzyny, int? idUzytkownika = null)
     {
         try
@@ -291,6 +306,8 @@ public class DruzynyService(
                         .Nazwa; // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć .Value
                 logoPlatformy = platformaRes.Value.Logo;
             }
+            
+            var idMiejscaKapitana = await druzynyRepository.GetIdMiejscaKapitanaDruzyny(idDruzyny);
 
             var czyUzytkownikSpelniaWymaganiaCzlonkostwaRes =
                 await CzyUzytkownikSpelniaWymaganiaDruzyny(idDruzyny, idUzytkownika);
@@ -324,6 +341,7 @@ public class DruzynyService(
                     if (!czySpelniaWymaganiaRes.Succeeded)
                         czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(new MiejsceWDruzynieSzczegolyDto(
                             miejsceWDruzynie.IdMiejscaWDruzynie,
+                            miejsceWDruzynie.IdMiejscaWDruzynie - idMiejscaKapitana + 1, // miejsce kapitana ma numer 1, potem 2 itd.
                             miejsceWDruzynie.Czlonek,
                             miejsceWDruzynie.Rola,
                             miejsceWDruzynie.Wymaganie,
@@ -338,6 +356,8 @@ public class DruzynyService(
                         });
                 }
             }
+            // sortujemy numerami miejsca
+            czlonkowieDruzynyZeSprawdzonymiWymaganiami.Sort((x, y) => x.NumerMiejsca.CompareTo(y.NumerMiejsca));
 
 
             // składamy wszystko do kupy i zwracamy szczegóły drużyny
@@ -370,6 +390,8 @@ public class DruzynyService(
         
         var miejscaWDruzynie = await druzynyRepository.GetMiejscaWDruzynie(idDruzyny);
         
+        var idMiejscaKapitana = await druzynyRepository.GetIdMiejscaKapitanaDruzyny(idDruzyny);
+        
         var czlonkowieDoZwrocenia = new List<MiejsceWDruzynieSzczegolyDto>();
         foreach (var miejsce in miejscaWDruzynie)
         {
@@ -393,13 +415,15 @@ public class DruzynyService(
             
             czlonkowieDoZwrocenia.Add(new MiejsceWDruzynieSzczegolyDto(
                 miejsce.Id,
+                miejsce.Id - idMiejscaKapitana + 1, // miejsce kapitana ma numer 1, potem 2 itd.
                 czlonek,
                 miejsce.Rola?.Nazwa,
                 wymaganie,
                 druzyna.KapitanId == miejsce.UzytkownikId
             ));
         }
-
+        // sortujemy numerami miejsca
+        czlonkowieDoZwrocenia.Sort((x, y) => x.NumerMiejsca.CompareTo(y.NumerMiejsca));
         return ServiceResult<ICollection<MiejsceWDruzynieSzczegolyDto>>.Ok(czlonkowieDoZwrocenia);
     }
     

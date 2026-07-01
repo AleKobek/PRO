@@ -4,6 +4,7 @@ namespace Squadra.Server.Modules.Drużyny.DTO;
 
 public record MiejsceWDruzynieSzczegolyDto(
     int IdMiejscaWDruzynie,
+    int NumerMiejsca,
     ProfilMinInfoDto? Czlonek,
     string? Rola,
     string? Wymaganie,
