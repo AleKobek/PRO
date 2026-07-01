@@ -150,6 +150,7 @@ export default function TwojeDruzyny() {
                     brakDruzynWiadomosc={"Nie należysz do żadnej drużyny. Czas to zmienić! Razem raźniej!"}
                     czySzczegolyWNowejKarcie = {false}
                     pierwszaStronaDruzyn={pierwszaStronaDruzyn}
+                    idUzytkownika={uzytkownik.id}
                 />
             </div>
         </div>

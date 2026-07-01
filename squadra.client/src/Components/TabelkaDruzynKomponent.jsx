@@ -7,7 +7,7 @@ import AwatarComponent from "./AwatarComponent";
 
 
 
-export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, czySzczegolyWNowejKarcie = false, pierwszaStronaDruzyn}) {
+export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, czySzczegolyWNowejKarcie = false, pierwszaStronaDruzyn, idUzytkownika = null}) {
 
     const navigate = useNavigate();
     const [druzynyNaStronie, ustawDruzynyNaStronie] = useState([])
@@ -22,6 +22,7 @@ export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, c
 
     // po załadowaniu od razu ustawiamy pierwszą stronę drużyn
     useEffect(() => {
+        if(!pierwszaStronaDruzyn || pierwszaStronaDruzyn.length === 0) return;
         ustawDruzynyNaStronie(pierwszaStronaDruzyn);
     }, [pierwszaStronaDruzyn]);
 
@@ -45,10 +46,11 @@ export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, c
                 },
                 body: JSON.stringify(idDruzynDoPobrania),
                 credentials: "include",
-                abortSignal: ac.signal,
+                signal: ac.signal,
             }
 
-            const res = await fetch(`${API_BASE_URL}/Druzyna/tabelka`, opcje);
+            let url = idUzytkownika ? `${API_BASE_URL}/Druzyna/tabelka/${idUzytkownika}` : `${API_BASE_URL}/Druzyna/tabelka`;
+            const res = await fetch(url, opcje);
             const body = await res.json().catch(() => null);
 
             if (!res.ok) {
@@ -75,7 +77,7 @@ export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, c
             alive = false;
             ac.abort();
         };
-    },[aktualnaStrona, idDruzyn, liczbaDruzynNaStronie, liczbaStron])
+    },[aktualnaStrona, idDruzyn, idUzytkownika, liczbaDruzynNaStronie, liczbaStron])
 
     return (<div>
         <span className="mr-2">Maksymalna liczba drużyn na stronie:</span>
@@ -108,17 +110,22 @@ export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, c
 
                 {druzynyNaStronie.map((druzyna) => {
                     if (!druzyna || typeof druzyna !== 'object') return null;
-
                     const key = druzyna.id;
                     const nazwa = druzyna.nazwa;
                     const tytulGry = druzyna.tytulGry;
                     const ostatniaAktywnoscKapitana = druzyna.ostatniaAktywnoscKapitana;
                     const czlonkowie = druzyna.czlonkowie || [];
                     const nazwaNastroju = druzyna.nazwaNastroju;
+                    const czySaNoweWiadomosci = druzyna.czySaNoweWiadomosci;
 
                     return (
                         <tr key={key} className="items-center border border-gray-600 px-2 text-xl">
-                            <td className="font-semibold text-gray-900 text-center border border-gray-600">{nazwa}</td>
+                            <td className="font-semibold text-gray-900 text-center border border-gray-600">
+                                <div className="flex items-center justify-center gap-2">
+                                    {nazwa}
+                                    {czySaNoweWiadomosci ? <img src="/img/koperta.svg" alt="koperta" className="text-red-600 h-[1.2em] w-auto align-middle"/> : null}
+                                </div>
+                            </td>
                             <td className="text-gray-900 text-center border border-gray-600">{tytulGry}</td>
                             <td className="text-gray-900 text-center border border-gray-600">{ostatniaAktywnoscKapitana}</td>
                             <td className="flex gap-5 items-center justify-center border-gray-600 py-5">
