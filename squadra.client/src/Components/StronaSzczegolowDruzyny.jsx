@@ -8,6 +8,8 @@ import {API_BASE_URL, CLIENT_URL} from "../config/api";
 import {OkienkoTlumaczaceZintegrowanie} from "./OkienkoTlumaczaceZintegrowanie";
 import AwatarComponent from "./AwatarComponent";
 import CzatDruzynowyKomponent from "./CzatDruzynowyKomponent";
+
+const TOAST_CONTAINER_ID = "szczegoly-druzyny-toast";
 export default function StronaSzczegolowDruzyny() {
 
     const navigate = useNavigate();
@@ -26,6 +28,19 @@ export default function StronaSzczegolowDruzyny() {
     const [idMiejscaDoZaproszenia, ustawIdMiejscaDoZaproszenia] = useState(null);
     const [listaZnajomych, ustawListeZnajomych] = useState(null);
     const [czySieWysylaZaproszenie, ustawCzySieWysylaZaproszenie] = useState(false);
+
+    const toastOptions = {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+        containerId: TOAST_CONTAINER_ID,
+    };
 
     /*
 
@@ -85,17 +100,7 @@ export default function StronaSzczegolowDruzyny() {
         if (location.state?.pomyslnieEdytowanoDruzyne && !toastShownRef.current) {
             // Małe opóźnienie aby upewnić się że ToastContainer jest renderowany
             const timer = setTimeout(() => {
-                toast.success('Pomyślnie edytowano drużynę!', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.success('Pomyślnie edytowano drużynę!', toastOptions);
                 toastShownRef.current = true;
             }, 100);
 
@@ -131,17 +136,7 @@ export default function StronaSzczegolowDruzyny() {
                 : await res.text().catch(() => "");
 
             if (!res.ok) {
-                toast.error(`${body.message ?? body.errors[0].message ?? "Wystąpił błąd podczas aktualizowania daty ostatniego otwarcia czatu"}`, {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error(`${body.message ?? body.errors[0].message ?? "Wystąpił błąd podczas aktualizowania daty ostatniego otwarcia czatu"}`, toastOptions);
             }
         }
 
@@ -158,17 +153,7 @@ export default function StronaSzczegolowDruzyny() {
                         if (res.status === 403) ustawCzyZablokowanoDostep(true);
                         if (res.status === 404) ustawNieZnalezionoDruzyny(true)
                         else {
-                            toast.error('Wystąpił błąd podczas pobierania danych drużyny', {
-                                position: "top-center",
-                                autoClose: 5000,
-                                hideProgressBar: false,
-                                closeOnClick: false,
-                                pauseOnHover: true,
-                                draggable: true,
-                                progress: undefined,
-                                theme: "light",
-                                transition: Bounce,
-                            });
+                            toast.error('Wystąpił błąd podczas pobierania danych drużyny', toastOptions);
                         }
                         return null;
                     }
@@ -176,17 +161,7 @@ export default function StronaSzczegolowDruzyny() {
                 } catch (err) {
                     if (err && err.name === 'AbortError') return null;
                     console.error('Błąd pobierania:', err);
-                    toast.error('Wystąpił błąd podczas pobierania danych drużyny', {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    });
+                    toast.error('Wystąpił błąd podczas pobierania danych drużyny', toastOptions);
                     return null;
                 }
             };
@@ -211,17 +186,7 @@ export default function StronaSzczegolowDruzyny() {
 
     const przyKliknieciuEdycji = () => {
         if(daneDruzyny.statusCzlonkostwa !== "Kapitan") {
-            toast.error('Tylko kapitan może edytować drużynę!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Tylko kapitan może edytować drużynę!', toastOptions);
             return;
         }
         const daneDoPrzekazania = {
@@ -237,17 +202,7 @@ export default function StronaSzczegolowDruzyny() {
     
     const przyKliknieciuRozwiaz = async () => {
         if(daneDruzyny.statusCzlonkostwa !== "Kapitan") {
-            toast.error('Tylko kapitan może rozwiązać drużynę!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Tylko kapitan może rozwiązać drużynę!', toastOptions);
             return;
         }
         // tutaj wysyłamy żądanie do backendu o rozwiązanie drużyny, a potem odświeżamy listę drużyn
@@ -264,31 +219,11 @@ export default function StronaSzczegolowDruzyny() {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
 
-            toast.error(`Wystąpił błąd podczas rozwiązywania drużyny: ${body}`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Wystąpił błąd podczas rozwiązywania drużyny: ${body}`, toastOptions);
             return;
         }
         // jak tu dotarliśmy, wszystko jest git
-        toast.success(`Pomyślnie usunięto drużynę!`, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-        });
+        toast.success(`Pomyślnie usunięto drużynę!`, toastOptions);
 
         navigate('/twojeDruzyny', {
             state: { pomyslnieUsunietoDruzyne: true }
@@ -299,60 +234,20 @@ export default function StronaSzczegolowDruzyny() {
         if(!uzytkownik) return;
         // sprawdzamy, czy już jest członkiem i czy miejsce jest puste .
         if(daneDruzyny.statusCzlonkostwa !== "Brak"){
-            toast.error(`Już jesteś członkiem tej drużyny`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Już jesteś członkiem tej drużyny`, toastOptions);
             return;
         }
         let miejsce = daneDruzyny.czlonkowie.find((miejsce) => miejsce.idMiejscaWDruzynie === idMiejsca);
         if(!miejsce){
-            toast.error(`Nie znaleziono miejsca w drużynie`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Nie znaleziono miejsca w drużynie`, toastOptions);
             return;
         }
         if(miejsce.czlonek){
-            toast.error(`To miejsce jest już zajęte`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`To miejsce jest już zajęte`, toastOptions);
             return;
         }
         if(miejsce.czyOgladajacySpelniaWymagania !== true){
-            toast.error(`Nie spełniasz wymagań tego miejsca`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Nie spełniasz wymagań tego miejsca`, toastOptions);
             return;
         }
 
@@ -370,17 +265,7 @@ export default function StronaSzczegolowDruzyny() {
                         if (res.status === 403) ustawCzyZablokowanoDostep(true);
                         if (res.status === 404) ustawNieZnalezionoDruzyny(true)
                         else {
-                            toast.error('Wystąpił błąd podczas pobierania danych drużyny', {
-                                position: "top-center",
-                                autoClose: 5000,
-                                hideProgressBar: false,
-                                closeOnClick: false,
-                                pauseOnHover: true,
-                                draggable: true,
-                                progress: undefined,
-                                theme: "light",
-                                transition: Bounce,
-                            });
+                            toast.error('Wystąpił błąd podczas pobierania danych drużyny', toastOptions);
                         }
                         return null;
                     }
@@ -388,17 +273,7 @@ export default function StronaSzczegolowDruzyny() {
                 } catch (err) {
                     if (err && err.name === 'AbortError') return null;
                     console.error('Błąd pobierania:', err);
-                    toast.error('Wystąpił błąd podczas pobierania danych drużyny', {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    });
+                    toast.error('Wystąpił błąd podczas pobierania danych drużyny', toastOptions);
                     return null;
                 }
             };
@@ -422,33 +297,13 @@ export default function StronaSzczegolowDruzyny() {
                     ? await res.json().catch(() => null)
                     : await res.text().catch(() => "");
 
-                toast.error(`Wystąpił błąd podczas dołączania do drużyny: ${body}`, {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error(`Wystąpił błąd podczas dołączania do drużyny: ${body}`, toastOptions);
                 return;
             }
             // jak tu doszliśmy, udało się dołączyć. pobieramy nowe dane druzyny
             pobierzStatystykiDruzyny(idDruzyny);
 
-            toast.success(`Pomyślnie dołączono do drużyny!`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.success(`Pomyślnie dołączono do drużyny!`, toastOptions);
         }
 
         dolaczDoDruzyny();
@@ -470,30 +325,10 @@ export default function StronaSzczegolowDruzyny() {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
 
-            toast.error(`Wystąpił błąd podczas opuszczania drużyny: ${body}`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Wystąpił błąd podczas opuszczania drużyny: ${body}`, toastOptions);
         }
         // jak tu dotarliśmy, wszystko jest git
-        toast.success(`Pomyślnie opuszczono drużynę!`, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-        });
+        toast.success(`Pomyślnie opuszczono drużynę!`, toastOptions);
         navigate('/twojeDruzyny', {
             state: { pomyslnieOpuszczonoDruzyne: true }
         });
@@ -504,18 +339,6 @@ export default function StronaSzczegolowDruzyny() {
         if(!idUzytkownika) return;
         if(czySieWysylaZaproszenie) return;
         ustawCzySieWysylaZaproszenie(true);
-
-        const toastOptions = {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce
-        };
 
         try {
             const res = await fetch(`${API_BASE_URL}/Druzyna/miejsce/zapros/${idMiejsca}/${idUzytkownika}`, {
@@ -548,18 +371,6 @@ export default function StronaSzczegolowDruzyny() {
         if(!login || login.trim().length === 0) return;
         if(czySieWysylaZaproszenie) return;
         ustawCzySieWysylaZaproszenie(true);
-
-        const toastOptions = {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce
-        };
 
         try {
             const res = await fetch(`${API_BASE_URL}/Druzyna/miejsce/zapros/${idMiejsca}/login`, {
@@ -603,17 +414,7 @@ export default function StronaSzczegolowDruzyny() {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
 
-            toast.error(`Wystąpił błąd podczas wyrzucania z drużyny: ${body}`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Wystąpił błąd podczas wyrzucania z drużyny: ${body}`, toastOptions);
         }
         // jak tu dotarliśmy, wszystko jest git.
         const tempDaneDruzyny = {
@@ -637,34 +438,14 @@ export default function StronaSzczegolowDruzyny() {
                     const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
                         ? await res.json().catch(() => null)
                         : await res.text().catch(() => "");
-                    toast.error(`${body.message ?? body.errors[0].message ?? "Wystąpił błąd podczas pobierania listy znajomych"}`, {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    });
+                    toast.error(`${body.message ?? body.errors[0].message ?? "Wystąpił błąd podczas pobierania listy znajomych"}`, toastOptions);
                     return null;
                 }
                 return await res.json();
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;
                 console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania listy znajomych', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Wystąpił błąd podczas pobierania listy znajomych', toastOptions);
                 return null;
             }
         };
@@ -1041,6 +822,7 @@ export default function StronaSzczegolowDruzyny() {
         {pokazOkienkoTlumaczenia && OkienkoTlumaczaceZintegrowanie(ref, ustawPokazOkienkoTlumaczenia)}
         {pokazPanelZapraszania && <PanelZapraszania/>}
         <ToastContainer
+            containerId={TOAST_CONTAINER_ID}
             position="top-center"
             autoClose={5000}
             hideProgressBar={false}

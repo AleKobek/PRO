@@ -3,6 +3,7 @@ import React, {useEffect, useState, useRef} from "react";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 
+const TOAST_CONTAINER_ID = "czat-drużynowy-toast";
 export default function CzatDruzynowyKomponent({
                                                     idDruzyny
                                                 }){
@@ -18,6 +19,19 @@ export default function CzatDruzynowyKomponent({
     const listaWiadomosciRef = useRef(null);
     // śledzenie poprzedniej liczby wiadomości
     const poprzedniaCzatLengthRef = useRef(0);
+
+    const toastOptions = {
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+        containerId: TOAST_CONTAINER_ID,
+    };
     
 
     // co 5 sekund aktualizujemy czat
@@ -104,17 +118,7 @@ export default function CzatDruzynowyKomponent({
                     (typeof body === "string" && body) ||
                     "Wystąpił błąd podczas aktualizacji daty otwarcia czatu";
 
-                toast.error(message, {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error(message, toastOptions);
                 return null;
             }
 
@@ -162,17 +166,7 @@ export default function CzatDruzynowyKomponent({
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
             if (!res.ok) {
-                toast.error(body || 'Wystąpił błąd podczas wysyłania wiadomości', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error(body || 'Wystąpił błąd podczas wysyłania wiadomości', toastOptions);
                 return;
             }
             ustawWiadomoscDoWyslania("");
@@ -180,17 +174,7 @@ export default function CzatDruzynowyKomponent({
             await podajCzat(ac);
         }catch (err) {
             console.error('Błąd wysyłania wiadomości:', err);
-            toast.error('Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie później.', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie później.', toastOptions);
         }finally {
             ustawCzySieWysylaWiadomosc(false);
         }
@@ -209,34 +193,14 @@ export default function CzatDruzynowyKomponent({
             const res = await fetch(url, init);
             if (!res.ok) {
                 const body = await res.json();
-                toast.error(body.message || 'Wystąpił błąd podczas pobierania '+coPobieramy, {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error(body.message || 'Wystąpił błąd podczas pobierania '+coPobieramy, toastOptions);
                 return null;
             }
             return await res.json();
         } catch (err) {
             if (err && err.name === 'AbortError') return null;
             console.error('Błąd pobierania:', err);
-            toast.error('Wystąpił błąd podczas pobierania '+coPobieramy, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Wystąpił błąd podczas pobierania '+coPobieramy, toastOptions);
             return null;
         }
     };
@@ -317,6 +281,7 @@ export default function CzatDruzynowyKomponent({
         </div>
         {/* ma własny kontener, bo nie chce mi się łączyć z tamtym */}
         <ToastContainer
+            containerId={TOAST_CONTAINER_ID}
             position="top-center"
             autoClose={5000}
             hideProgressBar={false}
