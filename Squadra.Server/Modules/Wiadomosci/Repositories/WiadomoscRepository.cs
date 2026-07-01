@@ -8,7 +8,7 @@ namespace Squadra.Server.Modules.Wiadomosci.Repositories;
 public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
 {
     public static readonly int MaksymalnaLiczbaWiadomosciNaCzaciePrywatnym = 300;
-    public static readonly int MaksymalnaLiczbaWiadomosciNaCzacieDruzynowym = 200;
+    public static readonly int MaksymalnaLiczbaWiadomosciNaCzacieDruzynowym = 250;
     
     public async Task<WiadomoscDto> GetWiadomosc(int id)
     {
@@ -17,7 +17,7 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         return new WiadomoscDto(
             wiadomosc.IdNadawcy,
             wiadomosc.IdOdbiorcy,
-            wiadomosc.DataWyslania.ToString("dd.MM.yyyy HH:mm"),
+            wiadomosc.DataWyslania.ToLocalTime().ToString("dd.MM.yyyy HH:mm"),
             wiadomosc.Tresc,
             wiadomosc.IdTypuWiadomosci
         );
@@ -34,7 +34,7 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         return wiadomosci.Select(wiadomosc => new WiadomoscDto(
             wiadomosc.IdNadawcy,
             wiadomosc.IdOdbiorcy,
-            wiadomosc.DataWyslania.ToString("dd.MM.yyyy HH:mm"),
+            wiadomosc.DataWyslania.ToLocalTime().ToString("dd.MM.yyyy HH:mm"),
             wiadomosc.Tresc,
             wiadomosc.IdTypuWiadomosci
         )).ToList();
@@ -49,7 +49,7 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         return wiadomosci.Select(wiadomosc => new WiadomoscDto(
             wiadomosc.IdNadawcy,
             wiadomosc.IdOdbiorcy,
-            wiadomosc.DataWyslania.ToString("dd.MM.yyyy HH:mm"),
+            wiadomosc.DataWyslania.ToLocalTime().ToString("dd.MM.yyyy HH:mm"),
             wiadomosc.Tresc,
             wiadomosc.IdTypuWiadomosci
         )).ToList();
@@ -80,7 +80,7 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         {
             IdNadawcy = idNadawcy,
             IdOdbiorcy = idOdbiorcy,
-            DataWyslania = DateTime.Now, // liczymy moment, w którym dotrze do bazy
+            DataWyslania = DateTime.UtcNow, // liczymy moment, w którym dotrze do bazy
             Tresc = wiadomosc.Tresc,
             IdTypuWiadomosci = wiadomosc.IdTypuWiadomosci
         };
