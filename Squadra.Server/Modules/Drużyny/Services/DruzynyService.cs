@@ -522,6 +522,22 @@ public class DruzynyService(
          return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
+
+    public async Task<ServiceResult<DateTime?>> GetDataOstatniegoOtwarciaCzatuUzytkownika(int idUzytkownika, int idDruzyny)
+    {
+        if(idUzytkownika <= 0) return ServiceResult<DateTime?>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika));
+        if(idDruzyny <= 0) return ServiceResult<DateTime?>.BadRequest(new ErrorItem("Podano nieprawidłowe id drużyny: " + idDruzyny));
+        try
+        {
+            var dataOstatniegoOtwarciaCzatu =
+                await druzynyRepository.GetDataOstatniegoOtwarciaCzatuUzytkownika(idUzytkownika, idDruzyny);
+            return ServiceResult<DateTime?>.Ok(dataOstatniegoOtwarciaCzatu);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<DateTime?>.NotFound(new ErrorItem(e.Message));
+        }
+    }
     
     public async Task<ServiceResult<ICollection<ProfilMinInfoDto>>> GetZnajomiSpelniajacyWarunkiMiejsca(int idMiejsca, int idUzytkownika)
     {
