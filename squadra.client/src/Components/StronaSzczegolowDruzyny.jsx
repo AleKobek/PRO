@@ -7,6 +7,7 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL, CLIENT_URL} from "../config/api";
 import {OkienkoTlumaczaceZintegrowanie} from "./OkienkoTlumaczaceZintegrowanie";
 import AwatarComponent from "./AwatarComponent";
+import CzatDruzynowyKomponent from "./CzatDruzynowyKomponent";
 export default function StronaSzczegolowDruzyny() {
 
     const navigate = useNavigate();
@@ -926,6 +927,10 @@ export default function StronaSzczegolowDruzyny() {
                 }
                 <h2 className="text-2xl font-bold">Szczegóły drużyny:</h2>
                 <h3 className="text-xl mb-4 text-blue-700">{daneDruzyny.nazwa}</h3>
+                {/* czat drużynowy */}
+                {daneDruzyny.statusCzlonkostwa !== "Brak" &&
+                    <div className="w-3/4 h-[1000px] border-4 border-gray-600 mb-10 shadow-xl rounded-md"><CzatDruzynowyKomponent idDruzyny={idDruzyny}/></div>
+                }
                 {/*  zwykłe dane jak opis, nastrój, platforma itp.  */}
                 <div className="flex flex-col gap-4 justify-center items-center text-xl border-2 border-gray-600 shadow-md rounded-md p-4 px-7 mb-6">
                     {/* tytuł gry */}
