@@ -20,7 +20,7 @@ import {CLIENT_URL} from "../config/api";
 */
 
 export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomienia}) {
-    
+
     const [trescPowiadomieniaCz1, ustawTrescPowiadomieniaCz1] = useState("");
     const [trescPowiadomieniaCz2, ustawTrescPowiadomieniaCz2] = useState("");
     const [trescPowiadomieniaCz3, ustawTrescPowiadomieniaCz3] = useState("");
@@ -189,19 +189,19 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         powiadomienie.idTypuPowiadomienia === TypyPowiadomien.SYSTEMOWE
     ) return (
         <li key={powiadomienie.id} className="p-2 border-b border-gray-200">
-        <div className="flex flex-row justify-between items-center w-full">
-            <div className="font-semibold">{typPowiadomienia}</div>
-            <button onClick={() => przyRozpatrzaniuPowiadomienia(powiadomienie.id, null)}>
-                <img
-                src = "/img/x.svg"
-                alt = "x"
-                className="w-4 h-4 cursor-pointer"
-            />
-            </button>
-        </div>
-        <div className="text-sm text-gray-600">{trescPowiadomieniaCz1}</div>
-        <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
-    </li>);
+            <div className="flex flex-row justify-between items-center w-full">
+                <div className="font-semibold">{typPowiadomienia}</div>
+                <button onClick={() => przyRozpatrzaniuPowiadomienia(powiadomienie.id, null)}>
+                    <img
+                        src = "/img/x.svg"
+                        alt = "x"
+                        className="w-4 h-4 cursor-pointer"
+                    />
+                </button>
+            </div>
+            <div className="text-sm text-gray-600">{trescPowiadomieniaCz1}</div>
+            <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
+        </li>);
 
     if(powiadomienie.idTypuPowiadomienia === TypyPowiadomien.ZAPROSZENIE_DO_ZNAJOMYCH
         || powiadomienie.idTypuPowiadomienia === TypyPowiadomien.ZAPROSZENIE_DO_DRUZYNY
@@ -214,7 +214,9 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
             <div className="font-semibold mb-1">{typPowiadomienia}</div>
             <div className="text-sm text-gray-600">
                 {trescPowiadomieniaCz1}
-                <a href={href} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
+                <span className="text-black font-semibold cursor-pointer" onClick={() => openInNewTab(href)}>
+                    {powiadomienie.nazwaPowiazanegoObiektu}
+                </span>
                 {trescPowiadomieniaCz2}
             </div>
             <div className="text-xs text-gray-400 mt-1">{powiadomienie.dataWyslania}</div>
@@ -240,27 +242,31 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         || powiadomienie.idTypuPowiadomienia === TypyPowiadomien.UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY
     )
         return (<li key={powiadomienie.id} className="p-2 border-b border-gray-200">
-        <div className="flex flex-row justify-between items-center w-full">
-            <div className="font-semibold">{typPowiadomienia}</div>
-            <button onClick={() => przyRozpatrzaniuPowiadomienia(powiadomienie.id, null)}>
-                <img
-                    src = "/img/x.svg"
-                    alt = "x"
-                    className="w-4 h-4 cursor-pointer"
-                />
-            </button>
-        </div>
-        <div className="text-sm text-gray-600">
-            {trescPowiadomieniaCz1}
-            <a href={`${CLIENT_URL}/profil/`+powiadomienie.idPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
-            {trescPowiadomieniaCz2}
-            {powiadomienie.idDrugiegoPowiazanegoObiektu &&
-                <a href={`${CLIENT_URL}/druzyna/`+powiadomienie.idDrugiegoPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaDrugiegoPowiazanegoObiektu}</a>
-            }
-            {trescPowiadomieniaCz3}
-        </div>
-        <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
-    </li>)
+            <div className="flex flex-row justify-between items-center w-full">
+                <div className="font-semibold">{typPowiadomienia}</div>
+                <button onClick={() => przyRozpatrzaniuPowiadomienia(powiadomienie.id, null)}>
+                    <img
+                        src = "/img/x.svg"
+                        alt = "x"
+                        className="w-4 h-4 cursor-pointer"
+                    />
+                </button>
+            </div>
+            <div className="text-sm text-gray-600">
+                {trescPowiadomieniaCz1}
+                <span className="text-black font-semibold cursor-pointer" onClick={() => openInNewTab(`${CLIENT_URL}/profil/`+powiadomienie.idPowiazanegoObiektu)}>
+                {powiadomienie.nazwaPowiazanegoObiektu}
+            </span>
+                {trescPowiadomieniaCz2}
+                {powiadomienie.idDrugiegoPowiazanegoObiektu &&
+                    <span className="text-black font-semibold cursor-pointer" onClick={() => openInNewTab(`${CLIENT_URL}/druzyna/`+powiadomienie.idDrugiegoPowiazanegoObiektu)}>
+                    {powiadomienie.nazwaDrugiegoPowiazanegoObiektu}
+                </span>
+                }
+                {trescPowiadomieniaCz3}
+            </div>
+            <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
+        </li>)
 
     if(powiadomienie.idTypuPowiadomienia === TypyPowiadomien.ZAPROSZENIE_ODRZUCONE_PRZEZ_USUNIECIE_KONTA)
         return (<li key={powiadomienie.id} className="p-2 border-b border-gray-200">
@@ -276,7 +282,9 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
             </div>
             <div className="text-sm text-gray-600">
                 {trescPowiadomieniaCz1}
-                <a href={`${CLIENT_URL}/druzyna/`+powiadomienie.idPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
+                <span className="text-black font-semibold cursor-pointer" onClick={() => openInNewTab(`${CLIENT_URL}/druzyna/`+powiadomienie.idPowiazanegoObiektu)}>
+                    {powiadomienie.nazwaPowiazanegoObiektu}
+                </span>
                 {trescPowiadomieniaCz2}
                 {trescPowiadomieniaCz3}
             </div>
@@ -317,7 +325,9 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
             </div>
             <div className="text-sm text-gray-600">
                 {trescPowiadomieniaCz1}
-                <a href={`${CLIENT_URL}/druzyna/`+powiadomienie.idPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
+                <span className="text-black font-semibold cursor-pointer" onClick={() => openInNewTab(`${CLIENT_URL}/druzyna/`+powiadomienie.idPowiazanegoObiektu)}>
+                    {powiadomienie.nazwaPowiazanegoObiektu}
+                </span>
                 {trescPowiadomieniaCz2}
             </div>
             <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
@@ -337,7 +347,9 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         </div>
         <div className="text-sm text-gray-600">
             {trescPowiadomieniaCz1}
-            <a href={`${CLIENT_URL}/profil/`+powiadomienie.idPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
+            <span className="text-black font-semibold cursor-pointer" onClick={() => openInNewTab(`${CLIENT_URL}/profil/`+powiadomienie.idPowiazanegoObiektu)}>
+                {powiadomienie.nazwaPowiazanegoObiektu}
+            </span>
             {trescPowiadomieniaCz2}
         </div>
         <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
