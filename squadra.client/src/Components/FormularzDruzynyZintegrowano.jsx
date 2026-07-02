@@ -375,8 +375,10 @@ export default function FormularzDruzynyZintegrowano({
         }
 
         // jak tutaj dojdziemy, wszystko jest git
-        navigate("/twojeDruzyny", {
-            state: { pomyslnieStworzonoDruzyne: true }
+        navigate(`/druzyna/${body}`,{
+            state: {
+                pomyslnieStworzonoDruzyne: true
+            }
         });
     }
 

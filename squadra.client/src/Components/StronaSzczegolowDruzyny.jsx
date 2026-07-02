@@ -42,6 +42,18 @@ export default function StronaSzczegolowDruzyny() {
         containerId: TOAST_CONTAINER_ID,
     };
 
+    useEffect(() => {
+        if (location.state?.pomyslnieStworzonoDruzyne && !toastShownRef.current) {
+            // Małe opóźnienie aby upewnić się że ToastContainer jest renderowany
+            const timer = setTimeout(() => {
+                toast.success('Pomyślnie utworzono drużynę!', toastOptions);
+                toastShownRef.current = true;
+            }, 100);
+
+            return () => clearTimeout(timer);
+        }
+    },[location.state?.pomyslnieStworzonoDruzyne])
+
     /*
 
    daneDruzyny = {

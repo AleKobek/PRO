@@ -19,19 +19,6 @@ export default function TwojeDruzyny() {
     }, []);
 
     useEffect(() => {
-        if (location.state?.pomyslnieStworzonoDruzyne) {
-            toast.success('Pomyślnie utworzono drużynę!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
-        }
         if (location.state?.pomyslnieUsunietoDruzyne) {
             toast.success('Pomyślnie usunięto drużynę!', {
                 position: "top-center",
@@ -60,7 +47,7 @@ export default function TwojeDruzyny() {
             });
         }
 
-    },[location.state?.pomyslnieOpuszczonoDruzyne, location.state?.pomyslnieStworzonoDruzyne, location.state?.pomyslnieUsunietoDruzyne])
+    },[location.state?.pomyslnieOpuszczonoDruzyne, location.state?.pomyslnieUsunietoDruzyne])
 
 
     // pobieramy tabelkę drużyn
