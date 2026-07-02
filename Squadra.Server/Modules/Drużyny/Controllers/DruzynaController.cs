@@ -285,6 +285,30 @@ public class DruzynaController(
         };
     }
     
+    [HttpPut("admin/{idDruzyny:int}")]
+    [Authorize (Roles = "Admin")]
+    [EndpointSummary("Aktualizuje dane dowolnej drużyny - tylko dla admina")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    public async Task<ActionResult> UpdateDruzynaAdmin(int idDruzyny, DruzynaUpdateDto dto)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.UpdateDruzyna(idDruzyny, uzytkownik.Id, dto);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
     [HttpPut("miejsce/dolacz/{idMiejsca:int}")]
     [EndpointSummary("Dołącza użytkownika na dane miejsce w drużynie")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
