@@ -45,6 +45,10 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         ZAPROSZENIE_ODRZUCONE_PRZEZ_USUNIECIE_KONTA: 17
     }),[]);
 
+    const openInNewTab = url => {
+        window.open(url, '_blank', 'noopener,noreferrer');
+    };
+
     // ustawiamy treść powiadomienia na podstawie typu powiadomienia
     useEffect(() => {
 
@@ -280,7 +284,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         </li>)
 
     if(
-        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA || TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE
+        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA || powiadomienie.idTypuPowiadomienia === TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE
     ) return (
         <li key={powiadomienie.id} className="p-2 border-b border-gray-200">
             <div className="flex flex-row justify-between items-center w-full">
