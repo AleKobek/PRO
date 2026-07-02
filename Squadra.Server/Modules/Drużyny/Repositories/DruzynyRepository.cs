@@ -208,7 +208,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         return await context.MiejsceWDruzynie.AnyAsync(m => m.DruzynaId == idDruzyny && m.UzytkownikId == idUzytkownika);
     }
     
-    public async Task<bool> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
+    public async Task<int?> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
     {
         var nastrojRozgrywki = await context.NastrojRozgrywki.FindAsync(druzynaReq.IdNastrojuRozgrywki);
         if (nastrojRozgrywki == null) throw new NieZnalezionoWBazieException("Nie znaleziono nastroju o id " + druzynaReq.IdNastrojuRozgrywki);
@@ -280,13 +280,13 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
             }
             await context.SaveChangesAsync();
             await transakcja.CommitAsync();
-            return true;
+            return dodanaDruzyna.Entity.Id;
         }
         catch (Exception e)
         {
             await transakcja.RollbackAsync();
             Console.WriteLine("Wystąpił błąd podczas tworzenia drużyny: " + e.Message);
-            return false;
+            return null;
         }
     }
     

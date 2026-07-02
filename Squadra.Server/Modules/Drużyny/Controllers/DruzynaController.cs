@@ -166,11 +166,11 @@ public class DruzynaController(
     
     [HttpPost]
     [EndpointSummary("Tworzy drużynę")]
-    [ProducesResponseType((int)HttpStatusCode.Created)]
+    [ProducesResponseType(typeof(int),(int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    public async Task<ActionResult> CreateDruzyna(CreateDruzynaReqDto dto)
+    public async Task<ActionResult<int>> CreateDruzyna(CreateDruzynaReqDto dto)
     {
         var uzytkownik = await userManager.GetUserAsync(User);
         if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
@@ -181,7 +181,7 @@ public class DruzynaController(
         {
             // Dla 400 u nas zwracamy ValidationProblem, ponieważ błędy dotyczą konkretnych pól
             case 201:
-                return Created();
+                return CreatedAtAction(nameof(GetDruzynaSzczegoly), new { idDruzyny = result.Value }, result.Value);
             case 400:
             {
                 foreach (var e in result.Errors)

@@ -24,7 +24,7 @@ public interface IDruzynyRepository
     public Task<bool> CzyUzytkownikSpelniaWymaganieMiejsca(int idMiejsca, int idUzytkownika);
     public Task<bool> CzyUzytkownikSpelniaWymaganeStatystykiDruzyny(int idDruzyny, int idUzytkownika);
     public  Task<bool> CzyUzytkownikNalezyDoDruzyny(int idUzytkownika, int idDruzyny);
-    public Task<bool> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana);
+    public Task<int?> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana);
     public Task<bool> UsunDruzyne(int idDruzyny);
     public Task<bool> DeleteMiejscaWDruzynie(int idDruzyny);
     public Task<bool> OpuscDruzyne(int idDruzyny, int idUzytkownika);

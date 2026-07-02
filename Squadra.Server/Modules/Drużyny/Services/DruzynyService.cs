@@ -721,7 +721,7 @@ public class DruzynyService(
         }
     }
     
-    public async Task<ServiceResult<bool>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
+    public async Task<ServiceResult<int>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana)
     {
         try
         {
@@ -732,14 +732,14 @@ public class DruzynyService(
             if (string.IsNullOrWhiteSpace(druzynaReq.Nazwa)) bledy.Add(new ErrorItem("Nazwa drużyny nie może być pusta", nameof(druzynaReq.Nazwa)));
             if (druzynaReq.Nazwa.Length > 40) bledy.Add(new ErrorItem("Nazwa drużyny nie może być dłuższa niż 40 znaków", nameof(druzynaReq.Nazwa)));
             if (druzynaReq.Opis?.Length > 300) bledy.Add(new ErrorItem("Opis drużyny nie może być dłuższy niż 300 znaków", nameof(druzynaReq.Opis)));
-            if(bledy.Count > 0) return ServiceResult<bool>.BadRequest(bledy.ToArray());
+            if(bledy.Count > 0) return ServiceResult<int>.BadRequest(bledy.ToArray());
             
             var graRes = await wspieranaGraService.GetWspieranaGra(druzynaReq.IdGry);
-            if (!graRes.Succeeded) return ServiceResult<bool>.Fail(graRes.StatusCode, graRes.Errors);
+            if (!graRes.Succeeded) return ServiceResult<int>.Fail(graRes.StatusCode, graRes.Errors);
             
             var czyUzytkownikPrzekraczaMaksLiczbeDruzynRes = await CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idKapitana, druzynaReq.IdGry);
-            if (!czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Succeeded) return ServiceResult<bool>.Fail(czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.StatusCode, czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Errors);
-            if (czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Value) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie można stworzyć drużyny, ponieważ użytkownik może być w maksymalnie " + DruzynyRepository.MaksymalnaLiczbaDruzynGraczaDlaGry +" drużynach dla danej gry"));
+            if (!czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Succeeded) return ServiceResult<int>.Fail(czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.StatusCode, czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Errors);
+            if (czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Value) return ServiceResult<int>.BadRequest(new ErrorItem("Nie można stworzyć drużyny, ponieważ użytkownik może być w maksymalnie " + DruzynyRepository.MaksymalnaLiczbaDruzynGraczaDlaGry +" drużynach dla danej gry"));
             
             if (druzynaReq.IdPlatformy != null)
             {
@@ -747,13 +747,13 @@ public class DruzynyService(
                     await platformaService.GetPlatforma(druzynaReq.IdPlatformy ??
                                                         0); // już odfiltrowaliśmy drużyny bez IdPlatformy, więc możemy bezpiecznie użyć ?? 0
                 if (!platformaRes.Succeeded)
-                    return ServiceResult<bool>.Fail(platformaRes.StatusCode, platformaRes.Errors);
+                    return ServiceResult<int>.Fail(platformaRes.StatusCode, platformaRes.Errors);
             }
 
             if (druzynaReq.IdWymaganegoJezyka != null)
             {
                 var jezykRes = await jezykService.GetJezyk(druzynaReq.IdWymaganegoJezyka ?? 0);
-                if (!jezykRes.Succeeded) return ServiceResult<bool>.Fail(jezykRes.StatusCode, jezykRes.Errors);
+                if (!jezykRes.Succeeded) return ServiceResult<int>.Fail(jezykRes.StatusCode, jezykRes.Errors);
             }
 
             if (druzynaReq.IdWymaganegoStopniaBieglosciJezyka != null)
@@ -761,29 +761,29 @@ public class DruzynyService(
                 var stopienRes =
                     await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(
                         druzynaReq.IdWymaganegoStopniaBieglosciJezyka ?? 0);
-                if (!stopienRes.Succeeded) return ServiceResult<bool>.Fail(stopienRes.StatusCode, stopienRes.Errors);
-                if(druzynaReq.IdWymaganegoJezyka == null) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie można ustawić wymaganego stopnia biegłości języka bez ustawienia wymaganego języka"));
+                if (!stopienRes.Succeeded) return ServiceResult<int>.Fail(stopienRes.StatusCode, stopienRes.Errors);
+                if(druzynaReq.IdWymaganegoJezyka == null) return ServiceResult<int>.BadRequest(new ErrorItem("Nie można ustawić wymaganego stopnia biegłości języka bez ustawienia wymaganego języka"));
             }
             
             // sprawdzamy, czy spełnia wymagania języka
             if (druzynaReq.IdWymaganegoJezyka != null)
             {
                 var jezykiOrazStopnieRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idKapitana);
-                if (!jezykiOrazStopnieRes.Succeeded) return ServiceResult<bool>.Fail(jezykiOrazStopnieRes.StatusCode, jezykiOrazStopnieRes.Errors);
+                if (!jezykiOrazStopnieRes.Succeeded) return ServiceResult<int>.Fail(jezykiOrazStopnieRes.StatusCode, jezykiOrazStopnieRes.Errors);
                 var jezykiOrazStopnie = jezykiOrazStopnieRes.Value ?? new List<JezykOrazRowneLubNizszeStopnieDto>();
                 
                 var jezyk = jezykiOrazStopnie.FirstOrDefault(x => x.Jezyk.Id == druzynaReq.IdWymaganegoJezyka);
                 if (jezyk == null) 
-                    return ServiceResult<bool>.BadRequest(new ErrorItem("Kapitan drużyny nie spełnia wymagań języka, który ustawił jako wymagany w drużynie"));
+                    return ServiceResult<int>.BadRequest(new ErrorItem("Kapitan drużyny nie spełnia wymagań języka, który ustawił jako wymagany w drużynie"));
                 
                 if (druzynaReq.IdWymaganegoStopniaBieglosciJezyka != null && jezyk.Stopnie.All(x => x.Id != druzynaReq.IdWymaganegoStopniaBieglosciJezyka))
-                    return ServiceResult<bool>.BadRequest(new ErrorItem("Kapitan drużyny nie spełnia wymagań stopnia biegłości języka, który ustawił jako wymagany w drużynie"));
+                    return ServiceResult<int>.BadRequest(new ErrorItem("Kapitan drużyny nie spełnia wymagań stopnia biegłości języka, który ustawił jako wymagany w drużynie"));
             }
 
             if (druzynaReq.IdRoliKapitana != null)
             {
                 var rolaRes = await statystykiService.GetRola(druzynaReq.IdRoliKapitana ?? 0);
-                if (!rolaRes.Succeeded) return ServiceResult<bool>.Fail(rolaRes.StatusCode, rolaRes.Errors);
+                if (!rolaRes.Succeeded) return ServiceResult<int>.Fail(rolaRes.StatusCode, rolaRes.Errors);
             }
 
             if (druzynaReq.WymaganeStatystyki != null)
@@ -792,19 +792,19 @@ public class DruzynyService(
                     statystykiService.FiltrujNieistniejaceStatystyki(druzynaReq.WymaganeStatystyki
                         .Select(x => x.IdStatystyki).ToList());
                 if (!nieprawidloweStatystykiRes.Succeeded)
-                    return ServiceResult<bool>.Fail(nieprawidloweStatystykiRes.StatusCode,
+                    return ServiceResult<int>.Fail(nieprawidloweStatystykiRes.StatusCode,
                         nieprawidloweStatystykiRes.Errors);
                 var nieprawidloweStatystyki = nieprawidloweStatystykiRes.Value ?? [];
                 if (nieprawidloweStatystyki.Count > 0)
                 {
                     var errorMessage =
                         $"Podane statystyki o id: [{string.Join(", ", nieprawidloweStatystyki)}], które zostały podane w wymaganiach drużyny, nie istnieją w bazie danych.";
-                    return ServiceResult<bool>.BadRequest(new ErrorItem(errorMessage));
+                    return ServiceResult<int>.BadRequest(new ErrorItem(errorMessage));
                 }
 
                 var czySpelniaWymaganiaRes = await statystykiService.CzyUzytkownikSpelniaWymagania(druzynaReq.WymaganeStatystyki, idKapitana);
-                if(!czySpelniaWymaganiaRes.Succeeded) return ServiceResult<bool>.Fail(czySpelniaWymaganiaRes.StatusCode, czySpelniaWymaganiaRes.Errors);
-                if (!czySpelniaWymaganiaRes.Value) return ServiceResult<bool>.BadRequest(new ErrorItem("Kapitan musi spełniać wymagania tworzonej przez siebie drużyny"));
+                if(!czySpelniaWymaganiaRes.Succeeded) return ServiceResult<int>.Fail(czySpelniaWymaganiaRes.StatusCode, czySpelniaWymaganiaRes.Errors);
+                if (!czySpelniaWymaganiaRes.Value) return ServiceResult<int>.BadRequest(new ErrorItem("Kapitan musi spełniać wymagania tworzonej przez siebie drużyny"));
             }
 
             var wymaganeStatystykiMiejscWDruzynie = druzynaReq.MiejscaWDruzynie.Select(x => x.WymaganaStatystyka)
@@ -814,26 +814,26 @@ public class DruzynyService(
                 var nieprawidloweStatystykiRes =
                     statystykiService.FiltrujNieistniejaceStatystyki(wymaganeStatystykiMiejscWDruzynie);
                 if (!nieprawidloweStatystykiRes.Succeeded)
-                    return ServiceResult<bool>.Fail(nieprawidloweStatystykiRes.StatusCode,
+                    return ServiceResult<int>.Fail(nieprawidloweStatystykiRes.StatusCode,
                         nieprawidloweStatystykiRes.Errors);
                 var nieprawidloweStatystyki = nieprawidloweStatystykiRes.Value ?? [];
                 if (nieprawidloweStatystyki.Count > 0)
                 {
                     var errorMessage =
                         $"Podane statystyki w miejscach w drużynie o id statystyk: [{string.Join(", ", nieprawidloweStatystyki)}] nie istnieją w bazie danych.";
-                    return ServiceResult<bool>.BadRequest(new ErrorItem(errorMessage));
+                    return ServiceResult<int>.BadRequest(new ErrorItem(errorMessage));
                 }
             }
 
             // statystyki sprawdzone, tworzymy drużynę
-            var stworzDruzyneRes = await druzynyRepository.StworzDruzyne(druzynaReq, idKapitana);
-            if (!stworzDruzyneRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się stworzyć drużyny")]);
+            var stworzonaDruzyna = await druzynyRepository.StworzDruzyne(druzynaReq, idKapitana);
+            if (stworzonaDruzyna == null) return ServiceResult<int>.Fail(500, [new ErrorItem("Nie udało się stworzyć drużyny")]);
             
-            return ServiceResult<bool>.Ok(true);
+            return ServiceResult<int>.Created(stworzonaDruzyna.Value);
         }
         catch (NieZnalezionoWBazieException e)
         {
-            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<int>.NotFound(new ErrorItem(e.Message));
         }
     }
     

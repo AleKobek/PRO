@@ -25,7 +25,7 @@ public interface IDruzynyService
     public Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganiaDruzyny(int idDruzyny, int idUzytkownika);
     public Task<ServiceResult<bool>> CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(int idGry, int idUzytkownika);
     public Task<ServiceResult<bool>> CzyUzytkownikNalezyDoDruzyny(int idUzytkownika, int idDruzyny);
-    public Task<ServiceResult<bool>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana);
+    public Task<ServiceResult<int>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana);
     public Task<ServiceResult<bool>> OpuscDruzyne(int idDruzyny, int idUzytkownika, bool czyPrzyUsuwaniuKonta);
     public Task<ServiceResult<bool>> OproznijMiejsceWDruzynie(int idMiejsca, int idUsuwajacegoUzytkownika);
     public Task<ServiceResult<bool>> PrzerwijIntegracjeUzytkownikaOdnosnieDruzyn(int idUzytkownika);
