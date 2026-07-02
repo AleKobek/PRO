@@ -78,6 +78,16 @@ public class UzytkownikRepository(
         return uzytkownik.OstatniaAktywnosc;
     }
 
+    public async Task<bool> CzyUzytkownikJestAdminem(int id)
+    {
+        var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
+        
+        if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + id + " nie istnieje");
+        
+        var role = (await userManager.GetRolesAsync(uzytkownik)).ToArray();
+        return role.Contains("Admin");
+    }
+
     public async Task<bool> CzyUzytkownikMaZintegrowaneKonto(int id)
     {
         var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);

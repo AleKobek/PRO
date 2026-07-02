@@ -10,6 +10,7 @@ public interface IUzytkownikService
 
     public Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(string login);
     public Task<ServiceResult<DateTime?>> GetOstatniaAktywnoscUzytkownika(int id);
+    public Task<ServiceResult<bool>> CzyUzytkownikJestAdminem(int id);
     public Task<ServiceResult<bool>> CzyUzytkownikMaZintegrowaneKonto(int id);
     Task<ServiceResult<bool>> CreateUzytkownik(UzytkownikCreateDto uzytkownik);
 

@@ -60,6 +60,19 @@ public class UzytkownikService(
         }
     }
 
+    public async Task<ServiceResult<bool>> CzyUzytkownikJestAdminem(int id)
+    {
+        if(id < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Niepoprawne id użytkownika: " + id));
+        try
+        {
+            return ServiceResult<bool>.Ok(await uzytkownikRepository.CzyUzytkownikJestAdminem(id));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
     public async Task<ServiceResult<bool>> CzyUzytkownikMaZintegrowaneKonto(int id)
     {
         if(id < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Niepoprawne id użytkownika: " + id));
