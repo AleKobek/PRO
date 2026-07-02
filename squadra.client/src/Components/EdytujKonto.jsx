@@ -283,7 +283,7 @@ export default function EdytujKonto() {
             });
             return;
         }
-
+        ustawUzytkownika(null);
         navigate('/login');
     }
 
