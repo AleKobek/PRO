@@ -727,8 +727,8 @@ export default function StronaSzczegolowDruzyny() {
                         Powrót do twoich drużyn
                     </button>
                 }
-                <h2 className="text-2xl font-bold">Szczegóły drużyny:</h2>
-                <h3 className="text-xl mb-4 text-blue-700">{daneDruzyny.nazwa}</h3>
+                <h1 className="text-2xl font-bold">Strona drużyny:</h1>
+                <h2 className="text-xl mb-4 text-blue-700">{daneDruzyny.nazwa}</h2>
                 {/* czat drużynowy */}
                 {daneDruzyny.statusCzlonkostwa !== "Brak" &&
                     <div className="w-3/4 h-[1000px] border-4 border-gray-600 mb-10 shadow-xl rounded-md"><CzatDruzynowyKomponent idDruzyny={idDruzyny}/></div>
