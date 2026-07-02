@@ -89,7 +89,6 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
     public async Task<bool> DeletePowiadomienie(int id)
     {
         var powiadomienie = await context.Powiadomienie.FindAsync(id);
-        if(id == 1) throw new NieZnalezionoWBazieException("Nie można usunąć powiadomienia Ello >:C");
         if(powiadomienie == null) throw new NieZnalezionoWBazieException("Powiadomienie o id " + id + " nie istnieje");;
         context.Powiadomienie.Remove(powiadomienie);
         await context.SaveChangesAsync();
