@@ -15,6 +15,6 @@ public enum TypPowiadomieniaEnum
     UzytkownikOpuscilDruzyne = 13, // pierwszym obiektem jest użytkownik, drugim drużyna
     DruzynaZostalaRozwiazana = 14, // jedynym powiązanym obiektem jest drużyna, dokładnie to jej nazwa, bo sama drużyna już nie istnieje
     UzytkownikOpuscilDruzyneBoUsunalKonto = 15, // jedynym powiązanym obiektem jest drużyna, bo użytkownik już nie istnieje i jest anonimowy
-    DruzynaZostalaUsunietaAutomatycznie = 16 // jedynym powiązanym obiektem jest drużyna, dokładnie to jej nazwa, bo sama drużyna już nie istnieje
-
+    DruzynaZostalaUsunietaAutomatycznie = 16, // jedynym powiązanym obiektem jest drużyna, dokładnie to jej nazwa, bo sama drużyna już nie istnieje
+    ZaproszenieOdrzuconePrzezUsuniecieKonta = 17 // pierwszym powiązanym obiektem jest drużyna, drugim jest miejsce, w nazwie jest numer miejsca
 }

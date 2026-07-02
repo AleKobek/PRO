@@ -41,7 +41,8 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         UZYTKOWNIK_OPUSCIL_DRUZYNE: 13,
         DRUZYNA_ZOSTALA_USUNIETA: 14,
         UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO: 15,
-        DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE: 16
+        DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE: 16,
+        ZAPROSZENIE_ODRZUCONE_PRZEZ_USUNIECIE_KONTA: 17
     }),[]);
 
     // ustawiamy treść powiadomienia na podstawie typu powiadomienia
@@ -154,6 +155,16 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
                 ustawTrescPowiadomieniaCz2(" została usunięta przez Twój brak aktywności.");
                 break;
             }
+            case TypyPowiadomien.ZAPROSZENIE_ODRZUCONE_PRZEZ_USUNIECIE_KONTA:{
+                ustawTypPowiadomienia("Użytkownik odrzucił zaproszenie do drużyny")
+                ustawTrescPowiadomieniaCz1("Uzytkownik, którego zaprosiłeś do drużyny ");
+                ustawTrescPowiadomieniaCz2(" na miejsce o numerze " + powiadomienie.nazwaDrugiegoPowiazanegoObiektu + " usunął konto i zaproszenie " +
+                    "zostało odrzucone.");
+                if(powiadomienie.tresc?.length > 0){
+                    ustawTrescPowiadomieniaCz3(" Miał mieć rolę " + powiadomienie.tresc + "."); // tu będzie rola
+                }
+                break;
+            }
             default:{
                 ustawTypPowiadomienia("Nieznany typ powiadomienia");
             }
@@ -165,7 +176,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         TypyPowiadomien.USUNIETO_CIE_Z_DRUZYNY, TypyPowiadomien.ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE,
         TypyPowiadomien.UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY,
         TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA, TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO,
-        TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE]);
+        TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE, TypyPowiadomien.ZAPROSZENIE_ODRZUCONE_PRZEZ_USUNIECIE_KONTA]);
 
 
     if(!powiadomienie) return (<></>);
@@ -246,6 +257,27 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         </div>
         <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
     </li>)
+
+    if(powiadomienie.idTypuPowiadomienia === TypyPowiadomien.ZAPROSZENIE_ODRZUCONE_PRZEZ_USUNIECIE_KONTA)
+        return (<li key={powiadomienie.id} className="p-2 border-b border-gray-200">
+            <div className="flex flex-row justify-between items-center w-full">
+                <div className="font-semibold">{typPowiadomienia}</div>
+                <button onClick={() => przyRozpatrzaniuPowiadomienia(powiadomienie.id, null)}>
+                    <img
+                        src = "/img/x.svg"
+                        alt = "x"
+                        className="w-4 h-4 cursor-pointer"
+                    />
+                </button>
+            </div>
+            <div className="text-sm text-gray-600">
+                {trescPowiadomieniaCz1}
+                <a href={`${CLIENT_URL}/druzyna/`+powiadomienie.idPowiazanegoObiektu} className="text-black font-semibold">{powiadomienie.nazwaPowiazanegoObiektu}</a>
+                {trescPowiadomieniaCz2}
+                {trescPowiadomieniaCz3}
+            </div>
+            <div className="text-xs text-gray-400 mt-1.5">{powiadomienie.dataWyslania}</div>
+        </li>)
 
     if(
         powiadomienie.idTypuPowiadomienia === TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA || TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE

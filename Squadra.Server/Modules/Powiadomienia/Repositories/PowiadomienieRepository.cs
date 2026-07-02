@@ -31,6 +31,18 @@ public class PowiadomienieRepository(AppDbContext context) : IPowiadomienieRepos
         return lista;
     }
     
+    public async Task<ICollection<Powiadomienie>> GetZaproszeniaDoDruzynyUzytkownika(int idUzytkownika)
+    {
+        var powiadomienia = await context.Powiadomienie
+            .Where(x => x.UzytkownikId == idUzytkownika && x.TypPowiadomieniaId == (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny)
+            .ToListAsync();
+        powiadomienia.Sort((x, y) => y.DataWyslania.CompareTo(x.DataWyslania));
+        var lista = new List<Powiadomienie>();
+        foreach (var powiadomienie in powiadomienia) 
+            lista.Add(await GetPowiadomienie(powiadomienie.Id));
+        return lista;
+    }
+    
     public async Task<ICollection<Powiadomienie>> PodajPowiadomieniaUzytkownikaPrzekraczajaceLimit(int idUzytkownika)
     {
         var liczbaPowiadomien = await context.Powiadomienie.CountAsync(x => x.UzytkownikId == idUzytkownika);

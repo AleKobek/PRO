@@ -10,7 +10,7 @@ namespace Squadra.Server.Modules.Uzytkownicy.Services;
 public class UsunKontoService (
     IUzytkownikService uzytkownikService,
     IIntegracjeZewnetrzneService integracjeZewnetrzneService,
-    IPowiadomienieService powiadomienieService,
+    IUsunPowiadomieniaUzytkownikaService usunPowiadomieniaService,
     IDeleteDruzynaService deleteDruzynaService,
     IDeleteZnajomoscService deleteZnajomoscService,
     AppDbContext context) : IUsunKontoService
@@ -43,7 +43,7 @@ public class UsunKontoService (
                 return wyrzucanieRes;
             }
             
-            var powiadomieniaRes = await powiadomienieService.DeletePowiadomieniaZwiazaneZUzytkownikiem(id);
+            var powiadomieniaRes = await usunPowiadomieniaService.DeletePowiadomieniaZwiazaneZUzytkownikiem(id);
             if (!powiadomieniaRes.Succeeded) 
             {
                 await transakcja.RollbackAsync();
