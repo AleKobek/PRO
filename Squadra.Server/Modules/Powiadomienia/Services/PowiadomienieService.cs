@@ -202,7 +202,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
     public async Task<bool> UsunNadmiarowePowiadomieniaUzytkownika(int idUzytkownika)
     {
         var powiadomieniaDoUsuniecia = await powiadomienieRepository.PodajPowiadomieniaUzytkownikaPrzekraczajaceLimit(idUzytkownika);
-        if (powiadomieniaDoUsuniecia.Count == 0) return true;
+        if (powiadomieniaDoUsuniecia == null || powiadomieniaDoUsuniecia.Count == 0) return true;
         // w przypadku usuwania zaproszeń musimy wysłać powiadomienie zwrotne, że zaproszenie zostało odrzucone
         foreach (var powiadomienieDoUsuniecia in powiadomieniaDoUsuniecia)
         {

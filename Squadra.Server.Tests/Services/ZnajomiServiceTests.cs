@@ -160,31 +160,4 @@ public class ZnajomiServiceTests
         Assert.False(result.Succeeded);
         Assert.Equal(400, result.StatusCode);
     }
-
-    [Fact]
-    public async Task DeleteZnajomosc_WithValidIds_ReturnsNoContent()
-    {
-        var userId1 = 1;
-        var userId2 = 2;
-
-        _mockRepository.Setup(r => r.DeleteZnajomosc(userId1, userId2))
-            .ReturnsAsync(true);
-
-        var result = await _service.DeleteZnajomosc(userId1, userId2);
-
-        Assert.True(result.Succeeded);
-        Assert.Equal(204, result.StatusCode);
-        Assert.True(result.Value);
-    }
-
-    [Theory]
-    [InlineData(0, 2)]
-    [InlineData(1, -1)]
-    public async Task DeleteZnajomosc_WithInvalidIds_ReturnsBadRequest(int userId1, int userId2)
-    {
-        var result = await _service.DeleteZnajomosc(userId1, userId2);
-
-        Assert.False(result.Succeeded);
-        Assert.Equal(400, result.StatusCode);
-    }
 }

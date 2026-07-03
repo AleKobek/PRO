@@ -113,7 +113,7 @@ public class WiadomoscControllerTests
             .Setup(s => s.GetWiadomosciPrywatne(user.Id, 2))
             .ReturnsAsync(ServiceResult<ICollection<WiadomoscDto>>.Ok(messages));
 
-        var actionResult = await _controller.GetWiadomosci(2);
+        var actionResult = await _controller.GetWiadomosciPrywatne(2);
 
         var okResult = Assert.IsType<OkObjectResult>(actionResult);
         var returnedMessages = Assert.IsAssignableFrom<IEnumerable<WiadomoscDto>>(okResult.Value);
@@ -125,7 +125,7 @@ public class WiadomoscControllerTests
     {
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync((Uzytkownik?)null);
 
-        var actionResult = await _controller.GetWiadomosci(2);
+        var actionResult = await _controller.GetWiadomosciPrywatne(2);
 
         var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(actionResult);
         Assert.Equal("Nie jesteś zalogowany.", unauthorizedResult.Value);
@@ -163,12 +163,11 @@ public class WiadomoscControllerTests
         var user = new Uzytkownik { Id = 1, UserName = "testuser" };
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
 
-        var createDto = new WiadomoscCreateDto("Hello!", 1);
         _mockWiadomoscService
-            .Setup(s => s.CreateWiadomosc(2, createDto, user.Id))
+            .Setup(s => s.CreateWiadomoscPrywatna(2, "Hello!", user.Id))
             .ReturnsAsync(ServiceResult<bool>.Ok(true, 201));
 
-        var actionResult = await _controller.CreateWiadomosc(2, createDto);
+        var actionResult = await _controller.CreateWiadomoscPrywatna(2, "Hello!");
 
         var createdResult = Assert.IsType<CreatedResult>(actionResult);
         Assert.Equal(201, createdResult.StatusCode);
@@ -180,7 +179,7 @@ public class WiadomoscControllerTests
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync((Uzytkownik?)null);
 
         var createDto = new WiadomoscCreateDto("Hello!", 1);
-        var actionResult = await _controller.CreateWiadomosc(2, createDto);
+        var actionResult = await _controller.CreateWiadomoscPrywatna(2, "Hello!");
 
         var unauthorizedResult = Assert.IsType<UnauthorizedObjectResult>(actionResult);
         Assert.Equal("Nie jesteś zalogowany.", unauthorizedResult.Value);
@@ -192,12 +191,11 @@ public class WiadomoscControllerTests
         var user = new Uzytkownik { Id = 1, UserName = "testuser" };
         _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>())).ReturnsAsync(user);
 
-        var createDto = new WiadomoscCreateDto("", 1);
         _mockWiadomoscService
-            .Setup(s => s.CreateWiadomosc(2, createDto, user.Id))
+            .Setup(s => s.CreateWiadomoscPrywatna(2, "", user.Id))
             .ReturnsAsync(ServiceResult<bool>.Fail(400, new[] { new ErrorItem("Message content is required", "Tresc") }));
 
-        var actionResult = await _controller.CreateWiadomosc(2, createDto);
+        var actionResult = await _controller.CreateWiadomoscPrywatna(2,"");
 
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult);
         Assert.Equal("Message content is required", badRequestResult.Value);

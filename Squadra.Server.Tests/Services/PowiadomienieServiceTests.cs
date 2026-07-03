@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Moq;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Drużyny.Repositories;
 using Squadra.Server.Modules.Powiadomienia.DTO;
 using Squadra.Server.Modules.Powiadomienia.Models;
 using Squadra.Server.Modules.Powiadomienia.Repositories;
@@ -10,9 +11,11 @@ using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
+using Squadra.Server.Modules.Statystyki.Services;
 using Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
 using Squadra.Server.Modules.Uzytkownicy.Models;
 using Squadra.Server.Modules.Uzytkownicy.Services;
+using Squadra.Server.Modules.Znajomosci.DTO;
 using Squadra.Server.Modules.Znajomosci.Models;
 using Squadra.Server.Modules.Znajomosci.Repositories;
 using Squadra.Server.Modules.Znajomosci.Services;
@@ -28,24 +31,29 @@ public class PowiadomienieServiceTests
     private readonly Mock<IZnajomiService> _mockZnajomiService;
     private readonly Mock<IZnajomiRepository> _mockZnajomiRepository;
     private readonly Mock<IProfilService> _mockProfilService;
+    private readonly Mock<IStatystykiService> _mockStatystykiService;
+    private readonly Mock<IDruzynyRepository> _mockDruzynyRepository;
     private readonly PowiadomienieService _service;
 
     public PowiadomienieServiceTests()
     {
         _mockPowiadomienieRepository = new Mock<IPowiadomienieRepository>();
-        _mockUserManager = MockUserManager();
         _mockUzytkownikService = new Mock<IUzytkownikService>();
         _mockZnajomiService = new Mock<IZnajomiService>();
         _mockZnajomiRepository = new Mock<IZnajomiRepository>();
         _mockProfilService = new Mock<IProfilService>();
+        _mockStatystykiService = new Mock<IStatystykiService>();
+        _mockDruzynyRepository = new Mock<IDruzynyRepository>();
+        _mockUserManager = MockUserManager();
         
         _service = new PowiadomienieService(
             _mockPowiadomienieRepository.Object,
-            _mockUserManager.Object,
             _mockUzytkownikService.Object,
             _mockZnajomiService.Object,
             _mockZnajomiRepository.Object,
-            _mockProfilService.Object
+            _mockProfilService.Object,
+            _mockStatystykiService.Object,
+            _mockDruzynyRepository.Object
         );
     }
 
@@ -127,15 +135,27 @@ public class PowiadomienieServiceTests
         string? tresc = null)
         => new(idTypuPowiadomienia, idUzytkownika, idPowiazanegoObiektu, nazwaPowiazanegoObiektu, idDrugiegoPowiazanegoObiektu, nazwaDrugiegoPowiazanegoObiektu, tresc);
 
-    private static List<Znajomi> StworzPelnaListeZnajomych(int ownerId)
+    private static ServiceResult<UzytkownikResDto> UzytkownikResult(int id, string login)
+        => ServiceResult<UzytkownikResDto>.Ok(new UzytkownikResDto(
+            id,
+            login,
+            login + "@test.com",
+            null,
+            null,
+            null,
+            null,
+            Array.Empty<string>()));
+
+    private static List<ZnajomiDto> StworzPelnaListeZnajomych(int ownerId)
     {
         return Enumerable.Range(1, ZnajomiService.MaxLiczbaZnajomych)
-            .Select(i => new Znajomi
-            {
-                IdUzytkownika1 = ownerId,
-                IdUzytkownika2 = 1000 + i,
-                DataNawiazaniaZnajomosci = DateOnly.FromDateTime(DateTime.Now)
-            })
+            .Select(i => new ZnajomiDto(
+                ownerId,
+                1000 + i,
+                DateOnly.FromDateTime(DateTime.Now),
+                DateTime.Now.AddHours(-1),
+                DateTime.Now.AddHours(-1)
+            ))
             .ToList();
     }
 
@@ -312,8 +332,8 @@ public class PowiadomienieServiceTests
         var inviterId = 1;
         var inviteeLogin = "nonexistent";
         
-        _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))
-            .ReturnsAsync((Uzytkownik?)null);
+        _mockUzytkownikService.Setup(s => s.GetUzytkownik(inviteeLogin))
+            .ReturnsAsync(ServiceResult<UzytkownikResDto>.NotFound(new ErrorItem("User not found")));
 
         // Act
         var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);
@@ -321,7 +341,7 @@ public class PowiadomienieServiceTests
         // Assert
         Assert.False(result.Succeeded);
         Assert.Equal(404, result.StatusCode);
-        Assert.Contains("nie istnieje", result.Errors[0].Message);
+        Assert.Contains("not found", result.Errors[0].Message.ToLower());
     }
 
     [Fact]
@@ -330,10 +350,9 @@ public class PowiadomienieServiceTests
         // Arrange
         var userId = 1;
         var login = "testuser";
-        var uzytkownik = new Uzytkownik { Id = userId, UserName = login };
         
-        _mockUserManager.Setup(um => um.FindByNameAsync(login))
-            .ReturnsAsync(uzytkownik);
+        _mockUzytkownikService.Setup(s => s.GetUzytkownik(login))
+            .ReturnsAsync(UzytkownikResult(userId, login));
 
         // Act
         var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(userId, login);
@@ -351,14 +370,13 @@ public class PowiadomienieServiceTests
         var inviterId = 1;
         var inviteeId = 2;
         var inviteeLogin = "invitee";
-        var invitee = new Uzytkownik { Id = inviteeId, UserName = inviteeLogin };
         var existingNotifications = new List<Powiadomienie>
         {
             StworzPowiadomienieEncje(1, 2, inviteeId, inviterId, "Inviter", null, null, null, DateTime.Now)
         };
         
-        _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))
-            .ReturnsAsync(invitee);
+        _mockUzytkownikService.Setup(s => s.GetUzytkownik(inviteeLogin))
+            .ReturnsAsync(UzytkownikResult(inviteeId, inviteeLogin));
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomieniaUzytkownika(inviteeId))
             .ReturnsAsync(existingNotifications);
 
@@ -378,10 +396,9 @@ public class PowiadomienieServiceTests
         var inviterId = 1;
         var inviteeId = 2;
         var inviteeLogin = "invitee";
-        var invitee = new Uzytkownik { Id = inviteeId, UserName = inviteeLogin };
         
-        _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))
-            .ReturnsAsync(invitee);
+        _mockUzytkownikService.Setup(s => s.GetUzytkownik(inviteeLogin))
+            .ReturnsAsync(UzytkownikResult(inviteeId, inviteeLogin));
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomieniaUzytkownika(inviteeId))
             .ReturnsAsync(new List<Powiadomienie>());
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(inviteeId, inviterId))
@@ -403,11 +420,10 @@ public class PowiadomienieServiceTests
         var inviterId = 1;
         var inviteeId = 2;
         var inviteeLogin = "invitee";
-        var invitee = new Uzytkownik { Id = inviteeId, UserName = inviteeLogin };
-        var friendsResult = ServiceResult<ICollection<Znajomi>>.Ok(StworzPelnaListeZnajomych(inviterId));
+        var friendsResult = ServiceResult<ICollection<ZnajomiDto>>.Ok(StworzPelnaListeZnajomych(inviterId));
         
-        _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))
-            .ReturnsAsync(invitee);
+        _mockUzytkownikService.Setup(s => s.GetUzytkownik(inviteeLogin))
+            .ReturnsAsync(UzytkownikResult(inviteeId, inviteeLogin));
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomieniaUzytkownika(inviteeId))
             .ReturnsAsync(new List<Powiadomienie>());
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(inviteeId, inviterId))
@@ -431,12 +447,11 @@ public class PowiadomienieServiceTests
         var inviterId = 1;
         var inviteeId = 2;
         var inviteeLogin = "invitee";
-        var invitee = new Uzytkownik { Id = inviteeId, UserName = inviteeLogin };
-        var inviterFriendsResult = ServiceResult<ICollection<Znajomi>>.Ok(new List<Znajomi>());
-        var inviteeFriendsResult = ServiceResult<ICollection<Znajomi>>.Ok(StworzPelnaListeZnajomych(inviteeId));
+        var inviterFriendsResult = ServiceResult<ICollection<ZnajomiDto>>.Ok(new List<ZnajomiDto>());
+        var inviteeFriendsResult = ServiceResult<ICollection<ZnajomiDto>>.Ok(StworzPelnaListeZnajomych(inviteeId));
         
-        _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))
-            .ReturnsAsync(invitee);
+        _mockUzytkownikService.Setup(s => s.GetUzytkownik(inviteeLogin))
+            .ReturnsAsync(UzytkownikResult(inviteeId, inviteeLogin));
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomieniaUzytkownika(inviteeId))
             .ReturnsAsync(new List<Powiadomienie>());
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(inviteeId, inviterId))
@@ -462,14 +477,13 @@ public class PowiadomienieServiceTests
         var inviterId = 1;
         var inviteeId = 2;
         var inviteeLogin = "invitee";
-        var invitee = new Uzytkownik { Id = inviteeId, UserName = inviteeLogin };
-        var inviterFriendsResult = ServiceResult<ICollection<Znajomi>>.Ok(new List<Znajomi>());
-        var inviteeFriendsResult = ServiceResult<ICollection<Znajomi>>.Ok(new List<Znajomi>());
+        var inviterFriendsResult = ServiceResult<ICollection<ZnajomiDto>>.Ok(new List<ZnajomiDto>());
+        var inviteeFriendsResult = ServiceResult<ICollection<ZnajomiDto>>.Ok(new List<ZnajomiDto>());
         var profileResult = ServiceResult<ProfilGetResDto>.Ok(
             new ProfilGetResDto("Inviter", null, null, null, new List<JezykOrazStopienDto>(), null, "Active"));
         
-        _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))
-            .ReturnsAsync(invitee);
+        _mockUzytkownikService.Setup(s => s.GetUzytkownik(inviteeLogin))
+            .ReturnsAsync(UzytkownikResult(inviteeId, inviteeLogin));
         _mockPowiadomienieRepository.Setup(r => r.GetPowiadomieniaUzytkownika(inviteeId))
             .ReturnsAsync(new List<Powiadomienie>());
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(inviteeId, inviterId))
@@ -482,6 +496,8 @@ public class PowiadomienieServiceTests
             .ReturnsAsync(profileResult);
         _mockPowiadomienieRepository.Setup(r => r.CreatePowiadomienie(It.IsAny<PowiadomienieCreateDto>()))
             .ReturnsAsync(true);
+        _mockPowiadomienieRepository.Setup(r => r.PodajPowiadomieniaUzytkownikaPrzekraczajaceLimit(inviteeId))
+            .ReturnsAsync(new List<Powiadomienie>());
 
         // Act
         var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);
@@ -499,7 +515,7 @@ public class PowiadomienieServiceTests
         var inviterId = 1;
         var inviteeLogin = "invitee";
         
-        _mockUserManager.Setup(um => um.FindByNameAsync(inviteeLogin))
+        _mockUzytkownikService.Setup(s => s.GetUzytkownik(inviteeLogin))
             .ThrowsAsync(new NieZnalezionoWBazieException("Database error"));
 
         // Act

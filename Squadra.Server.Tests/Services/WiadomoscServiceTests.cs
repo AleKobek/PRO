@@ -1,5 +1,7 @@
 using Moq;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Drużyny.Services;
+using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Wiadomosci.DTO;
 using Squadra.Server.Modules.Wiadomosci.Repositories;
 using Squadra.Server.Modules.Wiadomosci.Services;
@@ -11,13 +13,22 @@ public class WiadomoscServiceTests
 {
     private readonly Mock<IWiadomoscRepository> _mockWiadomoscRepository;
     private readonly Mock<IZnajomiRepository> _mockZnajomiRepository;
+    private readonly Mock<IDruzynyService> _mockDruzynyService;
+    private readonly Mock<IProfilService> _mockProfilService;
     private readonly WiadomoscService _service;
 
     public WiadomoscServiceTests()
     {
         _mockWiadomoscRepository = new Mock<IWiadomoscRepository>();
         _mockZnajomiRepository = new Mock<IZnajomiRepository>();
-        _service = new WiadomoscService(_mockWiadomoscRepository.Object, _mockZnajomiRepository.Object);
+        _mockDruzynyService = new Mock<IDruzynyService>();
+        _mockProfilService = new Mock<IProfilService>();
+        _service = new WiadomoscService(
+            _mockWiadomoscRepository.Object, 
+            _mockZnajomiRepository.Object,
+            _mockDruzynyService.Object,
+            _mockProfilService.Object
+        );
     }
 
     #region GetWiadomosc Tests
@@ -218,7 +229,7 @@ public class WiadomoscServiceTests
             .ReturnsAsync(true);
 
         // Act
-        var result = await _service.CreateWiadomosc(recipientId, dto, senderId);
+        var result = await _service.CreateWiadomoscPrywatna(recipientId, "Test message content", senderId);
 
         // Assert
         Assert.True(result.Succeeded);
@@ -231,10 +242,9 @@ public class WiadomoscServiceTests
     {
         // Arrange
         var userId = 1;
-        var dto = new WiadomoscCreateDto("Test message", 1);
-
+        
         // Act
-        var result = await _service.CreateWiadomosc(userId, dto, userId);
+        var result = await _service.CreateWiadomoscPrywatna(userId, "Test message", userId);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -247,10 +257,9 @@ public class WiadomoscServiceTests
     {
         // Arrange
         var senderId = 1;
-        var dto = new WiadomoscCreateDto("", 1);
 
         // Act
-        var result = await _service.CreateWiadomosc(2, dto, senderId);
+        var result = await _service.CreateWiadomoscPrywatna(2,"", senderId);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -263,10 +272,9 @@ public class WiadomoscServiceTests
     {
         // Arrange
         var senderId = 1;
-        var dto = new WiadomoscCreateDto(null!, 1);
 
         // Act
-        var result = await _service.CreateWiadomosc(2, dto, senderId);
+        var result = await _service.CreateWiadomoscPrywatna(2, null!, senderId);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -280,10 +288,9 @@ public class WiadomoscServiceTests
         // Arrange
         var senderId = 1;
         var longContent = new string('a', 1001); // 1001 characters
-        var dto = new WiadomoscCreateDto(longContent, 1);
 
         // Act
-        var result = await _service.CreateWiadomosc(2, dto, senderId);
+        var result = await _service.CreateWiadomoscPrywatna(2, longContent, senderId);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -296,12 +303,11 @@ public class WiadomoscServiceTests
     {
         // Arrange
         var senderId = 1;
-        var dto = new WiadomoscCreateDto("Test message", 1);
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(senderId, 2))
             .ReturnsAsync(false);
 
         // Act
-        var result = await _service.CreateWiadomosc(2, dto, senderId);
+        var result = await _service.CreateWiadomoscPrywatna(2, "Test message", senderId);
 
         // Assert
         Assert.False(result.Succeeded);
@@ -314,12 +320,11 @@ public class WiadomoscServiceTests
     {
         // Arrange
         var senderId = 1;
-        var dto = new WiadomoscCreateDto("Test message", 1);
         _mockZnajomiRepository.Setup(r => r.CzyJestZnajomosc(senderId, 999))
             .ThrowsAsync(new NieZnalezionoWBazieException("Odbiorca nie istnieje"));
 
         // Act
-        var result = await _service.CreateWiadomosc(999, dto, senderId);
+        var result = await _service.CreateWiadomoscPrywatna(999, "Test message", senderId);
 
         // Assert
         Assert.False(result.Succeeded);

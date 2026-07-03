@@ -21,6 +21,8 @@ public class ZnajomiControllerTests
     private readonly Mock<IPowiadomienieService> _mockPowiadomienieService;
     private readonly Mock<UserManager<Uzytkownik>> _mockUserManager;
     private readonly Mock<IProfilService> _mockProfilService;
+    private readonly Mock<IDeleteZnajomoscService> _mockDeleteZnajomoscService;
+    
     private readonly ZnajomiController _controller;
 
     public ZnajomiControllerTests()
@@ -29,12 +31,14 @@ public class ZnajomiControllerTests
         _mockPowiadomienieService = new Mock<IPowiadomienieService>();
         _mockUserManager = MockUserManager<Uzytkownik>();
         _mockProfilService = new Mock<IProfilService>();
+        _mockDeleteZnajomoscService = new Mock<IDeleteZnajomoscService>();
 
         _controller = new ZnajomiController(
             _mockZnajomiService.Object,
             _mockPowiadomienieService.Object,
-            _mockUserManager.Object,
-            _mockProfilService.Object);
+            _mockProfilService.Object,
+            _mockDeleteZnajomoscService.Object,
+            _mockUserManager.Object);
     }
 
     private static Mock<UserManager<TUser>> MockUserManager<TUser>() where TUser : class
@@ -121,7 +125,7 @@ public class ZnajomiControllerTests
             .ReturnsAsync(user);
         SetUserInHttpContext();
 
-        _mockZnajomiService.Setup(s => s.DeleteZnajomosc(user.Id, 2))
+        _mockDeleteZnajomoscService.Setup(s => s.DeleteZnajomosc(user.Id, 2))
             .ReturnsAsync(ServiceResult<bool>.Ok(true, 204));
 
         _mockProfilService.Setup(s => s.GetProfil(user.Id))
@@ -164,7 +168,7 @@ public class ZnajomiControllerTests
             .ReturnsAsync(user);
         SetUserInHttpContext();
 
-        _mockZnajomiService.Setup(s => s.DeleteZnajomosc(user.Id, 999))
+        _mockDeleteZnajomoscService.Setup(s => s.DeleteZnajomosc(user.Id, 999))
             .ReturnsAsync(ServiceResult<bool>.Fail(
                 404,
                 new[] { new ErrorItem("Friendship not found", "id") }));
@@ -183,7 +187,7 @@ public class ZnajomiControllerTests
             .ReturnsAsync(user);
         SetUserInHttpContext();
 
-        _mockZnajomiService.Setup(s => s.DeleteZnajomosc(user.Id, 2))
+        _mockDeleteZnajomoscService.Setup(s => s.DeleteZnajomosc(user.Id, 2))
             .ReturnsAsync(ServiceResult<bool>.Ok(true, 204));
 
         _mockProfilService.Setup(s => s.GetProfil(user.Id))

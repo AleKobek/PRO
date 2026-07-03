@@ -165,15 +165,7 @@ public class PowiadomienieRepositoryTests : IDisposable
         var notification = await _context.Powiadomienie.FindAsync(2);
         Assert.Null(notification);
     }
-
-    [Fact]
-    public async Task DeletePowiadomienie_WithId1_ThrowsException()
-    {
-        // Act & Assert - special case: can't delete notification with ID 1
-        var exception = await Assert.ThrowsAsync<NieZnalezionoWBazieException>(
-            async () => await _repository.DeletePowiadomienie(1));
-        Assert.Contains("Ello", exception.Message);
-    }
+    
 
     [Fact]
     public async Task DeletePowiadomienie_WithInvalidId_ThrowsException()

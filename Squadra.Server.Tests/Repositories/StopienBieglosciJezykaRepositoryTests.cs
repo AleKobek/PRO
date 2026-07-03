@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
+using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Profile.Models;
 using Squadra.Server.Modules.Profile.Repositories;
 using Xunit;
@@ -67,12 +68,11 @@ public class StopienBieglosciJezykaRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task GetStopienBieglosciJezyka_WithInvalidId_ReturnsNull()
+    public async Task GetStopienBieglosciJezyka_WithInvalidId_ThrowsException()
     {
-        // Act
-        var result = await _repository.GetStopienBieglosciJezyka(999);
 
-        // Assert
-        Assert.Null(result);
+        // Act & Assert
+        await Assert.ThrowsAsync<NieZnalezionoWBazieException>(
+            async () => await _repository.GetStopienBieglosciJezyka(999));
     }
 }
