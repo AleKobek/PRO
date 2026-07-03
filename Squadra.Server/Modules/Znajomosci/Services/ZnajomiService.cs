@@ -10,7 +10,6 @@ using Squadra.Server.Modules.Znajomosci.Repositories;
 namespace Squadra.Server.Modules.Znajomosci.Services;
 
 public class ZnajomiService(
-    AppDbContext context,
     IZnajomiRepository znajomiRepository,
     IProfilService profilService, 
     IStatystykiCzatuService statystykiCzatuService) : IZnajomiService
