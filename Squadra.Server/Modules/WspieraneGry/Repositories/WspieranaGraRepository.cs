@@ -28,7 +28,6 @@ public class WspieranaGraRepository(AppDbContext context) : IWspieranaGraReposit
         {
             Id = g.Id,
             Tytul = g.Tytul,
-            Wydawca = g.Wydawca,
             Gatunek = g.Gatunek
         }).ToListAsync();
     }
@@ -57,7 +56,6 @@ public class WspieranaGraRepository(AppDbContext context) : IWspieranaGraReposit
             gryZPlatformami.Add(new GraZPlatformaDTO(
                 gra.Id,
                 gra.Tytul,
-                gra.Wydawca,
                 gra.Gatunek,
                 platformy.ToList()
             ));

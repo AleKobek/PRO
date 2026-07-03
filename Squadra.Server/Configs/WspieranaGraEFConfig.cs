@@ -23,12 +23,6 @@ public class WspieranaGraEFConfig : IEntityTypeConfiguration<WspieranaGra>
             .IsRequired();
         
         builder
-            .Property(x => x.Wydawca)
-            .HasColumnName("wydawca")
-            .HasMaxLength(30)
-            .IsRequired();
-        
-        builder
             .Property(x => x.Gatunek)
             .HasColumnName("gatunek")
             .HasMaxLength(30)

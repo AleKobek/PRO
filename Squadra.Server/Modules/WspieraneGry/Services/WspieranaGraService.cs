@@ -12,7 +12,7 @@ public class WspieranaGraService(IWspieranaGraRepository wspieranaGraRepository)
     public async Task<ServiceResult<ICollection<WspieranaGraDto>>> GetWspieraneGry()
     {
         var gry = await wspieranaGraRepository.GetWspieraneGry();
-        return ServiceResult<ICollection<WspieranaGraDto>>.Ok(gry.Select(g => new WspieranaGraDto(g.Id, g.Tytul, g.Wydawca, g.Gatunek)).ToList());
+        return ServiceResult<ICollection<WspieranaGraDto>>.Ok(gry.Select(g => new WspieranaGraDto(g.Id, g.Tytul, g.Gatunek)).ToList());
     }
 
     public async Task<ServiceResult<WspieranaGraDto>> GetWspieranaGra(int idGry)
@@ -22,7 +22,7 @@ public class WspieranaGraService(IWspieranaGraRepository wspieranaGraRepository)
             if (idGry <= 0)
                 return ServiceResult<WspieranaGraDto>.BadRequest(new ErrorItem("Nieprawidłowe id gry: " + idGry));
             var gra = await wspieranaGraRepository.GetWspieranaGra(idGry);
-            return ServiceResult<WspieranaGraDto>.Ok(new WspieranaGraDto(gra.Id, gra.Tytul, gra.Wydawca, gra.Gatunek));
+            return ServiceResult<WspieranaGraDto>.Ok(new WspieranaGraDto(gra.Id, gra.Tytul, gra.Gatunek));
         }
         catch (NieZnalezionoWBazieException e)
         {

@@ -3,6 +3,5 @@
 public record WspieranaGraDto(
     int Id,
     string Tytul,
-    string Wydawca,
     string Gatunek
 );

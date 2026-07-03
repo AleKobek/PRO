@@ -16,9 +16,6 @@ public class WspieranaGra
     public string Tytul { get; set; } = null!;
     
     [Required][MaxLength(30)]
-    public string Wydawca { get; set; } = null!;
-    
-    [Required][MaxLength(30)]
     public string Gatunek { get; set; } = null!;
     
     public virtual ICollection<GraNaPlatformie> GraNaPlatformieCollection { get; set; } = null!;
