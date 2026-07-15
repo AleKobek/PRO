@@ -18,10 +18,6 @@ public class ProfilService(
     IStatusRepository statusRepository) : IProfilService
 {
     
-    public async Task<ServiceResult<ICollection<ProfilGetResDto>>> GetProfile()
-    {
-        return ServiceResult<ICollection<ProfilGetResDto>>.Ok(await profilRepository.GetProfile());
-    }
 
     public async Task<ServiceResult<ProfilGetResDto>> GetProfil(int id)
     {

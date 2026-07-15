@@ -5,7 +5,6 @@ namespace Squadra.Server.Modules.Profile.Repositories;
 
 public interface IProfilRepository
 {
-    public Task<ICollection<ProfilGetResDto>> GetProfile();
 
     public Task<ProfilGetResDto> GetProfilUzytkownika(int id);
     public Task<ProfilMinInfoDto> GetProfilMinInfo(int id);

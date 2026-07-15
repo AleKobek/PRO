@@ -13,30 +13,6 @@ public class ProfilRepository(AppDbContext appDbContext,
     IRegionRepository regionRepository,
     IStatusRepository statusRepository) : IProfilRepository
 {
-    public async Task<ICollection<ProfilGetResDto>> GetProfile()
-    {
-        ICollection<ProfilGetResDto> profileDoZwrocenia = new List<ProfilGetResDto>();
-        ICollection<Profil> profile = await appDbContext.Profil.ToListAsync();
-
-        foreach (var profil in profile)
-        {
-            var jezykiUzytkownika = await jezykRepository.GetJezykiProfilu(profil.IdUzytkownika);
-            
-            var regionIKraj = await regionRepository.GetRegionIKraj(profil.RegionId);
-            var status = await statusRepository.GetStatus(profil.StatusId) ?? statusRepository.GetStatusOffline();
-
-            profileDoZwrocenia.Add(new ProfilGetResDto(
-                profil.Pseudonim,
-                regionIKraj,
-                profil.Zaimki,
-                profil.Opis,
-                jezykiUzytkownika,
-                profil.Awatar,
-                status.Nazwa
-            ));
-        }
-        return profileDoZwrocenia;
-    }
 
     public async Task<ProfilGetResDto> GetProfilUzytkownika(int id)
     {

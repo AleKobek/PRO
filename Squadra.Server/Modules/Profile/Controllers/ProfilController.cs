@@ -17,18 +17,7 @@ public class ProfilController(
     IProfilService profilService,
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
-
-    [HttpGet("admin")]
-    [EndpointSummary("Zwraca dane wszystkich istniejących profilów (tylko dla admina")]
-    [Authorize(Roles = "Admin")]
-    [ProducesResponseType(typeof(IEnumerable<ProfilGetResDto>), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<IEnumerable<ProfilGetResDto>>> GetProfile()
-    {
-        var result = await profilService.GetProfile();
-        return result.StatusCode == 200
-            ? Ok(result.Value)
-            : StatusCode(result.StatusCode, new { errors = result.Errors });
-    }
+    
 
     [HttpGet("{id:int}")]
     [EndpointSummary("Zwraca dane profilu o podanym id.")]

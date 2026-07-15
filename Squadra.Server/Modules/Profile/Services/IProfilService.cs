@@ -6,8 +6,6 @@ namespace Squadra.Server.Modules.Profile.Services;
 
 public interface IProfilService
 {
-
-    public Task<ServiceResult<ICollection<ProfilGetResDto>>> GetProfile();
     
     public Task<ServiceResult<ProfilGetResDto>> GetProfil(int id);
 
