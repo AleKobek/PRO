@@ -40,6 +40,7 @@ public class JezykController(IJezykService jezykService) : ControllerBase
     }
 
     [HttpGet("profil/{id:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca dane wszystkich języków profilu o podanym id, wraz z ich stopniami biegłości.")]
     [ProducesResponseType(typeof(IEnumerable<JezykOrazStopienDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]

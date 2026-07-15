@@ -20,7 +20,7 @@ public class UzytkownikController(
 {
     [HttpGet("wszyscy")]
     [Authorize(Roles = "Admin")]
-    [EndpointSummary("Zwraca dane wszystkich użtykowników w bazie (tylko dla admina)")]
+    [EndpointSummary("Zwraca dane wszystkich użytkowników w bazie (tylko dla admina)")]
     [ProducesResponseType(typeof(IEnumerable<UzytkownikResDto>), (int)HttpStatusCode.OK)]
     public async Task<ActionResult<IEnumerable<UzytkownikResDto>>> GetUzytkownicy()
     {
@@ -189,7 +189,7 @@ public class UzytkownikController(
     
     
     [HttpDelete]
-    [Authorize]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Usuwa konto zalogowanego użytkownika")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]

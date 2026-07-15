@@ -20,6 +20,7 @@ public class DruzynaController(
 {
      
     [HttpGet("twoje")]
+    [Authorize(Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca wszystkie drużyny użytkownika, w formacie potrzebnym do wyświetlenia ich w tabelce na stronie głównej.")]
     [ProducesResponseType(typeof(TabelkaDruzynResDto), 200)]
     [ProducesResponseType(400)]
@@ -41,6 +42,7 @@ public class DruzynaController(
     }
     
     [HttpGet("szczegoly/{idDruzyny:int}")]
+    [Authorize(Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca szczegółowe dane drużyny, potrzebne do wyświetlenia jej na stronie drużyny.")]
     [ProducesResponseType(typeof(DruzynaSzczegolyDto), 200)]
     [ProducesResponseType(400)]
@@ -63,6 +65,7 @@ public class DruzynaController(
         };
     }
     [HttpGet("formularz/ze-statystykami/{idGry:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca dane potrzebne do wyświetlenia formularza tworzenia drużyny, ze statystykami.")]
     [EndpointDescription("Podajemy uzytkownika, który tworzy drużynę, aby zwrócić jego statystyki, które mogą być przydatne przy tworzeniu drużyny. Podajemy też id gry, aby zwrócić tylko statystyki z tej gry.")]
     [ProducesResponseType(typeof(DaneDoFormularzaDruzynyZeStatystykamiDto), 200)]
@@ -85,6 +88,7 @@ public class DruzynaController(
     }
     
      [HttpGet("formularz/bez-statystyk/{idGry:int}")]
+     [Authorize (Roles = "Uzytkownik")]
      [EndpointSummary("Zwraca dane potrzebne do wyświetlenia formularza tworzenia drużyny, bez statystyk.")]
      [EndpointDescription("Zwraca dane potrzebne do wyświetlenia formularza tworzenia drużyny, bez statystyk. Podajemy id gry, aby zwrócić tylko statystyki z tej gry.")]
      [ProducesResponseType(typeof(DaneDoFormularzaDruzynyBezStatystykDto), 200)]
@@ -107,6 +111,7 @@ public class DruzynaController(
     }
      
     [HttpGet("formularz/wyszukiwanie")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca dane potrzebne do wyświetlenia formularza wyszukiwania drużyny")]
     [EndpointDescription("Zwraca dane potrzebne do wyświetlenia formularza wyszukiwania")]
     [ProducesResponseType(typeof(DaneDoFormularzaDruzynyBezStatystykDto), 200)]
@@ -142,6 +147,7 @@ public class DruzynaController(
         };
     }
     [HttpGet("znajomi-spelniajacy-warunki-miejsca/{idMiejsca:int}")]
+    [Authorize(Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca listę znajomych zalogowanego użytkownika, którzy spełniają warunki danego miejsca.")]
     [ProducesResponseType(typeof(IEnumerable<ProfilMinInfoDto>), 200)]
     [ProducesResponseType(400)]
@@ -165,6 +171,7 @@ public class DruzynaController(
     }
     
     [HttpPost]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Tworzy drużynę")]
     [ProducesResponseType(typeof(int),(int)HttpStatusCode.Created)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -197,6 +204,7 @@ public class DruzynaController(
     }
     
     [HttpPut("opuszczanie/{idDruzyny:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Pozwala użytkownikowi opuścić drużynę, do której należy.")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -218,6 +226,7 @@ public class DruzynaController(
         };
     }
     [HttpPut("miejsce/{idmiejscaWDruzynie:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Pozwala opróżnić dane miejsce w drużynie.")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -240,6 +249,7 @@ public class DruzynaController(
     }
     
     [HttpDelete("{idDruzyny:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Usuwa drużynę")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -284,6 +294,7 @@ public class DruzynaController(
     }
     
     [HttpPut("{idDruzyny:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Aktualizuje dane drużyny")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -331,6 +342,7 @@ public class DruzynaController(
     }
     
     [HttpPut("miejsce/dolacz/{idMiejsca:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Dołącza użytkownika na dane miejsce w drużynie")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -355,6 +367,7 @@ public class DruzynaController(
         };
     }
     [HttpPut("czat/ostatnie-otwarcie/{idDruzyny:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Aktualizuje datę ostatniego otwarcia czatu dla zalogowanego użytkownika w danej drużynie")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -376,6 +389,7 @@ public class DruzynaController(
     }
     
     [HttpPost("miejsce/zapros/{idMiejsca:int}/{idUzytkownika:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zaprasza użytkownika na dane miejsce w drużynie")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -401,6 +415,7 @@ public class DruzynaController(
     }
     
     [HttpPost("miejsce/zapros/{idMiejsca:int}/login")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zaprasza użytkownika na dane miejsce w drużynie po jego loginie")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -426,6 +441,7 @@ public class DruzynaController(
     }
 
     [HttpPost("wyszukaj")]
+    [Authorize(Roles = "Uzytkownik")]
     [EndpointSummary("Wyszukuje drużyny spełniające podane kryteria")]
     [ProducesResponseType(typeof(ICollection<DruzynaDoTabelkiDto>), 200)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -447,6 +463,7 @@ public class DruzynaController(
     }
 
     [HttpPost("tabelka")]
+    [Authorize(Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca drużyny w formacie do tabelki, dla podanych id drużyn")]
     [ProducesResponseType(typeof(ICollection<DruzynaDoTabelkiDto>), 200)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -467,6 +484,7 @@ public class DruzynaController(
     }
     
     [HttpPost("tabelka/{idUzytkownika:int}")]
+    [Authorize(Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca drużyny w formacie do tabelki twoich drużyn, dla podanych id drużyn")]
     [ProducesResponseType(typeof(ICollection<DruzynaDoTabelkiDto>), 200)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]

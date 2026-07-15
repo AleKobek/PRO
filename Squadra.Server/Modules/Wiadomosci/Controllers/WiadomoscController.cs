@@ -17,6 +17,7 @@ public class WiadomoscController(
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
     [HttpGet("{id:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca wiadomość o podanym id")]
     [ProducesResponseType(typeof(WiadomoscDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -41,6 +42,7 @@ public class WiadomoscController(
     }
 
     [HttpGet("czat-prywatny/{idZnajomego:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Pobiera wszystkie wiadomości między zalogowanym użytkownikiem a uzytkownikiem o podanym id")]
     [ProducesResponseType(typeof(IEnumerable<WiadomoscDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -64,6 +66,7 @@ public class WiadomoscController(
     }
     
     [HttpGet("czat-druzynowy/{idDruzyny:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Pobiera wszystkie wiadomości między zalogowanym użytkownikiem a uzytkownikiem o podanym id")]
     [ProducesResponseType(typeof(CzatDruzynowyDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -88,6 +91,7 @@ public class WiadomoscController(
     }
 
     [HttpGet("nowe")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca, czy zalogowany uzytkownik ma nowe wiadomości od kogokolwiek")]
     [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -109,6 +113,7 @@ public class WiadomoscController(
     }
     
     [HttpPost("prywatna/{idOdbiorcy:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Wysyła wiadomość do znajomego")]
     [EndpointDescription("Tworzy nową wiadomość i wysyła ją do wybranego użytkownika")]
     [ProducesResponseType((int)HttpStatusCode.Created)]
@@ -130,6 +135,7 @@ public class WiadomoscController(
     }
     
     [HttpPost("druzynowa/{idDruzyny:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Wysyła wiadomość do do drużyny")]
     [EndpointDescription("Tworzy nową wiadomość i wysyła ją na czat wybranej drużyny")]
     [ProducesResponseType((int)HttpStatusCode.Created)]

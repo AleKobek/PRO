@@ -20,6 +20,7 @@ public class ProfilController(
     
 
     [HttpGet("{id:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca dane profilu o podanym id.")]
     [ProducesResponseType(typeof(ProfilGetResDto), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -41,6 +42,7 @@ public class ProfilController(
     }
     
     [HttpPut]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Aktualizuje dane profilu zalogowanego użytkownika")]
     [EndpointDescription("Nie zawiera w sobie aktualizacji awatara.")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -70,6 +72,7 @@ public class ProfilController(
     }
     
     [EndpointSummary("Aktualizuje awatar profilu zalogowanego użytkownika.")]
+    [Authorize (Roles = "Uzytkownik")]
     [HttpPut("awatar")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType(typeof(ValidationProblemDetails),(int)HttpStatusCode.BadRequest)]
@@ -98,6 +101,7 @@ public class ProfilController(
     }
     
     [HttpGet("status")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca status profilu zalogowanego użytkownika, pobrany bezpośrednio z bazy.")]
     [EndpointDescription(" Na froncie jest dostępne dla właściciela profilu.")]
     [ProducesResponseType(typeof(StatusDto),(int)HttpStatusCode.OK)]
@@ -118,6 +122,7 @@ public class ProfilController(
 
 
     [HttpGet("{id:int}/status")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca status danego profilu w formie przeznaczonej dla innych użytkowników.")]
     [EndpointDescription("Może zwrócić status \"offline\", nieistniejący w bazie, jeżeli właściciel profilu nie " +
                          "miał otwartego okna przeglądarki przez kilka minut lub ma ustawiony status \"niedostępny\".")]
@@ -136,8 +141,9 @@ public class ProfilController(
         };
     }
 
-    [EndpointSummary("Aktualizuje status profilu zalogowanego użytkownika.")]
     [HttpPut("status")]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Aktualizuje status profilu zalogowanego użytkownika.")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]

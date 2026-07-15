@@ -15,6 +15,7 @@ public class IntegracjeZewnetrzneController(
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
     [HttpPost]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Łączy konto uzytkownika z zewnętrznym serwisem na podstawie loginu i hasła")]
     [EndpointDescription("W przypadku sukcesu zewnętrzne id użytkownika jest ustawione na id z tamtego serwisu")]
     public async Task<IActionResult> ZintegrujKonto([FromBody] ZintegrujKontoReq req)
@@ -35,6 +36,7 @@ public class IntegracjeZewnetrzneController(
     }
 
     [HttpPost("przerwij")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Odłącza konto użytkownika od zewnętrznego serwisu")]
     public async Task<IActionResult> PrzerwijIntegracje()
     {

@@ -15,6 +15,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
     [HttpGet]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca dane wszystkich powiadomień zalogowanego użytkownika")]
     [ProducesResponseType(typeof(IEnumerable<PowiadomienieDto>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -30,6 +31,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     }
 
     [HttpPut("{id:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Rozpatruje powiadomienie o podanym id")]
     [EndpointDescription("W przypadku powiadomień wymagających akceptacji, należy w body przekazać czy zostało zaakceptowane czy odrzucone.")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -75,6 +77,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     }
     
     [HttpPost("zaproszenie/znajomi")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Wysyła zaproszenie do znajomych, skierowane do użytkownika o podanym loginie")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -99,6 +102,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     }
     
     [HttpPost("zaproszenie/znajomi/{idZapraszanegoUzytkownika:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Wysyła zaproszenie do znajomych, skierowane do użytkownika o podanym id")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]

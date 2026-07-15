@@ -55,7 +55,9 @@ public class PlatformaController(
         };
     }
 
+
     [HttpGet("uzytkownik/{idUzytkownika:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca dane platform użytkownika o podanym id")]
     [ProducesResponseType(typeof(IEnumerable<PlatformaUzytkownikaDTO>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]

@@ -16,6 +16,7 @@ public class BibliotekaGierController (
         UserManager<Uzytkownik> userManager) : ControllerBase
 { 
         [HttpGet("{idUzytkownika:int}")]
+        [Authorize (Roles = "Uzytkownik")]
         [EndpointSummary("Zwraca dane gier znajdujących się w bibliotece użytkownika o podanym id")]
         [ProducesResponseType(typeof(IEnumerable<GraWBiblioteceDTO>), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.Unauthorized)]

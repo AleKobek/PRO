@@ -21,6 +21,7 @@ public class ZnajomiController(IZnajomiService znajomiService,
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
     [HttpGet]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca listę znajomych danego użytkownika")]
     [EndpointDescription("Zawiera tylko część informacji o znajomym potrzebną do wyświetlenia na liście znajomych (id, pseudonim, url zdjęcia profilowego, data ostatniego otwarcia czatu), bez szczegółów profilu.")]
     [ProducesResponseType(typeof(IEnumerable<ZnajomyDoListyDto>), (int)HttpStatusCode.OK)]
@@ -39,6 +40,7 @@ public class ZnajomiController(IZnajomiService znajomiService,
     }
     
     [HttpGet("czyZnajomosc/{idZnajomego:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Zwraca, czy jest znajomość pomiędzy zalogowanym użytkownikiem a użytkownikiem o podanym id")]
     [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -59,6 +61,7 @@ public class ZnajomiController(IZnajomiService znajomiService,
     }
     
     [HttpDelete("{idUsuwanego:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Usuwa znajomość pomiędzy zalogowanym użytkownikiem a użytkownikiem o podanym id")]
     [EndpointDescription("Wraz z tym jest usuwana ich historia wiadomości")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
@@ -98,6 +101,7 @@ public class ZnajomiController(IZnajomiService znajomiService,
     }
     
     [HttpPut("{idZnajomego:int}")]
+    [Authorize (Roles = "Uzytkownik")]
     [EndpointSummary("Aktualizuje datę ostatniego otwarcia czatu zalogowanego użytkownika z danym znajomym")]
     [EndpointDescription("Służy do tego, żeby wiedzieć, czy są jakieś nowe wiadomości od tego znajomego. Jeśli data ostatniego otwarcia czatu jest starsza niż data ostatniej wiadomości od tego znajomego, to znaczy, że są nowe wiadomości.")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
