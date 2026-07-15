@@ -27,6 +27,11 @@ public class AuthController(IUzytkownikService uzytkownikService,
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
     public async Task<IActionResult> Zarejestruj([FromBody] UzytkownikCreateDto dto)
     {
+        // nie pozwalamy tworzyć konta, jeżeli już jest się zalogowanym - trzeba się najpierw wylogować
+        var obecnyUzytkownik = await userManager.GetUserAsync(User);
+        if(obecnyUzytkownik is not null) 
+            return BadRequest("Jesteś już zalogowany. Wyloguj się, żeby stworzyć konto.");
+        
         var result = await uzytkownikService.CreateUzytkownik(dto);
         
         // jeżeli coś jest źle
