@@ -79,12 +79,4 @@ public class PlatformaService(IPlatformaRepository platformaRepository) : IPlatf
         }
     }
     
-    public async Task<ServiceResult<bool>> CreatePlatforma(int id, string nazwa, IFormFile logo)
-    {
-        if (string.IsNullOrEmpty(nazwa))
-            return ServiceResult<bool>.BadRequest(new ErrorItem("Nazwa platformy nie może być pusta."));
-        var result = await platformaRepository.CreatePlatforma(id, nazwa, await WspolneFunkcje.NormalizujObraz(logo));
-        return ServiceResult<bool>.Created(result);
-    }
-    
 }
