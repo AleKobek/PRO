@@ -15,7 +15,7 @@ export default function NaglowekAdmina(){
             navigate('/login');
         }
         if (!ladowanie && uzytkownik && !uzytkownik.role.includes("Admin")) {
-            navigate('/twojProfil');
+            navigate('/twojeDruzyny');
         }
     }, [uzytkownik, navigate, ladowanie]);
     

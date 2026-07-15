@@ -8,7 +8,7 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
 export default function Logowanie() {
     const navigate = useNavigate();
     const location = useLocation();
-    const { uzytkownik, ustawUzytkownika, ladowanie } = useAuth();
+    const {ustawUzytkownika, ladowanie } = useAuth();
     const [loginLubEmail, ustawLoginLubEmail] = useState(""); // e-mail lub nazwa użytkownika
     const [haslo, ustawHaslo] = useState("");
     const [zapamietajMnie, ustawZapamietajMnie] = useState(false);
@@ -26,12 +26,6 @@ export default function Logowanie() {
             haslo.trim().length === 0
         )
     },[loginLubEmail, haslo]);
-
-    useEffect(() => {
-        if (!ladowanie && uzytkownik) {
-            navigate("/twojProfil"); // jeśli jest zalogowany
-        }
-    }, [ladowanie, uzytkownik, navigate]);
 
     async function przyWysylaniu(e) {
         e.preventDefault();
@@ -74,9 +68,10 @@ export default function Logowanie() {
             if (resMe.ok) {
                 const tempUzytkownik = await resMe.json();
                 ustawUzytkownika(tempUzytkownik);
+                tempUzytkownik.role.includes("Admin") ? navigate('/panelAdmina') : navigate("/twojeDruzyny");
             }
-            
-            navigate("/twojProfil");
+            navigate("/twojeDruzyny") // nawet jak się nie uda, to i tak przenosimy na strone glowna, najwyżej przeniesie do admina potem
+                                      // błąd może być spowodowany przez jakieś opóźnienie na serwerze, najważniejsze, że udało się zalogować
         } catch (err) {
             ustawBladOgolny(err.message || "Wystąpił błąd podczas logowania.");
         } finally {

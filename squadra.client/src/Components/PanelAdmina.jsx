@@ -17,9 +17,6 @@ export default function PanelAdmina() {
         if (!ladowanie && !uzytkownik) {
             navigate('/login');
         }
-        if (!ladowanie && uzytkownik && uzytkownik.role.includes("Admin")) {
-            navigate('/panelAdmina');
-        }
     }, [uzytkownik, navigate, ladowanie]);
 
     if(ladowanie || !uzytkownik) return (<>

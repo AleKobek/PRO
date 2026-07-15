@@ -8,7 +8,7 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
 
 export default function Rejestracja() {
     const navigate = useNavigate();
-    const { uzytkownik, ladowanie } = useAuth();
+    const {ladowanie} = useAuth();
     const [pseudonim, ustawPseudonim] = useState("");
     const [login, ustawLogin] = useState("");
     const [email, ustawEmail] = useState("");
@@ -37,12 +37,6 @@ export default function Rejestracja() {
         if (haslo1 !== haslo2) return "Hasła nie są zgodne.";
         return "";
     }
-
-    useEffect(() => {
-        if (!ladowanie && uzytkownik) {
-            navigate("/twojProfil"); // jeśli jest zalogowany
-        }
-    }, [ladowanie, uzytkownik, navigate]);
     
     async function przyWysylaniu(e) {
         e.preventDefault();

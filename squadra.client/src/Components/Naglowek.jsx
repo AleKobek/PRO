@@ -1,8 +1,19 @@
-﻿import React from 'react';
-import { NavLink } from "react-router-dom";
+﻿import React, {useEffect} from 'react';
+import {NavLink, useNavigate} from "react-router-dom";
+import {useAuth} from "../Context/AuthContext";
 
 export default function Naglowek() {
-    
+
+    const { uzytkownik, ladowanie } = useAuth();
+    const navigate = useNavigate();
+
+
+    useEffect(() => {
+        if (!ladowanie && uzytkownik) {
+            navigate("/twojeDruzyny"); // jeśli jest zalogowany
+        }
+    }, [ladowanie, uzytkownik, navigate])
+
     return(<>
         <header>
             <title>Squadra</title>
