@@ -32,6 +32,9 @@ export default function NaglowekZalogowano({
         if (!ladowanie && !uzytkownik) {
             navigate('/login');
         }
+        if (!ladowanie && uzytkownik && uzytkownik.role.includes("Admin")) {
+            navigate('/panelAdmina');
+        }
     }, [uzytkownik, navigate, ladowanie]);
     
     // ping

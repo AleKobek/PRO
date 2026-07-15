@@ -20,6 +20,8 @@ import StronaSzczegolowDruzyny from "./Components/StronaSzczegolowDruzyny";
 import EdytujDruzyne from "./Components/EdytujDruzyne";
 import WyszukajDruzyne from "./Components/WyszukajDruzyne";
 import WynikiWyszukiwaniaDruzyn from "./Components/WynikiWyszukiwaniaDruzyn";
+import PanelAdmina from "./Components/PanelAdmina";
+import NaglowekAdmina from "./Components/NaglowekAdmina";
 
 function App() {
 
@@ -79,6 +81,10 @@ function App() {
                 <Route path = "/wyszukaneDruzyny" element = {<>
                     <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
                     <WynikiWyszukiwaniaDruzyn/>
+                </>}></Route>
+                <Route path = "/panelAdmina" element = {<>
+                    <NaglowekAdmina/>
+                    <PanelAdmina/>
                 </>}></Route>
               <Route path = "/login" element = {<Logowanie/>}></Route>
               <Route path = "/rejestracja" element = {<Rejestracja/>}></Route>
