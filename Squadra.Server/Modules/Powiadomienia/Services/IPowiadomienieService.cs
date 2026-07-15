@@ -20,4 +20,5 @@ public interface IPowiadomienieService
     public Task<ServiceResult<bool>> WyslijPowiadomienieOUsunieciuZDruzyny(int idUsuwanego, int idDruzyny, string nazwaDruzyny);
     public Task<ServiceResult<bool>> WyslijPowiadomienieOWyjsciuZDruzyny(int idKapitana, int? idOpuszczajacego, int idDruzyny, string nazwaDruzyny, string? nazwaRoli, bool czyPrzyUsuwaniuKonta);
     public Task<ServiceResult<bool>> WyslijPowiadomienieORozwiazaniuDruzyny(int idOdbiorcy, string nazwaDruzyny);
+    public Task<ServiceResult<bool>> WyslijPowiadomienieOUsunieciuDruzynyPrzezAdmina(int idOdbiorcy, string nazwaDruzyny);
 }

@@ -492,4 +492,21 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             
             return await CreatePowiadomienie(dto);
         }
+        
+        public async Task<ServiceResult<bool>> WyslijPowiadomienieOUsunieciuDruzynyPrzezAdmina(int idOdbiorcy, string nazwaDruzyny)
+        {
+            if(idOdbiorcy <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id odbiorcy: " + idOdbiorcy));
+            
+            var dto = new PowiadomienieCreateDto(
+                (int)TypPowiadomieniaEnum.DruzynaZostalaUsunietaPrzezAdmina,
+                idOdbiorcy, 
+                null,
+                nazwaDruzyny,
+                null,
+                null,
+                null
+            );
+            
+            return await CreatePowiadomienie(dto);
+        }
 }

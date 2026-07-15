@@ -42,7 +42,8 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         DRUZYNA_ZOSTALA_USUNIETA: 14,
         UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO: 15,
         DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE: 16,
-        ZAPROSZENIE_ODRZUCONE_PRZEZ_USUNIECIE_KONTA: 17
+        ZAPROSZENIE_ODRZUCONE_PRZEZ_USUNIECIE_KONTA: 17,
+        DRUZYNA_USUNIETA_PRZEZ_ADMINA: 18
     }),[]);
 
     const openInNewTab = url => {
@@ -169,6 +170,12 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
                 }
                 break;
             }
+            case TypyPowiadomien.DRUZYNA_USUNIETA_PRZEZ_ADMINA:{
+                ustawTypPowiadomienia("Drużyna została usunięta")
+                ustawTrescPowiadomieniaCz1("Twoja drużyna ");
+                ustawTrescPowiadomieniaCz2(" została usunięta przez administratora.");
+                break;
+            }
             default:{
                 ustawTypPowiadomienia("Nieznany typ powiadomienia");
             }
@@ -180,7 +187,8 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         TypyPowiadomien.USUNIETO_CIE_Z_DRUZYNY, TypyPowiadomien.ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE,
         TypyPowiadomien.UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY, TypyPowiadomien.UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY,
         TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA, TypyPowiadomien.UZYTKOWNIK_OPUSCIL_DRUZYNE_BO_USUNAL_KONTO,
-        TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE, TypyPowiadomien.ZAPROSZENIE_ODRZUCONE_PRZEZ_USUNIECIE_KONTA]);
+        TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE, TypyPowiadomien.ZAPROSZENIE_ODRZUCONE_PRZEZ_USUNIECIE_KONTA,
+        TypyPowiadomien.DRUZYNA_USUNIETA_PRZEZ_ADMINA]);
 
 
     if(!powiadomienie) return (<></>);
@@ -292,7 +300,9 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         </li>)
 
     if(
-        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA || powiadomienie.idTypuPowiadomienia === TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE
+        powiadomienie.idTypuPowiadomienia === TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA
+        || powiadomienie.idTypuPowiadomienia === TypyPowiadomien.DRUZYNA_ZOSTALA_USUNIETA_AUTOAMTYCZNIE
+        || powiadomienie.idTypuPowiadomienia === TypyPowiadomien.DRUZYNA_USUNIETA_PRZEZ_ADMINA
     ) return (
         <li key={powiadomienie.id} className="p-2 border-b border-gray-200">
             <div className="flex flex-row justify-between items-center w-full">
