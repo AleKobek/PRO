@@ -38,7 +38,7 @@ public class DruzynyService(
     ) : IDruzynyService
 {
     
-    public static readonly int LiczbaDruzynNaStroneNaStart = 20;
+    private static readonly int LiczbaDruzynNaStroneNaStart = 20;
 
 
     public async Task<ServiceResult<DruzynaDto>> GetDruzyna(int id)
@@ -428,7 +428,6 @@ public class DruzynyService(
     }
     
     // funkcja przekazująca do frontu dane potrzebne do formularza drużyny
-    // potrzebujemy: listę nastrojów rozgrywki, listę platform, listę języków wraz ze stopniami biegłości języka, listę ról, listę statystyk
     public async Task<ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>> GetDaneDoFormularzaDruzynyZeStatystykami(int idGry, int idUzytkownika)
     {
         // sprawdzamy, czy podane dane są okej
@@ -461,7 +460,7 @@ public class DruzynyService(
         ));
     }
 
-    // funkcja zwracająca dane do formularza bez statystyk, nie spersonalizowane
+    // funkcja zwracająca dane do formularza tworzenia drużyny bez statystyk, nie spersonalizowane
     public async Task<ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>> GetDaneDoFormularzaDruzynyBezStatystyk(int idGry, int idUzytkownika)
     {
         // sprawdzamy, czy podane id jest okej
@@ -488,7 +487,7 @@ public class DruzynyService(
         );
     }
     
-    // funkcja zwracająca dane do formularza bez statystyk, nie spersonalizowane
+    // funkcja zwracająca dane do formularza wyszukiwania drużyny bez statystyk, nie spersonalizowane
     public async Task<ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>> GetDaneDoFormularzaWyszukiwaniaDruzyny(int idUzytkownika)
     {
 
@@ -563,6 +562,7 @@ public class DruzynyService(
         }
     }
     
+    // podaje listę znajomych spełniających wymagania miejsca, na które użytkownik chce kogoś zaprosić
     public async Task<ServiceResult<ICollection<ProfilMinInfoDto>>> GetZnajomiSpelniajacyWarunkiMiejsca(int idMiejsca, int idUzytkownika)
     {
         if(idMiejsca <= 0) return ServiceResult<ICollection<ProfilMinInfoDto>>.BadRequest(new ErrorItem("Podano nieprawidłowe id drużyny: " + idMiejsca));
@@ -585,8 +585,8 @@ public class DruzynyService(
                 
                 if(miejscaWDruzynie.Any(x => x.UzytkownikId == idZnajomego)) continue; // jeżeli znajomy jest już w drużynie, to nie dodajemy go do listy
                 
-                var czyPrzekraczaMaksLiczbeDruzynRes = await CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idZnajomego, druzyna.GraId);
-                if(!czyPrzekraczaMaksLiczbeDruzynRes.Succeeded || czyPrzekraczaMaksLiczbeDruzynRes.Value) continue; // jeżeli przekracza maks liczbę drużyn, to nie dodajemy go do listy
+                var czyOsgiagnalMaksLiczbeDruzynRes = await CzyUzytkownikOsiagnalMaksLiczbeDruzyn(idZnajomego, druzyna.GraId);
+                if(!czyOsgiagnalMaksLiczbeDruzynRes.Succeeded || czyOsgiagnalMaksLiczbeDruzynRes.Value) continue; // jeżeli osiągnął maks liczbę drużyn, to nie dodajemy go do listy
                 
                 var czySpelniaWymaganiaRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(druzyna.Id, idZnajomego);
                                     if (!czySpelniaWymaganiaRes.Succeeded || !czySpelniaWymaganiaRes.Value)
@@ -648,9 +648,6 @@ public class DruzynyService(
             
             // sprawdzamy, czy spełnia wymagania języka i stopnia trudności
             
-            Console.WriteLine("#####################################################################");
-            if (idUzytkownika == 8) Console.WriteLine(druzyna.WymaganyJezykId);
-
             if (druzyna.WymaganyJezykId != null)
             {
 
@@ -659,24 +656,11 @@ public class DruzynyService(
 
                 var jezykISopien = jezykiRes.Value.FirstOrDefault(x => x.Jezyk.Id == druzyna.WymaganyJezykId);
                 if(jezykISopien == null) return ServiceResult<bool>.Ok(false);
-            
-                if (idUzytkownika == 8)
-                {
-                    Console.WriteLine("#####################################################################");
-                    Console.WriteLine("Język i stopnie: " + jezykISopien.Jezyk.Nazwa + " - " +
-                                      string.Join(", ", jezykISopien.Stopnie.Select(x => x.Nazwa)));
-                }
                 
                 if (druzyna.WymaganyStopienBieglosciJezykaId != null)
                 {
                     var stopien = jezykISopien.Stopnie.FirstOrDefault(x => x.Id == druzyna.WymaganyStopienBieglosciJezykaId);
-                    if (idUzytkownika == 8)
-                    {
-                        Console.WriteLine("#####################################################################");
-                        Console.WriteLine("Stopień biegłości: " + (stopien != null ? stopien.Nazwa : "brak"));
-                    }
                     if (stopien == null) return ServiceResult<bool>.Ok(false);
-
                 }
 
             }
@@ -691,14 +675,14 @@ public class DruzynyService(
     }
 
     
-    public async Task<ServiceResult<bool>> CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(int idUzytkownika, int idGry)
+    public async Task<ServiceResult<bool>> CzyUzytkownikOsiagnalMaksLiczbeDruzyn(int idUzytkownika, int idGry)
     {
         if(idGry <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id gry: " + idGry));
         if(idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika));
         
         try{
             
-            return ServiceResult<bool>.Ok(await druzynyRepository.CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idUzytkownika, idGry));
+            return ServiceResult<bool>.Ok(await druzynyRepository.CzyUzytkownikOsiagnalMaksLiczbeDruzyn(idUzytkownika, idGry));
             
         }catch(NieZnalezionoWBazieException e)
         {
@@ -737,9 +721,10 @@ public class DruzynyService(
             var graRes = await wspieranaGraService.GetWspieranaGra(druzynaReq.IdGry);
             if (!graRes.Succeeded) return ServiceResult<int>.Fail(graRes.StatusCode, graRes.Errors);
             
-            var czyUzytkownikPrzekraczaMaksLiczbeDruzynRes = await CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idKapitana, druzynaReq.IdGry);
-            if (!czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Succeeded) return ServiceResult<int>.Fail(czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.StatusCode, czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Errors);
-            if (czyUzytkownikPrzekraczaMaksLiczbeDruzynRes.Value) return ServiceResult<int>.BadRequest(new ErrorItem("Nie można stworzyć drużyny, ponieważ użytkownik może być w maksymalnie " + DruzynyRepository.MaksymalnaLiczbaDruzynGraczaDlaGry +" drużynach dla danej gry"));
+            // sprawdzamy, czy już osiagnal maksymalną liczbę drużyn dla danej gry
+            var czyUzytkownikOsiagnalMaksLiczbeDruzynRes = await CzyUzytkownikOsiagnalMaksLiczbeDruzyn(idKapitana, druzynaReq.IdGry);
+            if (!czyUzytkownikOsiagnalMaksLiczbeDruzynRes.Succeeded) return ServiceResult<int>.Fail(czyUzytkownikOsiagnalMaksLiczbeDruzynRes.StatusCode, czyUzytkownikOsiagnalMaksLiczbeDruzynRes.Errors);
+            if (czyUzytkownikOsiagnalMaksLiczbeDruzynRes.Value) return ServiceResult<int>.BadRequest(new ErrorItem("Nie można stworzyć drużyny, ponieważ użytkownik może być w maksymalnie " + DruzynyRepository.MaksymalnaLiczbaDruzynGraczaDlaGry +" drużynach dla danej gry"));
             
             if (druzynaReq.IdPlatformy != null)
             {
@@ -1094,10 +1079,10 @@ public class DruzynyService(
             if (!druzyna.CzyPubliczna && !czyDolaczylZZaproszeniaRes.Value) 
                 return ServiceResult<bool>.Forbidden(new ErrorItem("To miejsce jest prywatne i nie masz zaproszenia, aby do niego dołączyć"));
             
-            // sprawdzamy, czy użytkownik nie przekracza limitu drużyn dla tej gry
-            var czyUzytkownikPrzepelniaLimitDruzynRes = await CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idUzytkownika, druzyna.GraId);
-            if (!czyUzytkownikPrzepelniaLimitDruzynRes.Succeeded) return czyUzytkownikPrzepelniaLimitDruzynRes;
-            if (czyUzytkownikPrzepelniaLimitDruzynRes.Value)
+            // sprawdzamy, czy użytkownik osiągnął limit drużyn dla tej gry
+            var czyUzytkownikOsiagnalLimitDruzynRes = await CzyUzytkownikOsiagnalMaksLiczbeDruzyn(idUzytkownika, druzyna.GraId);
+            if (!czyUzytkownikOsiagnalLimitDruzynRes.Succeeded) return czyUzytkownikOsiagnalLimitDruzynRes;
+            if (czyUzytkownikOsiagnalLimitDruzynRes.Value)
                 return ServiceResult<bool>.Forbidden(new ErrorItem("Użytkownik należy już do maksymalnej liczby drużyn dla tej gry"));
             
             // dodajemy użytkownika na miejsce
@@ -1174,7 +1159,7 @@ public class DruzynyService(
             if (await druzynyRepository.CzyUzytkownikNalezyDoDruzyny(idZapraszanegoUzytkownika, miejsce.DruzynaId))
                 return ServiceResult<bool>.Conflict(new ErrorItem("Użytkownik już należy do tej drużyny"));
             
-            var czyUzytkownikPrzepelniaLimitDruzynRes = await CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(idZapraszanegoUzytkownika, druzyna.GraId);
+            var czyUzytkownikPrzepelniaLimitDruzynRes = await CzyUzytkownikOsiagnalMaksLiczbeDruzyn(idZapraszanegoUzytkownika, druzyna.GraId);
             if (!czyUzytkownikPrzepelniaLimitDruzynRes.Succeeded) return czyUzytkownikPrzepelniaLimitDruzynRes;
             if (czyUzytkownikPrzepelniaLimitDruzynRes.Value)
                 return ServiceResult<bool>.Forbidden(new ErrorItem("Zapraszany użytkownik należy już do maksymalnej liczby drużyn dla tej gry"));

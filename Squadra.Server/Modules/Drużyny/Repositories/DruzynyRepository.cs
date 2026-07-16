@@ -184,7 +184,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         return true; // jeśli spełnia wszystkie wymagania, to zwracamy true
     }
 
-    public async Task<bool> CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(int idUzytkownika, int idGry)
+    public async Task<bool> CzyUzytkownikOsiagnalMaksLiczbeDruzyn(int idUzytkownika, int idGry)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
         if (uzytkownik == null) throw new NieZnalezionoWBazieException("Uzytkownik o id " + idUzytkownika + " nie istnieje.");
@@ -197,7 +197,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
             .Where(d => d.GraId == idGry && d.MiejsceWDruzynieCollection.Any(m => m.UzytkownikId == idUzytkownika))
             .CountAsync();
         
-        return liczbaDruzynGracza >= MaksymalnaLiczbaDruzynGraczaDlaGry; // jeżeli jest równe, to zaraz przkeroczy, bo dołączyłby do kolejnej drużyny, więc >=
+        return liczbaDruzynGracza >= MaksymalnaLiczbaDruzynGraczaDlaGry;
     }
     
     public async Task<bool> CzyUzytkownikNalezyDoDruzyny(int idUzytkownika, int idDruzyny)

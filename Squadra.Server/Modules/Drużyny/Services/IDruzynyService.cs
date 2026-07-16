@@ -23,7 +23,7 @@ public interface IDruzynyService
     public Task<ServiceResult<ICollection<ProfilMinInfoDto>>> GetZnajomiSpelniajacyWarunkiMiejsca(int idMiejsca, int idUzytkownika);
     public Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganieMiejsca(int idMiejsca, int idUzytkownika);
     public Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganiaDruzyny(int idDruzyny, int idUzytkownika);
-    public Task<ServiceResult<bool>> CzyUzytkownikPrzekraczaMaksLiczbeDruzyn(int idGry, int idUzytkownika);
+    public Task<ServiceResult<bool>> CzyUzytkownikOsiagnalMaksLiczbeDruzyn(int idGry, int idUzytkownika);
     public Task<ServiceResult<bool>> CzyUzytkownikNalezyDoDruzyny(int idUzytkownika, int idDruzyny);
     public Task<ServiceResult<int>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana);
     public Task<ServiceResult<bool>> OpuscDruzyne(int idDruzyny, int idUzytkownika, bool czyPrzyUsuwaniuKonta);
