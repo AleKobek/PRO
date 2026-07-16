@@ -21,6 +21,7 @@ public class UsunKontoService (
         
         try
         {
+            // usuwamy wszystkie jego znajomości
             var znajomosciRes = await deleteZnajomoscService.DeleteZnajomosciUzytkownika(id);
             if (!znajomosciRes.Succeeded) 
             {
@@ -28,6 +29,7 @@ public class UsunKontoService (
                 return znajomosciRes;
             }
             
+            // usuwamy jego zintegrowane dane
             var integracjeRes = await integracjeZewnetrzneService.PrzerwijIntegracjeUzytkownika(id, true);
             if(!integracjeRes.Succeeded) 
             {
@@ -43,6 +45,7 @@ public class UsunKontoService (
                 return wyrzucanieRes;
             }
             
+            // usuwamy wszystkie jego powiadomienia
             var powiadomieniaRes = await usunPowiadomieniaService.DeletePowiadomieniaZwiazaneZUzytkownikiem(id);
             if (!powiadomieniaRes.Succeeded) 
             {
@@ -50,6 +53,7 @@ public class UsunKontoService (
                 return powiadomieniaRes;
             }
             
+            // na koniec usuwamy konto
             var uzytkownikRes = await uzytkownikService.DeleteUzytkownik(id);
             if(!uzytkownikRes.Succeeded) 
             {

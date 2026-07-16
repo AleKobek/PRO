@@ -11,6 +11,7 @@ namespace Squadra.Server.Modules.BibliotekaGier.Services;
 public class BibliotekaGierService(IBibliotekaGierRepository bibliotekaGierRepository,
                                     IStatystykiService statystykiService) : IBibliotekaGierService
 {
+    // zwraca wszystkie gry, które użytkownik ma w swojej bibliotece w formacie do tabelki na stronie profilu
     public async Task<ServiceResult<ICollection<GraWBiblioteceDTO>>> PodajGryWBiblioteceUzytkownika(int idUzytkownika)
     {
         try
@@ -20,8 +21,6 @@ public class BibliotekaGierService(IBibliotekaGierRepository bibliotekaGierRepos
             var listaGier = await bibliotekaGierRepository.PodajGryWBiblioteceUzytkownika(idUzytkownika);
             var listaCzasowGierRes = await statystykiService.GetGodzinyGraniaUzytkownika(idUzytkownika);
             var listaCzasowGier = listaCzasowGierRes.Value ?? new List<CzasRozgrywkiDTO>();
-            // nie wywali wyjątków, bo już sprawdziliśmy, że użytkownik istnieje, ale może zwrócić pustą listę, jeśli użytkownik nie ma żadnych gier w bibliotece.
-            // to jest ok, bo wtedy po prostu zwrócimy pustą listę gier, a nie błąd 404
             
             var listaGierDoZwrocenia = listaGier
                 .Select(g => 
@@ -72,7 +71,7 @@ public class BibliotekaGierService(IBibliotekaGierRepository bibliotekaGierRepos
         }
     }
 
-    
+    // funkcja aktualizująca gry w bibliotece użytkownika, wywoływana przy pomyślnym "łączeniu kont z zewnętrznym serwisem", aby użytkownik nie musiał czekać do automatycznej aktualizacji
     public async Task<ServiceResult<bool>> UpdateBibliotekeGierUzytkownika(
         int idUzytkownika, List<GraUzytkownikaNaPlatformie> noweGryNaPlatformie, List<GraUzytkownika> noweGry
     ){
@@ -93,6 +92,7 @@ public class BibliotekaGierService(IBibliotekaGierRepository bibliotekaGierRepos
         }
     }
     
+    // czyści bibliotekę użytkownika, czyli wszystkie jego dane z tabel: GraUzytkownikaNaPlatformie, GraUzytkownika
     public async Task<ServiceResult<bool>> WyczyscBibliotekeUzytkownika(int idUzytkownika)
     {
         try

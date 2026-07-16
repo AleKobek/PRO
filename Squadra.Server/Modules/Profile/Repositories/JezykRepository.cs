@@ -51,6 +51,7 @@ public class JezykRepository(
         return jezykiDoZwrocenia;
     }
     
+    // zastępujemy stare języki nowymi
     public async Task<ICollection<JezykOrazStopienDto>> ZmienJezykiProfilu(int profilId, ICollection<JezykProfiluCreateDto> noweJezyki)
     {
         // sprawdzamy czy profil o id profilId istnieje

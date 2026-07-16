@@ -7,6 +7,7 @@ namespace Squadra.Server.Modules.Powiadomienia.Services;
 
 public class UsunPowiadomieniaUzytkownikaService(IPowiadomienieRepository powiadomienieRepository, IDruzynyService druzynyService) : IUsunPowiadomieniaUzytkownikaService
 {
+    // uruchamiamy to przy usuwaniu konta
     public async Task<ServiceResult<bool>> DeletePowiadomieniaZwiazaneZUzytkownikiem(int idUzytkownika)
     {
         if(idUzytkownika < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika));

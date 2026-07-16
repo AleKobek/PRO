@@ -38,7 +38,7 @@ public class DruzynyService(
     ) : IDruzynyService
 {
     
-    private static readonly int LiczbaDruzynNaStroneNaStart = 20;
+    public static readonly int LiczbaDruzynNaStroneNaStart = 20;
 
 
     public async Task<ServiceResult<DruzynaDto>> GetDruzyna(int id)
@@ -116,6 +116,7 @@ public class DruzynyService(
         }
     }
 
+    // pobieramy numer miejsca w drużynie (to nie to samo co id, jest względem danej drużyny)
     public async Task<ServiceResult<int>> GetNumerMiejsca(int idMiejsca)
     {
         if(idMiejsca < 1) return ServiceResult<int>.BadRequest(new ErrorItem("Nieprawidłowe id miejsca w drużynie: " + idMiejsca));
@@ -131,6 +132,7 @@ public class DruzynyService(
     }
 
 
+    // pobieramy drużynę i podajemy w formacie do tabelki drużyn na stronie "Twoje drużyny" lub "wyszukane drużyny"
     private async Task<ServiceResult<DruzynaDoTabelkiDto>> GetDruzynaDoTabelki(int idDruzyny, int? idUzytkownika = null)
     {
         try
@@ -218,6 +220,7 @@ public class DruzynyService(
         return ServiceResult<ICollection<DruzynaDoTabelkiDto>>.Ok(druzynyDoTabelki);
     }
     
+    // zwraca dane drużyny do wyświetlenia na stronie szczegółów drużyny
     public async Task<ServiceResult<DruzynaSzczegolyDto>> PodajSzczegolyDruzyny(int idDruzyny, int idUzytkownika)
     {
         if(idDruzyny <= 0) return ServiceResult<DruzynaSzczegolyDto>.BadRequest(new ErrorItem("Id drużyny musi być większe od 0"));
@@ -383,6 +386,7 @@ public class DruzynyService(
         }
     }
     
+    // zwraca szczegóły miejsca w drużynie do wyświetlenia na stronie szczegółów drużyny
     public async Task<ServiceResult<ICollection<MiejsceWDruzynieSzczegolyDto>>> GetCzlonkowieDruzynyDoWyswietlenia(int idDruzyny)
     {
         if(idDruzyny <= 0) return ServiceResult<ICollection<MiejsceWDruzynieSzczegolyDto>>.BadRequest(new ErrorItem("Id drużyny musi być większe od 0"));

@@ -124,7 +124,7 @@ public class UzytkownikService(
                 ? ServiceResult<bool>.Conflict(bledy.ToArray())
                 : ServiceResult<bool>.BadRequest(bledy.ToArray());
         }
-        // skoro tu doszliśmy, wszystko jest git
+        // skoro tu doszliśmy, wszystko jest w porządku
         return ServiceResult<bool>.Created(await uzytkownikRepository.CreateUzytkownik(uzytkownik));
 
     }
@@ -155,7 +155,7 @@ public class UzytkownikService(
                 return ServiceResult<bool>.BadRequest(bledy.ToArray());
             }
             
-            // jak tu doszliśmy, jedyne co może nie być git, jest to, że nie znajdzie. ale to już łapiemy
+            // jak tu doszliśmy, jedyne co może nie być w porządku, jest to, że nie znajdzie. ale to już łapiemy
             var result = await uzytkownikRepository.UpdateUzytkownik(id, dto);
             return ServiceResult<bool>.Ok(result, 204);
         }
@@ -219,7 +219,7 @@ public class UzytkownikService(
     private async Task<bool> CzyLoginIstnieje(int? idUzytkownika, string login) => await uzytkownikRepository.CzyLoginIstnieje(idUzytkownika, login);
     private async Task<bool> CzyEmailIstnieje(int? idUzytkownika, string email) => await uzytkownikRepository.CzyEmailIstnieje(idUzytkownika, email);
 
-    // tutaj wyciągamy aby użyć też w update
+    // używane w create i update użytkownik
     private async Task<List<ErrorItem>> SprawdzPoprawnoscDanychPozaHaslem(int? id, string Login, string Email, string? NumerTelefonu, DateOnly DataUrodzenia)
     {
         var bledy = new List<ErrorItem>();

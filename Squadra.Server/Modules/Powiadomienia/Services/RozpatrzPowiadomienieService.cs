@@ -40,7 +40,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
             {
                 return ServiceResult<bool>.Forbidden(new ErrorItem("Nie możesz rozpatrzyć powiadomienia innego użytkownika"));
             }
-            // jak tu doszliśmy, wszystko jest git, chyba że nie podano powiązanego obiektu w konkretnych typach
+            // jak tu doszliśmy, wszystko jest w porządku, chyba że nie podano powiązanego obiektu w konkretnych typach
     
             // zaproszenie do znajomych
             if ((TypPowiadomieniaEnum)powiadomienie.TypPowiadomieniaId == TypPowiadomieniaEnum.ZaproszenieDoZnajomych)
@@ -71,11 +71,11 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 {
                     case true:
                     {
-                        var result = await znajomiService.CreateZnajomosc(powiadomienie.UzytkownikId, powiadomienie.PowiazanyObiektId ?? 1); // aby się kompilator nie czepiał
+                        var result = await znajomiService.CreateZnajomosc(powiadomienie.UzytkownikId, powiadomienie.PowiazanyObiektId ?? 1); // "??" aby się kompilator nie czepiał
                         // coś poszło nie tak
                         if (result.StatusCode != 201) return result;
                         
-                        // wszystko git
+                        // wszystko w porządku
                         // wysyłamy uzytkownikowi, który jest powiązany, że jego zaproszenie zostało zaakceptowane
                         await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
                             // zaakceptowano zaproszenie
@@ -171,7 +171,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                         // coś poszło nie tak
                         if (!result.Succeeded) return result;
                         
-                        // wszystko git
+                        // wszystko w porządku
                         // użytkownik X przyjął Twoje zaproszenie do drużyny Y na rolę Z.
                         await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
                             // zaakceptowano zaproszenie

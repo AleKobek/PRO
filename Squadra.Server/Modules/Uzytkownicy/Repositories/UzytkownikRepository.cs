@@ -87,7 +87,7 @@ public class UzytkownikRepository(
         };
         // zaczynamy transakcję
         await using var transaction = await appDbContext.Database.BeginTransactionAsync();
-        // Identity zadba o hash hasła :)
+        // Identity zadba o hash hasła
         var result = await userManager.CreateAsync(uzytkownikDoDodania, uzytkownik.Haslo);
         if (!result.Succeeded)
         {
@@ -138,7 +138,7 @@ public class UzytkownikRepository(
         return true;
     }
 
-    // lista stringów jest potrzebna do błędów w zmianie hasła, jak jest git zwracamy pustą
+    // lista stringów jest potrzebna do błędów w zmianie hasła, jak jest w porządku zwracamy pustą
     public async Task<List<string>> UpdateHaslo(int idUzytkownika, string stareHaslo, string noweHaslo)
     {
         var bledy = new List<string>();
@@ -154,14 +154,13 @@ public class UzytkownikRepository(
             return bledy;
         }
         
-        // nie trzeba sprawdzać, czy nowe jest takie samo jak stare, bo jeżeli stare się zgadza i nowe nie jest takie samo
-        // jak stare, to nowe nie może być takie samo jak stare
+        // nie trzeba sprawdzać, czy nowe jest takie samo jak oryginalne stare, bo jeżeli podane stare się zgadza
+        // i nowe nie jest takie samo jak podane stare, to nowe nie może być takie samo jak oryginalne stare
         
         var result = await userManager.ChangePasswordAsync(user, stareHaslo, noweHaslo);
         if (!result.Succeeded)
         {
-            bledy.AddRange(result.Errors.Select(e => e.Description));
-            // będziemy to zwracać poniżej
+            bledy.AddRange(result.Errors.Select(e => e.Description)); // będziemy to zwracać poniżej
         }
         // albo puste, albo z błędami z wyżej
         return bledy;
@@ -182,7 +181,6 @@ public class UzytkownikRepository(
         var uzytkownik = await appDbContext.Uzytkownik.FindAsync(id);
         if (id != null){
             // jeżeli to ten sam login, co on ma, to na pewno jest unikalny
-            // nie może być nullem, bo w kontrolerze przy sprawdzaniu czy edytuje swoje konto od razu go odrzuci
             if(uzytkownik.NormalizedUserName == znormalizowanyLogin) return false;
         }
         return await appDbContext.Uzytkownik.AnyAsync(u => u.NormalizedUserName == znormalizowanyLogin);

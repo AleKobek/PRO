@@ -116,7 +116,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             try
             {
                 var idDruzyny = powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1;
-                var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
+                var druzyna = await druzynyRepository.GetDruzyna(idDruzyny); // tylko po to, aby w razie czego wyrzuciło wyjątek
             }
             catch (NieZnalezionoWBazieException e)
             {
@@ -134,7 +134,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             { 
                 // nie będzie sytuacji tutaj, że to będzie null, ale aby się nie czepiał kompilator
                 var idDruzyny = powiadomienie.IdPowiazanegoObiektu ?? 1;
-                var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
+                var druzyna = await druzynyRepository.GetDruzyna(idDruzyny); // tylko po to, aby w razie czego wyrzuciło wyjątek
             }
             catch (NieZnalezionoWBazieException e)
             {
@@ -149,11 +149,11 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             {    
                 // sprawdzamy, czy taka drużyna istnieje
                 var idDruzyny = powiadomienie.IdPowiazanegoObiektu ?? 1;
-                var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
+                var druzyna = await druzynyRepository.GetDruzyna(idDruzyny); // tylko po to, aby w razie czego wyrzuciło wyjątek
                 
                 // sprawdzamy, czy takie miejsce istnieje
                 var idMiejsca = powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1;
-                var wynikZnalezieniaMiejsca = await profilService.GetProfil(idDruzyny);
+                var wynikZnalezieniaMiejsca = await profilService.GetProfil(idMiejsca); // tylko po to, aby w razie czego wyrzuciło wyjątek
             }
             catch (NieZnalezionoWBazieException e)
             {
@@ -199,10 +199,11 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         return ServiceResult<bool>.NoContent(await powiadomienieRepository.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(idUzytkownika, idTypu, idPowiazanegoObiektu, idDrugiegoPowiazanegoObiektu));
     }
     
+    // usuwamy powiadomienia użytkownika przekraczające limit
     public async Task<bool> UsunNadmiarowePowiadomieniaUzytkownika(int idUzytkownika)
     {
         var powiadomieniaDoUsuniecia = await powiadomienieRepository.PodajPowiadomieniaUzytkownikaPrzekraczajaceLimit(idUzytkownika);
-        if (powiadomieniaDoUsuniecia == null || powiadomieniaDoUsuniecia.Count == 0) return true;
+        if (powiadomieniaDoUsuniecia.Count == 0) return true;
         // w przypadku usuwania zaproszeń musimy wysłać powiadomienie zwrotne, że zaproszenie zostało odrzucone
         foreach (var powiadomienieDoUsuniecia in powiadomieniaDoUsuniecia)
         {
@@ -267,263 +268,267 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         return true;
     }
 
-        // najpierw zmieniamy login na id, potem wywołujemy zapraszanie po id
-        public async Task<ServiceResult<bool>> WyslijZaproszenieDoZnajomychPoLoginie(int idZapraszajacego, string loginZaproszonego)
+    // najpierw zmieniamy login na id, potem wywołujemy zapraszanie po id
+    public async Task<ServiceResult<bool>> WyslijZaproszenieDoZnajomychPoLoginie(int idZapraszajacego, string loginZaproszonego)
+    {
+        try
         {
-            try
-            {
-                // filtrujemy, czy podano login
-                if (loginZaproszonego.IsNullOrEmpty())
-                    return ServiceResult<bool>.BadRequest(
-                        new ErrorItem("Nie podano loginu użytkownika, któremu wysyłasz zaproszenie"));
+            // filtrujemy, czy podano login
+            if (loginZaproszonego.IsNullOrEmpty())
+                return ServiceResult<bool>.BadRequest(
+                    new ErrorItem("Nie podano loginu użytkownika, któremu wysyłasz zaproszenie"));
 
-                // pobieramy zapraszanego użytkownika
-                var zapraszanyUzytkownikRes = await uzytkownikService.GetUzytkownik(loginZaproszonego);
-                
-                if (!zapraszanyUzytkownikRes.Succeeded) return ServiceResult<bool>.Fail(zapraszanyUzytkownikRes.StatusCode, zapraszanyUzytkownikRes.Errors);
-                
-                var idZapraszanego = zapraszanyUzytkownikRes.Value.Id;
-                
-                // jest git
-                return await WyslijZaproszenieDoZnajomychPoId(idZapraszajacego, idZapraszanego);
-            }
-            catch (NieZnalezionoWBazieException e)
-            {
-                return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
-            }
-        }
-
-        public async Task<ServiceResult<bool>> WyslijZaproszenieDoZnajomychPoId(int idZapraszajacego,
-            int idZapraszanego)
-        {
-            if(idZapraszanego == idZapraszajacego)
-                    return ServiceResult<bool>.BadRequest(
-                        new ErrorItem("Nie możesz wysłać zaproszenia do samego siebie"));
-                
-                // szukamy, czy zaproszony użytkownik ma już takie zaproszenie
-                var powiadomieniaZaproszonego = await powiadomienieRepository.GetPowiadomieniaUzytkownika(idZapraszanego);
-                if (powiadomieniaZaproszonego
-                    .Any(p => 
-                              (TypPowiadomieniaEnum)p.TypPowiadomieniaId == TypPowiadomieniaEnum.ZaproszenieDoZnajomych 
-                              && p.PowiazanyObiektId == idZapraszajacego)
-                ) { 
-                    return ServiceResult<bool>.Conflict(
-                        new ErrorItem("Użytkownik o id " + idZapraszanego + " ma już wysłane zaproszenie od Ciebie"));
-                }
+            // pobieramy zapraszanego użytkownika
+            var zapraszanyUzytkownikRes = await uzytkownikService.GetUzytkownik(loginZaproszonego);
             
-                // sprawdzamy, czy już są znajomymi                         
-                if (await znajomiRepository.CzyJestZnajomosc(idZapraszanego, idZapraszajacego))
-                {
-                    return ServiceResult<bool>.Conflict(
-                        new ErrorItem("Użytkownik o id " + idZapraszanego + " jest już Twoim znajomym"));
-                }
-                
-                // sprawdzamy, czy zapraszany jest adminem
-                var czyAdminRes = await uzytkownikService.CzyUzytkownikJestAdminem(idZapraszanego);
-                if (czyAdminRes.Succeeded && czyAdminRes.Value)
-                {
-                    return ServiceResult<bool>.Forbidden(
-                        new ErrorItem("Podany użytkownik nie może otrzymywać zaproszeń do znajomych"));
-                }
-                
-                // sprawdzamy, czy zapraszajacy nie ma już maksymalnej liczby znajomych
-                var znajomiZapraszajacego = await znajomiService.GetZnajomosciUzytkownika(idZapraszajacego);
-                if (!znajomiZapraszajacego.Succeeded)
-                    return ServiceResult<bool>.BadRequest(znajomiZapraszajacego.Errors[0]);
-                if (znajomiZapraszajacego.Value != null && znajomiZapraszajacego.Value.Count >= ZnajomiService.MaxLiczbaZnajomych)
-                {
-                    return ServiceResult<bool>.Conflict(
-                        new ErrorItem("Masz już maksymalną liczbę znajomych i nie możesz wysłać więcej zaproszeń"));
-                }
-                
-                // sprawdzamy, czy zapraszany nie ma już maksymalnej liczby znajomych
-                var znajomiZapraszanego = await znajomiService.GetZnajomosciUzytkownika(idZapraszanego);
-                if (!znajomiZapraszanego.Succeeded)
-                    return ServiceResult<bool>.BadRequest(znajomiZapraszanego.Errors[0]);
-                if (znajomiZapraszanego.Value != null && znajomiZapraszanego.Value.Count >= ZnajomiService.MaxLiczbaZnajomych)
-                {
-                    return ServiceResult<bool>.Conflict(
-                        new ErrorItem("Użytkownik o id " + idZapraszanego +
-                                      " ma już maksymalną liczbę znajomych i nie może przyjąć więcej zaproszeń"));
-                }
-                
-                // pobieramy profil zapraszającego, aby mieć jego pseudonim do powiadomienia
-                var wynikSzukaniaPseudonimuZapraszajacego = await profilService.GetProfil(idZapraszajacego);
-                if (wynikSzukaniaPseudonimuZapraszajacego.StatusCode != 200 || wynikSzukaniaPseudonimuZapraszajacego.Value == null)
-                    return ServiceResult<bool>.NotFound(
-                        new ErrorItem("Nie znaleziono profilu użytkownika o id " + idZapraszanego));
-                
-                var dto = new PowiadomienieCreateDto(
-                    (int)TypPowiadomieniaEnum.ZaproszenieDoZnajomych, 
-                    idZapraszanego, 
-                    idZapraszajacego, // powiadomienie idzie do zapraszanego użytkownika, powiązany jest wysyłający
-                    wynikSzukaniaPseudonimuZapraszajacego.Value.Pseudonim, 
-                    null,
-                    null,
-                    null);
-
-                // jest git
-                return ServiceResult<bool>.NoContent(await powiadomienieRepository.CreatePowiadomienie(dto));
-        }
-
-        public async Task<ServiceResult<bool>> WyslijPowiadomienieODolaczeniuDoDruzyny(int idDolaczajacego, int idKapitana, int idDruzyny, string nazwaDruzyny, string? nazwaRoli)
-        {
-            if(idDolaczajacego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika dołączającego: " + idDolaczajacego));
-            if(idKapitana <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id kapitana: " + idKapitana));
-            if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+            if (!zapraszanyUzytkownikRes.Succeeded) return ServiceResult<bool>.Fail(zapraszanyUzytkownikRes.StatusCode, zapraszanyUzytkownikRes.Errors);
             
-            // pobieramy profil dolaczajacego, aby mieć jego pseudonim do powiadomienia
-            var profilDolaczajacegoRes = await profilService.GetProfil(idDolaczajacego);
-            if (profilDolaczajacegoRes.StatusCode != 200 || profilDolaczajacegoRes.Value == null)
-                return ServiceResult<bool>.Fail(profilDolaczajacegoRes.StatusCode, profilDolaczajacegoRes.Errors);
+            var idZapraszanego = zapraszanyUzytkownikRes.Value.Id;
             
-            var dto = new PowiadomienieCreateDto(
-                (int)TypPowiadomieniaEnum.UzytkownikDolaczylDoDruzyny,
-                idKapitana, // powiadomienie idzie do kapitana
-                idDolaczajacego, // powiązany jest dołączający
-                profilDolaczajacegoRes.Value.Pseudonim,
-                idDruzyny, // powiązana jest drużyna, do której dołączono
-                nazwaDruzyny,
-                nazwaRoli
-            );
-
             // jest git
-            return await CreatePowiadomienie(dto);
+            return await WyslijZaproszenieDoZnajomychPoId(idZapraszajacego, idZapraszanego);
         }
-        
-        // zostałeś zaproszony do drużyny X na rolę Y .
-        public async Task<ServiceResult<bool>> WyslijZaproszenieNaMiejsceWDruzynie(int idZapraszanego, int idDruzyny, string nazwaDruzyny, int idMiejsca, string? nazwaRoli)
+        catch (NieZnalezionoWBazieException e)
         {
-            if(idMiejsca <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id miejsca: " + idMiejsca));
-            if(idZapraszanego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id uzytkownika zapraszanego: " + idZapraszanego));
-            if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
+    public async Task<ServiceResult<bool>> WyslijZaproszenieDoZnajomychPoId(int idZapraszajacego, int idZapraszanego)
+    {
+        if(idZapraszanego == idZapraszajacego)
+                return ServiceResult<bool>.BadRequest(
+                    new ErrorItem("Nie możesz wysłać zaproszenia do samego siebie"));
             
+            // szukamy, czy zaproszony użytkownik ma już takie zaproszenie
+            var powiadomieniaZaproszonego = await powiadomienieRepository.GetPowiadomieniaUzytkownika(idZapraszanego);
+            if (powiadomieniaZaproszonego
+                .Any(p => 
+                          (TypPowiadomieniaEnum)p.TypPowiadomieniaId == TypPowiadomieniaEnum.ZaproszenieDoZnajomych 
+                          && p.PowiazanyObiektId == idZapraszajacego)
+            ) { 
+                return ServiceResult<bool>.Conflict(
+                    new ErrorItem("Użytkownik o id " + idZapraszanego + " ma już wysłane zaproszenie od Ciebie"));
+            }
+        
+            // sprawdzamy, czy już są znajomymi                         
+            if (await znajomiRepository.CzyJestZnajomosc(idZapraszanego, idZapraszajacego))
+            {
+                return ServiceResult<bool>.Conflict(
+                    new ErrorItem("Użytkownik o id " + idZapraszanego + " jest już Twoim znajomym"));
+            }
             
             // sprawdzamy, czy zapraszany jest adminem
             var czyAdminRes = await uzytkownikService.CzyUzytkownikJestAdminem(idZapraszanego);
             if (czyAdminRes.Succeeded && czyAdminRes.Value)
             {
                 return ServiceResult<bool>.Forbidden(
-                    new ErrorItem("Podany użytkownik nie może otrzymywać zaproszeń do drużyny"));
+                    new ErrorItem("Podany użytkownik nie może otrzymywać zaproszeń do znajomych"));
             }
             
-            // usuwamy stare zaproszenia na dane miejsce, aby nie było duplikatów
-            await powiadomienieRepository.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(null, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, idDruzyny, idMiejsca);
+            // sprawdzamy, czy zapraszajacy nie ma już maksymalnej liczby znajomych
+            var znajomiZapraszajacego = await znajomiService.GetZnajomosciUzytkownika(idZapraszajacego);
+            if (!znajomiZapraszajacego.Succeeded)
+                return ServiceResult<bool>.BadRequest(znajomiZapraszajacego.Errors[0]);
+            if (znajomiZapraszajacego.Value != null && znajomiZapraszajacego.Value.Count >= ZnajomiService.MaxLiczbaZnajomych)
+            {
+                return ServiceResult<bool>.Conflict(
+                    new ErrorItem("Masz już maksymalną liczbę znajomych i nie możesz wysłać więcej zaproszeń"));
+            }
             
-            // usuwamy inne zaproszenia danego użytkownika do danej drużyny, bo je nadpisujemy
-            await DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(idZapraszanego, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, idDruzyny, null);
+            // sprawdzamy, czy zapraszany nie ma już maksymalnej liczby znajomych
+            var znajomiZapraszanego = await znajomiService.GetZnajomosciUzytkownika(idZapraszanego);
+            if (!znajomiZapraszanego.Succeeded)
+                return ServiceResult<bool>.BadRequest(znajomiZapraszanego.Errors[0]);
+            if (znajomiZapraszanego.Value != null && znajomiZapraszanego.Value.Count >= ZnajomiService.MaxLiczbaZnajomych)
+            {
+                return ServiceResult<bool>.Conflict(
+                    new ErrorItem("Użytkownik o id " + idZapraszanego +
+                                  " ma już maksymalną liczbę znajomych i nie może przyjąć więcej zaproszeń"));
+            }
+            
+            // pobieramy profil zapraszającego, aby mieć jego pseudonim do powiadomienia
+            var wynikSzukaniaPseudonimuZapraszajacego = await profilService.GetProfil(idZapraszajacego);
+            if (wynikSzukaniaPseudonimuZapraszajacego.StatusCode != 200 || wynikSzukaniaPseudonimuZapraszajacego.Value == null)
+                return ServiceResult<bool>.NotFound(
+                    new ErrorItem("Nie znaleziono profilu użytkownika o id " + idZapraszanego));
             
             var dto = new PowiadomienieCreateDto(
-                (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny,
-                idZapraszanego, // powiadomienie idzie do zapraszanego
-                idDruzyny, // powiązana jest drużyna, której kapitan zaprasza
+                (int)TypPowiadomieniaEnum.ZaproszenieDoZnajomych, 
+                idZapraszanego, 
+                idZapraszajacego, // powiadomienie idzie do zapraszanego użytkownika, powiązany jest wysyłający
+                wynikSzukaniaPseudonimuZapraszajacego.Value.Pseudonim, 
+                null,
+                null,
+                null);
+
+            // jest git
+            return ServiceResult<bool>.NoContent(await powiadomienieRepository.CreatePowiadomienie(dto));
+    }
+
+    // uzytkownik X dołączył do drużyny Y na rolę Z
+    public async Task<ServiceResult<bool>> WyslijPowiadomienieODolaczeniuDoDruzyny(int idDolaczajacego, int idKapitana, int idDruzyny, string nazwaDruzyny, string? nazwaRoli)
+    {
+        if(idDolaczajacego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika dołączającego: " + idDolaczajacego));
+        if(idKapitana <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id kapitana: " + idKapitana));
+        if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+        
+        // pobieramy profil dolaczajacego, aby mieć jego pseudonim do powiadomienia
+        var profilDolaczajacegoRes = await profilService.GetProfil(idDolaczajacego);
+        if (profilDolaczajacegoRes.StatusCode != 200 || profilDolaczajacegoRes.Value == null)
+            return ServiceResult<bool>.Fail(profilDolaczajacegoRes.StatusCode, profilDolaczajacegoRes.Errors);
+        
+        var dto = new PowiadomienieCreateDto(
+            (int)TypPowiadomieniaEnum.UzytkownikDolaczylDoDruzyny,
+            idKapitana, // powiadomienie idzie do kapitana
+            idDolaczajacego, // powiązany jest dołączający
+            profilDolaczajacegoRes.Value.Pseudonim,
+            idDruzyny, // powiązana jest drużyna, do której dołączono
+            nazwaDruzyny,
+            nazwaRoli
+        );
+
+        // jest git
+        return await CreatePowiadomienie(dto);
+    }
+    
+    // zostałeś zaproszony do drużyny X na rolę Y
+    public async Task<ServiceResult<bool>> WyslijZaproszenieNaMiejsceWDruzynie(int idZapraszanego, int idDruzyny, string nazwaDruzyny, int idMiejsca, string? nazwaRoli)
+    {
+        if(idMiejsca <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id miejsca: " + idMiejsca));
+        if(idZapraszanego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id uzytkownika zapraszanego: " + idZapraszanego));
+        if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+        
+        
+        // sprawdzamy, czy zapraszany jest adminem
+        var czyAdminRes = await uzytkownikService.CzyUzytkownikJestAdminem(idZapraszanego);
+        if (czyAdminRes.Succeeded && czyAdminRes.Value)
+        {
+            return ServiceResult<bool>.Forbidden(
+                new ErrorItem("Podany użytkownik nie może otrzymywać zaproszeń do drużyny"));
+        }
+        
+        // usuwamy stare zaproszenia na dane miejsce, aby nie było duplikatów
+        await powiadomienieRepository.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(null, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, idDruzyny, idMiejsca);
+        
+        // usuwamy inne zaproszenia danego użytkownika do danej drużyny, bo je nadpisujemy
+        await DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(idZapraszanego, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, idDruzyny, null);
+        
+        var dto = new PowiadomienieCreateDto(
+            (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny,
+            idZapraszanego, // powiadomienie idzie do zapraszanego
+            idDruzyny, // powiązana jest drużyna, której kapitan zaprasza
+            nazwaDruzyny,
+            idMiejsca, // powiązane jest miejsce, na które zapraszany jest użytkownik
+            null, // nazwa miejsca jest zbędna, bo i tak nie będzie wyświetlana w powiadomieniu
+            nazwaRoli
+        );
+
+        // jest git
+        return await CreatePowiadomienie(dto);
+    }
+    
+    // zostałeś usunięty z drużyny X
+    public async Task<ServiceResult<bool>> WyslijPowiadomienieOUsunieciuZDruzyny(int idUsuwanego, int idDruzyny, string nazwaDruzyny)
+    {
+        if(idUsuwanego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika usuwanego: " + idUsuwanego));
+        if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+        
+        // pobieramy profil usuwanego, aby mieć jego pseudonim do powiadomienia
+        var profilUsuwanegoRes = await profilService.GetProfil(idUsuwanego);
+        if (profilUsuwanegoRes.StatusCode != 200 || profilUsuwanegoRes.Value == null)
+            return ServiceResult<bool>.Fail(profilUsuwanegoRes.StatusCode, profilUsuwanegoRes.Errors);
+        
+        var dto = new PowiadomienieCreateDto(
+            (int)TypPowiadomieniaEnum.UsuniecieZDruzyny,
+            idUsuwanego, // powiadomienie idzie do usuwanego użytkownika
+            idDruzyny, // powiązana jest drużyna, z której usunięto
+            nazwaDruzyny,
+            null, 
+            null,
+            null
+        );
+
+        // jest git
+        return await CreatePowiadomienie(dto);
+    }
+
+    // użytkownk X opuścił twoją drużynę Y, miał rolę Z
+    public async Task<ServiceResult<bool>> WyslijPowiadomienieOWyjsciuZDruzyny(int idKapitana, int? idOpuszczajacego, int idDruzyny, string nazwaDruzyny, string? nazwaRoli, bool czyPrzyUsuwaniuKonta)
+    {
+        
+        if(idKapitana <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id kapitana: " + idKapitana));
+        if(idOpuszczajacego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika opuszczającego: " + idOpuszczajacego));
+        if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+
+        if(!czyPrzyUsuwaniuKonta){
+            // pobieramy profil opuszczającego, aby mieć jego pseudonim do powiadomienia
+            var profilOpuszczajacegoRes = await profilService.GetProfil(idOpuszczajacego ?? 1); // nie będzie sytuacji tutaj, że to będzie null, ale aby się nie czepiał kompilator
+            if (profilOpuszczajacegoRes.StatusCode != 200 || profilOpuszczajacegoRes.Value == null)
+                return ServiceResult<bool>.Fail(profilOpuszczajacegoRes.StatusCode, profilOpuszczajacegoRes.Errors);
+
+            var dto = new PowiadomienieCreateDto(
+                (int)TypPowiadomieniaEnum.UzytkownikOpuscilDruzyne,
+                idKapitana, // powiadomienie idzie do kapitana
+                idOpuszczajacego, // powiązany jest opuszczający użytkownik
+                profilOpuszczajacegoRes.Value.Pseudonim,
+                idDruzyny, // powiązana jest drużyna, którą opuszczono
                 nazwaDruzyny,
-                idMiejsca, // powiązane jest miejsce, na które zapraszany jest użytkownik
-                null, // nazwa miejsca jest zbędna, bo i tak nie będzie wyświetlana w powiadomieniu
                 nazwaRoli
             );
-
             // jest git
             return await CreatePowiadomienie(dto);
         }
-        
-        public async Task<ServiceResult<bool>> WyslijPowiadomienieOUsunieciuZDruzyny(int idUsuwanego, int idDruzyny, string nazwaDruzyny)
+        else
         {
-            if(idUsuwanego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika usuwanego: " + idUsuwanego));
-            if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
-            
-            // pobieramy profil usuwanego, aby mieć jego pseudonim do powiadomienia
-            var profilUsuwanegoRes = await profilService.GetProfil(idUsuwanego);
-            if (profilUsuwanegoRes.StatusCode != 200 || profilUsuwanegoRes.Value == null)
-                return ServiceResult<bool>.Fail(profilUsuwanegoRes.StatusCode, profilUsuwanegoRes.Errors);
-            
             var dto = new PowiadomienieCreateDto(
-                (int)TypPowiadomieniaEnum.UsuniecieZDruzyny,
-                idUsuwanego, // powiadomienie idzie do usuwanego użytkownika
-                idDruzyny, // powiązana jest drużyna, z której usunięto
+                (int)TypPowiadomieniaEnum.UzytkownikOpuscilDruzyneBoUsunalKonto,
+                idKapitana, // powiadomienie idzie do kapitana
+                idDruzyny, // powiązana jest drużyna, którą opuszczono
                 nazwaDruzyny,
                 null, 
                 null,
-                null
+                nazwaRoli
             );
-
             // jest git
             return await CreatePowiadomienie(dto);
         }
-
-        public async Task<ServiceResult<bool>> WyslijPowiadomienieOWyjsciuZDruzyny(int idKapitana, int? idOpuszczajacego, int idDruzyny, string nazwaDruzyny, string? nazwaRoli, bool czyPrzyUsuwaniuKonta)
-        {
-            
-            if(idKapitana <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id kapitana: " + idKapitana));
-            if(idOpuszczajacego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika opuszczającego: " + idOpuszczajacego));
-            if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
-
-            if(!czyPrzyUsuwaniuKonta){
-                // pobieramy profil opuszczającego, aby mieć jego pseudonim do powiadomienia
-                var profilOpuszczajacegoRes = await profilService.GetProfil(idOpuszczajacego ?? 1); // nie będzie sytuacji tutaj, że to będzie null, ale aby się nie czepiał kompilator
-                if (profilOpuszczajacegoRes.StatusCode != 200 || profilOpuszczajacegoRes.Value == null)
-                    return ServiceResult<bool>.Fail(profilOpuszczajacegoRes.StatusCode, profilOpuszczajacegoRes.Errors);
-
-                var dto = new PowiadomienieCreateDto(
-                    (int)TypPowiadomieniaEnum.UzytkownikOpuscilDruzyne,
-                    idKapitana, // powiadomienie idzie do kapitana
-                    idOpuszczajacego, // powiązany jest opuszczający użytkownik
-                    profilOpuszczajacegoRes.Value.Pseudonim,
-                    idDruzyny, // powiązana jest drużyna, którą opuszczono
-                    nazwaDruzyny,
-                    nazwaRoli
-                );
-                // jest git
-                return await CreatePowiadomienie(dto);
-            }
-            else
-            {
-                var dto = new PowiadomienieCreateDto(
-                    (int)TypPowiadomieniaEnum.UzytkownikOpuscilDruzyneBoUsunalKonto,
-                    idKapitana, // powiadomienie idzie do kapitana
-                    idDruzyny, // powiązana jest drużyna, którą opuszczono
-                    nazwaDruzyny,
-                    null, 
-                    null,
-                    nazwaRoli
-                );
-                // jest git
-                return await CreatePowiadomienie(dto);
-            }
-            
-        }
         
-        public async Task<ServiceResult<bool>> WyslijPowiadomienieORozwiazaniuDruzyny(int idOdbiorcy, string nazwaDruzyny)
-        {
-            if(idOdbiorcy <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id odbiorcy: " + idOdbiorcy));
-            
-            var dto = new PowiadomienieCreateDto(
-                (int)TypPowiadomieniaEnum.DruzynaZostalaRozwiazana,
-                idOdbiorcy, 
-                null,
-                nazwaDruzyny,
-                null,
-                null,
-                null
-            );
-            
-            return await CreatePowiadomienie(dto);
-        }
+    }
+    
+    // drużyna X, do której należałeś, została rozwiązana
+    public async Task<ServiceResult<bool>> WyslijPowiadomienieORozwiazaniuDruzyny(int idOdbiorcy, string nazwaDruzyny)
+    {
+        if(idOdbiorcy <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id odbiorcy: " + idOdbiorcy));
         
-        public async Task<ServiceResult<bool>> WyslijPowiadomienieOUsunieciuDruzynyPrzezAdmina(int idOdbiorcy, string nazwaDruzyny)
-        {
-            if(idOdbiorcy <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id odbiorcy: " + idOdbiorcy));
-            
-            var dto = new PowiadomienieCreateDto(
-                (int)TypPowiadomieniaEnum.DruzynaZostalaUsunietaPrzezAdmina,
-                idOdbiorcy, 
-                null,
-                nazwaDruzyny,
-                null,
-                null,
-                null
-            );
-            
-            return await CreatePowiadomienie(dto);
-        }
+        var dto = new PowiadomienieCreateDto(
+            (int)TypPowiadomieniaEnum.DruzynaZostalaRozwiazana,
+            idOdbiorcy, 
+            null,
+            nazwaDruzyny,
+            null,
+            null,
+            null
+        );
+        
+        return await CreatePowiadomienie(dto);
+    }
+    
+    // twoja drużyna X została usunięta przez admina
+    public async Task<ServiceResult<bool>> WyslijPowiadomienieOUsunieciuDruzynyPrzezAdmina(int idOdbiorcy, string nazwaDruzyny)
+    {
+        if(idOdbiorcy <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id odbiorcy: " + idOdbiorcy));
+        
+        var dto = new PowiadomienieCreateDto(
+            (int)TypPowiadomieniaEnum.DruzynaZostalaUsunietaPrzezAdmina,
+            idOdbiorcy, 
+            null,
+            nazwaDruzyny,
+            null,
+            null,
+            null
+        );
+        
+        return await CreatePowiadomienie(dto);
+    }
 }

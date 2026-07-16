@@ -92,7 +92,7 @@ public class ProfilService(
         
         var bledy = new List<ErrorItem>();
         
-        // tutaj zostawiam Not Found, aby nie mieszało się z resztą problemów walidacji
+        // tutaj zwracamy Not Found, aby nie mieszało się z resztą problemów walidacji
         if(id < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Profil o id " + id + " nie istnieje"));
         if(profil.RegionId < 1) return ServiceResult<bool>.NotFound(new ErrorItem("Region o id " + profil.RegionId + " nie istnieje"));
         
@@ -165,6 +165,8 @@ public class ProfilService(
         }
     }
 
+    // zwracamy status do wyświetlenia, czyli jeżeli użytkownik jest aktywny, to jego aktualny status, a jeżeli nie jest aktywny, to status offline
+    // zwracamy offline również, kiedy ma ustawiony status "niewidoczny"
     public async Task<ServiceResult<StatusDto>> GetStatusDoWyswietleniaProfilu(int id)
     {
         if(id < 1) return ServiceResult<StatusDto>.BadRequest(new ErrorItem("Nieprawidłowe id profilu: " + id));

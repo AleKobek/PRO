@@ -9,6 +9,7 @@ namespace Squadra.Server.Modules.BibliotekaGier.Repositories;
 
 public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRepository
 {
+    // zwraca wszystkie gry, które użytkownik ma w swojej bibliotece w formacie do tabelki na stronie profilu
     public async Task<ICollection<GraWBiblioteceDTO>> PodajGryWBiblioteceUzytkownika(int idUzytkownika)
     {
         
@@ -16,8 +17,7 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
         if (uzytkownik is null)
             throw new NieZnalezionoWBazieException("Użytkownik o id " + idUzytkownika + " nie istnieje.");
         
-        // tutaj spróbuję z LINQ, nie mam siły zmieniać wszędzie
-         var gryUzytkownika = context.GraUzytkownika
+        var gryUzytkownika = context.GraUzytkownika
             .Where(x => x.UzytkownikId == idUzytkownika)
             .Include(x => x.Gra)
             .Select(
@@ -34,7 +34,7 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
                         .ToList()
                 )
             ).ToListAsync();
-         return await gryUzytkownika;
+        return await gryUzytkownika;
     }
     
     public async Task<bool> CzyUzytkownikMaDanaGreNaDanejPlatformie(int idUzytkownika, int idGry, int idPlatformy)
@@ -73,6 +73,7 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
         return graUzytkownika != null;
     }
     
+    // funkcja aktualizująca gry w bibliotece użytkownika, wywoływana przy pomyślnym "łączeniu kont z zewnętrznym serwisem", aby użytkownik nie musiał czekać do automatycznej aktualizacji
     public async Task<bool> UpdateBibliotekeGierUzytkownika(int idUzytkownika, List<GraUzytkownikaNaPlatformie> noweGryNaPlatformie, List<GraUzytkownika> noweGry)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
@@ -107,7 +108,7 @@ public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRep
         return true;
     }
     
-    // funkcja wyczyść bibliotekę użytkownika, czyli wszystkie jego dane z tabel: GraUzytkownikaNaPlatformie, GraUzytkownika
+    // czyści bibliotekę użytkownika, czyli wszystkie jego dane z tabel: GraUzytkownikaNaPlatformie, GraUzytkownika
     public async Task<bool> WyczyscBibliotekeUzytkownika(int idUzytkownika)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);

@@ -18,6 +18,7 @@ public class DeleteDruzynaService(
     IWiadomoscService wiadomoscService
 ) : IDeleteDruzynaService
 {
+    // usuwa drużynę, wraz z miejscami w niej i wymaganymi statystykami. wysyła też powiadomienia o rozwiązaniu drużyny do byłych członków
     public async Task<ServiceResult<bool>> UsunDruzyne(int idDruzyny, int idUsuwajacegoUzytkownika)
     {
         IDbContextTransaction? transakcja = context.Database.CurrentTransaction;
@@ -106,6 +107,7 @@ public class DeleteDruzynaService(
         }
     }
     
+    // funkcja bardzo podobna do "zwykłego" usuwania, ale nie musisz być jej kapitanem i do kapitana również wysyłane jest powiadomienie
     public async Task<ServiceResult<bool>> UsunDruzyneAdmin(int idDruzyny)
     {
         IDbContextTransaction? transakcja = context.Database.CurrentTransaction;
@@ -196,6 +198,9 @@ public class DeleteDruzynaService(
         }
     }
     
+    // czyści dane związane z drużynami dla danego użytkownika.
+    // Usuwa drużyny, których jest kapitanem i usuwa go z drużyn, których nie jest kapitanem. Wysyła powiadomienia o rozwiązaniu drużyny do byłych członków drużyn, których był kapitanem.
+    // używane przy usuwaniu konta
     public async Task<ServiceResult<bool>> UsunWszystkieDruzynyDlaUzytkownika(int idUzytkownika)
     {
         if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika));

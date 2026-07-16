@@ -32,8 +32,9 @@ public class KrajRepository(AppDbContext context) : IKrajRepository
         return new KrajDto(kraj.Id, kraj.Nazwa);
     }
     
+    // zwracamy w niektórych przypadkach przy błędach
     public KrajDto GetKrajDomyslny()
     {
-        return new KrajDto(1, "Unknown");
+        return new KrajDto(0, "Nieznany");
     }
 }

@@ -32,9 +32,10 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
         }
     }
     
-    // w kontrolerze sprawdzamy, czy idUzytkownika1 lub idUzytkownika2 to id obecnego użytkownika
+    // pobieramy wiadomości na czacie prywatnym między dwoma użytkownikami
     public async Task<ServiceResult<ICollection<WiadomoscDto>>> GetWiadomosciPrywatne(int idUzytkownika1, int idUzytkownika2)
     {
+        // w kontrolerze sprawdzamy, czy idUzytkownika1 lub idUzytkownika2 to id obecnego użytkownika
         try
         {
             if(idUzytkownika1 < 1) return ServiceResult<ICollection<WiadomoscDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika1));
@@ -133,6 +134,7 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
         }
     }
     
+    // usuwamy wszystkie wiadomości z konwersacji między dwoma użytkownikami. używane przy usuwaniu znajomości
     public async Task<ServiceResult<bool>> DeleteWiadomosciPrywatneUzytkownikow(int idUzytkownika1, int idUzytkownika2)
     {
         try
@@ -148,6 +150,7 @@ public class WiadomoscService(IWiadomoscRepository wiadomoscRepository,
         }
     }
 
+    // usuwamy wszystkie wiadomości na czacie drużynowym. używane przy usuwaniu drużyny
     public async Task<ServiceResult<bool>> DeleteWiadomosciDruzyny(int idDruzyny)
     {
         if(idDruzyny < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));

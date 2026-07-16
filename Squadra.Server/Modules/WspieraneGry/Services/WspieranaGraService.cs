@@ -41,6 +41,7 @@ public class WspieranaGraService(IWspieranaGraRepository wspieranaGraRepository)
         return ServiceResult<ICollection<GraZPlatformaDTO>>.Ok(await wspieranaGraRepository.GetWspieraneGryZPlatformami());
     }
     
+    // pobieramy gry z platformami, żeby móc użyć w select w formularzach
     public async Task<ServiceResult<ICollection<GraZPlatformaDoSelectDto>>> GetWspieraneGryZPlatformamiDoSelect()
     {
         var gryZPlatformami = await wspieranaGraRepository.GetWspieraneGryZPlatformami();

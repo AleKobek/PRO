@@ -28,7 +28,7 @@ public class StatystykiCzatuService(IWiadomoscRepository wiadomoscRepository, IZ
                 return ServiceResult<DateTime?>.BadRequest(
                     new ErrorItem("Nie można pobrać wiadomości od użytkownika, który nie jest Twoim znajomym"));
 
-            // jest git
+            // jest w porządku
             return ServiceResult<DateTime?>.Ok(
                 await wiadomoscRepository.GetDataNajnowszejWiadomosciPrywatnej(idUzytkownika1, idUzytkownika2));
         }

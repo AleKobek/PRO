@@ -23,6 +23,7 @@ public class WiadomoscRepository(AppDbContext context) : IWiadomoscRepository
         );
     }
 
+    // pobieramy wiadomości na czacie prywatnym między dwom użytkownikami
     public async Task<ICollection<WiadomoscDto>> GetWiadomosciPrywatne(int idUzytkownika1, int idUzytkownika2)
     {
         var wiadomosci = await context.Wiadomosc

@@ -38,6 +38,7 @@ public class JezykService(IJezykRepository jezykRepository) : IJezykService
         }
     }
 
+    // zastępujemy stare języki nowymi
     public async Task<ServiceResult<ICollection<JezykOrazStopienDto>>> ZmienJezykiProfilu(int profilId,
         ICollection<JezykProfiluCreateDto> noweJezyki)
     {
@@ -55,6 +56,7 @@ public class JezykService(IJezykRepository jezykRepository) : IJezykService
         }
     }
 
+    // zwracamy listę języków profilu, każdy ma listę stopni biegłości równych lub niższych niż aktualny stopień biegłości w profilu
     public async Task<ServiceResult<ICollection<JezykOrazRowneLubNizszeStopnieDto>>> GetJezykiProfiluZRownymiLubNizszymiStopniami(int id)
     {
         try

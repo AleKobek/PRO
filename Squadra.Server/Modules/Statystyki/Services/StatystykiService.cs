@@ -26,6 +26,7 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
             return ServiceResult<StatystykaDTO>.NotFound(new ErrorItem(ex.Message));
         }
     }
+    // get godziny grania danego użytkownika dla danej gry - potrzebne do tabelki w bibliotece
     public async Task<ServiceResult<string>> GetGodzinyGrania(int idUzytkownika, int idGry)
     {
         if (idUzytkownika <= 0)
@@ -327,6 +328,7 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         }
     }
     
+    // odfiltrowujemy id statystyk, które nie istnieją w bazie danych
     public ServiceResult<ICollection<int>> FiltrujNieistniejaceStatystyki(ICollection<int> idStatystyk)
     {
         var nieprawidlowaStatystyka = idStatystyk.FirstOrDefault(id => id <= 0);
@@ -339,6 +341,7 @@ public class StatystykiService(IStatystykiRepository statystykiRepository) : ISt
         return ServiceResult<ICollection<int>>.Ok(result);
     }
 
+    // usuwamy wszystkie wymagane statystyki danej drużyny. używane przy usuwaniu drużyny
     public async Task<ServiceResult<bool>> UsunWymaganeStatystykiDruzyny(int idDruzyny)
     {
         if(idDruzyny <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator drużyny: " + idDruzyny));

@@ -30,6 +30,7 @@ public class DeleteZnajomoscService(
             
             await znajomiRepository.GetZnajomosc(idUzytkownikaInicjujacego, idUzytkownika2); // tylko po to, żeby wywaliło "Nie znaleziono w bazie exception" w razie potrzeby
             
+            // usuwamy wszystkie wiadomości na czacie prywatnym tych dwóch użytkowników
             var wiadomosciRes = await wiadomoscService.DeleteWiadomosciPrywatneUzytkownikow(idUzytkownikaInicjujacego, idUzytkownika2); // usuwamy ich wiadomości
             if (!wiadomosciRes.Succeeded)
             {
@@ -48,6 +49,7 @@ public class DeleteZnajomoscService(
         }
     }
     
+    // usuwamy wszystkie znajomości użytkownika. używamy przy usuwaniu konta
     public async Task<ServiceResult<bool>> DeleteZnajomosciUzytkownika(int idUzytkownika)
     {
         var znajomosci = await context.Znajomi.Where(x => x.IdUzytkownika1 == idUzytkownika || x.IdUzytkownika2 == idUzytkownika).ToListAsync();

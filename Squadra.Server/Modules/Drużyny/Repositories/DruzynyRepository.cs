@@ -74,6 +74,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         return miejsceWDruzynie.Id;
     }
 
+    // pobieramy numer miejsca w drużynie (to nie to samo co id, jest względem danej drużyny)
     public async Task<int> GetNumerMiejsca(int idMiejsca)
     {
         var miejsce = await context.MiejsceWDruzynie.FindAsync(idMiejsca);
@@ -382,6 +383,7 @@ public class DruzynyRepository(AppDbContext context, IStatystykiRepository staty
         return true;
     }
     
+    // używamy tej funkcji przy wyszukiwaniu drużyny
     public async Task<ICollection<int>> WyszukajIdDruzyn(WyszukajDruzyneReqDto req, int idUzytkownika, ICollection<JezykOrazStopienDto> jezykiUzytkownika)
     {
         

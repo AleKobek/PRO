@@ -17,7 +17,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         return statystyka;
     }
     
-    // get godziny grania danego użytkownika dla danej gry
+    // get godziny grania danego użytkownika dla danej gry - potrzebne do tabelki w bibliotece
     public async Task<string> GetGodzinyGrania(int idUzytkownika, int idGry)
     {
         
@@ -93,7 +93,6 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         var statystyki = await context.StatystykaUzytkownika
             .Include(x => x.Statystyka)
             .ThenInclude(s => s.Kategoria)
-            // można zrobić include parę razy i cofać się do początku, then include wchodzi głębiej
             .Include(x => x.Statystyka)
             .ThenInclude(s => s.Rola)
             .Where(x =>
@@ -133,7 +132,8 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
             .ToListAsync();
     }
     
-    // funkcja aktualizująca statystyki użytkownika, czyli usuwająca wszystkie stare wpisy z tabeli StatystykaUzytkownika dla danego idUzytkownika i dodająca nowe wpisy, które pobieramy z zewnętrznego serwisu
+    // funkcja aktualizująca statystyki użytkownika, czyli usuwająca wszystkie stare wpisy z tabeli StatystykaUzytkownika dla danego idUzytkownika
+    // i dodająca nowe wpisy, które pobieramy z zewnętrznego serwisu.
     // potrzebujemy to zrobić ręcznie, gdy użytkownik połączy się po raz pierwszy, aby nie musiał czekać do północy
     public async Task<bool> UpdateStatystykiUzytkownika(int idUzytkownika, List<StatystykaUzytkownika> noweStatystyki)
     {
@@ -177,6 +177,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         return true;
     }
 
+    // sprawdzamy po kolei wszystkie wymagania drużyny, czy użytkownik je spełnia
     public async Task<bool> CzyUzytkownikSpelniaOgolneWymaganiaDruzyny(int idDruzyny, int idUzytkownika)
     {
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);
@@ -205,6 +206,7 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         return CzySpelniaWymagania(wymagania, statystykiUzytkownika.Select(s => new WartoscStatystykiDTO(s.StatystykaId, s.Wartosc, s.PorownywalnaWartoscLiczbowa)).ToList());
     }
     
+    // zwracamy wymagane statystyki drużyny w formacie do wyświetlenia na froncie
     public async Task<ICollection<WymaganieDruzynyDoWyswietleniaDto>> GetWymaganiaDruzynyDoWyswietlenia(int idDruzyny)
     {
         var druzyna = await context.Druzyna.FindAsync(idDruzyny);
@@ -236,15 +238,6 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
             .ToListAsync();
 
         return wymaganiaDruzyny;
-    }
-    
-    public async Task<string?> GetNazwaRangi(int idStatystyki, int wartoscLiczbowa)
-    {
-        var statystyka = await context.Statystyka.FindAsync(idStatystyki);
-        if (statystyka == null) throw new NieZnalezionoWBazieException("Nie znaleziono statystyki o id " + idStatystyki);
-        var ranga = await context.Ranga.Where(x => x.StatystykaId == idStatystyki && x.WartoscLiczbowa <= wartoscLiczbowa).OrderByDescending(x => x.WartoscLiczbowa).FirstOrDefaultAsync();
-        // jeżeli ranga jest null, to statystyka nie jest rangą. To posłuży nam do sprawdzenia, czy to ranga
-        return ranga?.Nazwa;
     }
 
     public async Task<ICollection<RangiStatystykiDto>> GetRangiGry(int idGry)
@@ -333,11 +326,13 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         return rola;
     }
 
+    // odfiltrowujemy id statystyk, które nie istnieją w bazie danych
     public ICollection<int> FiltrujNieistniejaceStatystyki(ICollection<int> idStatystyk)
     {
         return idStatystyk.Where(x => !context.Statystyka.Any(s => s.Id == x)).ToList();
     }
     
+    // usuwamy wszystkie wymagane statystyki danej drużyny. używane przy usuwaniu drużyny
     public async Task<bool> UsunWymaganeStatystykiDruzyny(int idDruzyny)
     {
         var druzyna = await context.Druzyna.FindAsync(idDruzyny);
