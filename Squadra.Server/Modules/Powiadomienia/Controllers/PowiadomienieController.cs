@@ -81,6 +81,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     [EndpointSummary("Wysyła zaproszenie do znajomych, skierowane do użytkownika o podanym loginie")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -95,6 +96,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
         {
             204 => NoContent(),
             400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(StatusCodes.Status403Forbidden,result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
             409 => Conflict(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })
@@ -106,6 +108,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
     [EndpointSummary("Wysyła zaproszenie do znajomych, skierowane do użytkownika o podanym id")]
     [ProducesResponseType((int)HttpStatusCode.NoContent)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Conflict)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -120,6 +123,7 @@ public class PowiadomienieController(IPowiadomienieService powiadomienieService,
         {
             204 => NoContent(),
             400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(StatusCodes.Status403Forbidden, result.Errors[0].Message),
             404 => NotFound(result.Errors[0].Message),
             409 => Conflict(result.Errors[0].Message),
             _ => StatusCode(result.StatusCode, new { errors = result.Errors })

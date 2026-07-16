@@ -318,6 +318,14 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                         new ErrorItem("Użytkownik o id " + idZapraszanego + " jest już Twoim znajomym"));
                 }
                 
+                // sprawdzamy, czy zapraszany jest adminem
+                var czyAdminRes = await uzytkownikService.CzyUzytkownikJestAdminem(idZapraszanego);
+                if (czyAdminRes.Succeeded && czyAdminRes.Value)
+                {
+                    return ServiceResult<bool>.Forbidden(
+                        new ErrorItem("Podany użytkownik nie może otrzymywać zaproszeń do znajomych"));
+                }
+                
                 // sprawdzamy, czy zapraszajacy nie ma już maksymalnej liczby znajomych
                 var znajomiZapraszajacego = await znajomiService.GetZnajomosciUzytkownika(idZapraszajacego);
                 if (!znajomiZapraszajacego.Succeeded)
@@ -389,6 +397,15 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             if(idMiejsca <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id miejsca: " + idMiejsca));
             if(idZapraszanego <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id uzytkownika zapraszanego: " + idZapraszanego));
             if(idDruzyny <=0) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+            
+            
+            // sprawdzamy, czy zapraszany jest adminem
+            var czyAdminRes = await uzytkownikService.CzyUzytkownikJestAdminem(idZapraszanego);
+            if (czyAdminRes.Succeeded && czyAdminRes.Value)
+            {
+                return ServiceResult<bool>.Forbidden(
+                    new ErrorItem("Podany użytkownik nie może otrzymywać zaproszeń do drużyny"));
+            }
             
             // usuwamy stare zaproszenia na dane miejsce, aby nie było duplikatów
             await powiadomienieRepository.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(null, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, idDruzyny, idMiejsca);
