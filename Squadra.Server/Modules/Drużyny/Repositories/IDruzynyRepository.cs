@@ -1,6 +1,5 @@
 ﻿using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Models;
-using Squadra.Server.Modules.Platformy;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Statystyki.Models;
 

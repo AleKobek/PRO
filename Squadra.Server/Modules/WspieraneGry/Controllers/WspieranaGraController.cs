@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Uzytkownicy.Models;
 using Squadra.Server.Modules.WspieraneGry.DTO;
-using Squadra.Server.Modules.WspieraneGry.Models;
 using Squadra.Server.Modules.WspieraneGry.Services;
 
 namespace Squadra.Server.Modules.WspieraneGry.Controllers;

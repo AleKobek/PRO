@@ -1,7 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Squadra.Server.Context;
+﻿using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.DTO.Status;
 using Squadra.Server.Modules.Profile.Models;

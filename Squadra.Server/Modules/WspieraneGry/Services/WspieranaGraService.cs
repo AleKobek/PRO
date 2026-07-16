@@ -1,6 +1,5 @@
 ﻿using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Platformy.DTO;
-using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.WspieraneGry.DTO;
 using Squadra.Server.Modules.WspieraneGry.Repositories;

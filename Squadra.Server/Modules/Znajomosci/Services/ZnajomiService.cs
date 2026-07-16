@@ -1,5 +1,4 @@
-﻿using Squadra.Server.Context;
-using Squadra.Server.Exceptions;
+﻿using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Wiadomosci.Services;

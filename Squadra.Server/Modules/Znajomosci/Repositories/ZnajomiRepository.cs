@@ -2,15 +2,13 @@
 using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Profile.Repositories;
-using Squadra.Server.Modules.Wiadomosci.Repositories;
 using Squadra.Server.Modules.Znajomosci.Models;
 
 namespace Squadra.Server.Modules.Znajomosci.Repositories;
 
 public class ZnajomiRepository(
     AppDbContext context, 
-    IProfilRepository profilRepository,
-    IWiadomoscRepository wiadomoscRepository) : IZnajomiRepository
+    IProfilRepository profilRepository) : IZnajomiRepository
 {
 
     public async Task<Znajomi> GetZnajomosc(int idUzytkownika1, int idUzytkownika2)

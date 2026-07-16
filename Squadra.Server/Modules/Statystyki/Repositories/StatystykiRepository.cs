@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Statystyki.DTO;
 using Squadra.Server.Modules.Statystyki.Models;
 

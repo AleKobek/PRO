@@ -1,5 +1,4 @@
-﻿
-namespace Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
+﻿namespace Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
 
 // to jest po prostu get dto? nie, do czegoś jeszcze jest używane
 public record UzytkownikResDto

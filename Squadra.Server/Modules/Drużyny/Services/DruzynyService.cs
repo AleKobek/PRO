@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
-using Squadra.Server.Context;
-using Squadra.Server.Exceptions;
+﻿using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.BibliotekaGier.Services;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Repositories;
@@ -22,7 +20,6 @@ using Squadra.Server.Modules.Znajomosci.Services;
 namespace Squadra.Server.Modules.Drużyny.Services;
 
 public class DruzynyService(
-    AppDbContext context,
     IDruzynyRepository druzynyRepository,
     IWspieranaGraService wspieranaGraService,
     IUzytkownikService uzytkownikService,

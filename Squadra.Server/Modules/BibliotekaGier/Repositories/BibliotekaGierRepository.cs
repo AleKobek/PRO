@@ -3,7 +3,6 @@ using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.BibliotekaGier.DTO;
 using Squadra.Server.Modules.BibliotekaGier.Models;
-using Squadra.Server.Modules.Platformy.DTO;
 
 namespace Squadra.Server.Modules.BibliotekaGier.Repositories;
 

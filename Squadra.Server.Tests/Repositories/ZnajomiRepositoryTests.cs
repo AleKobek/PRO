@@ -18,7 +18,6 @@ public class ZnajomiRepositoryTests : IDisposable
 {
     private readonly AppDbContext _context;
     private readonly Mock<IProfilRepository> _mockProfilRepository;
-    private readonly Mock<IWiadomoscRepository> _mockWiadomoscRepository;
     private readonly ZnajomiRepository _repository;
 
     public ZnajomiRepositoryTests()
@@ -30,11 +29,9 @@ public class ZnajomiRepositoryTests : IDisposable
 
         _context = new AppDbContext(options);
         _mockProfilRepository = new Mock<IProfilRepository>();
-        _mockWiadomoscRepository = new Mock<IWiadomoscRepository>();
         _repository = new ZnajomiRepository(
             _context,
-            _mockProfilRepository.Object,
-            _mockWiadomoscRepository.Object);
+            _mockProfilRepository.Object);
 
         // Seed test data
         SeedTestData();
@@ -150,44 +147,6 @@ public class ZnajomiRepositoryTests : IDisposable
         // Act & Assert
         await Assert.ThrowsAsync<NieZnalezionoWBazieException>(
             async () => await _repository.CreateZnajomosc(999, 1000));
-    }
-
-    [Fact(Skip = "InMemory database doesn't support transactions. This method uses transactions in the actual implementation.")]
-    public async Task DeleteZnajomosc_WhenFriendshipExists_DeletesItAndMessages()
-    {
-        // Arrange - use a friendship that doesn't rely on transactions
-        var userId1 = 1;
-        var userId2 = 2;
-        _mockWiadomoscRepository.Setup(r => r.DeleteWiadomosciPrywatneUzytkownikow(userId1, userId2))
-            .ReturnsAsync(true);
-
-        // Verify friendship exists before deletion
-        var friendshipBefore = await _context.Znajomi
-            .FirstOrDefaultAsync(z => z.IdUzytkownika1 == userId1 && z.IdUzytkownika2 == userId2);
-        Assert.NotNull(friendshipBefore);
-
-        // Act
-        // Note: InMemory database throws on transactions - test will verify behavior despite that
-        try
-        {
-            await _repository.DeleteZnajomosc(userId1, userId2);
-        }
-        catch (InvalidOperationException ex) when (ex.Message.Contains("Transaction"))
-        {
-            // Expected with InMemory database - transaction warnings
-            // The actual deletion logic still executes despite the transaction not being supported
-        }
-
-        // Assert - messages deletion was called
-        _mockWiadomoscRepository.Verify(r => r.DeleteWiadomosciPrywatneUzytkownikow(userId1, userId2), Times.Once);
-    }
-
-    [Fact]
-    public async Task DeleteZnajomosc_WhenFriendshipNotFound_ThrowsException()
-    {
-        // Act & Assert
-        await Assert.ThrowsAsync<NieZnalezionoWBazieException>(
-            async () => await _repository.DeleteZnajomosc(999, 1000));
     }
 
     [Fact]

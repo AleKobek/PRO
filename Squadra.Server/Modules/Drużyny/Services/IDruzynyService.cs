@@ -1,5 +1,4 @@
 ﻿using Squadra.Server.Modules.Drużyny.DTO;
-using Squadra.Server.Modules.Platformy;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Shared.Services;
 

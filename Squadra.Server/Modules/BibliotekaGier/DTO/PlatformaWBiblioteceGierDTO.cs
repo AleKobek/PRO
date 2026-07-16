@@ -1,4 +1,4 @@
-﻿namespace Squadra.Server.Modules.Platformy.DTO;
+﻿namespace Squadra.Server.Modules.BibliotekaGier.DTO;
 
 public record PlatformaWBiblioteceGierDTO(
     int IdPlatformy,

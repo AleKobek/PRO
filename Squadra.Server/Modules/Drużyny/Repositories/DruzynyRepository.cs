@@ -1,17 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
 using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
 using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Models;
-using Squadra.Server.Modules.Platformy;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Statystyki.Models;
-using Squadra.Server.Modules.Statystyki.Repositories;
 
 namespace Squadra.Server.Modules.Drużyny.Repositories;
 
-public class DruzynyRepository(AppDbContext context, IStatystykiRepository statystykiRepository) : IDruzynyRepository
+public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
 {
     public static readonly int MaksymalnaLiczbaDruzynGraczaDlaGry = 10;
     

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Squadra.Server.Modules.Uzytkownicy.Models;
+﻿using Squadra.Server.Modules.Uzytkownicy.Models;
 
 namespace Squadra.Server.Modules.Wiadomosci.Models;
 

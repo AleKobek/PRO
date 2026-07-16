@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Squadra.Server.Modules.Platformy.DTO;
-using Squadra.Server.Modules.Platformy.Models;
 using Squadra.Server.Modules.Platformy.Services;
 using Squadra.Server.Modules.Uzytkownicy.Models;
 

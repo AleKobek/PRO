@@ -1,11 +1,11 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Services;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Wiadomosci.DTO;
+using Squadra.Server.Modules.Wiadomosci.Enums;
 using Squadra.Server.Modules.Wiadomosci.Repositories;
 using Squadra.Server.Modules.Znajomosci.Repositories;
 

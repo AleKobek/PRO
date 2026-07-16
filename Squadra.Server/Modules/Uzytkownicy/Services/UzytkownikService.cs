@@ -1,7 +1,5 @@
 ﻿using System.Text.RegularExpressions;
-using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Modules.Profile.Repositories;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
