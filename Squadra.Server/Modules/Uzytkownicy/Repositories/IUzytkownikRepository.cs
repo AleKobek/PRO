@@ -4,8 +4,6 @@ namespace Squadra.Server.Modules.Uzytkownicy.Repositories;
 
 public interface IUzytkownikRepository
 {
-    public Task<ICollection<UzytkownikResDto>> GetUzytkownicy();
-    
     public Task<UzytkownikResDto> GetUzytkownik(int id);
 
     public Task<UzytkownikResDto> GetUzytkownik(string login);

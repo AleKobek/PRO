@@ -34,27 +34,6 @@ public class UzytkownikControllerTests
     }
 
     [Fact]
-    public async Task GetUzytkownicy_ReturnsOkWithUsers()
-    {
-        // Arrange
-        var users = new List<UzytkownikResDto>
-        {
-            new UzytkownikResDto(1, "user1", "user1@test.com", null, null, null, null, new string[] { "User" }),
-            new UzytkownikResDto(2, "user2", "user2@test.com", null, null, null, null, new string[] { "User" })
-        };
-        var result = ServiceResult<ICollection<UzytkownikResDto>>.Ok(users);
-        _mockUzytkownikService.Setup(s => s.GetUzytkownicy()).ReturnsAsync(result);
-
-        // Act
-        var actionResult = await _controller.GetUzytkownicy();
-
-        // Assert
-        var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-        var returnedUsers = Assert.IsAssignableFrom<IEnumerable<UzytkownikResDto>>(okResult.Value);
-        Assert.Equal(2, returnedUsers.Count());
-    }
-
-    [Fact]
     public async Task GetUzytkownikById_WithValidId_ReturnsOkWithUser()
     {
         // Arrange

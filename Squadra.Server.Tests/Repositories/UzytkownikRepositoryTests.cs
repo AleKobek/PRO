@@ -123,17 +123,6 @@ public class UzytkownikRepositoryTests : IDisposable
         await _context.SaveChangesAsync();
     }
 
-    [Fact]
-    public async Task GetUzytkownicy_ReturnsAllUsers()
-    {
-        // Act
-        var result = await _repository.GetUzytkownicy();
-
-        // Assert
-        Assert.Equal(2, result.Count);
-        Assert.Contains(result, u => u.Login == "testuser1");
-        Assert.Contains(result, u => u.Login == "testuser2");
-    }
 
     [Fact]
     public async Task GetUzytkownik_ByValidId_ReturnsUser()

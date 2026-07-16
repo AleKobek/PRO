@@ -22,29 +22,6 @@ public class UzytkownikRepository(
     RoleManager<IdentityRole<int>> roleManager)
     : IUzytkownikRepository
 {
-    
-    public async Task<ICollection<UzytkownikResDto>> GetUzytkownicy()
-    {
-        ICollection<UzytkownikResDto> uzytkownicyDoZwrocenia = new List<UzytkownikResDto>();
-        ICollection<Uzytkownik> uzytkownicy = await appDbContext.Uzytkownik.ToListAsync();
-        
-        foreach (var uzytkownik in uzytkownicy)
-        {
-            var role = (await userManager.GetRolesAsync(uzytkownik)).ToArray();
-
-            uzytkownicyDoZwrocenia.Add(new UzytkownikResDto(
-                uzytkownik.Id, 
-                uzytkownik.UserName ?? string.Empty, 
-                uzytkownik.Email ?? string.Empty,
-                uzytkownik.PhoneNumber,
-                uzytkownik.DataUrodzenia,
-                uzytkownik.IdNaZewnetrznymSerwisie,
-                uzytkownik.LoginNaZewnetrznymSerwisie,
-                role
-            ));
-        }
-        return uzytkownicyDoZwrocenia;
-    }
 
     public async Task<UzytkownikResDto> GetUzytkownik(int id)
     {

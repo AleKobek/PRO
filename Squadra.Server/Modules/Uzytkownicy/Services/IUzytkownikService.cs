@@ -5,7 +5,6 @@ namespace Squadra.Server.Modules.Uzytkownicy.Services;
 
 public interface IUzytkownikService
 {
-    public Task<ServiceResult<ICollection<UzytkownikResDto>>> GetUzytkownicy();
     public Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(int id);
 
     public Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(string login);

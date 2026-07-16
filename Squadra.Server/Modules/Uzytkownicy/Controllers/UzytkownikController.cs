@@ -18,18 +18,6 @@ public class UzytkownikController(
     IUsunKontoService usunKontoService,
     UserManager<Uzytkownik> userManager) : ControllerBase
 {
-    [HttpGet("wszyscy")]
-    [Authorize(Roles = "Admin")]
-    [EndpointSummary("Zwraca dane wszystkich użytkowników w bazie (tylko dla admina)")]
-    [ProducesResponseType(typeof(IEnumerable<UzytkownikResDto>), (int)HttpStatusCode.OK)]
-    public async Task<ActionResult<IEnumerable<UzytkownikResDto>>> GetUzytkownicy()
-    {
-        var result = await uzytkownikService.GetUzytkownicy();
-        return result.StatusCode == 200
-            ? Ok(result.Value)
-            : StatusCode(result.StatusCode, new { errors = result.Errors });
-    }
-
     [HttpGet("{id:int}")]
     [Authorize(Roles = "Admin")]
     [EndpointSummary("Zwraca dane użytkownika o podanym id (tylko dla admina)")]

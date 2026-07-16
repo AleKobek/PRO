@@ -13,10 +13,7 @@ public class UzytkownikService(
     IUzytkownikRepository uzytkownikRepository,
     IProfilService profilService) : IUzytkownikService
 {
-    public async Task<ServiceResult<ICollection<UzytkownikResDto>>> GetUzytkownicy()
-    {
-        return ServiceResult<ICollection<UzytkownikResDto>>.Ok(await uzytkownikRepository.GetUzytkownicy());
-    }
+   
 
     public async Task<ServiceResult<UzytkownikResDto>> GetUzytkownik(int id)
     {
