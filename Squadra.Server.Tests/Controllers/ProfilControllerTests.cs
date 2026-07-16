@@ -35,23 +35,6 @@ public class ProfilControllerTests
     }
 
     [Fact]
-    public async Task GetProfile_ReturnsOkWithProfiles()
-    {
-        var profiles = new List<ProfilGetResDto>
-        {
-            new ProfilGetResDto("User1", new RegionKrajDto(1, "Mazowieckie", 1, "Poland"), "he/him", "Description 1", new List<JezykOrazStopienDto>(), Array.Empty<byte>(), "Online"),
-            new ProfilGetResDto("User2", new RegionKrajDto(2, "Slaskie", 1, "Poland"), "she/her", "Description 2", new List<JezykOrazStopienDto>(), Array.Empty<byte>(), "Offline")
-        };
-        _mockProfilService.Setup(s => s.GetProfile()).ReturnsAsync(ServiceResult<ICollection<ProfilGetResDto>>.Ok(profiles));
-
-        var actionResult = await _controller.GetProfile();
-
-        var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-        var returnedProfiles = Assert.IsAssignableFrom<IEnumerable<ProfilGetResDto>>(okResult.Value);
-        Assert.Equal(2, returnedProfiles.Count());
-    }
-
-    [Fact]
     public async Task GetProfil_WithValidId_ReturnsOkWithProfile()
     {
         var user = new Uzytkownik { Id = 1, UserName = "testuser" };

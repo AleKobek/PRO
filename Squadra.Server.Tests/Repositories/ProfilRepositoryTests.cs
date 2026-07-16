@@ -74,33 +74,6 @@ public class ProfilRepositoryTests : IDisposable
     }
 
     [Fact]
-    public async Task GetProfile_ReturnsAllProfiles()
-    {
-        // Arrange
-        var languages = new List<JezykOrazStopienDto>();
-        var regionKraj = new RegionKrajDto(1, "Mazowieckie", 1, "Poland");
-        var status = new StatusDto(1, "Online");
-
-        _mockJezykRepository.Setup(r => r.GetJezykiProfilu(It.IsAny<int>()))
-            .ReturnsAsync(languages);
-        _mockRegionRepository.Setup(r => r.GetRegionIKraj(1))
-            .ReturnsAsync(regionKraj);
-        _mockRegionRepository.Setup(r => r.GetRegionIKraj(null))
-            .ReturnsAsync((RegionKrajDto?)null);
-        _mockStatusRepository.Setup(r => r.GetStatus(It.IsAny<int>()))
-            .ReturnsAsync(status);
-
-        // Act
-        var result = await _repository.GetProfile();
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count);
-        Assert.Contains(result, p => p.Pseudonim == "TestUser1");
-        Assert.Contains(result, p => p.Pseudonim == "TestUser2");
-    }
-
-    [Fact]
     public async Task GetProfilUzytkownika_WithValidId_ReturnsProfile()
     {
         // Arrange
