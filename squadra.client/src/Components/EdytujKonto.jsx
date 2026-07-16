@@ -9,6 +9,7 @@ import {API_BASE_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
 import EdytujIntegracjeWKoncieKomponent from "./EdytujIntegracjeWKoncieKomponent";
 import {OkienkoTlumaczaceZintegrowanie} from "./OkienkoTlumaczaceZintegrowanie";
+import ZmienHaslo from "./ZmienHaslo";
 export default function EdytujKonto() {
 
     const navigate = useNavigate();
@@ -34,13 +35,6 @@ export default function EdytujKonto() {
     const[bladNumeruTelefonu, ustawBladNumeruTelefonu] = useState("");
     const[bladDatyUrodzenia, ustawBladDatyUrodzenia] = useState("");
     const[bladOgolnyKonta, ustawBladOgolnyKonta] = useState("");
-
-    // do zmiany hasła
-    
-    const [stareHaslo, ustawStareHaslo] = useState("");
-    const [noweHaslo, ustawNoweHaslo] = useState("");
-    const [powtorzHaslo, ustawPowtorzHaslo] = useState("");
-    const [bladOgolnyHasla, ustawbladOgolnyHasla] = useState("");
 
     const [pokazOkienkoTlumaczenia, ustawPokazOkienkoTlumaczenia] = useState(false);
     const ref = React.useRef(null);
@@ -195,63 +189,6 @@ export default function EdytujKonto() {
         });
     }
 
-    const czyZablokowaneWyslijHasla = useMemo(() =>{
-        let tempNoweHaslo = noweHaslo.trim();
-        let tempPowtorzHaslo = powtorzHaslo.trim();
-        return(
-            stareHaslo.trim().length === 0 ||
-            tempNoweHaslo.length === 0 || 
-            tempPowtorzHaslo.length === 0 || 
-            tempNoweHaslo !== tempPowtorzHaslo
-        )
-    },[stareHaslo, noweHaslo, powtorzHaslo]);
-
-    const przyWysylaniuZmianyHasla = async() => {
-        ustawbladOgolnyHasla("");
-
-        const hasloDoWyslania = {
-            stareHaslo: stareHaslo.trim(),
-            noweHaslo: noweHaslo.trim(),
-        };
-
-        const opcje = {
-            method: "PUT",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: "include",
-            body: JSON.stringify(hasloDoWyslania)
-        }
-        
-        const res = await fetch(`${API_BASE_URL}/Uzytkownik/haslo`, opcje);
-
-
-        // Odczyt body różni się zależnie od typu odpowiedzi
-        // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
-        const ct = res.headers.get("content-type") || "";
-        const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
-            ? await res.json().catch(() => null)
-            : await res.text().catch(() => "");
-
-        if (!res.ok) {
-            if(res.status === 400){
-                ustawbladOgolnyHasla(body[0].message);
-            }
-            return;
-        }
-
-        toast.success('Pomyślnie edytowano hasło!', {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-        });
-    }
 
     const przyUsuwaniuKonta = async () => {
         if(czyZablokowaneUsun) return;
@@ -357,31 +294,7 @@ export default function EdytujKonto() {
                 <span id = "error-zapisz" className="error-wiadomosc">{bladOgolnyKonta}</span><br/>
             </form>
             <br></br>
-            <div className="box-zmiany-hasla text-center my-10 border-2 border-red-900 rounded-md p-2.5 bg-[#fcb7ab]">
-                <h2>Zmień hasło</h2>
-                <form id= "formularz-hasła" name = "formularz-hasła" className="border-0">
-                    <label>
-                        Stare hasło<br/>
-                        <input
-                        type="password" value={stareHaslo} onChange={(e) => ustawStareHaslo(e.target.value)}/><br/>
-                    </label>
-                    <label>
-                        Nowe hasło<br/>
-                        <input
-                            type="password" value={noweHaslo} onChange={(e) => ustawNoweHaslo(e.target.value)}/><br/>
-                    </label>
-                    <label>
-                        Powtórz nowe hasło<br/>
-                        <input
-                            type="password" value={powtorzHaslo} onChange={(e) => ustawPowtorzHaslo(e.target.value)}/><br/>
-                    </label>
-                    <input
-                        className={czyZablokowaneWyslijHasla ? "zablokowany-przycisk mt-2" : "wyslij-formularz-przycisk"}
-                        type="button"
-                        value="Zapisz" onClick={przyWysylaniuZmianyHasla} disabled={czyZablokowaneWyslijHasla}/><br/>
-                    <span id = "error-ogolny-hasla" className="error-wiadomosc">{bladOgolnyHasla}</span><br/>
-                </form>
-            </div>
+            <ZmienHaslo/>
             <h3 className="flex items-center mb-4">
                 Zewnętrzny serwis
                 <img
