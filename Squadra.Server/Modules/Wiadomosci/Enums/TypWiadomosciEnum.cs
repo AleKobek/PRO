@@ -1,4 +1,4 @@
-﻿namespace Squadra.Server.Modules.Wiadomosci;
+﻿namespace Squadra.Server.Modules.Wiadomosci.Enums;
 
 public enum TypWiadomosciEnum
 {
