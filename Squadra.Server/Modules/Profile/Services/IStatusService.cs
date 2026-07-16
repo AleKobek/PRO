@@ -9,5 +9,4 @@ public interface IStatusService
 
     public Task<ServiceResult<StatusDto?>> GetStatus(int id);
     
-    public StatusDto GetStatusDomyslny();
 }

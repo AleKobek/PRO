@@ -16,9 +16,4 @@ public class StatusService(IStatusRepository statusRepository) : IStatusService
         var status = await statusRepository.GetStatus(id);
         return status == null ? ServiceResult<StatusDto?>.NotFound(new ErrorItem("Status o id " + id + " nie istnieje")) : ServiceResult<StatusDto?>.Ok(status);
     }
-    
-    public StatusDto GetStatusDomyslny()
-    {
-        return statusRepository.GetStatusOffline();
-    }
 }

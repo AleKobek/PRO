@@ -76,21 +76,4 @@ public class StatusServiceTests
         Assert.False(result.Succeeded);
         Assert.Equal(404, result.StatusCode);
     }
-
-    [Fact]
-    public void GetStatusDomyslny_ReturnsDefaultStatus()
-    {
-        // Arrange
-        var defaultStatus = new StatusDto(2, "Offline");
-        _mockRepository.Setup(r => r.GetStatusOffline())
-            .Returns(defaultStatus);
-
-        // Act
-        var result = _service.GetStatusDomyslny();
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal("Offline", result.Nazwa);
-        _mockRepository.Verify(r => r.GetStatusOffline(), Times.Once);
-    }
 }
