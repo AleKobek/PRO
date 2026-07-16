@@ -1,4 +1,4 @@
-﻿namespace Squadra.Server.Modules.Drużyny.DTO;
+﻿namespace Squadra.Server.Modules.Statystyki.DTO;
 
 public record RolaDto(
     int Id,
