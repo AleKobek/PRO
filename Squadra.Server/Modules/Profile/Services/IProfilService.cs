@@ -9,7 +9,6 @@ public interface IProfilService
     
     public Task<ServiceResult<ProfilGetResDto>> GetProfil(int id);
 
-    public Task<ServiceResult<ProfilGetResDto>> GetProfil(string login);
     public Task<ServiceResult<ProfilMinInfoDto>> GetProfilMinInfo(int id);
 
     public Task<ServiceResult<bool>> UpdateProfil(int id, ProfilUpdateDto profil);
