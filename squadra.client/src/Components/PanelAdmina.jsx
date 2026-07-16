@@ -5,6 +5,7 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL} from "../config/api";
+import ZmienHaslo from "./ZmienHaslo";
 export default function PanelAdmina() {
 
     const navigate = useNavigate();
@@ -236,7 +237,7 @@ export default function PanelAdmina() {
         <div id = "glowna">
             <h1 className="text-red-600">Panel admina</h1>
             <div className="flex flex-col gap-20 justify-center items-center mt-20">
-                <div className="border-gray-600 border-2 rounded-md p-10 shadow-md">
+                <div className="border-gray-600 border-2 rounded-md p-10 shadow-md bg-white">
                     <h2>Usuń użytkownika o podanym id</h2>
                     <div className="flex justify-center gap-5">
                         <input
@@ -258,7 +259,7 @@ export default function PanelAdmina() {
                         </button>
                     </div>
                 </div>
-                <div className="border-gray-600 border-2 rounded-md p-10 shadow-md">
+                <div className="border-gray-600 border-2 rounded-md p-10 shadow-md bg-white">
                     <h2>Usuń drużynę o podanym id</h2>
                     <div className="flex justify-center gap-5">
                         <input
@@ -281,7 +282,7 @@ export default function PanelAdmina() {
                     </div>
                 </div>
             </div>
-
+            <ZmienHaslo/>
         </div>
         {pokazUsunUzytkownika && <PanelUsunUzytkownika />}
         {pokazUsunDruzyne && <PanelUsunDruzyne />}
