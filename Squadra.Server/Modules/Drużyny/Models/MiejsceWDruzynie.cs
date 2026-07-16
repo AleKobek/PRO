@@ -10,9 +10,9 @@ public class MiejsceWDruzynie
     public int? UzytkownikId { get; set; }
     public int? RolaId { get; set; }
     public int? StatystykaId { get; set; }
-    public string? WartoscStatystyki { get; set; }
-    public double? WartoscLiczbowaStatystyki { get; set; }
-    public DateTime? OstatnieOtwarcieCzatu { get; set; }
+    public string? WartoscStatystyki { get; set; } // do wyświetlania
+    public double? WartoscLiczbowaStatystyki { get; set; } // do porównywania
+    public DateTime? OstatnieOtwarcieCzatu { get; set; } // data ostatniego otwarcia czatu przez użytkownika na tym miejscu
     
     public virtual Druzyna Druzyna { get; set; } = null!;
     public virtual Uzytkownik? Uzytkownik { get; set; }
