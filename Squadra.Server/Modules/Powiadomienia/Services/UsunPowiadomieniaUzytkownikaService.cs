@@ -35,7 +35,7 @@ public class UsunPowiadomieniaUzytkownikaService(IPowiadomienieRepository powiad
             ));
         }
         
-        // jak tu dochodzimy, wszystko jest git
+        // jak tu dochodzimy, wszystko jest w porządku
         return ServiceResult<bool>.NoContent(await powiadomienieRepository.DeletePowiadomieniaZwiazaneZUzytkownikiem(idUzytkownika));
     }
 }

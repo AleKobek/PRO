@@ -174,9 +174,9 @@ public class UzytkownikService(
         try
         {
             var wynikZBledami = await uzytkownikRepository.UpdateHaslo(idUzytkownika, stareHaslo, noweHaslo);
-            // jeżeli jest git
+            // jeżeli jest w porządku
             if (wynikZBledami.Count == 0) return ServiceResult<bool>.Ok(true);
-            // jeżeli nie jest git
+            // jeżeli nie jest w porządku
             var bledy = wynikZBledami.Select(e => new ErrorItem(e, nameof(noweHaslo)));
             return ServiceResult<bool>.BadRequest(bledy.ToArray());
         }catch(NieZnalezionoWBazieException e){

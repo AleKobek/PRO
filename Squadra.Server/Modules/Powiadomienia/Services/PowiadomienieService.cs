@@ -161,7 +161,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             }
         }
         
-        // jak tu dochodzimy, wszystko jest git
+        // jak tu dochodzimy, wszystko jest w porządku
         await powiadomienieRepository.CreatePowiadomienie(powiadomienie);
         // usuwamy powiadomienia przekraczające limit
         await UsunNadmiarowePowiadomieniaUzytkownika(powiadomienie.IdUzytkownika);
@@ -178,7 +178,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
         if (uzytkownik.StatusCode != 200)
             return ServiceResult<bool>.NotFound(uzytkownik.Errors[0]);
         
-        // jak tu dochodzimy, wszystko jest git
+        // jak tu dochodzimy, wszystko jest w porządku
         return ServiceResult<bool>.NoContent(await powiadomienieRepository.DeletePowiadomieniaZwiazaneZUzytkownikiem(idUzytkownika));
     }
 
@@ -285,7 +285,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             
             var idZapraszanego = zapraszanyUzytkownikRes.Value.Id;
             
-            // jest git
+            // jest w porządku
             return await WyslijZaproszenieDoZnajomychPoId(idZapraszajacego, idZapraszanego);
         }
         catch (NieZnalezionoWBazieException e)
@@ -362,7 +362,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 null,
                 null);
 
-            // jest git
+            // jest w porządku
             return ServiceResult<bool>.NoContent(await powiadomienieRepository.CreatePowiadomienie(dto));
     }
 
@@ -388,7 +388,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             nazwaRoli
         );
 
-        // jest git
+        // jest w porządku
         return await CreatePowiadomienie(dto);
     }
     
@@ -424,7 +424,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             nazwaRoli
         );
 
-        // jest git
+        // jest w porządku
         return await CreatePowiadomienie(dto);
     }
     
@@ -449,7 +449,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
             null
         );
 
-        // jest git
+        // jest w porządku
         return await CreatePowiadomienie(dto);
     }
 
@@ -476,7 +476,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 nazwaDruzyny,
                 nazwaRoli
             );
-            // jest git
+            // jest w porządku
             return await CreatePowiadomienie(dto);
         }
         else
@@ -490,7 +490,7 @@ public class PowiadomienieService(IPowiadomienieRepository powiadomienieReposito
                 null,
                 nazwaRoli
             );
-            // jest git
+            // jest w porządku
             return await CreatePowiadomienie(dto);
         }
         

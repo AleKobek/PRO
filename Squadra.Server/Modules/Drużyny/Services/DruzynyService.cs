@@ -1028,7 +1028,7 @@ public class DruzynyService(
         }
         if(req.IdRol.Length == 0 && roleGry.Value.Count > 0) return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Jeżeli gra ma role, to należy podać id przynajmniej jednej roli"));
         
-        // wszystko powinno być git, można szukać drużyn
+        // wszystko powinno być w porządku, można szukać drużyn
         var jezykiUzytkownikaRes = await jezykService.GetJezykiProfilu(idUzytkownika);
         if(!jezykiUzytkownikaRes.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(jezykiUzytkownikaRes.StatusCode, jezykiUzytkownikaRes.Errors);
         
@@ -1180,7 +1180,7 @@ public class DruzynyService(
             var rola = miejsce.RolaId != null ? await statystykiService.GetRola(miejsce.RolaId ?? 1) : null;
             var nazwaRoli = rola != null && rola.Succeeded ? rola.Value.Nazwa : null;
             
-            // wszystko powinno być git, wysyłamy zaproszenie
+            // wszystko powinno być w porządku, wysyłamy zaproszenie
             var wynik = await powiadomienieService.WyslijZaproszenieNaMiejsceWDruzynie(
                 idZapraszanegoUzytkownika,
                 miejsce.DruzynaId,
