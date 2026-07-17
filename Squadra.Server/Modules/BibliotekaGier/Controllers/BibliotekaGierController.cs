@@ -27,7 +27,7 @@ public class BibliotekaGierController (
                 var uzytkownik = await userManager.GetUserAsync(User);
                 if (uzytkownik is null)
                         return Unauthorized("Nie jesteś zalogowany.");
-                var result = await bibliotekaGierService.PodajGryWBiblioteceUzytkownika(idUzytkownika);
+                var result = await bibliotekaGierService.GetGryWBiblioteceUzytkownika(idUzytkownika);
                 return result.StatusCode switch
                 {
                         200 => Ok(result.Value),

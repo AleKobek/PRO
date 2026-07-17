@@ -494,7 +494,7 @@ public class DruzynyService(
 
         var gryRes = await wspieranaGraService.GetWspieraneGryZPlatformamiDoSelect();
         
-        var bibliotekaGierRes = await bibliotekaGierService.PodajGryWBiblioteceUzytkownika(idUzytkownika);
+        var bibliotekaGierRes = await bibliotekaGierService.GetGryWBiblioteceUzytkownika(idUzytkownika);
         if (!bibliotekaGierRes.Succeeded) return ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>.Fail(bibliotekaGierRes.StatusCode, bibliotekaGierRes.Errors);
         
         var gryUzytkownikaZPlatformami = bibliotekaGierRes.Value.Select(x =>

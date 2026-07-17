@@ -9,7 +9,7 @@ namespace Squadra.Server.Modules.BibliotekaGier.Repositories;
 public class BibliotekaGierRepository(AppDbContext context) : IBibliotekaGierRepository
 {
     // zwraca wszystkie gry, które użytkownik ma w swojej bibliotece w formacie do tabelki na stronie profilu
-    public async Task<ICollection<GraWBiblioteceDTO>> PodajGryWBiblioteceUzytkownika(int idUzytkownika)
+    public async Task<ICollection<GraWBiblioteceDTO>> GetGryWBiblioteceUzytkownika(int idUzytkownika)
     {
         
         var uzytkownik = await context.Uzytkownik.FindAsync(idUzytkownika);

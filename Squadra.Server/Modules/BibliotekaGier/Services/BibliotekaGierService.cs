@@ -12,13 +12,13 @@ public class BibliotekaGierService(IBibliotekaGierRepository bibliotekaGierRepos
                                     IStatystykiService statystykiService) : IBibliotekaGierService
 {
     // zwraca wszystkie gry, które użytkownik ma w swojej bibliotece w formacie do tabelki na stronie profilu
-    public async Task<ServiceResult<ICollection<GraWBiblioteceDTO>>> PodajGryWBiblioteceUzytkownika(int idUzytkownika)
+    public async Task<ServiceResult<ICollection<GraWBiblioteceDTO>>> GetGryWBiblioteceUzytkownika(int idUzytkownika)
     {
         try
         {
             if (idUzytkownika <= 0)
                 return ServiceResult<ICollection<GraWBiblioteceDTO>>.BadRequest(new ErrorItem("Podano nieprawidłowe id uzytkownika: " + idUzytkownika));
-            var listaGier = await bibliotekaGierRepository.PodajGryWBiblioteceUzytkownika(idUzytkownika);
+            var listaGier = await bibliotekaGierRepository.GetGryWBiblioteceUzytkownika(idUzytkownika);
             var listaCzasowGierRes = await statystykiService.GetGodzinyGraniaUzytkownika(idUzytkownika);
             var listaCzasowGier = listaCzasowGierRes.Value ?? new List<CzasRozgrywkiDTO>();
             
