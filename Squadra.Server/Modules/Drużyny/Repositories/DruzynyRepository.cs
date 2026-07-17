@@ -39,6 +39,7 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
         return miejscaWDruzynie.Select(m => m.Druzyna).Distinct().ToList();
     }
     
+    
     public async Task<ICollection<Druzyna>> GetDruzyny(int[] idDruzyn)
     {
         var druzyny = await context.Druzyna
@@ -56,6 +57,15 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
         var miejscaWDruzynie = await context.MiejsceWDruzynie
             .Where(m => m.DruzynaId == idDruzyny)
             .Include(m => m.Rola)
+            .ToListAsync();
+
+        return miejscaWDruzynie;
+    }
+    
+    public async Task<ICollection<MiejsceWDruzynie>> GetMiejscaWDruzynieUzytkownika(int idUzytkownika)
+    {
+        var miejscaWDruzynie = await context.MiejsceWDruzynie
+            .Where(m => m.UzytkownikId == idUzytkownika)
             .ToListAsync();
 
         return miejscaWDruzynie;
