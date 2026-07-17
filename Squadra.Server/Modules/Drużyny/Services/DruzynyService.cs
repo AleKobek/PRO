@@ -931,29 +931,6 @@ public class DruzynyService(
             return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
         }
     }
-    
-    public async Task<ServiceResult<bool>> UpdateDruzynaAdmin(int idDruzyny, DruzynaUpdateDto druzynaReq)
-    {
-        if(idDruzyny <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Id drużyny musi być większe od 0"));
-        try
-        {
-            var nastroj = await druzynyRepository.GetNastrojRozgrywki(druzynaReq.IdNastrojuRozgrywki); // tylko po to, aby wywaliło błąd gdy nie znajdzie
-            
-            var bledy = new List<ErrorItem>();
-
-            if(druzynaReq.Nazwa.Trim().Length == 0) bledy.Add(new ErrorItem("Nazwa drużyny nie może być pusta", nameof(druzynaReq.Nazwa)));
-            if(druzynaReq.Nazwa.Trim().Length > 40) bledy.Add(new ErrorItem("Nazwa drużyny nie może być dłuższa niż 40 znaków", nameof(druzynaReq.Nazwa)));
-            if(druzynaReq.Opis?.Trim().Length > 300) bledy.Add(new ErrorItem("Opis nie może być dłuższy niż 300 znaków", nameof(druzynaReq.Opis)));
-            
-            return bledy.Count > 0 
-                ? ServiceResult<bool>.BadRequest(bledy.ToArray()) 
-                : ServiceResult<bool>.NoContent(await druzynyRepository.UpdateDruzyna(idDruzyny, druzynaReq));
-        }
-        catch (NieZnalezionoWBazieException e)
-        {
-            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
-        }
-    }
 
     public async Task<ServiceResult<TabelkaDruzynResDto>> WyszukajDruzyny(WyszukajDruzyneReqDto req, int idUzytkownika)
     {
