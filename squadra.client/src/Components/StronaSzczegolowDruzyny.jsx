@@ -10,7 +10,7 @@ import AwatarComponent from "./AwatarComponent";
 import CzatDruzynowyKomponent from "./CzatDruzynowyKomponent";
 
 const TOAST_CONTAINER_ID = "szczegoly-druzyny-toast";
-export default function StronaSzczegolowDruzyny() {
+export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzynowe}) {
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -107,6 +107,32 @@ export default function StronaSzczegolowDruzyny() {
         if(!daneDruzyny) document.title = `Szczegóły drużyny`;
         else document.title = `Szczegóły drużyny ${daneDruzyny.nazwa}`;
     }, [daneDruzyny]);
+
+    useEffect(() => {
+
+        const ac = new AbortController();
+        let alive = true;
+
+        const sprawdzCzySaNoweWiadomosci = async (signal) => {
+            try {
+                console.log("sprawdzam czy sa nowe wiadomości z czatów drużynowych");
+                const res = await fetch(`${API_BASE_URL}/Wiadomosc/nowe/druzyny`, {credentials: "include", signal});
+                if(!res.ok) return;
+                const czyNowe = await res.json();
+                console.log("czy nowe wiadomości z czatów drużynowych: ",czyNowe);
+                if(alive) ustawCzySaNoweWiadomosciDruzynowe(czyNowe);
+            } catch (err) {
+                if (err && err.name === 'AbortError') return;
+                console.error(err);
+            }
+        }
+        if(daneDruzyny) sprawdzCzySaNoweWiadomosci(ac.signal);
+
+        return () => {
+            alive = false;
+            ac.abort(); // przerywamy fetch
+        };
+    }, [daneDruzyny, ustawCzySaNoweWiadomosciDruzynowe]);
 
     useEffect(() => {
         if (location.state?.pomyslnieEdytowanoDruzyne && !toastShownRef.current) {

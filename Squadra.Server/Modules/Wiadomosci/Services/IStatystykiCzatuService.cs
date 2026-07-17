@@ -9,5 +9,6 @@ public interface IStatystykiCzatuService
     public Task<ServiceResult<bool>> CzySaNoweWiadomosciOdZnajomych(int idObecnegoUzytkownika);
     public Task<ServiceResult<DateTime?>> GetDataNajnowszejWiadomosciWDruzynie(int idDruzyny);
     public Task<ServiceResult<bool>> CzySaNoweWiadomosciWDruzynie(int idDruzyny, DateTime? dataOstatniegoOtwarciaCzatu);
+    public Task<ServiceResult<bool>> CzySaNoweWiadomosciNaCzatachDruzyn(int idObecnegoUzytkownika);
 
 }

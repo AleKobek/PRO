@@ -90,9 +90,9 @@ public class WiadomoscController(
         };
     }
 
-    [HttpGet("nowe")]
+    [HttpGet("nowe/znajomi")]
     [Authorize (Roles = "Uzytkownik")]
-    [EndpointSummary("Zwraca, czy zalogowany uzytkownik ma nowe wiadomości od kogokolwiek")]
+    [EndpointSummary("Zwraca, czy zalogowany uzytkownik ma nowe wiadomości od któregokolwiek ze znajomych")]
     [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.Forbidden)]
@@ -103,6 +103,28 @@ public class WiadomoscController(
         if (uzytkownik is null)
             return Unauthorized("Nie jesteś zalogowany.");
         var result = await statykiCzatuService.CzySaNoweWiadomosciOdZnajomych(uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpGet("nowe/druzyny")]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Zwraca, czy zalogowany uzytkownik ma nowe wiadomości na czacie którejkolwiek druzyny")]
+    [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult> CzySaNoweWiadomosciNaCzatachDruzyn()
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        var result = await statykiCzatuService.CzySaNoweWiadomosciNaCzatachDruzyn(uzytkownik.Id);
         return result.StatusCode switch
         {
             200 => Ok(result.Value),

@@ -1,4 +1,5 @@
 ﻿using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Drużyny.Repositories;
 using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Wiadomosci.Repositories;
 using Squadra.Server.Modules.Znajomosci.Repositories;
@@ -6,8 +7,11 @@ using Squadra.Server.Modules.Znajomosci.Repositories;
 namespace Squadra.Server.Modules.Wiadomosci.Services;
 
 // używamy tego w GetZnajomiDoListyUżytkownika w ZnajomiService
-public class StatystykiCzatuService(IWiadomoscRepository wiadomoscRepository, IZnajomiRepository znajomiRepository)
-    : IStatystykiCzatuService
+public class StatystykiCzatuService(
+    IWiadomoscRepository wiadomoscRepository, 
+    IZnajomiRepository znajomiRepository,
+    IDruzynyRepository druzynyRepository
+    ) : IStatystykiCzatuService
 {
     // potrzebujemy tego do sortowania znajomych na liście znajomych - ten, z którym mamy nowszą wiadomość, powinien być wyżej
     public async Task<ServiceResult<DateTime?>> GetDataNajnowszejWiadomosci(int idUzytkownika1, int idUzytkownika2)
@@ -141,5 +145,34 @@ public class StatystykiCzatuService(IWiadomoscRepository wiadomoscRepository, IZ
         if (dataOstatniegoOtwarciaCzatu == null) return ServiceResult<bool>.Ok(true); // jeżeli użytkownik nigdy nie otworzył czatu z tą drużyną a jest jakaś wiadomość, to na pewno jest nowa wiadomość
         
         return ServiceResult<bool>.Ok(dataNajnowszejWiadomosci > dataOstatniegoOtwarciaCzatu);
+    }
+    
+    // przechodzimy po miejscach w drużynach użytkownika i sprawdzamy, czy są jakieś nowe wiadomości na którymkolwiek czacie, aby zaznaczyć to w ui
+    public async Task<ServiceResult<bool>> CzySaNoweWiadomosciNaCzatachDruzyn(int idObecnegoUzytkownika)
+    {
+        try
+        {
+            if (idObecnegoUzytkownika < 1)
+                return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idObecnegoUzytkownika + " nie istnieje"));
+
+            var miejsca = await druzynyRepository.GetMiejscaWDruzynieUzytkownika(idObecnegoUzytkownika);
+            var czySaNowe = false;
+            foreach (var miejsce in miejsca)
+            {
+                var czySaNoweWiadomosciRes = await CzySaNoweWiadomosciWDruzynie(miejsce.DruzynaId, miejsce.OstatnieOtwarcieCzatu);
+                if(!czySaNoweWiadomosciRes.Succeeded) continue; // jeżeli jest coś nie tak z miejscem, to je pomijamy
+                if (czySaNoweWiadomosciRes.Value) // są nowe wiadomości na czacie tej drużyny
+                {
+                    czySaNowe = true;
+                    break; // już nie musimy dalej sprawdzać, wystarczy, że jest jeden czat, na którym są nowe wiadomości, żeby zaznaczyć to w ui
+                }
+            }
+
+            return ServiceResult<bool>.Ok(czySaNowe);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
     }
 }
