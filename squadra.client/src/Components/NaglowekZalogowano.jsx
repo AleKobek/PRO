@@ -7,8 +7,8 @@ import SelectStatusowNaNaglowkuKomponent from "./SelectStatusowNaNaglowkuKompone
 import {Bounce, toast, ToastContainer} from "react-toastify";
 
 export default function NaglowekZalogowano({
-                                           czySaNoweWiadomosci = false,
-                                           ustawCzySaNoweWiadomosci = () => {},
+                                           czySaNoweWiadomosciPrywatne = false,
+                                           ustawCzySaNoweWiadomosciPrywatne = () => {},
                                             awatarUrl = "",
                                             ustawAwatarUrl = () => {},
 }){
@@ -154,10 +154,10 @@ export default function NaglowekZalogowano({
     
     const sprawdzCzySaNoweWiadomosci = async (signal) => {
         try {
-            const res = await fetch(`${API_BASE_URL}/Wiadomosc/nowe`, {credentials: "include", signal});
+            const res = await fetch(`${API_BASE_URL}/Wiadomosc/nowe/znajomi`, {credentials: "include", signal});
             if(!res.ok) return;
             const czyNowe = await res.json();
-            if(czySaNoweWiadomosci !== czyNowe) ustawCzySaNoweWiadomosci(czyNowe);
+            if(czySaNoweWiadomosciPrywatne !== czyNowe) ustawCzySaNoweWiadomosciPrywatne(czyNowe);
         } catch (err) {
             if (err && err.name === 'AbortError') return;
             console.error(err);
@@ -322,7 +322,7 @@ export default function NaglowekZalogowano({
                     <NavLink to = '/twoiZnajomi' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja' }>
                         <div className="flex flex-row gap-2 items-center">
                             Znajomi
-                            {czySaNoweWiadomosci ? <img src="/img/koperta.svg" alt="koperta" className="text-red-600 h-[1em] w-auto align-middle"/> : null}
+                            {czySaNoweWiadomosciPrywatne ? <img src="/img/koperta.svg" alt="koperta" className="text-red-600 h-[1em] w-auto align-middle"/> : null}
                         </div>
                     </NavLink>
                     <NavLink to = '/twojProfil' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Twój profil</NavLink>

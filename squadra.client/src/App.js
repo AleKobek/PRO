@@ -25,7 +25,7 @@ import NaglowekAdmina from "./Components/NaglowekAdmina";
 
 function App() {
 
-    const [czySaNoweWiadomosci, ustawCzySaNoweWiadomosci] = useState(false);
+    const [czySaNoweWiadomosciPrywatne, ustawCzySaNoweWiadomosciPrywatne] = useState(false);
     const [awatarUrl, ustawAwatarUrl] = useState("");
 
     // jesteśmy na porcie 3000
@@ -35,51 +35,51 @@ function App() {
             <Routes>
               <Route path = "/" element = {<StronaGlowna/>}></Route>
               <Route path = "/edytujProfil" element = {<>
-                  <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
+                  <NaglowekZalogowano czySaNoweWiadomosciPrywatne={czySaNoweWiadomosciPrywatne} ustawCzySaNoweWiadomosciPrywatne={ustawCzySaNoweWiadomosciPrywatne} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
                   <EdytujProfil ustawAwatarUrl={ustawAwatarUrl}/>
               </>}></Route>
               <Route path = "/twojProfil" element = {<>
-                  <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
+                  <NaglowekZalogowano czySaNoweWiadomosciPrywatne={czySaNoweWiadomosciPrywatne} ustawCzySaNoweWiadomosciPrywatne={ustawCzySaNoweWiadomosciPrywatne} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
                   <TwojProfil/>
               </>}></Route>
                 <Route path = "/twojeKonto" element = {<>
-                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
+                    <NaglowekZalogowano czySaNoweWiadomosciPrywatne={czySaNoweWiadomosciPrywatne} ustawCzySaNoweWiadomosciPrywatne={ustawCzySaNoweWiadomosciPrywatne} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
                     <TwojeKonto/>
                 </>}></Route>
                 <Route path = "/edytujKonto" element = {<>
-                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
+                    <NaglowekZalogowano czySaNoweWiadomosciPrywatne={czySaNoweWiadomosciPrywatne} ustawCzySaNoweWiadomosciPrywatne={ustawCzySaNoweWiadomosciPrywatne} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
                     <EdytujKonto/>
                 </>}></Route>
                 <Route path = "/twoiZnajomi" element = {<>
-                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
-                    <TwoiZnajomiStrona ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci}/>
+                    <NaglowekZalogowano czySaNoweWiadomosciPrywatne={czySaNoweWiadomosciPrywatne} ustawCzySaNoweWiadomosciPrywatne={ustawCzySaNoweWiadomosciPrywatne} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
+                    <TwoiZnajomiStrona ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosciPrywatne}/>
                 </>}></Route>
               <Route path = "/profil/:idWlascicielaProfilu" element = {<>
-                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
+                    <NaglowekZalogowano czySaNoweWiadomosciPrywatne={czySaNoweWiadomosciPrywatne} ustawCzySaNoweWiadomosciPrywatne={ustawCzySaNoweWiadomosciPrywatne} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
                     <ProfilOgolny/>
               </>}></Route>
                 <Route path = "/twojeDruzyny" element = {<>
-                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
+                    <NaglowekZalogowano czySaNoweWiadomosciPrywatne={czySaNoweWiadomosciPrywatne} ustawCzySaNoweWiadomosciPrywatne={ustawCzySaNoweWiadomosciPrywatne} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
                     <TwojeDruzyny/>
                 </>}></Route>
                 <Route path = "/stworzDruzyne" element = {<>
-                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
+                    <NaglowekZalogowano czySaNoweWiadomosciPrywatne={czySaNoweWiadomosciPrywatne} ustawCzySaNoweWiadomosciPrywatne={ustawCzySaNoweWiadomosciPrywatne} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
                     <StworzDruzyne/>
                 </>}></Route>
                 <Route path = "/druzyna/:idDruzyny" element = {<>
-                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
+                    <NaglowekZalogowano czySaNoweWiadomosciPrywatne={czySaNoweWiadomosciPrywatne} ustawCzySaNoweWiadomosciPrywatne={ustawCzySaNoweWiadomosciPrywatne} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
                     <StronaSzczegolowDruzyny/>
                 </>}></Route>
                 <Route path = "/edytujDruzyne" element = {<>
-                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
+                    <NaglowekZalogowano czySaNoweWiadomosciPrywatne={czySaNoweWiadomosciPrywatne} ustawCzySaNoweWiadomosciPrywatne={ustawCzySaNoweWiadomosciPrywatne} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
                     <EdytujDruzyne/>
                 </>}></Route>
                 <Route path = "/wyszukajDruzyne" element = {<>
-                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
+                    <NaglowekZalogowano czySaNoweWiadomosciPrywatne={czySaNoweWiadomosciPrywatne} ustawCzySaNoweWiadomosciPrywatne={ustawCzySaNoweWiadomosciPrywatne} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
                     <WyszukajDruzyne/>
                 </>}></Route>
                 <Route path = "/wyszukaneDruzyny" element = {<>
-                    <NaglowekZalogowano czySaNoweWiadomosci={czySaNoweWiadomosci} ustawCzySaNoweWiadomosci={ustawCzySaNoweWiadomosci} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
+                    <NaglowekZalogowano czySaNoweWiadomosciPrywatne={czySaNoweWiadomosciPrywatne} ustawCzySaNoweWiadomosciPrywatne={ustawCzySaNoweWiadomosciPrywatne} awatarUrl={awatarUrl} ustawAwatarUrl={ustawAwatarUrl}/>
                     <WynikiWyszukiwaniaDruzyn/>
                 </>}></Route>
                 <Route path = "/panelAdmina" element = {<>
