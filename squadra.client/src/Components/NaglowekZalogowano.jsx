@@ -9,6 +9,8 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
 export default function NaglowekZalogowano({
                                            czySaNoweWiadomosciPrywatne = false,
                                            ustawCzySaNoweWiadomosciPrywatne = () => {},
+                                           czySaNoweWiadomosciDruzynowe = false,
+                                           ustawCzySaNoweWiadomosciDruzynowe = () => {},
                                             awatarUrl = "",
                                             ustawAwatarUrl = () => {},
 }){
@@ -151,13 +153,22 @@ export default function NaglowekZalogowano({
             ustawLadowaniePowiadomien(false);
         }
     };
-    
+
     const sprawdzCzySaNoweWiadomosci = async (signal) => {
         try {
-            const res = await fetch(`${API_BASE_URL}/Wiadomosc/nowe/znajomi`, {credentials: "include", signal});
-            if(!res.ok) return;
-            const czyNowe = await res.json();
-            if(czySaNoweWiadomosciPrywatne !== czyNowe) ustawCzySaNoweWiadomosciPrywatne(czyNowe);
+            const resZnajomi = await fetch(`${API_BASE_URL}/Wiadomosc/nowe/znajomi`, {credentials: "include", signal});
+            const resDruzyny = await fetch(`${API_BASE_URL}/Wiadomosc/nowe/druzyny`, {credentials: "include", signal});
+            // używamy promise.all, bo oba są niezależne od siebie i można je zrobić naraz
+            Promise.all([resZnajomi, resDruzyny]).then(async ([resZnajomi, resDruzyny]) => {
+                if(resZnajomi.ok) {
+                    const czyNoweZnajomi = await resZnajomi.json();
+                    if (czySaNoweWiadomosciPrywatne !== czyNoweZnajomi) ustawCzySaNoweWiadomosciPrywatne(czyNoweZnajomi);
+                }
+                if(resDruzyny.ok) {
+                    const czyNoweDruzyny = await resDruzyny.json();
+                    if(czySaNoweWiadomosciDruzynowe !== czyNoweDruzyny) ustawCzySaNoweWiadomosciDruzynowe(czyNoweDruzyny);
+                }
+            })
         } catch (err) {
             if (err && err.name === 'AbortError') return;
             console.error(err);
@@ -318,7 +329,12 @@ export default function NaglowekZalogowano({
             <div id = "menu-na-pasku">
                 <div className="nawigacja-na-pasku">
                     {/* na razie wszystkie prowadzą do profilu, bo nie ma reszty */}
-                    <NavLink to = '/twojeDruzyny' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Drużyny</NavLink>
+                    <NavLink to = '/twojeDruzyny' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>
+                        <div className="flex flex-row gap-2 items-center">
+                            Drużyny
+                            {czySaNoweWiadomosciDruzynowe ? <img src="/img/koperta.svg" alt="koperta" className="text-red-600 h-[1em] w-auto align-middle"/> : null}
+                        </div>
+                    </NavLink>
                     <NavLink to = '/twoiZnajomi' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja' }>
                         <div className="flex flex-row gap-2 items-center">
                             Znajomi
