@@ -115,11 +115,9 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
 
         const sprawdzCzySaNoweWiadomosci = async (signal) => {
             try {
-                console.log("sprawdzam czy sa nowe wiadomości z czatów drużynowych");
                 const res = await fetch(`${API_BASE_URL}/Wiadomosc/nowe/druzyny`, {credentials: "include", signal});
                 if(!res.ok) return;
                 const czyNowe = await res.json();
-                console.log("czy nowe wiadomości z czatów drużynowych: ",czyNowe);
                 if(alive) ustawCzySaNoweWiadomosciDruzynowe(czyNowe);
             } catch (err) {
                 if (err && err.name === 'AbortError') return;
