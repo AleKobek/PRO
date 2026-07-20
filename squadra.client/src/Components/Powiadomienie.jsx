@@ -150,7 +150,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
                 if(powiadomienie.tresc?.length > 0){
                     ustawTrescPowiadomieniaCz2(", usunął konto i ją opuścił. Miał rolę " + powiadomienie.tresc + "."); // tu będzie rola
                 } else {
-                    ustawTrescPowiadomieniaCz2("usunął konto i ją opuścił.");
+                    ustawTrescPowiadomieniaCz2(" usunął konto i ją opuścił.");
                 }
                 break;
             }
