@@ -51,7 +51,7 @@ public class ZnajomiRepository(
         {
             IdUzytkownika1 = idUzytkownika1,
             IdUzytkownika2 = idUzytkownika2,
-            DataNawiazaniaZnajomosci = DateOnly.FromDateTime(DateTime.Now)
+            DataNawiazaniaZnajomosci = DateOnly.FromDateTime(DateTime.UtcNow)
         };
         await context.Znajomi.AddAsync(znajomosc);
         return await context.SaveChangesAsync() > 0;
@@ -83,8 +83,8 @@ public class ZnajomiRepository(
         
         // aktualizujemy datę ostatniego otwarcia czatu dla użytkownika, który otwiera czat
         // mamy dwie zmienne w bazie danych, OstatnieOtwarcieCzatuUzytkownika1 i OstatnieOtwarcieCzatuUzytkownika2, więc musimy sprawdzić, który z nich aktualizować
-        if (znajomosc.IdUzytkownika1 == idOtwierajacego) znajomosc.OstatnieOtwarcieCzatuUzytkownika1 = DateTime.Now;
-        else znajomosc.OstatnieOtwarcieCzatuUzytkownika2 = DateTime.Now;
+        if (znajomosc.IdUzytkownika1 == idOtwierajacego) znajomosc.OstatnieOtwarcieCzatuUzytkownika1 = DateTime.UtcNow;
+        else znajomosc.OstatnieOtwarcieCzatuUzytkownika2 = DateTime.UtcNow;
         
         context.Znajomi.Update(znajomosc);
         return await context.SaveChangesAsync() > 0;
