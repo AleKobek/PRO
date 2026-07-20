@@ -16,6 +16,7 @@ export default function FormularzWyboruGryDruzyny({
     const [idWybranejGry, ustawIdWybranejGry] = useState(0);
     const [wszystkieGry, ustawWszystkieGry] = useState([]);
     const [gryUzytkownika, ustawGryUzytkownika] = useState([]);
+    const [ladowanie, ustawLadowanie] = useState(true);
 
 
     // Pobranie list gier
@@ -65,7 +66,9 @@ export default function FormularzWyboruGryDruzyny({
             else ustawIdWybranejGry(gryUzytkownikaPobrane[0].idGry);
         };
 
-        podajGry();
+        podajGry().then(() => {
+            ustawLadowanie(false);
+        });
 
         // to funkcja sprzątająca. Odpali się od razu, gdy ten element zniknie, np. użytkownik zmieni stronę
         // albo pod koniec całej funkcji
@@ -75,10 +78,10 @@ export default function FormularzWyboruGryDruzyny({
         }
     }, [uzytkownik, uzytkownik.id]);
 
-    if(wszystkieGry.length === 0) return (<>
-            <h1>Ładowanie...</h1>
-        </>
-    )
+    if(ladowanie) return (<div className="flex flex-col items-center justify-center gap-5 border-4 border-gray-500 rounded-lg p-5 shadow-lg">
+        <h3>Formularz wyboru gry</h3>
+        <h1>Ładowanie...</h1>
+    </div>)
 
     return (<div className="flex flex-col items-center justify-center gap-5 border-4 border-gray-500 rounded-lg p-5 shadow-lg">
         <h3>Formularz wyboru gry</h3>
