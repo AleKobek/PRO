@@ -305,7 +305,7 @@ export default function WyszukajDruzyne() {
                     <select
                         onChange={(e) => ustawIdWybranejGry(parseInt(e.target.value))}
                         value={idWybranejGry}
-                        className="border-2 border-gray-300 rounded-md p-2 w-full"
+                        className="border-2 border-gray-300 rounded-md p-2"
 
                     >
                         {czyZintegrowano
