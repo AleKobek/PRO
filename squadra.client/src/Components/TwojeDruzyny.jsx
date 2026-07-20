@@ -13,6 +13,7 @@ export default function TwojeDruzyny() {
 
     const [idDruzyn, ustawIdDruzyn] = useState([]);
     const [pierwszaStronaDruzyn, ustawDruzynyNaStronie] = useState([])
+    const [ladowanieDruzyn, ustawLadowanieDruzyn] = useState(true);
 
     useEffect(() => {
         document.title = `Squadra`;
@@ -102,7 +103,7 @@ export default function TwojeDruzyny() {
             ustawDruzynyNaStronie(dane.pierwszaStronaDruzyn);
         };
 
-        podajTwojeDruzyny();
+        podajTwojeDruzyny().then(() => {ustawLadowanieDruzyn(false)});
 
         return () => {
             alive = false;
@@ -132,13 +133,16 @@ export default function TwojeDruzyny() {
                 </button>
             </div>
             <div className="mt-10 text-2xl">
-                <TabelkaDruzynKomponent
-                    idDruzyn={idDruzyn}
-                    brakDruzynWiadomosc={"Nie należysz do żadnej drużyny. Czas to zmienić! Razem raźniej!"}
-                    czySzczegolyWNowejKarcie = {false}
-                    pierwszaStronaDruzyn={pierwszaStronaDruzyn}
-                    idUzytkownika={uzytkownik.id}
-                />
+                {ladowanieDruzyn
+                    ? <h1>Ładowanie...</h1>
+                    : <TabelkaDruzynKomponent
+                        idDruzyn={idDruzyn}
+                        brakDruzynWiadomosc={"Nie należysz do żadnej drużyny. Czas to zmienić! Razem raźniej!"}
+                        czySzczegolyWNowejKarcie={false}
+                        pierwszaStronaDruzyn={pierwszaStronaDruzyn}
+                        idUzytkownika={uzytkownik.id}
+                    />
+                }
             </div>
         </div>
         <ToastContainer
