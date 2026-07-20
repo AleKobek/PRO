@@ -149,7 +149,10 @@ export default function DaneProfilu({idUzytkownika, ustawPseudonimDoNazwyKarty =
         </label>
         <label>
             Zaimki:
-            <p id= "zaimki" className= "pole-w-danych-profilu">{zaimki}</p>
+            {zaimki && zaimki.length > 0
+                ? <p id= "zaimki" className= "pole-w-danych-profilu">{zaimki}</p>
+                : <p id= "zaimki" className= "pole-w-danych-profilu text-gray-500">Nie określono</p>
+            }
         </label>
         <label>
             Kraj:
@@ -165,7 +168,10 @@ export default function DaneProfilu({idUzytkownika, ustawPseudonimDoNazwyKarty =
         </div><br/>
         <label>
             Opis:
-            <p id = "opis" className= "pole-w-danych-profilu">{opis}</p>
+            {opis && opis.length > 0
+                ? <p id = "opis" className= "pole-w-danych-profilu">{opis}</p>
+                : <p id = "opis" className= "pole-w-danych-profilu text-gray-500">brak</p>
+            }
         </label>
         <label>
             Status:
