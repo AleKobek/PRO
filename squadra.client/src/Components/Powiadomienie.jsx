@@ -35,7 +35,7 @@ export default function Powiadomienie({powiadomienie, przyRozpatrzaniuPowiadomie
         USUNIETO_CIE_ZE_ZNAJOMYCH: 5,
         UZYTKOWNIK_DOLACZYL_DO_DRUZYNY: 6,
         USUNIETO_CIE_Z_DRUZYNY: 7,
-        ZAPROSZENIE_DO_DRUZYNY: 8,
+        ZAPROSZENIE_DO_DRUZYNY: 8, // przy zmianie id zmienić także przy usuwaniu zaproszeń przy dołączaniu do drużyny w StronaSzczegolowDruzyny
         UZYTKOWNIK_PRZYJAL_ZAPROSZENIE_DO_DRUZYNY: 9,
         UZYTKOWNIK_ODRZUCIL_ZAPROSZENIE_DO_DRUZYNY: 10,
         UZYTKOWNIK_OPUSCIL_DRUZYNE: 13,

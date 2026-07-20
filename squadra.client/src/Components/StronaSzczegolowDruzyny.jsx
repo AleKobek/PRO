@@ -10,7 +10,7 @@ import AwatarComponent from "./AwatarComponent";
 import CzatDruzynowyKomponent from "./CzatDruzynowyKomponent";
 
 const TOAST_CONTAINER_ID = "szczegoly-druzyny-toast";
-export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzynowe}) {
+export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzynowe, powiadomienia, ustawPowiadomienia}) {
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -340,6 +340,8 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
             pobierzStatystykiDruzyny(idDruzyny);
 
             toast.success(`Pomyślnie dołączono do drużyny!`, toastOptions);
+            let tempPowiadomienia = powiadomienia.filter(powiadomienie => powiadomienie.idPowiazanegoObiektu === idDruzyny && powiadomienie.idTypuPowiadomienia === 8)
+            ustawPowiadomienia(tempPowiadomienia);
         }
 
         dolaczDoDruzyny();

@@ -13,6 +13,8 @@ export default function NaglowekZalogowano({
                                            ustawCzySaNoweWiadomosciDruzynowe = () => {},
                                             awatarUrl = "",
                                             ustawAwatarUrl = () => {},
+                                            powiadomienia = [],
+                                            ustawPowiadomienia = () => {}
 }){
 
     const navigate = useNavigate();
@@ -23,7 +25,6 @@ export default function NaglowekZalogowano({
 
     // powiadomienia
     const [pokazPowiadomienia, ustawPokazPowiadomienia] = useState(false);
-    const [powiadomienia, ustawPowiadomienia] = useState([]);
     const [ladowaniePowiadomien, ustawLadowaniePowiadomien] = useState(false);
     const [maPowiadomienia, ustawMaPowiadomienia] = useState(false);
 
