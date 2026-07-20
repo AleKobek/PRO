@@ -192,7 +192,7 @@ export default function FormularzDruzynyZintegrowano({
     // dodawanie wymagań drużyny
     const [idStatystykiDoDodania, ustawIdStatystykiDoDodania] = useState(null);
     const [nazwaStatystykiDoDodania, ustawNazweStatystykiDoDodania] = useState(null);
-    const [wartoscStatystykiDoDodania, ustawWartoscStatystykiDoDodania] = useState(0);
+    const [wartoscStatystykiDoDodania, ustawWartoscStatystykiDoDodania] = useState("0");
     const [wartoscLiczbowaStatystykiDoDodania, ustawWartoscLiczbowaStatystykiDoDodania] = useState(0);
     const [idRangiDoDodania, ustawIdRangiDoDodania] = useState(null);
     const [nazwaRangiDoDodania, ustawNazweRangiDoDodania] = useState(null);
@@ -203,7 +203,7 @@ export default function FormularzDruzynyZintegrowano({
     const [idRoliDoDodania, ustawIdRoliDoDodania] = useState(null);
     const [typWymaganiaDoDodania, ustawTypWymaganiaDoDodania] = useState(null); // do radio przy dodawaniu miejsca
     const [idStatystykiMiejscaDoDodania, ustawIdStatystykiMiejscaDoDodania] = useState(null);
-    const [wartoscStatystykiMiejscaDoDodania, ustawWartoscStatystykiMiejscaDoDodania] = useState(0);
+    const [wartoscStatystykiMiejscaDoDodania, ustawWartoscStatystykiMiejscaDoDodania] = useState("0");
     const [wartoscLiczbowaStatystykiMiejscaDoDodania, ustawWartoscLiczbowaStatystykiMiejscaDoDodania] = useState(0);
     const [idRangiMiejscaDoDodania, ustawIdRangiMiejscaDoDodania] = useState(null);
     const [wartoscRangiMiejscaDoDodania, ustawWartoscRangiMiejscaDoDodania] = useState(null);
