@@ -970,8 +970,8 @@ export default function FormularzDruzynyZintegrowano({
                 disabled={czyZablokowaneDodanieMiejsca}
             >Dodaj</button>
         </div>
-        <h3>Uwaga!</h3>
-        <p>Drużyna zostanie rozwiązana automatycznie po tygodniu Twojej nieaktywności</p>
+        <h2 className="text-red-700">Uwaga!</h2>
+        <p className="text-red-700">Drużyna zostanie rozwiązana automatycznie po tygodniu Twojej nieaktywności</p>
         <button
             className={ czyZablokowane
                 ? "zablokowany-przycisk"
