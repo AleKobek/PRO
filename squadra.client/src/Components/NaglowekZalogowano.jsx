@@ -206,7 +206,7 @@ export default function NaglowekZalogowano({
         let tempStatus = listaStatusow.find(item => item.id === idStatusu);
         ustawAktualnyStatusZBazy(tempStatus);
     }
-    
+
     useEffect(() => {
         // czekamy aż się załaduje id użytkownika
         if(!uzytkownik) return;
@@ -295,7 +295,7 @@ export default function NaglowekZalogowano({
             const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
-            toast.error(body.message ?? body.errors[0].message ?? `Wystąpił błąd podczas rozpatrywania powiadomienia`, {
+            toast.error(body.message ?? ( body.errors ? body.errors[0] ? body.errors[0].message : null : null) ?? `Wystąpił błąd podczas rozpatrywania powiadomienia`, {
                 position: "top-center",
                 autoClose: 5000,
                 hideProgressBar: false,
