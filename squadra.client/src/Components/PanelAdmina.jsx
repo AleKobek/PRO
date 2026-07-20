@@ -242,7 +242,7 @@ export default function PanelAdmina() {
                     <div className="flex justify-center gap-5">
                         <input
                             type="number"
-                            className="border-2 border-gray-300 rounded-md p-2"
+                            className="border-2 border-gray-500 rounded-md p-2"
                             placeholder="Podaj id użytkownika"
                             value={idUzytkownikaDoUsuniecia}
                             onChange={(e) => ustawIdUzytkownikaDoUsuniecia(e.target.value)}
@@ -264,7 +264,7 @@ export default function PanelAdmina() {
                     <div className="flex justify-center gap-5">
                         <input
                             type="number"
-                            className="border-2 border-gray-300 rounded-md p-2"
+                            className="border-2 border-gray-500 rounded-md p-2"
                             placeholder="Podaj id drużyny"
                             value={idDruzynyDoUsuniecia}
                             onChange={(e) => ustawIdDruzynyDoUsuniecia(e.target.value)}
