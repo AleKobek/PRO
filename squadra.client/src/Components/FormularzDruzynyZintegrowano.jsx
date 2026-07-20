@@ -12,6 +12,7 @@ export default function FormularzDruzynyZintegrowano({
     /*
     dane przychodzą w formie: (tutaj dla ow)
         {
+      "tytulGry": "Overwatch",
       "nastrojeRozgrywki": [
         {
           "id": 1,
@@ -164,6 +165,7 @@ export default function FormularzDruzynyZintegrowano({
     const [ladowanie, ustawLadowanie] = useState(true);
 
     // pobrane dane z bazy
+    const [tytulGry, ustawTytulGry] = useState("");
     const [nastrojeRozgrywki, ustawNastrojeRozgrywki] = useState([]);
     const [platformy, ustawPlatformy] = useState([]);
     const [jezykiIStopnie, ustawJezykiIStopnie] = useState([]);
@@ -246,6 +248,7 @@ export default function FormularzDruzynyZintegrowano({
             const dane = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/formularz/ze-statystykami/${idGryDruzyny}`);
             if (!alive || !dane) return;
 
+            ustawTytulGry(dane.tytulGry);
             ustawNastrojeRozgrywki(dane.nastrojeRozgrywki);
             ustawIdWybranegoNastroju(dane.nastrojeRozgrywki[0].id);
             ustawPlatformy(dane.platformy);
@@ -478,6 +481,8 @@ export default function FormularzDruzynyZintegrowano({
 
 
     return (<div className="flex flex-col items-center justify-center gap-5">
+        <span className="text-4xl font-semibold mb-0">Wybrana gra:</span>
+        <span className="text-4xl font-extrabold text-amber-700">{tytulGry}</span>
         <button className="przycisk-nawigacji" onClick={() => ustawIdGryDruzyny(0)}>Zmień grę</button>
         <form className="flex flex-col items-center justify-center gap-5 border-4 border-gray-500 rounded-lg p-5 shadow-lg">
             <div className="flex-col items-center justify-center gap-2 w-[700px]">

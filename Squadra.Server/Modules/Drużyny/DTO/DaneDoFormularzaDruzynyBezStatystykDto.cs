@@ -5,6 +5,7 @@ using Squadra.Server.Modules.Statystyki.DTO;
 namespace Squadra.Server.Modules.Drużyny.DTO;
 
 public record DaneDoFormularzaDruzynyBezStatystykDto(
+    string TytulGry,
     ICollection<NastrojRozgrywkiDto> NastrojeRozgrywki,
     ICollection<PlatformaDto> Platformy,
     ICollection<JezykOrazRowneLubNizszeStopnieDto> JezykiOrazStopnie,
