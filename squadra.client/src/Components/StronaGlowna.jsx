@@ -28,9 +28,16 @@ export default function StronaGlowna() {
 
     return (<>
         <Naglowek></Naglowek>
-        <div id = "glowna">
+        <div id = "glowna" className="flex flex-col items-center">
             <h1>Witamy w Squadra - twojej platformie do jednoczenia się z innymi graczami i komunikacji!</h1>
-            <p>Zaloguj się, aby skorzystać z usług.</p>
+            <p className="text-center my-3">
+                W naszej aplikacji możesz znaleźć towarzyszy do grania w gry wieloosobowe i komunikować się z nimi. 
+                Oferujemy możliwość tworzenia drużyn, dołączania do nich oraz wysyłania wiadomości do innych graczy.
+                Po połączeniu konta z serwisem XYZ dostępne jest wyświetlanie swojej biblioteki gier wraz ze statystykami 
+                w niej oraz ustawianie wymagań na dołączenie do drużyny, aby mieć pewność, że znajdziesz osoby odpowiadające 
+                oczekiwanemu przez Ciebie poziomie umiejętności.
+            </p>
+            <p>Zaloguj się, aby skorzystać z usług naszego serwisu.</p>
         </div>
     </>);
 }
