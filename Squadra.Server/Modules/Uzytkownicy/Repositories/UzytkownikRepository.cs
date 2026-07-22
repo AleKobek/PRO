@@ -82,7 +82,7 @@ public class UzytkownikRepository(
             NormalizedUserName = uzytkownik.Login.ToUpper(),
             Email = uzytkownik.Email,
             NormalizedEmail = uzytkownik.Email.ToUpper(),
-            PhoneNumber = uzytkownik.NumerTelefonu,
+            PhoneNumber = uzytkownik.NumerTelefonu?.Trim().Length == 0 ? null : uzytkownik.NumerTelefonu?.Trim(),
             DataUrodzenia = uzytkownik.DataUrodzenia,
         };
         // zaczynamy transakcję
@@ -121,7 +121,7 @@ public class UzytkownikRepository(
         uzytkownikDoZmiany.NormalizedUserName = uzytkownik.Login.ToUpper();
         uzytkownikDoZmiany.Email = uzytkownik.Email;
         uzytkownikDoZmiany.NormalizedEmail = uzytkownik.Email.ToUpper();
-        uzytkownikDoZmiany.PhoneNumber = uzytkownik.NumerTelefonu;
+        uzytkownikDoZmiany.PhoneNumber = uzytkownik.NumerTelefonu?.Trim().Length == 0 ? null : uzytkownik.NumerTelefonu?.Trim();
         uzytkownikDoZmiany.DataUrodzenia = uzytkownik.DataUrodzenia;
         
         await appDbContext.SaveChangesAsync();

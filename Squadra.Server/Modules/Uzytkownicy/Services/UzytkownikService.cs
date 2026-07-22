@@ -235,7 +235,7 @@ public class UzytkownikService(
         }
         
         re = new Regex("^([0-9]{9})$|^[0-9]{3}-[0-9]{3}-[0-9]{3}|^[0-9]{3} [0-9]{3} [0-9]{3}$");
-        if (string.IsNullOrWhiteSpace(NumerTelefonu) || !re.IsMatch(NumerTelefonu))
+        if (!string.IsNullOrWhiteSpace(NumerTelefonu) && !re.IsMatch(NumerTelefonu))
         {
             bledy.Add(new ErrorItem("Niepoprawny numer telefonu.", nameof(NumerTelefonu), "NiepoprawnyNumerTelefonu"));
         }
