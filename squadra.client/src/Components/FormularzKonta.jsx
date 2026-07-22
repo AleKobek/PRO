@@ -52,7 +52,7 @@ export default function FormularzKonta({ // pamiętać, aby dać nawias klamrowy
             <span id = "error-data-urodzenia" className="error-wiadomosc">{bladDatyUrodzenia}</span><br/>
 
             <label>
-                Numer telefonu <br/>
+                Numer telefonu (opcjonalny)<br/>
                 <input
                     type="text"
                     value={numerTelefonu}
