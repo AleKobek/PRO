@@ -8,6 +8,8 @@ namespace Squadra.Server.Modules.Statystyki.Repositories;
 
 public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
 {
+
+    public static readonly int[] IdStatystykSprawdzanychNaOdwrot = [53, 81];
     
     public async Task<Statystyka> GetStatystyka(int idStatystyki)
     {
@@ -168,7 +170,16 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         foreach (var w in wymagania)
         {
             var statystyka = statystykiDoSprawdzenia.FirstOrDefault(s => s.IdStatystyki == w.IdStatystyki);
-            if (statystyka == null || statystyka.PorownywalnaWartoscLiczbowa < w.PorownywalnaWartoscLiczbowa)
+            if (statystyka == null) return false;
+            
+            if (IdStatystykSprawdzanychNaOdwrot.Contains(statystyka.IdStatystyki)) // trzeba to sprawdzić na odwrót, bo to np. średnie miejsce
+            {
+                if(statystyka.PorownywalnaWartoscLiczbowa > w.PorownywalnaWartoscLiczbowa)
+                {
+                    return false;
+                }
+            }
+            else if (statystyka.PorownywalnaWartoscLiczbowa < w.PorownywalnaWartoscLiczbowa)
             {
                 return false;
             }
@@ -190,7 +201,22 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         bool czyUzytkownikSpelniaWymagania = true;
         foreach (var w in wymagania){
             var statystykaUzytkownika = await context.StatystykaUzytkownika.FirstOrDefaultAsync(s => s.UzytkownikId == idUzytkownika && s.StatystykaId == w.IdStatystyki);
-            if (statystykaUzytkownika == null || statystykaUzytkownika.PorownywalnaWartoscLiczbowa < w.PorownywalnaWartoscLiczbowa)
+            
+            if (statystykaUzytkownika == null)
+            {
+                czyUzytkownikSpelniaWymagania = false;
+                break;
+            }
+            
+            if (IdStatystykSprawdzanychNaOdwrot.Contains(statystykaUzytkownika.StatystykaId)) // trzeba to sprawdzić na odwrót, bo to np. średnie miejsce
+            {
+                if(statystykaUzytkownika.PorownywalnaWartoscLiczbowa > w.PorownywalnaWartoscLiczbowa)   
+                {
+                    czyUzytkownikSpelniaWymagania = false;
+                    break;
+                }
+            }
+            else if (statystykaUzytkownika.PorownywalnaWartoscLiczbowa < w.PorownywalnaWartoscLiczbowa)
             {
                 czyUzytkownikSpelniaWymagania = false;
                 break;
@@ -218,8 +244,12 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
             .Select(x => new WymaganieDruzynyDoWyswietleniaDto(
                 x.StatystykaId,
                 x.Statystyka.RolaId == null
-                    ? x.Statystyka.Nazwa
-                    : $"{x.Statystyka.Nazwa}({x.Statystyka.Rola.Nazwa})",
+                    ? IdStatystykSprawdzanychNaOdwrot.Contains(x.Statystyka.Id)
+                        ? $"{x.Statystyka.Kategoria.Nazwa}: {x.Statystyka.Nazwa}(traktowane jako maksymalna wartość)"
+                        : $"{x.Statystyka.Kategoria.Nazwa}: {x.Statystyka.Nazwa}"
+                    :  IdStatystykSprawdzanychNaOdwrot.Contains(x.Statystyka.Id)
+                        ? $"{x.Statystyka.Kategoria.Nazwa}: {x.Statystyka.Nazwa}(traktowane jako maksymalna wartość)" 
+                        : $"{x.Statystyka.Kategoria.Nazwa}: {x.Statystyka.Nazwa}({x.Statystyka.Rola.Nazwa})",
                 x.Wartosc ?? "brak"
             )).ToListAsync();
         

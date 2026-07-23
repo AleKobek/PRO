@@ -5,6 +5,7 @@ using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Models;
 using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Statystyki.Models;
+using Squadra.Server.Modules.Statystyki.Repositories;
 
 namespace Squadra.Server.Modules.Drużyny.Repositories;
 
@@ -161,6 +162,12 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
             
         if (miejsce.WartoscLiczbowaStatystyki != null)
         {
+                                                             // jeżeli ma wartość liczbową statystyki, to ma też jej id
+            if (StatystykiRepository.IdStatystykSprawdzanychNaOdwrot.Contains(miejsce.StatystykaId ?? 1)) // trzeba to sprawdzić na odwrót, bo to np. średnie miejsce
+            {
+                return statystykaUzytkownika.PorownywalnaWartoscLiczbowa <= miejsce.WartoscLiczbowaStatystyki;
+
+            }
             return statystykaUzytkownika.PorownywalnaWartoscLiczbowa >= miejsce.WartoscLiczbowaStatystyki;
         }
             
@@ -182,7 +189,18 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
             
             if (wymaganie.PorownywalnaWartoscLiczbowa != null)
             {
-                if(statystykaUzytkownika.PorownywalnaWartoscLiczbowa < wymaganie.PorownywalnaWartoscLiczbowa) return false;
+
+                if (StatystykiRepository.IdStatystykSprawdzanychNaOdwrot.Contains(wymaganie.StatystykaId)) // trzeba to sprawdzić na odwrót, bo to np. średnie miejsce
+                {
+                    if(statystykaUzytkownika.PorownywalnaWartoscLiczbowa > wymaganie.PorownywalnaWartoscLiczbowa)
+                    {
+                        return false;
+                    }
+                }
+                else if (statystykaUzytkownika.PorownywalnaWartoscLiczbowa < wymaganie.PorownywalnaWartoscLiczbowa)
+                {
+                    return false;
+                }
             }
             else
             {

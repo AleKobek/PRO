@@ -9,6 +9,7 @@ using Squadra.Server.Modules.Profile.DTO.JezykStopien;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.Services;
 using Squadra.Server.Modules.Shared.Services;
+using Squadra.Server.Modules.Statystyki.Repositories;
 using Squadra.Server.Modules.Statystyki.Services;
 using Squadra.Server.Modules.Uzytkownicy.Services;
 using Squadra.Server.Modules.Wiadomosci.Services;
@@ -409,9 +410,13 @@ public class DruzynyService(
             {
                 var statystykaRes = await statystykiService.GetStatystyka(miejsce.StatystykaId ?? 1); // już odfiltrowaliśmy miejsca bez StatystykaId, więc możemy bezpiecznie użyć ?? 1,
                 if(!statystykaRes.Succeeded) return ServiceResult<ICollection<MiejsceWDruzynieSzczegolyDto>>.Fail(statystykaRes.StatusCode, statystykaRes.Errors);
-                wymaganie = miejsce.RolaId != null 
-                        ? $"{statystykaRes.Value.Nazwa}({miejsce.Rola?.Nazwa}): {miejsce.WartoscStatystyki}" // juz odfiltrowaliśmy miejsca bez StatystykaId, więc możemy bezpiecznie użyć .Value
-                        : $"{statystykaRes.Value.Nazwa}: {miejsce.WartoscStatystyki}";
+                wymaganie = miejsce.RolaId != null  
+                        ? StatystykiRepository.IdStatystykSprawdzanychNaOdwrot.Contains(statystykaRes.Value.Id) ? // juz odfiltrowaliśmy miejsca bez StatystykaId, więc możemy bezpiecznie użyć .Value
+                            $"{statystykaRes.Value.Nazwa}({miejsce.Rola?.Nazwa})(traktowane jako maksymalna wartość): {miejsce.WartoscStatystyki}" 
+                            : $"{statystykaRes.Value.Nazwa}({miejsce.Rola?.Nazwa}): {miejsce.WartoscStatystyki}" 
+                        : StatystykiRepository.IdStatystykSprawdzanychNaOdwrot.Contains(statystykaRes.Value.Id) // juz odfiltrowaliśmy miejsca bez StatystykaId, więc możemy bezpiecznie użyć .Value
+                            ? $"{statystykaRes.Value.Nazwa}(traktowane jako maksymalna wartość): {miejsce.WartoscStatystyki}" 
+                            : $"{statystykaRes.Value.Nazwa}: {miejsce.WartoscStatystyki}";
             }
             
             czlonkowieDoZwrocenia.Add(new MiejsceWDruzynieSzczegolyDto(
