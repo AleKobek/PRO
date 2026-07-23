@@ -1,0 +1,29 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Squadra.Server.Context;
+using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
+using Squadra.Server.Modules.Profile.Models;
+
+namespace Squadra.Server.Modules.Profile.Repositories;
+
+public class StopnieBieglosciJezykaRepository(AppDbContext appDbContext) : IStopnieBieglosciJezykaRepository
+{
+    public async Task<ICollection<StopienBieglosciJezykaDto>> GetStopnieBieglosciJezyka()
+    {
+        ICollection<StopienBieglosciJezykaDto> stopnieBieglosciDoZwrocenia = new List<StopienBieglosciJezykaDto>();
+        ICollection<StopienBieglosciJezyka> stopnieBieglosci = await appDbContext.StopienBieglosciJezyka.ToListAsync();
+        foreach (var stopienBieglosci in stopnieBieglosci)
+        {
+            stopnieBieglosciDoZwrocenia.Add(new StopienBieglosciJezykaDto(stopienBieglosci.Id, stopienBieglosci.Nazwa, stopienBieglosci.Wartosc));
+        }
+
+        return stopnieBieglosciDoZwrocenia;
+    }
+
+    public async Task<StopienBieglosciJezykaDto> GetStopienBieglosciJezyka(int id)
+    {
+        var stopienBieglosci = await appDbContext.StopienBieglosciJezyka.FindAsync(id);
+        if(stopienBieglosci == null) throw new NieZnalezionoWBazieException("Nie znaleziono stopnia bieglosci jezyka o id: " + id);
+        return new StopienBieglosciJezykaDto(stopienBieglosci.Id, stopienBieglosci.Nazwa, stopienBieglosci.Wartosc);
+    }
+}

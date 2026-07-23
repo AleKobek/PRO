@@ -70,7 +70,7 @@ export default function DaneProfilu({idUzytkownika, ustawPseudonimDoNazwyKarty =
         };
 
         const podajDaneProfilu = async () => {
-            const data = await fetchJsonAbort(`${API_BASE_URL}/Profil/${idUzytkownika}`);
+            const data = await fetchJsonAbort(`${API_BASE_URL}/Profile/${idUzytkownika}`);
 
             // przerywamy działanie funkcji
             if (!alive) return;
@@ -94,7 +94,7 @@ export default function DaneProfilu({idUzytkownika, ustawPseudonimDoNazwyKarty =
         };
 
         const podajJezykiIStopnieUzytkownika = async () => {
-            const data = await fetchJsonAbort(`${API_BASE_URL}/Jezyk/profil/${idUzytkownika}`);
+            const data = await fetchJsonAbort(`${API_BASE_URL}/Jezyki/profil/${idUzytkownika}`);
 
             if (!alive) return;
 

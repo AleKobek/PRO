@@ -1,0 +1,161 @@
+﻿using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Profile.Services;
+using Squadra.Server.Modules.Shared.Services;
+using Squadra.Server.Modules.Wiadomosci.Services;
+using Squadra.Server.Modules.Znajomosci.DTO;
+using Squadra.Server.Modules.Znajomosci.Models;
+using Squadra.Server.Modules.Znajomosci.Repositories;
+
+namespace Squadra.Server.Modules.Znajomosci.Services;
+
+public class ZnajomosciService(
+    IZnajomosciRepository znajomosciRepository,
+    IProfileService profileService, 
+    IStatystykiCzatuService statystykiCzatuService) : IZnajomosciService
+{
+
+    public async Task<ServiceResult<ICollection<ZnajomiDto>>> GetZnajomosciUzytkownika(int id)
+    {
+        if(id < 1) return ServiceResult<ICollection<ZnajomiDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + id));
+        
+        try
+        {
+            var znajomi = await znajomosciRepository.GetZnajomosciUzytkownika(id);
+            return ServiceResult<ICollection<ZnajomiDto>>.Ok(znajomi.Select(x => new ZnajomiDto(
+                x.IdUzytkownika1,
+                x.IdUzytkownika2,
+                x.DataNawiazaniaZnajomosci,
+                x.OstatnieOtwarcieCzatuUzytkownika1,
+                x.OstatnieOtwarcieCzatuUzytkownika2
+            )).ToList());
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<ICollection<ZnajomiDto>>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
+    // zwracamy listę znajomych do pokazania na stronie "moi znajomi", potrzebujemy pseudonimu, awatara, nazwy statusu,
+    // daty najnowszej wiadomości między nimi (do sortowania) i informacji, czy są jakieś nowe wiadomości od tego znajomego
+    public async Task<ServiceResult<ICollection<ZnajomyDoListyDto>>> GetZnajomiDoListyUzytkownika(int id)
+    {
+        if(id < 1) return ServiceResult<ICollection<ZnajomyDoListyDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + id));
+        // najpierw z bazy znajomych pobieramy id wszystkich osób, które są w parze z naszym
+        ICollection<Znajomi> znajomi = await znajomosciRepository.GetZnajomosciUzytkownika(id);
+        List<ZnajomyDoListyDto> listaDoZwrocenia = new List<ZnajomyDoListyDto>();
+        // dla każdego użytkownika bierzemy jego profil
+        foreach (var uzytkownik in znajomi)
+        {
+            var idZnajomego = uzytkownik.IdUzytkownika1 == id ? uzytkownik.IdUzytkownika2 : uzytkownik.IdUzytkownika1;
+            
+            // bierzemy profil znajomego, potrzebujemy z niego pseudonim, awatar i nazwę statusu
+            var profilRes = await profileService.GetProfilMinInfo(idZnajomego);
+            
+            var profil = profilRes.Value;
+            
+            if(profil == null) return ServiceResult<ICollection<ZnajomyDoListyDto>>.NotFound(profilRes.Errors[0]);
+            
+            // bierzemy datę najnowszej wiadomości między nimi, potrzebujemy jej do posortowania znajomych
+            var dataNajnowszejWiadomosciRes = await statystykiCzatuService.GetDataNajnowszejWiadomosci(id, idZnajomego);
+            if(dataNajnowszejWiadomosciRes.StatusCode == 404) return ServiceResult<ICollection<ZnajomyDoListyDto>>.NotFound(dataNajnowszejWiadomosciRes.Errors[0]);
+            if(dataNajnowszejWiadomosciRes.StatusCode == 400) return ServiceResult<ICollection<ZnajomyDoListyDto>>.BadRequest(dataNajnowszejWiadomosciRes.Errors[0]);
+            
+            var czySaNoweWiadomosciRes = await statystykiCzatuService.CzySaNoweWiadomosciOdZnajomego(id, idZnajomego);
+            if(czySaNoweWiadomosciRes.StatusCode == 404) return ServiceResult<ICollection<ZnajomyDoListyDto>>.NotFound(czySaNoweWiadomosciRes.Errors[0]);
+            if(czySaNoweWiadomosciRes.StatusCode == 400) return ServiceResult<ICollection<ZnajomyDoListyDto>>.BadRequest(czySaNoweWiadomosciRes.Errors[0]);
+    
+            var znajomyDoListy = new ZnajomyDoListyDto(
+                    idZnajomego,
+                    profil.Pseudonim,
+                    profil.Awatar ?? [],
+                    dataNajnowszejWiadomosciRes.Value,
+                    profil.NazwaStatusu,
+                    czySaNoweWiadomosciRes.Value
+            );
+            listaDoZwrocenia.Add(znajomyDoListy);
+        }
+        
+        // sortujemy znajomych po dacie najnowszej wiadomości, żeby ci, z którymi ostatnio rozmawialiśmy, byli na górze listy. Ci, którzy nie mają żadnych wiadomości, będą na dole listy, posortowani alfabetycznie po pseudonimie
+        listaDoZwrocenia = listaDoZwrocenia.OrderByDescending(x => x.DataOstatniejWiadomosci).ThenBy(x => x.Pseudonim).ToList();
+        
+        return ServiceResult<ICollection<ZnajomyDoListyDto>>.Ok(listaDoZwrocenia);
+    }
+    
+    // zwracamy datę ostatniego otwarcia czatu między dwoma użytkownikami, potrzebujemy jej do sprawdzenia, czy są jakieś nowe wiadomości od tego znajomego
+    public async Task<ServiceResult<DateTime?>> GetDataOstatniegoOtwarciaCzatu(int idSprawdzajacego, int idZnajomego)
+    {
+        try
+        {
+            if (idSprawdzajacego < 1) return ServiceResult<DateTime?>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika sprawdzającego: " + idSprawdzajacego));
+            if (idZnajomego < 1) return ServiceResult<DateTime?>.NotFound(new ErrorItem("Nieprawidłowe id znajomego: " + idZnajomego));
+            
+            return ServiceResult<DateTime?>.Ok(await znajomosciRepository.GetDataOstatniegoOtwarciaCzatu(idSprawdzajacego, idZnajomego));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<DateTime?>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
+    public async Task<ServiceResult<bool>> CzyJestZnajomosc(int idUzytkownika1, int idUzytkownika2)
+    {
+        try
+        {
+            if (idUzytkownika1 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika1));
+            if (idUzytkownika2 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika2));
+            
+            return ServiceResult<bool>.Ok(await znajomosciRepository.CzyJestZnajomosc(idUzytkownika1, idUzytkownika2));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
+    public async Task<ServiceResult<bool>> CreateZnajomosc(int idUzytkownika1, int idUzytkownika2)
+    {
+        try
+        {
+            if (idUzytkownika1 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika1));
+            if (idUzytkownika2 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika2));
+
+            if(idUzytkownika1 == idUzytkownika2)
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Użytkownik nie może dodać siebie do znajomych"));
+            
+            // trzeba tutaj oddzielnie sprawdzić, czy żaden użytkownik nie przekroczył maksymalnej liczby znajomych
+            // bo powiadomienia mogą być wysyłane asynchronicznie i wtedy może się okazać, że obaj użytkownicy przekroczyli limit
+            var znajomiUzytkownika1 = await znajomosciRepository.GetZnajomosciUzytkownika(idUzytkownika1);
+            if (znajomiUzytkownika1.Count >= MaxLiczbaZnajomych)
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Uzytkownik o id " + idUzytkownika1 + " osiągnął maksymalną liczbę znajomych: " + MaxLiczbaZnajomych));
+            var znajomiUzytkownika2 = await znajomosciRepository.GetZnajomosciUzytkownika(idUzytkownika2);
+            if (znajomiUzytkownika2.Count >= MaxLiczbaZnajomych)
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Uzytkownik o id " + idUzytkownika2 + " osiągnął maksymalną liczbę znajomych: " + MaxLiczbaZnajomych));
+            
+
+            return ServiceResult<bool>.Created(await znajomosciRepository.CreateZnajomosc(idUzytkownika1, idUzytkownika2));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
+    // aktualizujemy datę ostatniego otwarcia czatu między dwoma użytkownikami, gdy użytkownik otworzy czat
+    public async Task<ServiceResult<bool>> ZaktualizujOstatnieOtwarcieCzatu(int idOtwierajacego, int idZnajomego)
+    {
+        try
+        {
+            if (idOtwierajacego < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika otwierającego czat: " + idOtwierajacego));
+            if (idZnajomego < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id znajomego: " + idZnajomego));
+            
+            return ServiceResult<bool>.Ok(await znajomosciRepository.ZaktualizujOstatnieOtwarcieCzatu(idOtwierajacego, idZnajomego));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
+    // maksymalna liczba znajomych jednego użytkownika, statyczna wartość dostępna dla innych serwisów
+    public const int MaxLiczbaZnajomych = 100;
+}

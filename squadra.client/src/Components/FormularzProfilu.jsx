@@ -102,12 +102,12 @@ export default function FormularzProfilu({
         const podajKrajeIRegionyZBazy = async () => {
             
             // podajemy kraje
-            const kraje = await fetchJsonAbort(`${API_BASE_URL}/Kraj`);
+            const kraje = await fetchJsonAbort(`${API_BASE_URL}/Kraje`);
             if (!alive || !kraje || !Array.isArray(kraje)) return;
             ustawListeKrajowZBazy(kraje);
             
             // podajemy regiony
-            const regiony = await fetchJsonAbort(`${API_BASE_URL}/Region`);
+            const regiony = await fetchJsonAbort(`${API_BASE_URL}/Regiony`);
             if(!alive || !regiony || !Array.isArray(regiony)) return;
             ustawListeRegionowZBazy(regiony);
             
@@ -153,7 +153,7 @@ export default function FormularzProfilu({
         }
         
         
-        const res = await fetch(`${API_BASE_URL}/Profil`, opcje);
+        const res = await fetch(`${API_BASE_URL}/Profile`, opcje);
         
         
         // Odczyt body różni się zależnie od typu odpowiedzi

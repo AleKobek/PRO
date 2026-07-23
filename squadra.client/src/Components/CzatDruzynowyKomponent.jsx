@@ -99,7 +99,7 @@ export default function CzatDruzynowyKomponent({
                 signal: ac.signal,
             };
 
-            const res = await fetch(`${API_BASE_URL}/Druzyna/czat/ostatnie-otwarcie/${idDruzyny}`, opcje);
+            const res = await fetch(`${API_BASE_URL}/Druzyny/czat/ostatnie-otwarcie/${idDruzyny}`, opcje);
 
             // Bezpieczne czytanie body: backend może zwrócić pustą odpowiedź (np. 204)
             const raw = await res.text();
@@ -160,7 +160,7 @@ export default function CzatDruzynowyKomponent({
                 signal: ac.signal,
                 body: JSON.stringify(wiadomoscDoWyslania)
             }
-            const res = await fetch(`${API_BASE_URL}/Wiadomosc/druzynowa/${idDruzyny}`, opcje);
+            const res = await fetch(`${API_BASE_URL}/Wiadomosci/druzynowa/${idDruzyny}`, opcje);
             const ct = res.headers.get("content-type") || "";
             const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
                 ? await res.json().catch(() => null)
@@ -206,7 +206,7 @@ export default function CzatDruzynowyKomponent({
     };
 
     const podajCzat = async (ac) => {
-        const data = await fetchJsonAbort(`${API_BASE_URL}/Wiadomosc/czat-druzynowy/${idDruzyny}`, ac, " czatu");
+        const data = await fetchJsonAbort(`${API_BASE_URL}/Wiadomosci/czat-druzynowy/${idDruzyny}`, ac, " czatu");
         if(data && data.wiadomosci && data.wiadomosci.length > 0) {
             ustawCzat(data.wiadomosci);
             ustawUczestnikow(data.uczestnicy);

@@ -13,8 +13,8 @@ namespace Squadra.Server.Modules.Uzytkownicy.Controllers;
 // do rejestracji, logowania i wylogowywania
 [ApiController]
 [Route("api/[controller]")]
-public class AuthController(IUzytkownikService uzytkownikService,
-    IProfilService profilService,
+public class AuthController(IUzytkownicyService uzytkownicyService,
+    IProfileService profileService,
     UserManager<Uzytkownik> userManager,
     SignInManager<Uzytkownik> signInManager) : ControllerBase
 {
@@ -32,7 +32,7 @@ public class AuthController(IUzytkownikService uzytkownikService,
         if(obecnyUzytkownik is not null) 
             return BadRequest("Jesteś już zalogowany. Wyloguj się, żeby stworzyć konto.");
         
-        var result = await uzytkownikService.CreateUzytkownik(dto);
+        var result = await uzytkownicyService.CreateUzytkownik(dto);
         
         // jeżeli coś jest źle
         switch (result.StatusCode)
@@ -125,7 +125,7 @@ public class AuthController(IUzytkownikService uzytkownikService,
         if (uzytkownik is null) return Unauthorized();
 
         var roles = (await userManager.GetRolesAsync(uzytkownik)).ToArray();
-        var result = await profilService.GetProfil(uzytkownik.Id);
+        var result = await profileService.GetProfil(uzytkownik.Id);
         var profil = result.Value;
         var awatar = profil?.Awatar;
         return Ok(new AuthUserDto(uzytkownik.Id, uzytkownik.UserName!, uzytkownik.Email!, roles, awatar));

@@ -21,16 +21,16 @@ namespace Squadra.Server.Modules.Drużyny.Services;
 
 public class DruzynyService(
     IDruzynyRepository druzynyRepository,
-    IWspieranaGraService wspieranaGraService,
-    IUzytkownikService uzytkownikService,
-    IProfilService profilService,
-    IJezykService jezykService,
-    IStopienBieglosciJezykaService stopienBieglosciJezykaService,
+    IWspieraneGryService wspieraneGryService,
+    IUzytkownicyService uzytkownicyService,
+    IProfileService profileService,
+    IJezykiService jezykiService,
+    IStopnieBieglosciJezykaService stopnieBieglosciJezykaService,
     IStatystykiService statystykiService,
-    IPlatformaService platformaService,
+    IPlatformyService platformyService,
     IBibliotekaGierService bibliotekaGierService,
-    IPowiadomienieService powiadomienieService,
-    IZnajomiService znajomiService,
+    IPowiadomieniaService powiadomieniaService,
+    IZnajomosciService znajomosciService,
     IStatystykiCzatuService statystykiCzatuService
     ) : IDruzynyService
 {
@@ -137,10 +137,10 @@ public class DruzynyService(
             if(idDruzyny <= 0) return ServiceResult<DruzynaDoTabelkiDto>.BadRequest(new ErrorItem("Id drużyny musi być większe od 0"));
             var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
             
-            var graRes = await wspieranaGraService.GetWspieranaGra(druzyna.GraId);
+            var graRes = await wspieraneGryService.GetWspieranaGra(druzyna.GraId);
             if (!graRes.Succeeded) return ServiceResult<DruzynaDoTabelkiDto>.Fail(graRes.StatusCode, graRes.Errors);
 
-            var ostatniaAktywnoscKapitanaRes = await uzytkownikService.GetOstatniaAktywnoscUzytkownika(druzyna.KapitanId);
+            var ostatniaAktywnoscKapitanaRes = await uzytkownicyService.GetOstatniaAktywnoscUzytkownika(druzyna.KapitanId);
             if (!ostatniaAktywnoscKapitanaRes.Succeeded) return ServiceResult<DruzynaDoTabelkiDto>.Fail(ostatniaAktywnoscKapitanaRes.StatusCode, ostatniaAktywnoscKapitanaRes.Errors);
             
             var ostatniaAktywnoscKapitana = ostatniaAktywnoscKapitanaRes.Value ?? DateTime.UtcNow;
@@ -245,7 +245,7 @@ public class DruzynyService(
             // musimy potem jeszcze sprawdzać, czy ma zaproszenie do niej
             if (!druzyna.CzyPubliczna && statusCzlonkostwa == "Brak")
             {
-                var zaproszenieRes = await powiadomienieService.CzyUzytkownikMaPowiadomienieDanegoTypuPowiazaneZObiektami(idUzytkownika, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny,idDruzyny, null);
+                var zaproszenieRes = await powiadomieniaService.CzyUzytkownikMaPowiadomienieDanegoTypuPowiazaneZObiektami(idUzytkownika, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny,idDruzyny, null);
                 if (!zaproszenieRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(zaproszenieRes.StatusCode, zaproszenieRes.Errors);
                 // jeżeli nie ma zaproszenia do tej drużyny, to nie może zobaczyć jej szczegółów, bo jest prywatna
                 if(!zaproszenieRes.Value) return ServiceResult<DruzynaSzczegolyDto>.Forbidden(new ErrorItem(
@@ -253,7 +253,7 @@ public class DruzynyService(
             }
 
             // pobieramy grę, żeby mieć jej tytuł
-            var graRes = await wspieranaGraService.GetWspieranaGra(druzyna.GraId);
+            var graRes = await wspieraneGryService.GetWspieranaGra(druzyna.GraId);
             if (!graRes.Succeeded) return ServiceResult<DruzynaSzczegolyDto>.Fail(graRes.StatusCode, graRes.Errors);
 
             // pobieramy nastrój rozgrywki
@@ -261,7 +261,7 @@ public class DruzynyService(
 
             // pobieramy wymageny język i stopień biegłości, żeby mieć ich nazwy
             var jezykRes = druzyna.WymaganyJezykId != null
-                ? await jezykService.GetJezyk(druzyna.WymaganyJezykId ??
+                ? await jezykiService.GetJezyk(druzyna.WymaganyJezykId ??
                                               0) // już odfiltrowaliśmy drużyny bez WymaganyJezykId, więc możemy bezpiecznie użyć ?? 0
                 : null;
 
@@ -269,7 +269,7 @@ public class DruzynyService(
                 return ServiceResult<DruzynaSzczegolyDto>.Fail(jezykRes.StatusCode, jezykRes.Errors);
 
             var stopienBieglosciRes = druzyna.WymaganyStopienBieglosciJezykaId != null
-                ? await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(
+                ? await stopnieBieglosciJezykaService.GetStopienBieglosciJezyka(
                     druzyna.WymaganyStopienBieglosciJezykaId ??
                     0) // już odfiltrowaliśmy drużyny bez WymaganyStopienBieglosciJezykaId, więc możemy bezpiecznie użyć ?? 0
                 : null;
@@ -297,7 +297,7 @@ public class DruzynyService(
             if (druzyna.PlatformaId != null)
             {
                 var platformaRes =
-                    await platformaService.GetPlatforma(druzyna.PlatformaId ??
+                    await platformyService.GetPlatforma(druzyna.PlatformaId ??
                                                         0); // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć ?? 0
                 if (!platformaRes.Succeeded)
                     return ServiceResult<DruzynaSzczegolyDto>.Fail(platformaRes.StatusCode, platformaRes.Errors);
@@ -399,7 +399,7 @@ public class DruzynyService(
             ProfilMinInfoDto? czlonek = null;
             if (miejsce.UzytkownikId != null)
             { 
-                var profilRes = await profilService.GetProfilMinInfo(miejsce.UzytkownikId ?? 0); // już odfiltrowaliśmy miejsca bez UzytkownikId
+                var profilRes = await profileService.GetProfilMinInfo(miejsce.UzytkownikId ?? 0); // już odfiltrowaliśmy miejsca bez UzytkownikId
                 if(!profilRes.Succeeded) return ServiceResult<ICollection<MiejsceWDruzynieSzczegolyDto>>.Fail(profilRes.StatusCode, profilRes.Errors);
                 czlonek = profilRes.Value ?? null; // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             }
@@ -432,18 +432,18 @@ public class DruzynyService(
     public async Task<ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>> GetDaneDoFormularzaDruzynyZeStatystykami(int idGry, int idUzytkownika)
     {
         // sprawdzamy, czy podane dane są okej
-        var graRes = await wspieranaGraService.GetWspieranaGra(idGry);
+        var graRes = await wspieraneGryService.GetWspieranaGra(idGry);
         if (!graRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(graRes.StatusCode, graRes.Errors);
         
-        var uzytkownikRes = await uzytkownikService.GetUzytkownik(idUzytkownika);
+        var uzytkownikRes = await uzytkownicyService.GetUzytkownik(idUzytkownika);
         if (!uzytkownikRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(uzytkownikRes.StatusCode, uzytkownikRes.Errors);
         
         var nastroje = await druzynyRepository.GetNastrojeRozgrywki();
         
-        var platformyRes = await wspieranaGraService.GetPlatformyGryUzytkownika(idGry, idUzytkownika);
+        var platformyRes = await wspieraneGryService.GetPlatformyGryUzytkownika(idGry, idUzytkownika);
         if (!platformyRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(platformyRes.StatusCode, platformyRes.Errors);
         
-        var jezykiOrazStopnieRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
+        var jezykiOrazStopnieRes = await jezykiService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
         if (!jezykiOrazStopnieRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyZeStatystykamiDto>.Fail(jezykiOrazStopnieRes.StatusCode, jezykiOrazStopnieRes.Errors);
         
         var roleRes = await statystykiService.GetRoleGry(idGry);
@@ -466,14 +466,14 @@ public class DruzynyService(
     public async Task<ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>> GetDaneDoFormularzaDruzynyBezStatystyk(int idGry, int idUzytkownika)
     {
         // sprawdzamy, czy podane id jest okej
-        var graRes = await wspieranaGraService.GetWspieranaGra(idGry);
+        var graRes = await wspieraneGryService.GetWspieranaGra(idGry);
         if (!graRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(graRes.StatusCode, graRes.Errors);
         
         var nastroje = await druzynyRepository.GetNastrojeRozgrywki();
-        var platformyRes = await wspieranaGraService.GetPlatformyGry(idGry);
+        var platformyRes = await wspieraneGryService.GetPlatformyGry(idGry);
         if (!platformyRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(platformyRes.StatusCode, platformyRes.Errors);
         
-        var jezykiOrazStopnieRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
+        var jezykiOrazStopnieRes = await jezykiService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
         if (!jezykiOrazStopnieRes.Succeeded) return ServiceResult<DaneDoFormularzaDruzynyBezStatystykDto>.Fail(jezykiOrazStopnieRes.StatusCode, jezykiOrazStopnieRes.Errors);
         
         var roleRes = await statystykiService.GetRoleGry(idGry);
@@ -494,7 +494,7 @@ public class DruzynyService(
     public async Task<ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>> GetDaneDoFormularzaWyszukiwaniaDruzyny(int idUzytkownika)
     {
 
-        var gryRes = await wspieranaGraService.GetWspieraneGryZPlatformamiDoSelect();
+        var gryRes = await wspieraneGryService.GetWspieraneGryZPlatformamiDoSelect();
         
         var bibliotekaGierRes = await bibliotekaGierService.GetGryWBiblioteceUzytkownika(idUzytkownika);
         if (!bibliotekaGierRes.Succeeded) return ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>.Fail(bibliotekaGierRes.StatusCode, bibliotekaGierRes.Errors);
@@ -509,10 +509,10 @@ public class DruzynyService(
         
         var nastroje = await druzynyRepository.GetNastrojeRozgrywki();
         
-        var platformyRes = await wspieranaGraService.GetWspieraneGryZPlatformamiDoSelect();
+        var platformyRes = await wspieraneGryService.GetWspieraneGryZPlatformamiDoSelect();
         if (!platformyRes.Succeeded) return ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>.Fail(platformyRes.StatusCode, platformyRes.Errors);
         
-        var jezykiOrazStopnieRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
+        var jezykiOrazStopnieRes = await jezykiService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
         if (!jezykiOrazStopnieRes.Succeeded) return ServiceResult<DaneDoFormularzaWyszukiwaniaDruzyny>.Fail(jezykiOrazStopnieRes.StatusCode, jezykiOrazStopnieRes.Errors);
 
         var roleRes = await statystykiService.GetRole();
@@ -578,7 +578,7 @@ public class DruzynyService(
             if(druzyna.KapitanId != idUzytkownika) 
                 return ServiceResult<ICollection<ProfilMinInfoDto>>.Forbidden(new ErrorItem("Tylko kapitan drużyny może sprawdzić, którzy znajomi spełniają wymagania miejsca w drużynie"));
             
-            var znajomiRes = await znajomiService.GetZnajomosciUzytkownika(idUzytkownika);
+            var znajomiRes = await znajomosciService.GetZnajomosciUzytkownika(idUzytkownika);
             if(!znajomiRes.Succeeded) return ServiceResult<ICollection<ProfilMinInfoDto>>.Fail(znajomiRes.StatusCode, znajomiRes.Errors);
             var znajomi = znajomiRes.Value ?? new List<ZnajomiDto>(); // jeżeli się powiodło, to Value nie jest null, więc można bezpiecznie użyć .Value
             var znajomiSpelniajacyWarunki = new List<ProfilMinInfoDto>();
@@ -604,7 +604,7 @@ public class DruzynyService(
                 }
                 
                 // spełnia wszystkie wymagania, więc pobieramy jego profil i dodajemy go do listy
-                var profilRes = await profilService.GetProfilMinInfo(idZnajomego);
+                var profilRes = await profileService.GetProfilMinInfo(idZnajomego);
                 if(!profilRes.Succeeded || profilRes.Value == null) continue; // jeżeli nie udało się pobrać profilu, to nie dodajemy go do listy
                 znajomiSpelniajacyWarunki.Add(profilRes.Value);
             }
@@ -654,7 +654,7 @@ public class DruzynyService(
             if (druzyna.WymaganyJezykId != null)
             {
 
-                var jezykiRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
+                var jezykiRes = await jezykiService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
                 if (!jezykiRes.Succeeded) return ServiceResult<bool>.Fail(jezykiRes.StatusCode, jezykiRes.Errors);
 
                 var jezykISopien = jezykiRes.Value.FirstOrDefault(x => x.Jezyk.Id == druzyna.WymaganyJezykId);
@@ -721,7 +721,7 @@ public class DruzynyService(
             if (druzynaReq.Opis?.Length > 300) bledy.Add(new ErrorItem("Opis drużyny nie może być dłuższy niż 300 znaków", nameof(druzynaReq.Opis)));
             if(bledy.Count > 0) return ServiceResult<int>.BadRequest(bledy.ToArray());
             
-            var graRes = await wspieranaGraService.GetWspieranaGra(druzynaReq.IdGry);
+            var graRes = await wspieraneGryService.GetWspieranaGra(druzynaReq.IdGry);
             if (!graRes.Succeeded) return ServiceResult<int>.Fail(graRes.StatusCode, graRes.Errors);
             
             // sprawdzamy, czy już osiagnal maksymalną liczbę drużyn dla danej gry
@@ -732,7 +732,7 @@ public class DruzynyService(
             if (druzynaReq.IdPlatformy != null)
             {
                 var platformaRes =
-                    await platformaService.GetPlatforma(druzynaReq.IdPlatformy ??
+                    await platformyService.GetPlatforma(druzynaReq.IdPlatformy ??
                                                         0); // już odfiltrowaliśmy drużyny bez IdPlatformy, więc możemy bezpiecznie użyć ?? 0
                 if (!platformaRes.Succeeded)
                     return ServiceResult<int>.Fail(platformaRes.StatusCode, platformaRes.Errors);
@@ -740,14 +740,14 @@ public class DruzynyService(
 
             if (druzynaReq.IdWymaganegoJezyka != null)
             {
-                var jezykRes = await jezykService.GetJezyk(druzynaReq.IdWymaganegoJezyka ?? 0);
+                var jezykRes = await jezykiService.GetJezyk(druzynaReq.IdWymaganegoJezyka ?? 0);
                 if (!jezykRes.Succeeded) return ServiceResult<int>.Fail(jezykRes.StatusCode, jezykRes.Errors);
             }
 
             if (druzynaReq.IdWymaganegoStopniaBieglosciJezyka != null)
             {
                 var stopienRes =
-                    await stopienBieglosciJezykaService.GetStopienBieglosciJezyka(
+                    await stopnieBieglosciJezykaService.GetStopienBieglosciJezyka(
                         druzynaReq.IdWymaganegoStopniaBieglosciJezyka ?? 0);
                 if (!stopienRes.Succeeded) return ServiceResult<int>.Fail(stopienRes.StatusCode, stopienRes.Errors);
                 if(druzynaReq.IdWymaganegoJezyka == null) return ServiceResult<int>.BadRequest(new ErrorItem("Nie można ustawić wymaganego stopnia biegłości języka bez ustawienia wymaganego języka"));
@@ -756,7 +756,7 @@ public class DruzynyService(
             // sprawdzamy, czy spełnia wymagania języka
             if (druzynaReq.IdWymaganegoJezyka != null)
             {
-                var jezykiOrazStopnieRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idKapitana);
+                var jezykiOrazStopnieRes = await jezykiService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idKapitana);
                 if (!jezykiOrazStopnieRes.Succeeded) return ServiceResult<int>.Fail(jezykiOrazStopnieRes.StatusCode, jezykiOrazStopnieRes.Errors);
                 var jezykiOrazStopnie = jezykiOrazStopnieRes.Value ?? new List<JezykOrazRowneLubNizszeStopnieDto>();
                 
@@ -841,7 +841,7 @@ public class DruzynyService(
             if (!opuscDruzyneRes) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się opuścić drużyny")]);
 
             // wysyłamy kapitanowi powiadomienie, że ktoś opuścił drużynę
-            var powiadomienieRes = await powiadomienieService.WyslijPowiadomienieOWyjsciuZDruzyny(
+            var powiadomienieRes = await powiadomieniaService.WyslijPowiadomienieOWyjsciuZDruzyny(
                 druzyna.KapitanId,
                 idUzytkownika,
                 druzyna.Id,
@@ -880,7 +880,7 @@ public class DruzynyService(
             var druzynaRes = await GetDruzyna(miejsce.DruzynaId);
             if(!druzynaRes.Succeeded) return ServiceResult<bool>.Fail(druzynaRes.StatusCode, druzynaRes.Errors);
 
-            var powiadomienieRes = await powiadomienieService.WyslijPowiadomienieOUsunieciuZDruzyny(
+            var powiadomienieRes = await powiadomieniaService.WyslijPowiadomienieOUsunieciuZDruzyny(
                 usuwanyUzytkownikId ?? 0, // już odfiltrowaliśmy miejsca bez UzytkownikId, więc możemy bezpiecznie użyć ?? 0
                 miejsce.DruzynaId,
                 druzynaRes.Value.Nazwa
@@ -941,18 +941,18 @@ public class DruzynyService(
         
         // preferencje zintegrowania = [zintegrowane, niezintegrowane, wszystkie]
 
-        var czyUzytkownikMaZintegrowaneKontoRes = await uzytkownikService.CzyUzytkownikMaZintegrowaneKonto(idUzytkownika);
+        var czyUzytkownikMaZintegrowaneKontoRes = await uzytkownicyService.CzyUzytkownikMaZintegrowaneKonto(idUzytkownika);
         if (!czyUzytkownikMaZintegrowaneKontoRes.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(czyUzytkownikMaZintegrowaneKontoRes.StatusCode, czyUzytkownikMaZintegrowaneKontoRes.Errors);
         var maZintegrowaneKonto = czyUzytkownikMaZintegrowaneKontoRes.Value;
         if(!maZintegrowaneKonto && req.PreferencjeZintegrowania != "niezintegrowane")
             return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Nie można szukać drużyn zintegrowanych, ponieważ nie masz zintegrowanego konta"));
         
-        var gra = await wspieranaGraService.GetWspieranaGra(req.IdGry);
+        var gra = await wspieraneGryService.GetWspieranaGra(req.IdGry);
         if (!gra.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(gra.StatusCode, gra.Errors);
         
         if(req.IdPlatformy != null)
         {
-            var platforma = await platformaService.GetPlatforma(req.IdPlatformy ?? 0);
+            var platforma = await platformyService.GetPlatforma(req.IdPlatformy ?? 0);
             if (!platforma.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(platforma.StatusCode, platforma.Errors);
             var czyMaTeGreNaPlatformieRes = await bibliotekaGierService.CzyUzytkownikMaDanaGreNaDanejPlatformie(
                 idUzytkownika, 
@@ -965,7 +965,7 @@ public class DruzynyService(
 
         if (req.IdJezyka != null)
         {
-            var jezykiRes = await jezykService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
+            var jezykiRes = await jezykiService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
             if (!jezykiRes.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(jezykiRes.StatusCode, jezykiRes.Errors);
 
             var jezykISopien = jezykiRes.Value.FirstOrDefault(x => x.Jezyk.Id == req.IdJezyka);
@@ -1008,7 +1008,7 @@ public class DruzynyService(
         if(req.IdRol.Length == 0 && roleGry.Value.Count > 0) return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Jeżeli gra ma role, to należy podać id przynajmniej jednej roli"));
         
         // wszystko powinno być w porządku, można szukać drużyn
-        var jezykiUzytkownikaRes = await jezykService.GetJezykiProfilu(idUzytkownika);
+        var jezykiUzytkownikaRes = await jezykiService.GetJezykiProfilu(idUzytkownika);
         if(!jezykiUzytkownikaRes.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(jezykiUzytkownikaRes.StatusCode, jezykiUzytkownikaRes.Errors);
         
         var idDruzyn = await druzynyRepository.WyszukajIdDruzyn(req, idUzytkownika, jezykiUzytkownikaRes.Value);
@@ -1046,7 +1046,7 @@ public class DruzynyService(
             if (!czyUzytkownikSpelniaWymaganieMiejscaRes.Value) return ServiceResult<bool>.Forbidden(new ErrorItem("Nie spełniasz wymagań tego miejsca"));
             
             // sprawdzamy, czy użytkownik ma zaproszenie na to miejsce. od tego zależą rzeczy potem
-            var czyDolaczylZZaproszeniaRes = await powiadomienieService.CzyUzytkownikMaPowiadomienieDanegoTypuPowiazaneZObiektami(
+            var czyDolaczylZZaproszeniaRes = await powiadomieniaService.CzyUzytkownikMaPowiadomienieDanegoTypuPowiazaneZObiektami(
                 idUzytkownika,
                 (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny,
                 miejsce.DruzynaId,
@@ -1069,7 +1069,7 @@ public class DruzynyService(
             var wynik = await druzynyRepository.DodajUzytkownikaNaMiejsce(idMiejsca, idUzytkownika);
             
             // usuwamy zaproszenia na dane miejsce, bo są nieaktualne
-            await powiadomienieService.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(null, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, miejsce.DruzynaId, idMiejsca);
+            await powiadomieniaService.DeletePowiadomieniaDanegoTypuPowiazaneZObiektami(null, (int)TypPowiadomieniaEnum.ZaproszenieDoDruzyny, miejsce.DruzynaId, idMiejsca);
             
             // jeżeli wynik jest false, to znaczy, że miejsce zajęło ktoś inny w międzyczasie, więc zwracamy konflikt
             if(!wynik) return ServiceResult<bool>.Conflict(new ErrorItem("To miejsce jest już zajęte lub zostało usunięte"));
@@ -1082,7 +1082,7 @@ public class DruzynyService(
                 var rola = miejsce.RolaId != null ? await statystykiService.GetRola(miejsce.RolaId ?? 1) : null;
                 var nazwaRoli = rola != null && rola.Succeeded ? rola.Value.Nazwa : null;
 
-                await powiadomienieService.WyslijPowiadomienieODolaczeniuDoDruzyny(
+                await powiadomieniaService.WyslijPowiadomienieODolaczeniuDoDruzyny(
                     idUzytkownika,
                     druzynaRes.Value.KapitanId,
                     miejsce.DruzynaId,
@@ -1160,7 +1160,7 @@ public class DruzynyService(
             var nazwaRoli = rola != null && rola.Succeeded ? rola.Value.Nazwa : null;
             
             // wszystko powinno być w porządku, wysyłamy zaproszenie
-            var wynik = await powiadomienieService.WyslijZaproszenieNaMiejsceWDruzynie(
+            var wynik = await powiadomieniaService.WyslijZaproszenieNaMiejsceWDruzynie(
                 idZapraszanegoUzytkownika,
                 miejsce.DruzynaId,
                 druzyna.Nazwa,
@@ -1178,7 +1178,7 @@ public class DruzynyService(
 
     public async Task<ServiceResult<bool>> ZaprosUzytkownikaNaMiejscePoLoginie(int idMiejsca, string login, int idZapraszajacegoUzytkownika)
     {
-        var uzytkownikRes = await uzytkownikService.GetUzytkownik(login);
+        var uzytkownikRes = await uzytkownicyService.GetUzytkownik(login);
         if (!uzytkownikRes.Succeeded) return ServiceResult<bool>.Fail(uzytkownikRes.StatusCode, uzytkownikRes.Errors);
         return await ZaprosUzytkownikaNaMiejsce(idMiejsca, uzytkownikRes.Value.Id, idZapraszajacegoUzytkownika);
     }

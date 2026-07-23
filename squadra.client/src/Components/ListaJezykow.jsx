@@ -65,11 +65,11 @@ export default function ListaJezykow({
         };
         
         const pobierzJezykiIStopnie = async () => {
-            const jezyki = await fetchJsonAbort(`${API_BASE_URL}/Jezyk`);
+            const jezyki = await fetchJsonAbort(`${API_BASE_URL}/Jezyki`);
             if (!alive || !jezyki) return;
             ustawListeJezykowZBazy(jezyki);
             
-            const stopnie = await fetchJsonAbort(`${API_BASE_URL}/StopienBieglosciJezyka`);
+            const stopnie = await fetchJsonAbort(`${API_BASE_URL}/StopnieBieglosciJezyka`);
             if (!alive || !stopnie) return;
             ustawListeStopniZBazy(stopnie);
         };

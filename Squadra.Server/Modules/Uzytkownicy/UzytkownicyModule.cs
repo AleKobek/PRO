@@ -7,8 +7,8 @@ public static class UzytkownicyModule
 {
     public static IServiceCollection AddUzytkownicyModule(this IServiceCollection services)
     {
-        services.AddScoped<IUzytkownikService, UzytkownikService>();
-        services.AddScoped<IUzytkownikRepository, UzytkownikRepository>();
+        services.AddScoped<IUzytkownicyService, UzytkownicyService>();
+        services.AddScoped<IUzytkownicyRepository, UzytkownicyRepository>();
         
         services.AddScoped<IUsunKontoService, UsunKontoService>();
         

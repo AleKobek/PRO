@@ -76,7 +76,7 @@ export default function EdytujDruzyne() {
 
         const podajNastroje = async () => {
 
-            const dane = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/nastroje-rozgrywki`);
+            const dane = await fetchJsonAbort(`${API_BASE_URL}/Druzyny/nastroje-rozgrywki`);
             if (!alive || !dane) return;
 
             ustawNastrojeRozgrywki(dane);
@@ -122,7 +122,7 @@ export default function EdytujDruzyne() {
             body: JSON.stringify(druzynaDoWyslania)
         }
 
-        const res = await fetch(`${API_BASE_URL}/Druzyna/${stareDane.idDruzyny}`, opcje);
+        const res = await fetch(`${API_BASE_URL}/Druzyny/${stareDane.idDruzyny}`, opcje);
 
         const ct = res.headers.get("content-type") || "";
         const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy

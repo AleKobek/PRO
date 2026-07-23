@@ -111,7 +111,7 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
             }
         };
 
-        const znajomi = await fetchJsonAbort(`${API_BASE_URL}/Znajomi`, {signal});
+        const znajomi = await fetchJsonAbort(`${API_BASE_URL}/Znajomosci`, {signal});
         if(!alive || !Array.isArray(znajomi)) return;
         if(znajomi.length > 0 ) znajomi[0] = {...znajomi[0], czySaNoweWiadomosci: false};
         ustawZnajomych(znajomi);
@@ -218,7 +218,7 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
             containerId: TOAST_CONTAINER_ID,
         };
         try {
-            const res = await fetch(`${API_BASE_URL}/Powiadomienie/zaproszenie/znajomi`, {
+            const res = await fetch(`${API_BASE_URL}/Powiadomienia/zaproszenie/znajomi`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: "include",

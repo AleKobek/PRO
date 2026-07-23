@@ -19,10 +19,6 @@ export default function FormularzPlatformy()
     
     const przyWysylaniu = async() =>{
 
-        console.log("Wysyłamy!")
-        console.log("idPlatformy", idPlatformy);
-        console.log("nazwa", nazwaPlatformy);
-
         ustawBladLogo("");
         ustawBladNazwyPlatformy("");
         ustawBladIdPlatformy("");
@@ -49,7 +45,7 @@ export default function FormularzPlatformy()
             body: formularz
         }
         
-        const res = await fetch(`${API_BASE_URL}/Platforma/`+idPlatformy, opcje);
+        const res = await fetch(`${API_BASE_URL}/Platformy/`+idPlatformy, opcje);
         
         // Odczyt body różni się zależnie od typu odpowiedzi
         // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić

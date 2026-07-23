@@ -21,9 +21,9 @@ public class IntegracjeZewnetrzneService(
     IIntegracjeZewnetrzneRepository integracjeZewnetrzneRepository,
     IStatystykiService statystykiService,
     IBibliotekaGierService bibliotekaGierService,
-    IPlatformaService platformaService,
+    IPlatformyService platformyService,
     IDruzynyService druzynyService,
-    IUzytkownikService uzytkownikService) : IIntegracjeZewnetrzneService
+    IUzytkownicyService uzytkownicyService) : IIntegracjeZewnetrzneService
 {
     
     // symulujemy logowanie do zewnętrznego serwisu. jeżeli dopasuje podane dane do któregoś z "kont", przydziela je do konta obecnego użytkownika
@@ -54,7 +54,7 @@ public class IntegracjeZewnetrzneService(
                 return ServiceResult<ZintegrujKontoRes>.Unauthorized(new ErrorItem("Nieprawidłowy login lub hasło dla zewnętrznego serwisu."));
             
             // aktualizujemy login i id na zewnętrznym serwisie w bazie danych
-            var result = await uzytkownikService.UpdateDaneKontaNaZewnetrznymSerwisie(idUzytkownika, daneKonta.Id, login);
+            var result = await uzytkownicyService.UpdateDaneKontaNaZewnetrznymSerwisie(idUzytkownika, daneKonta.Id, login);
             if (!result.Succeeded)
                 return ServiceResult<ZintegrujKontoRes>.Fail(result.StatusCode, result.Errors);
             
@@ -114,7 +114,7 @@ public class IntegracjeZewnetrzneService(
         }
         
         // czyścimy jego id i login na zewnętrznym serwisie
-        var result = await uzytkownikService.UpdateDaneKontaNaZewnetrznymSerwisie(idUzytkownika, null, null);
+        var result = await uzytkownicyService.UpdateDaneKontaNaZewnetrznymSerwisie(idUzytkownika, null, null);
         if (!result.Succeeded)
         {
             if (czyToNowaTransakcja)
@@ -177,7 +177,7 @@ public class IntegracjeZewnetrzneService(
             return wyczyscBibliotekeResult;
         }
 
-        var wyczyscPlatformyResult = await platformaService.UsunPlatformyUzytkownika(idUzytkownika);
+        var wyczyscPlatformyResult = await platformyService.UsunPlatformyUzytkownika(idUzytkownika);
         if (!wyczyscPlatformyResult.Succeeded)
         {
             return wyczyscPlatformyResult;
@@ -234,7 +234,7 @@ public class IntegracjeZewnetrzneService(
                 PlatformaId = p.PlatformaId,
             }).ToList();
 
-            var wynik = await platformaService.UpdatePlatformyUzytkownika(idUzytkownika, platformy);
+            var wynik = await platformyService.UpdatePlatformyUzytkownika(idUzytkownika, platformy);
             return wynik;
         }
         catch (BladZewnetrznegoSerwisuException e)

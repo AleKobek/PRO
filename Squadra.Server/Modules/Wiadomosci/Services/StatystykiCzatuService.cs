@@ -8,8 +8,8 @@ namespace Squadra.Server.Modules.Wiadomosci.Services;
 
 // używamy tego w GetZnajomiDoListyUżytkownika w ZnajomiService
 public class StatystykiCzatuService(
-    IWiadomoscRepository wiadomoscRepository, 
-    IZnajomiRepository znajomiRepository,
+    IWiadomosciRepository wiadomosciRepository, 
+    IZnajomosciRepository znajomosciRepository,
     IDruzynyRepository druzynyRepository
     ) : IStatystykiCzatuService
 {
@@ -28,13 +28,13 @@ public class StatystykiCzatuService(
             if (idUzytkownika1 == idUzytkownika2)
                 return ServiceResult<DateTime?>.BadRequest(
                     new ErrorItem("Nie można pobrać wiadomości między tym samym użytkownikiem"));
-            if (!await znajomiRepository.CzyJestZnajomosc(idUzytkownika1, idUzytkownika2))
+            if (!await znajomosciRepository.CzyJestZnajomosc(idUzytkownika1, idUzytkownika2))
                 return ServiceResult<DateTime?>.BadRequest(
                     new ErrorItem("Nie można pobrać wiadomości od użytkownika, który nie jest Twoim znajomym"));
 
             // jest w porządku
             return ServiceResult<DateTime?>.Ok(
-                await wiadomoscRepository.GetDataNajnowszejWiadomosciPrywatnej(idUzytkownika1, idUzytkownika2));
+                await wiadomosciRepository.GetDataNajnowszejWiadomosciPrywatnej(idUzytkownika1, idUzytkownika2));
         }
         catch (NieZnalezionoWBazieException e)
         {
@@ -59,7 +59,7 @@ public class StatystykiCzatuService(
                     new ErrorItem("Nie można sprawdzić wiadomości między tym samym użytkownikiem"));
 
             var dataNajnowszejWiadomosci =
-                await wiadomoscRepository.GetDataNajnowszejWiadomosciPrywatnej(idObecnegoUzytkownika, idZnajomego);
+                await wiadomosciRepository.GetDataNajnowszejWiadomosciPrywatnej(idObecnegoUzytkownika, idZnajomego);
             if (dataNajnowszejWiadomosci == null)
                 return ServiceResult<bool>.Ok(false); // jeżeli nie ma żadnych wiadomości, to na pewno nie ma nowych
 
@@ -67,7 +67,7 @@ public class StatystykiCzatuService(
             try
             {
                 var dataOstatniegoOtwarciaCzatu =
-                    await znajomiRepository.GetDataOstatniegoOtwarciaCzatu(idObecnegoUzytkownika, idZnajomego);
+                    await znajomosciRepository.GetDataOstatniegoOtwarciaCzatu(idObecnegoUzytkownika, idZnajomego);
                 if (dataOstatniegoOtwarciaCzatu == null)
                     return
                         ServiceResult<bool>
@@ -93,7 +93,7 @@ public class StatystykiCzatuService(
             if (idObecnegoUzytkownika < 1)
                 return ServiceResult<bool>.NotFound(new ErrorItem("Uzytkownik o id " + idObecnegoUzytkownika + " nie istnieje"));
 
-            var znajomi = await znajomiRepository.GetZnajomosciUzytkownika(idObecnegoUzytkownika);
+            var znajomi = await znajomosciRepository.GetZnajomosciUzytkownika(idObecnegoUzytkownika);
             var czySaNowe = false;
             foreach (var znajomy in znajomi)
             {
@@ -128,7 +128,7 @@ public class StatystykiCzatuService(
         
         if (idDruzyny < 1) return ServiceResult<DateTime?>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny)); // na wszelki wypadek
         
-        return ServiceResult<DateTime?>.Ok(await wiadomoscRepository.GetDataNajnowszejWiadomosciWDruzynie(idDruzyny));
+        return ServiceResult<DateTime?>.Ok(await wiadomosciRepository.GetDataNajnowszejWiadomosciWDruzynie(idDruzyny));
         
     }
     
@@ -138,7 +138,7 @@ public class StatystykiCzatuService(
         
         if (idDruzyny < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny)); // na wszelki wypadek
         
-        var dataNajnowszejWiadomosci = await wiadomoscRepository.GetDataNajnowszejWiadomosciWDruzynie(idDruzyny);
+        var dataNajnowszejWiadomosci = await wiadomosciRepository.GetDataNajnowszejWiadomosciWDruzynie(idDruzyny);
         
         if (dataNajnowszejWiadomosci == null) return ServiceResult<bool>.Ok(false); // jeżeli nie ma żadnych wiadomości, to na pewno nie ma nowych
         

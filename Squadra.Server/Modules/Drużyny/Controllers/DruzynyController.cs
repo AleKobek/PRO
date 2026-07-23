@@ -1,0 +1,506 @@
+﻿using System.Net;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Squadra.Server.Modules.Drużyny.DTO;
+using Squadra.Server.Modules.Drużyny.Services;
+using Squadra.Server.Modules.Profile.DTO.Profil;
+using Squadra.Server.Modules.Uzytkownicy.Models;
+
+namespace Squadra.Server.Modules.Drużyny.Controllers;
+
+[Authorize]
+[Route("api/[controller]")]
+[ApiController]
+public class DruzynyController(
+    IDruzynyService druzynyService, 
+    IDeleteDruzynaService deleteDruzynaService,
+    UserManager<Uzytkownik> userManager
+) : ControllerBase
+{
+     
+    [HttpGet("twoje")]
+    [Authorize(Roles = "Uzytkownik")]
+    [EndpointSummary("Zwraca wszystkie drużyny użytkownika, w formacie potrzebnym do wyświetlenia ich w tabelce na stronie głównej.")]
+    [ProducesResponseType(typeof(TabelkaDruzynResDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<TabelkaDruzynResDto>> GetWszystkieDruzynyUzytkownikaDoTabelki()
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetWszystkieDruzynyUzytkownikaDoTabelki(uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpGet("szczegoly/{idDruzyny:int}")]
+    [Authorize(Roles = "Uzytkownik")]
+    [EndpointSummary("Zwraca szczegółowe dane drużyny, potrzebne do wyświetlenia jej na stronie drużyny.")]
+    [ProducesResponseType(typeof(DruzynaSzczegolyDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<DruzynaSzczegolyDto>> GetDruzynaSzczegoly(int idDruzyny)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.PodajSzczegolyDruzyny(idDruzyny, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    [HttpGet("formularz/ze-statystykami/{idGry:int}")]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Zwraca dane potrzebne do wyświetlenia formularza tworzenia drużyny, ze statystykami.")]
+    [EndpointDescription("Podajemy uzytkownika, który tworzy drużynę, aby zwrócić jego statystyki, które mogą być przydatne przy tworzeniu drużyny. Podajemy też id gry, aby zwrócić tylko statystyki z tej gry.")]
+    [ProducesResponseType(typeof(DaneDoFormularzaDruzynyZeStatystykamiDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<DaneDoFormularzaDruzynyZeStatystykamiDto>> GetDaneDoFormularzaDruzynyZeStatystykami(int idGry)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetDaneDoFormularzaDruzynyZeStatystykami(idGry, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+     [HttpGet("formularz/bez-statystyk/{idGry:int}")]
+     [Authorize (Roles = "Uzytkownik")]
+     [EndpointSummary("Zwraca dane potrzebne do wyświetlenia formularza tworzenia drużyny, bez statystyk.")]
+     [EndpointDescription("Zwraca dane potrzebne do wyświetlenia formularza tworzenia drużyny, bez statystyk. Podajemy id gry, aby zwrócić tylko statystyki z tej gry.")]
+     [ProducesResponseType(typeof(DaneDoFormularzaDruzynyBezStatystykDto), 200)]
+     [ProducesResponseType(400)]
+     [ProducesResponseType(404)]
+     public async Task<ActionResult<DaneDoFormularzaDruzynyBezStatystykDto>> GetDaneDoFormularzaDruzynyBezStatystyk(int idGry)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetDaneDoFormularzaDruzynyBezStatystyk(idGry, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+     
+    [HttpGet("formularz/wyszukiwanie")]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Zwraca dane potrzebne do wyświetlenia formularza wyszukiwania drużyny")]
+    [EndpointDescription("Zwraca dane potrzebne do wyświetlenia formularza wyszukiwania")]
+    [ProducesResponseType(typeof(DaneDoFormularzaDruzynyBezStatystykDto), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<DaneDoFormularzaWyszukiwaniaDruzyny>> GetDaneDoFormularzaWyszukiwaniaDruzyny()
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetDaneDoFormularzaWyszukiwaniaDruzyny(uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpGet("nastroje-rozgrywki")]
+    [EndpointSummary("Zwraca nastroje rozgrywki, które można wybrać przy tworzeniu drużyny.")]
+    [EndpointDescription("Zwraca nastroje rozgrywki, które można wybrać przy tworzeniu i edytowaniu drużyny.")]
+    [ProducesResponseType(typeof(IEnumerable<NastrojRozgrywkiDto>), 200)]
+    public async Task<ActionResult<IEnumerable<NastrojRozgrywkiDto>>> GetNastrojeRozgrywki()
+    {
+        var result = await druzynyService.GetNastrojeRozgrywki();
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    [HttpGet("znajomi-spelniajacy-warunki-miejsca/{idMiejsca:int}")]
+    [Authorize(Roles = "Uzytkownik")]
+    [EndpointSummary("Zwraca listę znajomych zalogowanego użytkownika, którzy spełniają warunki danego miejsca.")]
+    [ProducesResponseType(typeof(IEnumerable<ProfilMinInfoDto>), 200)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(403)]
+    [ProducesResponseType(404)]
+    public async Task<ActionResult<IEnumerable<ProfilMinInfoDto>>> GetZnajomiSpelniajacyWarunkiMiejsca(int idMiejsca)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null)
+            return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetZnajomiSpelniajacyWarunkiMiejsca(idMiejsca, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpPost]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Tworzy drużynę")]
+    [ProducesResponseType(typeof(int),(int)HttpStatusCode.Created)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult<int>> CreateDruzyna(CreateDruzynaReqDto dto)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.StworzDruzyne(dto, uzytkownik.Id);
+
+        switch (result.StatusCode)
+        {
+            // Dla 400 u nas zwracamy ValidationProblem, ponieważ błędy dotyczą konkretnych pól
+            case 201:
+                return CreatedAtAction(nameof(GetDruzynaSzczegoly), new { idDruzyny = result.Value }, result.Value);
+            case 400:
+            {
+                foreach (var e in result.Errors)
+                    ModelState.AddModelError(e.Field ?? "Ogolne", e.Message);
+                return ValidationProblem();
+            }
+            case 404:
+                return NotFound(new { errors = result.Errors });
+            // coś jeszcze innego
+            default:
+                return StatusCode(result.StatusCode, new { errors = result.Errors });
+        }
+    }
+    
+    [HttpPut("opuszczanie/{idDruzyny:int}")]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Pozwala użytkownikowi opuścić drużynę, do której należy.")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult> OpuscDruzyne(int idDruzyny)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.OpuscDruzyne(idDruzyny, uzytkownik.Id, false);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    [HttpPut("miejsce/{idmiejscaWDruzynie:int}")]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Pozwala opróżnić dane miejsce w drużynie.")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult> OproznijMiejsceWDruzynie(int idmiejscaWDruzynie, int idUzytkownika)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.OproznijMiejsceWDruzynie(idmiejscaWDruzynie, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpDelete("{idDruzyny:int}")]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Usuwa drużynę")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    public async Task<ActionResult> DeleteDruzyna(int idDruzyny)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await deleteDruzynaService.UsunDruzyne(idDruzyny, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpDelete("admin/{idDruzyny:int}")]
+    [Authorize (Roles = "Admin")]
+    [EndpointSummary("Usuwa drużynę")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    public async Task<ActionResult> DeleteDruzynaAdmin(int idDruzyny)
+    {
+        var result = await deleteDruzynaService.UsunDruzyneAdmin(idDruzyny);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpPut("{idDruzyny:int}")]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Aktualizuje dane drużyny")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    public async Task<ActionResult> UpdateDruzyna(int idDruzyny, DruzynaUpdateDto dto)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.UpdateDruzyna(idDruzyny, uzytkownik.Id, dto);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpPut("admin/{idDruzyny:int}")]
+    [Authorize (Roles = "Admin")]
+    [EndpointSummary("Aktualizuje dane dowolnej drużyny - tylko dla admina")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    public async Task<ActionResult> UpdateDruzynaAdmin(int idDruzyny, DruzynaUpdateDto dto)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.UpdateDruzyna(idDruzyny, uzytkownik.Id, dto);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpPut("miejsce/dolacz/{idMiejsca:int}")]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Dołącza użytkownika na dane miejsce w drużynie")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.Conflict)]
+    public async Task<ActionResult> DolaczNaMiejsce(int idMiejsca)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.DodajUzytkownikaNaMiejsce(idMiejsca, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            409 => Conflict(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    [HttpPut("czat/ostatnie-otwarcie/{idDruzyny:int}")]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Aktualizuje datę ostatniego otwarcia czatu dla zalogowanego użytkownika w danej drużynie")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult> UpdateDataOstatniegoOtwarciaCzatu(int idDruzyny)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.UpdateDataOstatniegoOtwarciaCzatu(idDruzyny, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpPost("miejsce/zapros/{idMiejsca:int}/{idUzytkownika:int}")]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Zaprasza użytkownika na dane miejsce w drużynie")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.Conflict)]
+    public async Task<ActionResult> ZaprosNaMiejsce(int idMiejsca, int idUzytkownika)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.ZaprosUzytkownikaNaMiejsce(idMiejsca, idUzytkownika, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            409 => Conflict(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpPost("miejsce/zapros/{idMiejsca:int}/login")]
+    [Authorize (Roles = "Uzytkownik")]
+    [EndpointSummary("Zaprasza użytkownika na dane miejsce w drużynie po jego loginie")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.Forbidden)]
+    [ProducesResponseType((int)HttpStatusCode.Conflict)]
+    public async Task<ActionResult> ZaprosNaMiejscePoLoginie(int idMiejsca, [FromBody] string loginUzytkownika)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.ZaprosUzytkownikaNaMiejscePoLoginie(idMiejsca, loginUzytkownika, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            204 => NoContent(),
+            400 => BadRequest(result.Errors[0].Message),
+            403 => StatusCode(403, result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            409 => Conflict(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+
+    [HttpPost("wyszukaj")]
+    [Authorize(Roles = "Uzytkownik")]
+    [EndpointSummary("Wyszukuje drużyny spełniające podane kryteria")]
+    [ProducesResponseType(typeof(ICollection<DruzynaDoTabelkiDto>), 200)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    public async Task<ActionResult<TabelkaDruzynResDto>> WyszukajDruzyny(WyszukajDruzyneReqDto dto)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.WyszukajDruzyny(dto, uzytkownik.Id);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+
+    [HttpPost("tabelka")]
+    [Authorize(Roles = "Uzytkownik")]
+    [EndpointSummary("Zwraca drużyny w formacie do tabelki, dla podanych id drużyn")]
+    [ProducesResponseType(typeof(ICollection<DruzynaDoTabelkiDto>), 200)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult<ICollection<DruzynaDoTabelkiDto>>> GetDruzynyDoTabelki(int[] idDruzyn)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetDruzynyDoTabelki(idDruzyn, null);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+    
+    [HttpPost("tabelka/{idUzytkownika:int}")]
+    [Authorize(Roles = "Uzytkownik")]
+    [EndpointSummary("Zwraca drużyny w formacie do tabelki twoich drużyn, dla podanych id drużyn")]
+    [ProducesResponseType(typeof(ICollection<DruzynaDoTabelkiDto>), 200)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult<ICollection<DruzynaDoTabelkiDto>>> GetDruzynyDoTabelkiUzytkownika(int idUzytkownika, [FromBody] int[] idDruzyn)
+    {
+        var uzytkownik = await userManager.GetUserAsync(User);
+        if (uzytkownik is null) return Unauthorized("Nie jesteś zalogowany.");
+        
+        var result = await druzynyService.GetDruzynyDoTabelki(idDruzyn, idUzytkownika);
+        return result.StatusCode switch
+        {
+            200 => Ok(result.Value),
+            400 => BadRequest(result.Errors[0].Message),
+            404 => NotFound(result.Errors[0].Message),
+            _ => StatusCode(result.StatusCode, new { errors = result.Errors })
+        };
+    }
+}

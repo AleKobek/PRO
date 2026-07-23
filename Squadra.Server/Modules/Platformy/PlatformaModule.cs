@@ -7,8 +7,8 @@ public static class PlatformaModule
 {
     public static IServiceCollection AddPlatformaModule(this IServiceCollection services)
     {
-        services.AddScoped<IPlatformaRepository, PlatformaRepository>();
-        services.AddScoped<IPlatformaService, PlatformaService>();
+        services.AddScoped<IPlatformyRepository, PlatformyRepository>();
+        services.AddScoped<IPlatformyService, PlatformyService>();
         
         return services;
     }

@@ -8,7 +8,7 @@ using Squadra.Server.Modules.Znajomosci.Services;
 namespace Squadra.Server.Modules.Uzytkownicy.Services;
 
 public class UsunKontoService (
-    IUzytkownikService uzytkownikService,
+    IUzytkownicyService uzytkownicyService,
     IIntegracjeZewnetrzneService integracjeZewnetrzneService,
     IUsunPowiadomieniaUzytkownikaService usunPowiadomieniaService,
     IDeleteDruzynaService deleteDruzynaService,
@@ -54,7 +54,7 @@ public class UsunKontoService (
             }
             
             // na koniec usuwamy konto
-            var uzytkownikRes = await uzytkownikService.DeleteUzytkownik(id);
+            var uzytkownikRes = await uzytkownicyService.DeleteUzytkownik(id);
             if(!uzytkownikRes.Succeeded) 
             {
                 await transakcja.RollbackAsync();

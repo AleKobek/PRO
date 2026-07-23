@@ -19,16 +19,16 @@ namespace Squadra.Server.Tests.Controllers;
 
 public class AuthControllerTests
 {
-    private readonly Mock<IUzytkownikService> _mockUzytkownikService;
-    private readonly Mock<IProfilService> _mockProfilService;
+    private readonly Mock<IUzytkownicyService> _mockUzytkownikService;
+    private readonly Mock<IProfileService> _mockProfilService;
     private readonly Mock<UserManager<Uzytkownik>> _mockUserManager;
     private readonly Mock<SignInManager<Uzytkownik>> _mockSignInManager;
     private readonly AuthController _controller;
 
     public AuthControllerTests()
     {
-        _mockUzytkownikService = new Mock<IUzytkownikService>();
-        _mockProfilService = new Mock<IProfilService>();
+        _mockUzytkownikService = new Mock<IUzytkownicyService>();
+        _mockProfilService = new Mock<IProfileService>();
         _mockUserManager = MockUserManager<Uzytkownik>();
         _mockSignInManager = MockSignInManager<Uzytkownik>(_mockUserManager.Object);
         _controller = new AuthController(

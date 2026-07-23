@@ -6,8 +6,8 @@ public static class PowiadomieniaModule
 {
     public static IServiceCollection AddPowiadomieniaModule(this IServiceCollection services)
     {
-        services.AddScoped<IPowiadomienieService, PowiadomienieService>();
-        services.AddScoped<IPowiadomienieRepository, PowiadomienieRepository>();
+        services.AddScoped<IPowiadomieniaService, PowiadomieniaService>();
+        services.AddScoped<IPowiadomieniaRepository, PowiadomieniaRepository>();
         services.AddScoped<IRozpatrzPowiadomienieService, RozpatrzPowiadomienieService>();
         services.AddScoped<IUsunPowiadomieniaUzytkownikaService, UsunPowiadomieniaUzytkownikaService>();
         return services;

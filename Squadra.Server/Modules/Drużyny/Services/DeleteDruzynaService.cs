@@ -14,8 +14,8 @@ public class DeleteDruzynaService(
     IDruzynyRepository druzynyRepository,
     IDruzynyService druzynyService,
     IStatystykiService statystykiService,
-    IPowiadomienieService powiadomienieService,
-    IWiadomoscService wiadomoscService
+    IPowiadomieniaService powiadomieniaService,
+    IWiadomosciService wiadomosciService
 ) : IDeleteDruzynaService
 {
     // usuwa drużynę, wraz z miejscami w niej i wymaganymi statystykami. wysyła też powiadomienia o rozwiązaniu drużyny do byłych członków
@@ -47,7 +47,7 @@ public class DeleteDruzynaService(
             await druzynyRepository.DeleteMiejscaWDruzynie(idDruzyny);
             
             // usuwamy wszystkie wiadomości na czacie drużyny, żeby nie było wiadomości w drużynie, która już nie istnieje
-            var czatDruzynowyRes = await wiadomoscService.DeleteWiadomosciDruzyny(idDruzyny);
+            var czatDruzynowyRes = await wiadomosciService.DeleteWiadomosciDruzyny(idDruzyny);
             if (!czatDruzynowyRes.Succeeded)
             {
                 await transakcja.RollbackAsync();
@@ -57,7 +57,7 @@ public class DeleteDruzynaService(
 
             // usuwamy wszystkie powiadomienia związane z drużyną, żeby nie było powiadomień o drużynie, która już nie istnieje
             // czyli to będą zaproszenia do tej drużyny i u kapitana powiadomienia że ktoś dołączył/opuścił, ktoś odrzucił/zaakceptował zaproszenie .
-            var powiadomieniaRes = await powiadomienieService.UsunPowiadomieniaZwiazaneZDruzyna(idDruzyny);
+            var powiadomieniaRes = await powiadomieniaService.UsunPowiadomieniaZwiazaneZDruzyna(idDruzyny);
             if (!powiadomieniaRes.Succeeded)
             {
                 await transakcja.RollbackAsync();
@@ -72,7 +72,7 @@ public class DeleteDruzynaService(
                 if (miejsce.UzytkownikId == idUsuwajacegoUzytkownika)
                     continue; // nie wysyłamy powiadomienia do osoby, która usunęła drużynę
                 
-                await powiadomienieService.WyslijPowiadomienieORozwiazaniuDruzyny(
+                await powiadomieniaService.WyslijPowiadomienieORozwiazaniuDruzyny(
                     miejsce.UzytkownikId ??
                     0, // już odfiltrowaliśmy miejsca bez UzytkownikId, więc możemy bezpiecznie użyć ?? 0
                     druzyna.Nazwa
@@ -134,7 +134,7 @@ public class DeleteDruzynaService(
             await druzynyRepository.DeleteMiejscaWDruzynie(idDruzyny);
             
             // usuwamy wszystkie wiadomości na czacie drużyny, żeby nie było wiadomości w drużynie, która już nie istnieje
-            var czatDruzynowyRes = await wiadomoscService.DeleteWiadomosciDruzyny(idDruzyny);
+            var czatDruzynowyRes = await wiadomosciService.DeleteWiadomosciDruzyny(idDruzyny);
             if (!czatDruzynowyRes.Succeeded)
             {
                 await transakcja.RollbackAsync();
@@ -144,7 +144,7 @@ public class DeleteDruzynaService(
 
             // usuwamy wszystkie powiadomienia związane z drużyną, żeby nie było powiadomień o drużynie, która już nie istnieje
             // czyli to będą zaproszenia do tej drużyny i u kapitana powiadomienia że ktoś dołączył/opuścił, ktoś odrzucił/zaakceptował zaproszenie .
-            var powiadomieniaRes = await powiadomienieService.UsunPowiadomieniaZwiazaneZDruzyna(idDruzyny);
+            var powiadomieniaRes = await powiadomieniaService.UsunPowiadomieniaZwiazaneZDruzyna(idDruzyny);
             if (!powiadomieniaRes.Succeeded)
             {
                 await transakcja.RollbackAsync();
@@ -157,7 +157,7 @@ public class DeleteDruzynaService(
             {
                 if (miejsce.UzytkownikId == null) continue; // jeżeli miejsce jest puste, to nie wysyłamy powiadomienia
                 
-                await powiadomienieService.WyslijPowiadomienieORozwiazaniuDruzyny(
+                await powiadomieniaService.WyslijPowiadomienieORozwiazaniuDruzyny(
                     miejsce.UzytkownikId ??
                     0, // już odfiltrowaliśmy miejsca bez UzytkownikId, więc możemy bezpiecznie użyć ?? 0
                     druzyna.Nazwa
@@ -166,7 +166,7 @@ public class DeleteDruzynaService(
             }
             
             // wysyłamy powiadomienie do kapitana drużyny, że drużyna została usunięta przez administratora
-            await powiadomienieService.WyslijPowiadomienieOUsunieciuDruzynyPrzezAdmina(
+            await powiadomieniaService.WyslijPowiadomienieOUsunieciuDruzynyPrzezAdmina(
                 druzyna.KapitanId,
                 druzyna.Nazwa
             );

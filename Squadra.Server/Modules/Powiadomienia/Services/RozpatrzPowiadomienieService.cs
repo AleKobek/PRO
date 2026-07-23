@@ -10,9 +10,9 @@ using Squadra.Server.Modules.Znajomosci.Services;
 
 namespace Squadra.Server.Modules.Powiadomienia.Services;
 
-public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienieRepository,
-    IZnajomiService znajomiService,
-    IProfilService profilService,
+public class RozpatrzPowiadomienieService(IPowiadomieniaRepository powiadomieniaRepository,
+    IZnajomosciService znajomosciService,
+    IProfileService profileService,
     IDruzynyService druzynyService,
     IStatystykiService statystykiService
 ) : IRozpatrzPowiadomienieService
@@ -23,7 +23,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
     {
         try
         {
-            var powiadomienie = await powiadomienieRepository.GetPowiadomienie(id);
+            var powiadomienie = await powiadomieniaRepository.GetPowiadomienie(id);
             /*
                 int Id,
                 int IdTypuPowiadomienia,
@@ -53,7 +53,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 }
             
                 // pobieramy naszą nazwę użytkownika, aby była w powiadomieniu dla drugiej strony
-                var wynikZnalezieniaProfilu = await profilService.GetProfil(idUzytkownika);
+                var wynikZnalezieniaProfilu = await profileService.GetProfil(idUzytkownika);
                 if(wynikZnalezieniaProfilu.StatusCode != 200)
                 {
                     // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
@@ -71,13 +71,13 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 {
                     case true:
                     {
-                        var result = await znajomiService.CreateZnajomosc(powiadomienie.UzytkownikId, powiadomienie.PowiazanyObiektId ?? 1); // "??" aby się kompilator nie czepiał
+                        var result = await znajomosciService.CreateZnajomosc(powiadomienie.UzytkownikId, powiadomienie.PowiazanyObiektId ?? 1); // "??" aby się kompilator nie czepiał
                         // coś poszło nie tak
                         if (result.StatusCode != 201) return result;
                         
                         // wszystko w porządku
                         // wysyłamy uzytkownikowi, który jest powiązany, że jego zaproszenie zostało zaakceptowane
-                        await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
+                        await powiadomieniaRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
                             // zaakceptowano zaproszenie
                             (int)TypPowiadomieniaEnum.PrzyjecieZaproszeniaDoZnajomych,
                             // wysyłamy to użytkownikowi, którego to zaproszenie dotyczy
@@ -95,7 +95,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                     case false:
                     {
                         // wysyłamy uzytkownikowi, który jest powiązany, że jego zaproszenie zostało odrzucone
-                        await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
+                        await powiadomieniaRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
                             // odrzucono zaproszenie
                             (int)TypPowiadomieniaEnum.OdrzucenieZaproszeniaDoZnajomych,
                             // wysyłamy to użytkownikowi, którego to zaproszenie dotyczy
@@ -127,7 +127,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                 }
                 
                 // pobieramy naszą nazwę użytkownika, aby była w powiadomieniu dla drugiej strony
-                var wynikZnalezieniaProfilu = await profilService.GetProfil(idUzytkownika);
+                var wynikZnalezieniaProfilu = await profileService.GetProfil(idUzytkownika);
                 if(wynikZnalezieniaProfilu.StatusCode != 200)
                 {
                     // skoro jest błędne powiadomienie, to usuwamy je, bo nic innego nie możemy zrobić, a lepiej, żeby go nie było, niż żeby ciągle był i ktoś próbował na niego reagować
@@ -173,7 +173,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                         
                         // wszystko w porządku
                         // użytkownik X przyjął Twoje zaproszenie do drużyny Y na rolę Z.
-                        await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
+                        await powiadomieniaRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
                             // zaakceptowano zaproszenie
                             (int)TypPowiadomieniaEnum.PrzyjecieZaproszeniaDoDruzyny,
                             // wysyłamy to kapitanowi drużyny, której to zaproszenie dotyczy
@@ -190,7 +190,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
                     case false:
                     {
                         // użytkownik X odrzucił Twoje zaproszenie do drużyny Y na rolę Z.
-                        await powiadomienieRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
+                        await powiadomieniaRepository.CreatePowiadomienie(new PowiadomienieCreateDto(
                             // odrzucono zaproszenie
                             (int)TypPowiadomieniaEnum.OdrzucenieZaproszeniaDoDruzyny,
                             // wysyłamy to kapitanowi drużyny, której to zaproszenie dotyczy
@@ -223,7 +223,7 @@ public class RozpatrzPowiadomienieService(IPowiadomienieRepository powiadomienie
     {
         try
         {
-            await powiadomienieRepository.DeletePowiadomienie(id);
+            await powiadomieniaRepository.DeletePowiadomienie(id);
         }
         catch (NieZnalezionoWBazieException e)
         {

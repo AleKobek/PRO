@@ -7,8 +7,8 @@ public static class ZnajomosciModule
 {
     public static IServiceCollection AddZnajomosciModule(this IServiceCollection services)
     {
-        services.AddScoped<IZnajomiService, ZnajomiService>();
-        services.AddScoped<IZnajomiRepository, ZnajomiRepository>();
+        services.AddScoped<IZnajomosciService, ZnajomosciService>();
+        services.AddScoped<IZnajomosciRepository, ZnajomosciRepository>();
         services.AddScoped<IDeleteZnajomoscService, DeleteZnajomoscService>();
 
         return services;

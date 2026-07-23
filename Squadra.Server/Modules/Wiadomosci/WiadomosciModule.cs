@@ -6,8 +6,8 @@ public static class WiadomosciModule
 {
     public static IServiceCollection AddWiadomosciModule(this IServiceCollection services)
     {
-        services.AddScoped<IWiadomoscRepository, WiadomoscRepository>();
-        services.AddScoped<IWiadomoscService, WiadomoscService>();
+        services.AddScoped<IWiadomosciRepository, WiadomosciRepository>();
+        services.AddScoped<IWiadomosciService, WiadomosciService>();
         services.AddScoped<IStatystykiCzatuService, StatystykiCzatuService>();
         return services;
     }

@@ -39,7 +39,7 @@ export default function ZmienHaslo() {
             body: JSON.stringify(hasloDoWyslania)
         }
 
-        const res = await fetch(`${API_BASE_URL}/Uzytkownik/haslo`, opcje);
+        const res = await fetch(`${API_BASE_URL}/Uzytkownicy/haslo`, opcje);
 
 
         // Odczyt body różni się zależnie od typu odpowiedzi

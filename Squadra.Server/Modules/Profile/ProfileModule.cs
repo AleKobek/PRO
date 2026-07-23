@@ -7,23 +7,23 @@ public static class ProfileModule
 {
     public static IServiceCollection AddProfileModule(this IServiceCollection services)
     {
-        services.AddScoped<IProfilService, ProfilService>();
-        services.AddScoped<IProfilRepository, ProfilRepository>();
+        services.AddScoped<IProfileService, ProfileService>();
+        services.AddScoped<IProfileRepository, ProfileRepository>();
         
-        services.AddScoped<IKrajRepository, KrajRepository>();
-        services.AddScoped<IKrajService, KrajService>();
+        services.AddScoped<IKrajeRepository, KrajeRepository>();
+        services.AddScoped<IKrajeService, KrajeService>();
         
-        services.AddScoped<IStatusRepository, StatusRepository>();
-        services.AddScoped<IStatusService, StatusService>();
+        services.AddScoped<IStatusyRepository, StatusyRepository>();
+        services.AddScoped<IStatusyService, StatusyService>();
         
-        services.AddScoped<IRegionRepository, RegionRepository>();
-        services.AddScoped<IRegionService, RegionService>();
+        services.AddScoped<IRegionyRepository, RegionyRepository>();
+        services.AddScoped<IRegionyService, RegionyService>();
 
-        services.AddScoped<IJezykRepository, JezykRepository>();
-        services.AddScoped<IJezykService, JezykService>();
+        services.AddScoped<IJezykiRepository, JezykiRepository>();
+        services.AddScoped<IJezykiService, JezykiService>();
 
-        services.AddScoped<IStopienBieglosciJezykaRepository, StopienBieglosciJezykaRepository>();
-        services.AddScoped<IStopienBieglosciJezykaService, StopienBieglosciJezykaService>();
+        services.AddScoped<IStopnieBieglosciJezykaRepository, StopnieBieglosciJezykaRepository>();
+        services.AddScoped<IStopnieBieglosciJezykaService, StopnieBieglosciJezykaService>();
 
         
         return services;

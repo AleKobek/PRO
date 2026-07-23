@@ -9,8 +9,8 @@ namespace Squadra.Server.Modules.Znajomosci.Services;
 
 public class DeleteZnajomoscService(
     AppDbContext context,
-    IZnajomiRepository znajomiRepository,
-    IWiadomoscService wiadomoscService) : IDeleteZnajomoscService
+    IZnajomosciRepository znajomosciRepository,
+    IWiadomosciService wiadomosciService) : IDeleteZnajomoscService
 {
     public async Task<ServiceResult<bool>> DeleteZnajomosc(int idUzytkownikaInicjujacego, int idUzytkownika2)
     {
@@ -28,17 +28,17 @@ public class DeleteZnajomoscService(
                 return ServiceResult<bool>.BadRequest(
                     new ErrorItem("Nieprawidłowe id usuwanego znajomego: " + idUzytkownika2));
             
-            await znajomiRepository.GetZnajomosc(idUzytkownikaInicjujacego, idUzytkownika2); // tylko po to, żeby wywaliło "Nie znaleziono w bazie exception" w razie potrzeby
+            await znajomosciRepository.GetZnajomosc(idUzytkownikaInicjujacego, idUzytkownika2); // tylko po to, żeby wywaliło "Nie znaleziono w bazie exception" w razie potrzeby
             
             // usuwamy wszystkie wiadomości na czacie prywatnym tych dwóch użytkowników
-            var wiadomosciRes = await wiadomoscService.DeleteWiadomosciPrywatneUzytkownikow(idUzytkownikaInicjujacego, idUzytkownika2); // usuwamy ich wiadomości
+            var wiadomosciRes = await wiadomosciService.DeleteWiadomosciPrywatneUzytkownikow(idUzytkownikaInicjujacego, idUzytkownika2); // usuwamy ich wiadomości
             if (!wiadomosciRes.Succeeded)
             {
                 if(czyToNowaTransakcja) await transakcja!.RollbackAsync();
                 return wiadomosciRes;
             }
 
-            await znajomiRepository.DeleteZnajomosc(idUzytkownikaInicjujacego, idUzytkownika2);
+            await znajomosciRepository.DeleteZnajomosc(idUzytkownikaInicjujacego, idUzytkownika2);
             if (czyToNowaTransakcja) await transakcja!.CommitAsync();
             return ServiceResult<bool>.NoContent(true);
         }

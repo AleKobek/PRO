@@ -1,0 +1,30 @@
+﻿using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Profile.DTO.JezykStopien;
+using Squadra.Server.Modules.Profile.Repositories;
+using Squadra.Server.Modules.Shared.Services;
+
+namespace Squadra.Server.Modules.Profile.Services;
+
+public class StopnieBieglosciJezykaService(IStopnieBieglosciJezykaRepository stopnieBieglosciJezykaRepository) : IStopnieBieglosciJezykaService
+{
+    public async Task<ServiceResult<ICollection<StopienBieglosciJezykaDto>>> GetStopnieBieglosciJezyka()
+    {
+        return ServiceResult<ICollection<StopienBieglosciJezykaDto>>.Ok(await stopnieBieglosciJezykaRepository.GetStopnieBieglosciJezyka());
+    }
+
+    public async Task<ServiceResult<StopienBieglosciJezykaDto>> GetStopienBieglosciJezyka(int id)
+    {
+        try
+        {
+            if (id < 1)
+                return ServiceResult<StopienBieglosciJezykaDto>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator stopnia bieglosci jezyka: " + id));
+           
+            return ServiceResult<StopienBieglosciJezykaDto>.Ok(await stopnieBieglosciJezykaRepository.GetStopienBieglosciJezyka(id));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<StopienBieglosciJezykaDto>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
+}

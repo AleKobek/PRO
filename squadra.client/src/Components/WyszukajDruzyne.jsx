@@ -161,7 +161,7 @@ export default function WyszukajDruzyne() {
         };
 
         const podajDane = async () => {
-            const dane = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/formularz/wyszukiwanie`);
+            const dane = await fetchJsonAbort(`${API_BASE_URL}/Druzyny/formularz/wyszukiwanie`);
             if(!alive || !dane) return;
             ustawWszystkieGryzPlatformami(dane.wszystkieGryzPlatformami);
             ustawGryUzytkownikaZPlatformami(dane.gryUzytkownikaZPlatformami);
@@ -214,7 +214,6 @@ export default function WyszukajDruzyne() {
             idRol: wybraneRole
         }
 
-        console.log(daneDoWyslania)
 
         // pakujemy i wysyłamy
         const opcje = {
@@ -226,7 +225,7 @@ export default function WyszukajDruzyne() {
             credentials: "include",
         }
 
-        const res = await fetch(`${API_BASE_URL}/Druzyna/wyszukaj`, opcje);
+        const res = await fetch(`${API_BASE_URL}/Druzyny/wyszukaj`, opcje);
 
 
         const body = await res.json().catch(() => null);

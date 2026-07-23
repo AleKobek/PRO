@@ -69,7 +69,7 @@ export default function PanelAdmina() {
             credentials: "include"
         }
 
-        const res = await fetch(`${API_BASE_URL}/Uzytkownik/${idUzytkownikaDoUsuniecia}`, opcje);
+        const res = await fetch(`${API_BASE_URL}/Uzytkownicy/${idUzytkownikaDoUsuniecia}`, opcje);
         if(!res.ok){
             const ct = res.headers.get("content-type") || "";
             const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
@@ -114,7 +114,7 @@ export default function PanelAdmina() {
             credentials: "include"
         }
 
-        const res = await fetch(`${API_BASE_URL}/Druzyna/admin/${idDruzynyDoUsuniecia}`, opcje);
+        const res = await fetch(`${API_BASE_URL}/Druzyny/admin/${idDruzynyDoUsuniecia}`, opcje);
         if(!res.ok){
             const ct = res.headers.get("content-type") || "";
             const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy

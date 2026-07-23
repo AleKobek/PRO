@@ -42,7 +42,7 @@ export default function FormularzAwatara({
             body: formularz
         }
         
-        const res = await fetch(`${API_BASE_URL}/Profil/awatar`, opcje);
+        const res = await fetch(`${API_BASE_URL}/Profile/awatar`, opcje);
         
         // Odczyt body różni się zależnie od typu odpowiedzi
         // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić

@@ -34,7 +34,7 @@ export default function CzatZeZnajomymKomponent({
         // jeżeli nie ma danych naszego profilu, pobieramy je
         const podajDaneProfilu = async () => {
 
-            const data = await fetchJsonAbort(`${API_BASE_URL}/Profil/${naszeId}`, ac, " profilu");
+            const data = await fetchJsonAbort(`${API_BASE_URL}/Profile/${naszeId}`, ac, " profilu");
 
             // przerywamy działanie funkcji
             if (!alive) return;
@@ -125,7 +125,7 @@ export default function CzatZeZnajomymKomponent({
                 signal: ac.signal,
             };
 
-            const res = await fetch(`${API_BASE_URL}/Znajomi/${idZnajomegoZOtwartymCzatem}`, opcje);
+            const res = await fetch(`${API_BASE_URL}/Znajomosci/${idZnajomegoZOtwartymCzatem}`, opcje);
 
             // Bezpieczne czytanie body: backend może zwrócić pustą odpowiedź (np. 204)
             const raw = await res.text();
@@ -196,7 +196,7 @@ export default function CzatZeZnajomymKomponent({
                 signal: ac.signal,
                 body: JSON.stringify(wiadomoscDoWyslania)
             }
-            const res = await fetch(`${API_BASE_URL}/Wiadomosc/prywatna/${idZnajomegoZOtwartymCzatem}`, opcje);
+            const res = await fetch(`${API_BASE_URL}/Wiadomosci/prywatna/${idZnajomegoZOtwartymCzatem}`, opcje);
             const ct = res.headers.get("content-type") || "";
             const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
                 ? await res.json().catch(() => null)
@@ -282,7 +282,7 @@ export default function CzatZeZnajomymKomponent({
     };
 
     const podajCzat = async (ac) => {
-        const data = await fetchJsonAbort(`${API_BASE_URL}/Wiadomosc/czat-prywatny/${idZnajomegoZOtwartymCzatem}`, ac, " czatu");
+        const data = await fetchJsonAbort(`${API_BASE_URL}/Wiadomosci/czat-prywatny/${idZnajomegoZOtwartymCzatem}`, ac, " czatu");
         if(!data) ustawCzat([]);
         else ustawCzat(data);
         await aktualizujDateOtwarciaCzatu()

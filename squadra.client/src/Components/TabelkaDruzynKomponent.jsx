@@ -49,7 +49,7 @@ export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, c
                 signal: ac.signal,
             }
 
-            let url = idUzytkownika ? `${API_BASE_URL}/Druzyna/tabelka/${idUzytkownika}` : `${API_BASE_URL}/Druzyna/tabelka`;
+            let url = idUzytkownika ? `${API_BASE_URL}/Druzyny/tabelka/${idUzytkownika}` : `${API_BASE_URL}/Druzyny/tabelka`;
             const res = await fetch(url, opcje);
             const body = await res.json().catch(() => null);
 

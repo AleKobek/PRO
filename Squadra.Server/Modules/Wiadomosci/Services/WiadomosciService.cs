@@ -1,0 +1,161 @@
+﻿using Microsoft.IdentityModel.Tokens;
+using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Drużyny.Services;
+using Squadra.Server.Modules.Profile.DTO.Profil;
+using Squadra.Server.Modules.Profile.Services;
+using Squadra.Server.Modules.Shared.Services;
+using Squadra.Server.Modules.Wiadomosci.DTO;
+using Squadra.Server.Modules.Wiadomosci.Enums;
+using Squadra.Server.Modules.Wiadomosci.Repositories;
+using Squadra.Server.Modules.Znajomosci.Repositories;
+
+namespace Squadra.Server.Modules.Wiadomosci.Services;
+
+public class WiadomosciService(IWiadomosciRepository wiadomosciRepository,
+    IZnajomosciRepository znajomosciRepository,
+    IDruzynyService druzynyService,
+    IProfileService profileService) : IWiadomosciService
+{
+    public async Task<ServiceResult<WiadomoscDto>> GetWiadomosc(int idWiadomosci, int idObecnegoUzytkownika)
+    {
+        try
+        {
+            if (idWiadomosci < 1) return ServiceResult<WiadomoscDto>.BadRequest(new ErrorItem("Nieprawidłowe id wiadomości: " + idWiadomosci));
+            var wiadomosc = await wiadomosciRepository.GetWiadomosc(idWiadomosci);
+            if (wiadomosc.IdNadawcy != idObecnegoUzytkownika && wiadomosc.IdOdbiorcy != idObecnegoUzytkownika)
+                return ServiceResult<WiadomoscDto>.Forbidden(new ErrorItem("Brak dostępu do wiadomości o id " + idWiadomosci));
+            return ServiceResult<WiadomoscDto>.Ok(wiadomosc);
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<WiadomoscDto>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
+    // pobieramy wiadomości na czacie prywatnym między dwoma użytkownikami
+    public async Task<ServiceResult<ICollection<WiadomoscDto>>> GetWiadomosciPrywatne(int idUzytkownika1, int idUzytkownika2)
+    {
+        // w kontrolerze sprawdzamy, czy idUzytkownika1 lub idUzytkownika2 to id obecnego użytkownika
+        try
+        {
+            if(idUzytkownika1 < 1) return ServiceResult<ICollection<WiadomoscDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika1));
+            if(idUzytkownika2 < 1) return ServiceResult<ICollection<WiadomoscDto>>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika2));
+            if(idUzytkownika1 == idUzytkownika2) return ServiceResult<ICollection<WiadomoscDto>>.BadRequest(new ErrorItem("Nie można pobrać wiadomości między tym samym użytkownikiem"));
+            
+            return ServiceResult<ICollection<WiadomoscDto>>.Ok(await wiadomosciRepository.GetWiadomosciPrywatne(idUzytkownika1, idUzytkownika2));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<ICollection<WiadomoscDto>>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
+    public async Task<ServiceResult<CzatDruzynowyDto>> GetWiadomosciNaCzacieDruzyny(int idDruzyny, int idCzytajacego)
+    {
+        if(idDruzyny < 1) return ServiceResult<CzatDruzynowyDto>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+        
+        // sprawdzamy, czy użytkownik należy do drużyny, bo tylko członkowie drużyny mogą czytać czat drużyny
+        var czyUzytkownikNalezyDoDruzynyRes = await druzynyService.CzyUzytkownikNalezyDoDruzyny(idCzytajacego, idDruzyny);
+        if(!czyUzytkownikNalezyDoDruzynyRes.Succeeded) return ServiceResult<CzatDruzynowyDto>.Fail(czyUzytkownikNalezyDoDruzynyRes.StatusCode, czyUzytkownikNalezyDoDruzynyRes.Errors);
+
+        if(!czyUzytkownikNalezyDoDruzynyRes.Value)
+            return ServiceResult<CzatDruzynowyDto>.Forbidden(new ErrorItem("Brak dostępu do czatu drużyny o id " + idDruzyny));
+        
+        // bierzemy wiadomości z czatu drużyny
+        var wiadomosci = await wiadomosciRepository.GetWiadomosciNaCzacieDruzyny(idDruzyny);
+        
+        // bierzemy osoby, które brały udział w czacie
+        var idNadawcow = wiadomosci.Select(x => x.IdNadawcy).Distinct().ToList();
+        var nadawcy = new List<ProfilMinInfoDto>();
+        foreach(var id in idNadawcow)
+        {
+            var profilRes = await profileService.GetProfilMinInfo(id);
+            if(profilRes.Succeeded && profilRes.Value != null) 
+                nadawcy.Add(profilRes.Value);
+            // jeżeli nie znaleziono tego użytkownika, bo usunął konto, to nie dodajemy i na froncie będziemy wyświetlać "Nieznany użytkownik" lub coś takiego
+        }
+        
+        return ServiceResult<CzatDruzynowyDto>.Ok(new CzatDruzynowyDto(nadawcy, wiadomosci));
+    }
+
+    
+    public async Task<ServiceResult<bool>> CreateWiadomoscPrywatna(int idOdbiorcy, string tresc, int idObecnegoUzytkownika)
+    {
+        try
+        {
+            if(idObecnegoUzytkownika == idOdbiorcy) 
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Nadawca i odbiorca wiadomości nie mogą być tym samym użytkownikiem"));
+            
+            if(tresc.IsNullOrEmpty())
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Treść wiadomości nie może być pusta"));
+            
+            if(tresc.Length > 1000)   
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Treść wiadomości nie może przekraczać 1000 znaków"));
+            
+            if(!await znajomosciRepository.CzyJestZnajomosc(idObecnegoUzytkownika, idOdbiorcy))
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Nie można wysłać wiadomości do użytkownika, który nie jest Twoim znajomym"));
+            
+            return ServiceResult<bool>.Created(await wiadomosciRepository.CreateWiadomosc(idOdbiorcy, new WiadomoscCreateDto(tresc, (int)TypWiadomosciEnum.Prywatna), idObecnegoUzytkownika));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
+    public async Task<ServiceResult<bool>> CreateWiadomoscDruzynowa(int idDruzyny, string tresc, int idObecnegoUzytkownika)
+    {
+        try
+        {
+            if(tresc.IsNullOrEmpty())
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Treść wiadomości nie może być pusta"));
+            
+            if(tresc.Length > 1000)   
+                return ServiceResult<bool>.BadRequest(new ErrorItem("Treść wiadomości nie może przekraczać 1000 znaków"));
+            
+            // sprawdzamy, czy drużyna o podanym id istnieje
+            var druzyna = await druzynyService.GetDruzyna(idDruzyny);
+            if(!druzyna.Succeeded) return ServiceResult<bool>.Fail(druzyna.StatusCode, druzyna.Errors);
+            if (druzyna.Value == null)
+                return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono drużyny o id " + idDruzyny));
+            
+            // sprawdzamy, czy użytkownik należy do drużyny, bo tylko członkowie drużyny mogą wysyłać wiadomości na czat drużyny
+            var czyUzytkownikNalezyDoDruzynyRes = await druzynyService.CzyUzytkownikNalezyDoDruzyny(idObecnegoUzytkownika, idDruzyny);
+            if(!czyUzytkownikNalezyDoDruzynyRes.Succeeded) return ServiceResult<bool>.Fail(czyUzytkownikNalezyDoDruzynyRes.StatusCode, czyUzytkownikNalezyDoDruzynyRes.Errors);
+
+            if(!czyUzytkownikNalezyDoDruzynyRes.Value)
+                return ServiceResult<bool>.Forbidden(new ErrorItem("Brak dostępu do czatu drużyny o id " + idDruzyny));
+            
+            return ServiceResult<bool>.Created(await wiadomosciRepository.CreateWiadomosc(idDruzyny, new WiadomoscCreateDto(tresc, (int)TypWiadomosciEnum.Druzynowa), idObecnegoUzytkownika));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+    
+    // usuwamy wszystkie wiadomości z konwersacji między dwoma użytkownikami. używane przy usuwaniu znajomości
+    public async Task<ServiceResult<bool>> DeleteWiadomosciPrywatneUzytkownikow(int idUzytkownika1, int idUzytkownika2)
+    {
+        try
+        {
+            if(idUzytkownika1 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika1));
+            if(idUzytkownika2 < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika2));
+            if(idUzytkownika1 == idUzytkownika2) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie można usunąć wiadomości między tym samym użytkownikiem"));
+            return ServiceResult<bool>.Ok(await wiadomosciRepository.DeleteWiadomosciPrywatneUzytkownikow(idUzytkownika1, idUzytkownika2));
+        }
+        catch (NieZnalezionoWBazieException e)
+        {
+            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+        }
+    }
+
+    // usuwamy wszystkie wiadomości na czacie drużynowym. używane przy usuwaniu drużyny
+    public async Task<ServiceResult<bool>> DeleteWiadomosciDruzyny(int idDruzyny)
+    {
+        if(idDruzyny < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
+        // nie musimy sprawdzać, czy drużyna istnieje, ponieważ będzie to wywoływane tylko przez usuwanie drużyny, a tam jest sprawdzane
+        return ServiceResult<bool>.Ok(await wiadomosciRepository.DeleteWiadomosciDruzyny(idDruzyny));
+    }
+
+}

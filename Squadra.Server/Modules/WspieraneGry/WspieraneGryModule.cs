@@ -7,8 +7,8 @@ public static class WspieraneGryModule
 {
     public static IServiceCollection AddWspieraneGryModule(this IServiceCollection services)
     {
-        services.AddScoped<IWspieranaGraRepository, WspieranaGraRepository>();
-        services.AddScoped<IWspieranaGraService, WspieranaGraService>();
+        services.AddScoped<IWspieraneGryRepository, WspieraneGryRepository>();
+        services.AddScoped<IWspieraneGryService, WspieraneGryService>();
         return services;
     }
 }

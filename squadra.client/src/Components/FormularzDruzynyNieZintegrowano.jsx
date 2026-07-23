@@ -147,7 +147,7 @@ export default function FormularzDruzynyNieZintegrowano({
 
         const podajNieZintegrowaneDane = async () => {
 
-            const dane = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/formularz/bez-statystyk/${idGryDruzyny}`);
+            const dane = await fetchJsonAbort(`${API_BASE_URL}/Druzyny/formularz/bez-statystyk/${idGryDruzyny}`);
             if (!alive || !dane) return;
 
             ustawTytulGry(dane.tytulGry);
@@ -229,7 +229,7 @@ export default function FormularzDruzynyNieZintegrowano({
             credentials: "include"
         }
 
-        const res = await fetch(`${API_BASE_URL}/Druzyna`, opcje);
+        const res = await fetch(`${API_BASE_URL}/Druzyny`, opcje);
 
         // Odczyt body różni się zależnie od typu odpowiedzi
         // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić

@@ -80,7 +80,7 @@ import {Bounce, toast} from "react-toastify";
             const id = uzytkownik.id;
 
             // podajemy języki profilu
-            const profil = await fetchJsonAbort(`${API_BASE_URL}/Profil/${id}`);
+            const profil = await fetchJsonAbort(`${API_BASE_URL}/Profile/${id}`);
             if(!alive || !profil) return
 
             ustawStaraListeJezykowUzytkownika(Array.isArray(profil.jezyki) ? profil.jezyki : []);
@@ -97,7 +97,7 @@ import {Bounce, toast} from "react-toastify";
             ustawAwatar(profil.awatar ? "data:image/jpeg;base64,"+profil.awatar : "");
 
 
-            const jezyki = await fetchJsonAbort(`${API_BASE_URL}/Jezyk/profil/${id}`);
+            const jezyki = await fetchJsonAbort(`${API_BASE_URL}/Jezyki/profil/${id}`);
             if(!alive || !jezyki || !Array.isArray(jezyki)) return;
 
             ustawStaraListeJezykowUzytkownika(jezyki.map(item => ({

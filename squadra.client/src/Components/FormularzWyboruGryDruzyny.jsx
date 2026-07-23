@@ -53,7 +53,7 @@ export default function FormularzWyboruGryDruzyny({
         const podajGry = async () => {
 
             // pobieramy wszystkie gry w bazie
-            const wszystkieGryPobrane = await fetchJsonAbort(`${API_BASE_URL}/WspieranaGra`);
+            const wszystkieGryPobrane = await fetchJsonAbort(`${API_BASE_URL}/WspieraneGry`);
             if (!alive || !wszystkieGryPobrane || !Array.isArray(wszystkieGryPobrane)) return;
             ustawWszystkieGry(wszystkieGryPobrane);
 

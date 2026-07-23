@@ -77,7 +77,7 @@ export default function ProfilOgolny() {
         const czyJestesmyZnajomymi = async () => {
             ustawLadowanieCzyZnajomy(true);
             try {
-                const res = await fetchJsonAbort(`${API_BASE_URL}/Znajomi/czyZnajomosc/` + idWlascicielaProfilu);
+                const res = await fetchJsonAbort(`${API_BASE_URL}/Znajomosci/czyZnajomosc/` + idWlascicielaProfilu);
                 if (res === null) return;
                 ustawCzyZnajomy(Boolean(res));
             } finally {
@@ -115,7 +115,7 @@ export default function ProfilOgolny() {
             credentials: "include",
         }
 
-        const res = await fetch(`${API_BASE_URL}/Powiadomienie/zaproszenie/znajomi/`+idWlascicielaProfilu, opcje);
+        const res = await fetch(`${API_BASE_URL}/Powiadomienia/zaproszenie/znajomi/`+idWlascicielaProfilu, opcje);
         if(!res.ok) {
             const contentType = res.headers.get("content-type");
             let wiadomosc = "Nie udało się wysłać zaproszenia do znajomych.";
@@ -161,7 +161,7 @@ export default function ProfilOgolny() {
             headers: {"Content-Type": "application/json"},
             credentials: "include",
         }
-        const res = await fetch(`${API_BASE_URL}/Znajomi/`+idWlascicielaProfilu, opcje);
+        const res = await fetch(`${API_BASE_URL}/Znajomosci/`+idWlascicielaProfilu, opcje);
         if(!res.ok){
             const body = await res.json().catch(() => ({}));
             let wiadomosc = "Wystąpił błąd podczas usuwania znajomego"

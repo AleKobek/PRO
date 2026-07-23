@@ -96,7 +96,7 @@ export default function TwojeDruzyny() {
         };
 
         const podajTwojeDruzyny = async () => {
-            const dane = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/twoje`);
+            const dane = await fetchJsonAbort(`${API_BASE_URL}/Druzyny/twoje`);
             if (!alive) return;
 
             ustawIdDruzyn(dane.idDruzyn);

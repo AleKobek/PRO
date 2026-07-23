@@ -115,7 +115,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
 
         const sprawdzCzySaNoweWiadomosci = async (signal) => {
             try {
-                const res = await fetch(`${API_BASE_URL}/Wiadomosc/nowe/druzyny`, {credentials: "include", signal});
+                const res = await fetch(`${API_BASE_URL}/Wiadomosci/nowe/druzyny`, {credentials: "include", signal});
                 if(!res.ok) return;
                 const czyNowe = await res.json();
                 if(alive) ustawCzySaNoweWiadomosciDruzynowe(czyNowe);
@@ -162,7 +162,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
                 credentials: "include",
             };
 
-            const res = await fetch(`${API_BASE_URL}/Druzyna/czat/ostatnie-otwarcie/${idDruzyny}`, opcje);
+            const res = await fetch(`${API_BASE_URL}/Druzyny/czat/ostatnie-otwarcie/${idDruzyny}`, opcje);
 
             // Odczyt body różni się zależnie od typu odpowiedzi
             // jeżeli to 404, to zwraca tylko tekst (nie application/json), więc res.json rzuci wyjątek. musimy to uwzlgędnić
@@ -185,7 +185,6 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
                 try {
                     const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
                     if (!res.ok) {
-                        console.log(res)
                         if (res.status === 403) ustawCzyZablokowanoDostep(true);
                         if (res.status === 404) ustawNieZnalezionoDruzyny(true)
                         else {
@@ -202,7 +201,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
                 }
             };
 
-            const data = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/szczegoly/${idDruzyny}`);
+            const data = await fetchJsonAbort(`${API_BASE_URL}/Druzyny/szczegoly/${idDruzyny}`);
 
             // przerywamy działanie funkcji
             if (!alive) return;
@@ -248,7 +247,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
             credentials: "include"
         }
 
-        const res = await fetch(`${API_BASE_URL}/Druzyna/` + idDruzyny, opcje);
+        const res = await fetch(`${API_BASE_URL}/Druzyny/` + idDruzyny, opcje);
         if(!res.ok){
             const ct = res.headers.get("content-type") || "";
             const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
@@ -297,7 +296,6 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
                 try {
                     const res = await fetch(url, { method: 'GET', credentials: "include" });
                     if (!res.ok) {
-                        console.log(res)
                         if (res.status === 403) ustawCzyZablokowanoDostep(true);
                         if (res.status === 404) ustawNieZnalezionoDruzyny(true)
                         else {
@@ -314,7 +312,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
                 }
             };
 
-            const data = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/szczegoly/${idDruzyny}`);
+            const data = await fetchJsonAbort(`${API_BASE_URL}/Druzyny/szczegoly/${idDruzyny}`);
 
             ustawDaneDruzyny(data);
         }
@@ -326,7 +324,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
                 headers: {"Content-Type": "application/json"},
                 credentials: "include"
             }
-            const res = await fetch(`${API_BASE_URL}/Druzyna/miejsce/dolacz/` + idMiejsca, opcje);
+            const res = await fetch(`${API_BASE_URL}/Druzyny/miejsce/dolacz/` + idMiejsca, opcje);
             if(!res.ok){
                 const ct = res.headers.get("content-type") || "";
                 const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
@@ -356,7 +354,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
             credentials: "include"
         }
 
-        const res = await fetch(`${API_BASE_URL}/Druzyna/opuszczanie/` + idDruzyny, opcje);
+        const res = await fetch(`${API_BASE_URL}/Druzyny/opuszczanie/` + idDruzyny, opcje);
         if(!res.ok){
             const ct = res.headers.get("content-type") || "";
             const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
@@ -379,7 +377,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
         ustawCzySieWysylaZaproszenie(true);
 
         try {
-            const res = await fetch(`${API_BASE_URL}/Druzyna/miejsce/zapros/${idMiejsca}/${idUzytkownika}`, {
+            const res = await fetch(`${API_BASE_URL}/Druzyny/miejsce/zapros/${idMiejsca}/${idUzytkownika}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: "include"
@@ -411,7 +409,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
         ustawCzySieWysylaZaproszenie(true);
 
         try {
-            const res = await fetch(`${API_BASE_URL}/Druzyna/miejsce/zapros/${idMiejsca}/login`, {
+            const res = await fetch(`${API_BASE_URL}/Druzyny/miejsce/zapros/${idMiejsca}/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: "include",
@@ -445,7 +443,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
             credentials: "include"
         }
 
-        const res = await fetch(`${API_BASE_URL}/Druzyna/miejsce/${idMiejsca}`, opcje);
+        const res = await fetch(`${API_BASE_URL}/Druzyny/miejsce/${idMiejsca}`, opcje);
         if(!res.ok){
             const ct = res.headers.get("content-type") || "";
             const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
@@ -488,7 +486,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
             }
         };
 
-        const data = await fetchJsonAbort(`${API_BASE_URL}/Druzyna/znajomi-spelniajacy-warunki-miejsca/${idMiejsca}`);
+        const data = await fetchJsonAbort(`${API_BASE_URL}/Druzyny/znajomi-spelniajacy-warunki-miejsca/${idMiejsca}`);
         ustawListeZnajomych(data);
     }
 

@@ -43,7 +43,7 @@ export default function NaglowekZalogowano({
     // ping
     useEffect(() => {
         const interval = setInterval(async () => {
-            await fetch(`${API_BASE_URL}/Uzytkownik/ping`, {credentials: "include"});
+            await fetch(`${API_BASE_URL}/Uzytkownicy/ping`, {credentials: "include"});
         }, 60000); // co minutę
 
         // jak wychodzimy to usuwamy nasz interval
@@ -118,7 +118,7 @@ export default function NaglowekZalogowano({
         async function fetchNow(signal) {
             if (!alive) return;
             await sprawdzCzySaNoweWiadomosci(signal);
-            await fetch(`${API_BASE_URL}/Uzytkownik/ping`, {credentials: "include"});
+            await fetch(`${API_BASE_URL}/Uzytkownicy/ping`, {credentials: "include"});
         }
 
         fetchNow(ac.signal);
@@ -134,7 +134,7 @@ export default function NaglowekZalogowano({
     const pobierzPowiadomienia = async (signal) => {
         ustawLadowaniePowiadomien(true);
         try {
-            const res = await fetch(`${API_BASE_URL}/Powiadomienie`, { credentials: "include", signal });
+            const res = await fetch(`${API_BASE_URL}/Powiadomienia`, { credentials: "include", signal });
             if (!res.ok) {
                 console.error("Błąd pobierania powiadomień", res.status);
                 ustawPowiadomienia([]);
@@ -157,8 +157,8 @@ export default function NaglowekZalogowano({
 
     const sprawdzCzySaNoweWiadomosci = async (signal) => {
         try {
-            const resZnajomi = await fetch(`${API_BASE_URL}/Wiadomosc/nowe/znajomi`, {credentials: "include", signal});
-            const resDruzyny = await fetch(`${API_BASE_URL}/Wiadomosc/nowe/druzyny`, {credentials: "include", signal});
+            const resZnajomi = await fetch(`${API_BASE_URL}/Wiadomosci/nowe/znajomi`, {credentials: "include", signal});
+            const resDruzyny = await fetch(`${API_BASE_URL}/Wiadomosci/nowe/druzyny`, {credentials: "include", signal});
             // używamy promise.all, bo oba są niezależne od siebie i można je zrobić naraz
             Promise.all([resZnajomi, resDruzyny]).then(async ([resZnajomi, resDruzyny]) => {
                 if(resZnajomi.ok) {
@@ -197,7 +197,7 @@ export default function NaglowekZalogowano({
             body: idStatusu
         }
 
-        const res = await fetch(`${API_BASE_URL}/Profil/status`, opcje);
+        const res = await fetch(`${API_BASE_URL}/Profile/status`, opcje);
         if(!res.ok){
             console.error(res);
             return
@@ -231,13 +231,13 @@ export default function NaglowekZalogowano({
             }
         };
         const podajStatusy = async () => {
-            const statusy = await fetchJsonAbort(`${API_BASE_URL}/Status`);
+            const statusy = await fetchJsonAbort(`${API_BASE_URL}/Statusy`);
             if(!alive || !statusy || !Array.isArray(statusy)) return;
             ustawListeStatusow(statusy);
         }
         
         const podajAktualnyStatus = async () => {
-            const aktualnyStatus = await fetchJsonAbort(`${API_BASE_URL}/Profil/status`);
+            const aktualnyStatus = await fetchJsonAbort(`${API_BASE_URL}/Profile/status`);
             if(!alive || !aktualnyStatus) return;
             ustawAktualnyStatusZBazy(aktualnyStatus);
         }
@@ -290,7 +290,7 @@ export default function NaglowekZalogowano({
             body: JSON.stringify(czyZaakceptowane)
         }
 
-        const res = await fetch(`${API_BASE_URL}/Powiadomienie/` + id, opcje);
+        const res = await fetch(`${API_BASE_URL}/Powiadomienia/` + id, opcje);
         if(!res.ok) {
             const ct = res.headers.get("content-type") || "";
             const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy

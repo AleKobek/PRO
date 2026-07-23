@@ -5,7 +5,7 @@ using Squadra.Server.Modules.Shared.Services;
 
 namespace Squadra.Server.Modules.Powiadomienia.Services;
 
-public class UsunPowiadomieniaUzytkownikaService(IPowiadomienieRepository powiadomienieRepository, IDruzynyService druzynyService) : IUsunPowiadomieniaUzytkownikaService
+public class UsunPowiadomieniaUzytkownikaService(IPowiadomieniaRepository powiadomieniaRepository, IDruzynyService druzynyService) : IUsunPowiadomieniaUzytkownikaService
 {
     // uruchamiamy to przy usuwaniu konta
     public async Task<ServiceResult<bool>> DeletePowiadomieniaZwiazaneZUzytkownikiem(int idUzytkownika)
@@ -13,7 +13,7 @@ public class UsunPowiadomieniaUzytkownikaService(IPowiadomienieRepository powiad
         if(idUzytkownika < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika));
         
         // wysyłamy kapitanom druzyny, od których ma zaproszenia, że ich zaproszenie zostanie usunięte.
-        var zaproszeniaDoDruzyny = await powiadomienieRepository.GetZaproszeniaDoDruzynyUzytkownika(idUzytkownika);
+        var zaproszeniaDoDruzyny = await powiadomieniaRepository.GetZaproszeniaDoDruzynyUzytkownika(idUzytkownika);
         foreach (var zaproszenie in zaproszeniaDoDruzyny)
         {
             // w zaproszeniu pierwszym powiązanym obiektem jest drużyna, drugim jest miejsce (bez nazwy). W treści jest rola miejsca
@@ -24,7 +24,7 @@ public class UsunPowiadomieniaUzytkownikaService(IPowiadomienieRepository powiad
             var miejsceRes = zaproszenie.DrugiPowiazanyObiektId != null ? await druzynyService.GetNumerMiejsca(zaproszenie.DrugiPowiazanyObiektId.Value) : null;
             if(miejsceRes == null || !miejsceRes.Succeeded) continue; // miejsce nie istnieje lub coś jest nie tak, więc nie ma sensu wysyłać powiadomienia
             
-            await powiadomienieRepository.CreatePowiadomienie(new DTO.PowiadomienieCreateDto(
+            await powiadomieniaRepository.CreatePowiadomienie(new DTO.PowiadomienieCreateDto(
                 (int)TypPowiadomieniaEnum.ZaproszenieOdrzuconePrzezUsuniecieKonta,
                 druzynaRes.Value.KapitanId,
                 druzynaRes.Value.Id,
@@ -36,6 +36,6 @@ public class UsunPowiadomieniaUzytkownikaService(IPowiadomienieRepository powiad
         }
         
         // jak tu dochodzimy, wszystko jest w porządku
-        return ServiceResult<bool>.NoContent(await powiadomienieRepository.DeletePowiadomieniaZwiazaneZUzytkownikiem(idUzytkownika));
+        return ServiceResult<bool>.NoContent(await powiadomieniaRepository.DeletePowiadomieniaZwiazaneZUzytkownikiem(idUzytkownika));
     }
 }

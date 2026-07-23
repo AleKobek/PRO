@@ -22,7 +22,7 @@ export default function NaglowekAdmina(){
     // ping
     useEffect(() => {
         const interval = setInterval(async () => {
-            await fetch(`${API_BASE_URL}/Uzytkownik/ping`, {credentials: "include"});
+            await fetch(`${API_BASE_URL}/Uzytkownicy/ping`, {credentials: "include"});
         }, 60000); // co minutę
 
         // jak wychodzimy to usuwamy nasz interval
@@ -35,7 +35,7 @@ export default function NaglowekAdmina(){
     // przy załadowaniu strony także jednorazowo sprawdzamy czy są nowe wiadomości i pingamy
     useEffect(() => {
         async function fetchNow() {
-            await fetch(`${API_BASE_URL}/Uzytkownik/ping`, {credentials: "include"});
+            await fetch(`${API_BASE_URL}/Uzytkownicy/ping`, {credentials: "include"});
         }
         fetchNow();
 
