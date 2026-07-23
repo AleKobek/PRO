@@ -182,11 +182,15 @@ export default function EdytujKonto() {
             });
             return;
         }
-
         // jak tutaj dojdziemy, wszystko jest git
-        navigate("/twojeKonto", {
+        uzytkownik.role.includes("Admin")
+            ? navigate("/twojeKontoAdmin", {
+                state: { pomyslnieEdytowanoKonto: true }
+            })
+            : navigate("/twojeKonto", {
             state: { pomyslnieEdytowanoKonto: true }
-        });
+            });
+
     }
 
 
@@ -295,26 +299,31 @@ export default function EdytujKonto() {
             </form>
             <br></br>
             <ZmienHaslo/>
-            <h3 className="flex items-center mb-4">
-                Zewnętrzny serwis
-                <img
-                    src="/img/znak-zapytania.svg"
-                    alt="znak zapytania"
-                    className="h-[1em] w-auto align-middle ml-2 cursor-pointer"
-                    onClick={() => ustawPokazOkienkoTlumaczenia(true)}
-                />
-            </h3>
-            <EdytujIntegracjeWKoncieKomponent zewnetrzneId={zewnetrzneId} ustawZewnetrzneId={ustawZewnetrzneId} zewnetrznyLogin={zewnetrznyLogin} ustawZewnetrznyLogin={ustawZewnetrznyLogin} ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia}/>
-            <br/>
-            <button
-                className="block !mx-auto bg-red-900 !text-[25px] text-white rounded-md !px-3 !py-1 !my-4 hover:bg-red-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
-                onClick={() => {
-                    ustawCzyZablokowaneUsun(true);
-                    ustawPokazUsunKonto(v => !v)
-                }}
-            >
-                Usuń konto
-            </button>
+            {!uzytkownik.role.includes("Admin") && <div className="flex flex-col items-center justify-center">
+                <h3 className="flex items-center mb-4">
+                    Zewnętrzny serwis
+                    <img
+                        src="/img/znak-zapytania.svg"
+                        alt="znak zapytania"
+                        className="h-[1em] w-auto align-middle ml-2 cursor-pointer"
+                        onClick={() => ustawPokazOkienkoTlumaczenia(true)}
+                    />
+                </h3>
+                <EdytujIntegracjeWKoncieKomponent zewnetrzneId={zewnetrzneId} ustawZewnetrzneId={ustawZewnetrzneId}
+                                                  zewnetrznyLogin={zewnetrznyLogin}
+                                                  ustawZewnetrznyLogin={ustawZewnetrznyLogin}
+                                                  ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia}/>
+                <br/>
+                <button
+                    className="block !mx-auto bg-red-900 !text-[25px] text-white rounded-md !px-3 !py-1 !my-4 hover:bg-red-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
+                    onClick={() => {
+                        ustawCzyZablokowaneUsun(true);
+                        ustawPokazUsunKonto(v => !v)
+                    }}
+                >
+                    Usuń konto
+                </button>
+            </div>}
         </div>
         {pokazOkienkoTlumaczenia && OkienkoTlumaczaceZintegrowanie(ref, ustawPokazOkienkoTlumaczenia)}
         {pokazUsunKonto && <PanelUsunKonto/>}

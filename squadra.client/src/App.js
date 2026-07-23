@@ -112,6 +112,14 @@ function App() {
                     <NaglowekAdmina/>
                     <PanelAdmina/>
                 </>}></Route>
+                <Route path = "/twojeKontoAdmin" element = {<>
+                    <NaglowekAdmina/>
+                    <TwojeKonto/>
+                </>}></Route>
+                <Route path = "/edytujKontoAdmin" element = {<>
+                    <NaglowekAdmina/>
+                    <EdytujKonto/>
+                </>}></Route>
               <Route path = "/login" element = {<Logowanie/>}></Route>
               <Route path = "/rejestracja" element = {<Rejestracja/>}></Route>
               <Route path = "*" element = {<Error404/>}></Route>

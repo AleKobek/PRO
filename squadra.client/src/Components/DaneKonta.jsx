@@ -61,7 +61,7 @@ export default function DaneKonta({uzytkownik}) {
 
         const podajDaneKonta = async () => {
             const data = await fetchJsonAbort(`${API_BASE_URL}/Uzytkownik/`);
-            const platformy =  await fetchJsonAbort(`${API_BASE_URL}/Platforma/uzytkownik/${uzytkownik.id}`);
+            const platformy =  !uzytkownik.role.includes("Admin") ? await fetchJsonAbort(`${API_BASE_URL}/Platforma/uzytkownik/${uzytkownik.id}`) : [];
 
             // przerywamy działanie funkcji
             if (!alive) return;

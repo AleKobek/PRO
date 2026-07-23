@@ -282,7 +282,6 @@ export default function PanelAdmina() {
                     </div>
                 </div>
             </div>
-            <ZmienHaslo/>
         </div>
         {pokazUsunUzytkownika && <PanelUsunUzytkownika />}
         {pokazUsunDruzyne && <PanelUsunDruzyne />}

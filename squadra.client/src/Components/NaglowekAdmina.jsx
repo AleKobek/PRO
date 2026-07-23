@@ -1,5 +1,5 @@
 ﻿import React, {useEffect} from "react";
-import {useNavigate} from "react-router-dom";
+import {NavLink, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, ToastContainer} from "react-toastify";
@@ -65,6 +65,11 @@ export default function NaglowekAdmina(){
             </div>
 
             <div id = "menu-na-pasku">
+                <div className="nawigacja-na-pasku">
+                    {/* na razie wszystkie prowadzą do profilu, bo nie ma reszty */}
+                    <NavLink to = '/panelAdmina' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Panel admina</NavLink>
+                    <NavLink to = '/twojeKontoAdmin' className={({isActive}) => isActive ? 'nawigacja active' : 'nawigacja'}>Twoje konto</NavLink>
+                </div>
                 <button
                     className="text-white bg-red-900 hover:bg-red-600 mx-2 rounded-[clamp(6px,0.55vw,12px)] px-[clamp(8px,0.9vw,14px)] py-[clamp(6px,0.6vw,10px)] text-[clamp(14px,1.05vw,20px)] leading-none"
                     onClick={przyWylogowywaniu}>

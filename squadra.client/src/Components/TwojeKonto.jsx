@@ -43,7 +43,15 @@ export default function TwojeKonto() {
         <div id = "glowna">
             <h1>Twoje konto</h1>
             <DaneKonta uzytkownik = {uzytkownik}></DaneKonta>
-            <button className={"przycisk-nawigacji"} onClick={() => navigate('/edytujKonto')} style={{textAlign: "center", alignSelf: "center"}}>Edytuj konto</button>
+            <button
+                className={"przycisk-nawigacji"}
+                onClick={() => uzytkownik.role.includes("Admin") ?
+                    navigate('/edytujKontoAdmin') :
+                    navigate('/edytujKonto')}
+                style={{textAlign: "center", alignSelf: "center"}}
+            >
+                Edytuj konto
+            </button>
         </div>
         <ToastContainer
             position="top-center"
