@@ -48,9 +48,9 @@ builder.Services.ConfigureApplicationCookie(options =>
     {
         options.LoginPath = "/api/auth/login";
         options.Cookie.HttpOnly = true;
+        
         // kontroluje, kiedy przeglądarka wysyła cookie do serwera w kontekście cross-site requests
         // (czyli np. jeśli front i back są na różnych domenach/subdomenach).
-        
         // my mamy lax, co się ustawia jak jest na tym samym originie
         options.Cookie.SameSite = SameSiteMode.Lax;
         
