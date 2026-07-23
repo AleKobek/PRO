@@ -47,5 +47,13 @@ public class UzytkownikEFConfig : IEntityTypeConfiguration<Uzytkownik>
         builder
             .Property(x => x.PhoneNumber)
             .HasMaxLength(15);
+
+        builder
+            .Property(x => x.DataUrodzenia)
+            .HasColumnName("data_urodzenia");
+        
+        builder
+            .Property(x => x.OstatniaAktywnosc)
+            .HasColumnName("ostatnia_aktywnosc");
     }
 }
