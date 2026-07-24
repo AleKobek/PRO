@@ -328,7 +328,7 @@ export default function WyszukajDruzyne() {
                 </div></label>
                 <div className="flex-col items-center justify-center gap-2 w-[700px]">
                     <label>
-                        Nazwa:
+                        Nazwa (lub jej część):
                         <input
                             type="text"
                             value={nazwa ?? 0}
