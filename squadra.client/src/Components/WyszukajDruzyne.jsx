@@ -322,7 +322,7 @@ export default function WyszukajDruzyne() {
                         className="border-2 border-gray-300 rounded-md p-2 w-full"
 
                     >
-                        <option value = "" key = {-1}>Brak</option>
+                        <option value = "" key = {-1}>Dowolna</option>
                         {aktualnaListaPlatform.map((platforma) => <option value={platforma.id} key={platforma.id}>{platforma.nazwa}</option>)}
                     </select>
                 </div></label>
