@@ -358,7 +358,7 @@ export default function WyszukajDruzyne() {
                         </select>
                     </label>
                     <label>
-                        Wymagany język i stopień biegłości:
+                        Wymagany język i stopień biegłości (jeśli jest ustalony):
                         <div>
                             {
                                 <div className="flex gap-2">
