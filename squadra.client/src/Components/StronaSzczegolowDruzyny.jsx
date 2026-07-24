@@ -748,7 +748,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
             <div className="flex flex-col justify-center items-center">
                 {daneDruzyny.statusCzlonkostwa !== "Brak" &&
                     <button className={"przycisk-nawigacji"} onClick={() => {navigate('/twojeDruzyny')}}>
-                        Powrót do twoich drużyn
+                        Powrót do Twoich drużyn
                     </button>
                 }
                 <h1 className="text-2xl font-bold">Strona drużyny:</h1>
