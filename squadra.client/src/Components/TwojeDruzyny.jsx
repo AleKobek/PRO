@@ -125,7 +125,7 @@ export default function TwojeDruzyny() {
                 <button
                     className="bg-blue-600 text-white text-2xl p-2 hover:bg-blue-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
                     onClick={() => navigate('/wyszukajDruzyne')}
-                >Wyszukaj nową</button>
+                >Wyszukaj drużynę</button>
                 <button
                     className="bg-green-600 text-white text-2xl p-2 hover:bg-green-500 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"
                     onClick={() => navigate('/stworzDruzyne')}
