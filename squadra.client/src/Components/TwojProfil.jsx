@@ -41,6 +41,7 @@ export default function TwojProfil() {
 
     return (<>
         <div id = "glowna">
+            <h1>Twój profil</h1>
             <DaneProfilu idUzytkownika={uzytkownik.id}></DaneProfilu>
             <button className={"przycisk-nawigacji"} onClick={() => navigate('/edytujProfil')}>Edytuj profil</button>
             <h2 className="mt-10">Biblioteka gier</h2>
