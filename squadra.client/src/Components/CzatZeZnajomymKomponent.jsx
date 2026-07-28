@@ -305,7 +305,7 @@ export default function CzatZeZnajomymKomponent({
 
                 <div className="flex flex-col justify-center border-b-2 p-2 bg-gray-100 item shrink-0">
                     <h2>Czat</h2>
-                    <span className="text-center text-sm">Limit wiadomości to 300. Po tym najstarsze będą usuwane.</span>
+                    <span className="text-center text-sm">Odświeża się co 5 sekund i po wysłaniu wiadomości. Limit wiadomości to 300. Po tym najstarsze będą usuwane.</span>
                 </div>
                 {/* lista wiadomości */}
                 <ul ref={listaWiadomosciRef} className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-4 p-2">
