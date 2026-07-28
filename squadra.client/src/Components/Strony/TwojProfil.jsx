@@ -1,11 +1,11 @@
-﻿import '../App.css';
+﻿import '../../App.css';
 
 import React, {useEffect} from 'react';
-import DaneProfilu from './DaneProfilu';
+import DaneProfilu from '../DaneProfilu';
 import {useLocation, useNavigate} from "react-router-dom";
-import {useAuth} from "../Context/AuthContext";
+import {useAuth} from "../../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
-import TabelkaBibliotekiGierKomponent from "./TabelkaBibliotekiGierKomponent";
+import TabelkaBibliotekiGierKomponent from "../TabelkaBibliotekiGierKomponent";
 export default function TwojProfil() {
     
     const navigate = useNavigate();

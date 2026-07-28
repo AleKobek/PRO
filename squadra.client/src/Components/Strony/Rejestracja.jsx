@@ -1,9 +1,9 @@
 ﻿import React, {useEffect, useMemo, useState} from 'react';
 import { useNavigate } from "react-router-dom";
-import Naglowek from "./Naglowek";
-import FormularzKonta from "./FormularzKonta";
-import {useAuth} from "../Context/AuthContext";
-import {API_BASE_URL} from "../config/api";
+import Naglowek from "../Naglowek";
+import FormularzKonta from "../FormularzKonta";
+import {useAuth} from "../../Context/AuthContext";
+import {API_BASE_URL} from "../../config/api";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 
 export default function Rejestracja() {

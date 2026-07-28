@@ -1,12 +1,12 @@
-﻿import '../App.css';
+﻿import '../../App.css';
 
 import React, {useEffect, useState} from 'react';
-import DaneProfilu from './DaneProfilu';
+import DaneProfilu from '../DaneProfilu';
 import {useNavigate, useParams} from "react-router-dom";
-import {useAuth} from "../Context/AuthContext";
-import {API_BASE_URL} from "../config/api";
+import {useAuth} from "../../Context/AuthContext";
+import {API_BASE_URL} from "../../config/api";
 import {Bounce, toast} from "react-toastify";
-import TabelkaBibliotekiGierKomponent from "./TabelkaBibliotekiGierKomponent";
+import TabelkaBibliotekiGierKomponent from "../TabelkaBibliotekiGierKomponent";
 export default function ProfilOgolny() {
 
     const navigate = useNavigate();

@@ -1,13 +1,13 @@
-﻿import '../App.css';
+﻿import '../../App.css';
 
 import React, {useEffect, useRef, useState} from 'react';
 import {useLocation, useNavigate, useParams} from "react-router-dom";
-import {useAuth} from "../Context/AuthContext";
+import {useAuth} from "../../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
-import {API_BASE_URL, CLIENT_URL} from "../config/api";
-import {OkienkoTlumaczaceZintegrowanie} from "./OkienkoTlumaczaceZintegrowanie";
-import AwatarComponent from "./AwatarComponent";
-import CzatDruzynowyKomponent from "./CzatDruzynowyKomponent";
+import {API_BASE_URL, CLIENT_URL} from "../../config/api";
+import {OkienkoTlumaczaceZintegrowanie} from "../OkienkoTlumaczaceZintegrowanie";
+import AwatarComponent from "../AwatarComponent";
+import CzatDruzynowyKomponent from "../CzatDruzynowyKomponent";
 
 const TOAST_CONTAINER_ID = "szczegoly-druzyny-toast";
 export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzynowe, powiadomienia, ustawPowiadomienia}) {

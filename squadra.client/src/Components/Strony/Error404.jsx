@@ -1,8 +1,8 @@
-import Naglowek from "./Naglowek";
-import NaglowekZalogowano from "./NaglowekZalogowano";
+import Naglowek from "../Naglowek";
+import NaglowekZalogowano from "../NaglowekZalogowano";
 import {useNavigate} from "react-router-dom";
 import {useEffect} from "react";
-import {useAuth} from "../Context/AuthContext";
+import {useAuth} from "../../Context/AuthContext";
 
 export default function Error404() {
 

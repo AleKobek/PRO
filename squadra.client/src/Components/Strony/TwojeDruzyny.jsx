@@ -1,9 +1,9 @@
 ﻿import {Bounce, toast, ToastContainer} from "react-toastify";
 import React, {useEffect, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
-import {useAuth} from "../Context/AuthContext";
-import TabelkaDruzynKomponent from "./TabelkaDruzynKomponent";
-import {API_BASE_URL} from "../config/api";
+import {useAuth} from "../../Context/AuthContext";
+import TabelkaDruzynKomponent from "../TabelkaDruzynKomponent";
+import {API_BASE_URL} from "../../config/api";
 
 export default function TwojeDruzyny() {
 

@@ -1,8 +1,8 @@
 ﻿import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import {useAuth} from "../Context/AuthContext";
-import FormularzZewnetrznyDruzyny from "./FormularzZewnetrznyDruzyny";
-import {OkienkoTlumaczaceZintegrowanie} from "./OkienkoTlumaczaceZintegrowanie";
+import {useAuth} from "../../Context/AuthContext";
+import FormularzZewnetrznyDruzyny from "../FormularzZewnetrznyDruzyny";
+import {OkienkoTlumaczaceZintegrowanie} from "../OkienkoTlumaczaceZintegrowanie";
 
 export default function StworzDruzyne() {
 

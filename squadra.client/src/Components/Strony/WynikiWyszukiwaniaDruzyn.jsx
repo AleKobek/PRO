@@ -1,8 +1,8 @@
 ﻿import {useLocation, useNavigate} from "react-router-dom";
-import {useAuth} from "../Context/AuthContext";
+import {useAuth} from "../../Context/AuthContext";
 import React, {useEffect, useState} from "react";
 import {Bounce, ToastContainer} from "react-toastify";
-import TabelkaDruzynKomponent from "./TabelkaDruzynKomponent";
+import TabelkaDruzynKomponent from "../TabelkaDruzynKomponent";
 
 export default function WynikiWyszukiwaniaDruzyn() {
 

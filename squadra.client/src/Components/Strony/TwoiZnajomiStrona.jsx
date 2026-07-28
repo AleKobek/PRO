@@ -1,11 +1,11 @@
-﻿import '../App.css';
+﻿import '../../App.css';
 
 import React, {useEffect, useState} from 'react';
-import {useAuth} from "../Context/AuthContext";
-import {API_BASE_URL} from "../config/api";
-import ZnajomyNaLiscieKomponent from "./ZnajomyNaLiscieKomponent";
+import {useAuth} from "../../Context/AuthContext";
+import {API_BASE_URL} from "../../config/api";
+import ZnajomyNaLiscieKomponent from "../ZnajomyNaLiscieKomponent";
 import {Bounce, toast, ToastContainer} from "react-toastify";
-import CzatZeZnajomymKomponent from "./CzatZeZnajomymKomponent";
+import CzatZeZnajomymKomponent from "../CzatZeZnajomymKomponent";
 
 const TOAST_CONTAINER_ID = "twoi-znajomi-toast";
 const WYSOKOSC_NAGLOWKA = "60px";

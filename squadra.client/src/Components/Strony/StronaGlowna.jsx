@@ -1,7 +1,7 @@
 ﻿import {useNavigate} from "react-router-dom";
 import React, {useEffect} from "react";
-import Naglowek from "./Naglowek";
-import {useAuth} from "../Context/AuthContext";
+import Naglowek from "../Naglowek";
+import {useAuth} from "../../Context/AuthContext";
 
 export default function StronaGlowna() {
 

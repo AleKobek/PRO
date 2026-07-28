@@ -1,11 +1,11 @@
-﻿import '../App.css';
+﻿import '../../App.css';
 
 import React, {useEffect, useState} from 'react';
 import {useNavigate} from "react-router-dom";
-import {useAuth} from "../Context/AuthContext";
+import {useAuth} from "../../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
-import {API_BASE_URL} from "../config/api";
-import ZmienHaslo from "./ZmienHaslo";
+import {API_BASE_URL} from "../../config/api";
+import ZmienHaslo from "../ZmienHaslo";
 export default function PanelAdmina() {
 
     const navigate = useNavigate();

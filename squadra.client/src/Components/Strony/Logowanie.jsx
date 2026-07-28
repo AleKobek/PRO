@@ -1,8 +1,8 @@
 ﻿import React, {useEffect, useMemo, useState} from 'react';
 import {useLocation, useNavigate} from "react-router-dom";
-import Naglowek from "./Naglowek";
-import {useAuth} from "../Context/AuthContext";
-import {API_BASE_URL} from "../config/api";
+import Naglowek from "../Naglowek";
+import {useAuth} from "../../Context/AuthContext";
+import {API_BASE_URL} from "../../config/api";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 
 export default function Logowanie() {

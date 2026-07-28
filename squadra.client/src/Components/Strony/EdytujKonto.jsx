@@ -1,15 +1,15 @@
-﻿import '../App.css';
+﻿import '../../App.css';
 
 import React, {useEffect, useMemo, useState} from 'react';
-import NaglowekZalogowano from './NaglowekZalogowano';
+import NaglowekZalogowano from '../NaglowekZalogowano';
 import {useNavigate} from "react-router-dom";
-import {useAuth} from "../Context/AuthContext";
-import FormularzKonta from "./FormularzKonta";
-import {API_BASE_URL} from "../config/api";
+import {useAuth} from "../../Context/AuthContext";
+import FormularzKonta from "../FormularzKonta";
+import {API_BASE_URL} from "../../config/api";
 import {Bounce, toast} from "react-toastify";
-import EdytujIntegracjeWKoncieKomponent from "./EdytujIntegracjeWKoncieKomponent";
-import {OkienkoTlumaczaceZintegrowanie} from "./OkienkoTlumaczaceZintegrowanie";
-import ZmienHaslo from "./ZmienHaslo";
+import EdytujIntegracjeWKoncieKomponent from "../EdytujIntegracjeWKoncieKomponent";
+import {OkienkoTlumaczaceZintegrowanie} from "../OkienkoTlumaczaceZintegrowanie";
+import ZmienHaslo from "../ZmienHaslo";
 export default function EdytujKonto() {
 
     const navigate = useNavigate();

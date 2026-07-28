@@ -1,10 +1,10 @@
-﻿import '../App.css';
+﻿import '../../App.css';
 
 import React, {useEffect, useMemo, useState} from 'react';
 import {useLocation, useNavigate} from "react-router-dom";
-import {useAuth} from "../Context/AuthContext";
+import {useAuth} from "../../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
-import {API_BASE_URL} from "../config/api";
+import {API_BASE_URL} from "../../config/api";
 export default function EdytujDruzyne() {
 
     const navigate = useNavigate();

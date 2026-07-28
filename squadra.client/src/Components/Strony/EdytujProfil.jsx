@@ -1,11 +1,11 @@
-﻿import '../App.css';
+﻿import '../../App.css';
 
 import React, {useEffect, useState} from 'react';
-import FormularzProfilu from './FormularzProfilu';
+import FormularzProfilu from '../FormularzProfilu';
 import {useNavigate} from "react-router-dom";
-import {useAuth} from "../Context/AuthContext";
-import FormularzAwatara from "./FormularzAwatara";
-import {API_BASE_URL} from "../config/api";
+import {useAuth} from "../../Context/AuthContext";
+import FormularzAwatara from "../FormularzAwatara";
+import {API_BASE_URL} from "../../config/api";
 import {Bounce, toast} from "react-toastify";
     export default function EdytujProfil({ustawAwatarUrl}) {
 

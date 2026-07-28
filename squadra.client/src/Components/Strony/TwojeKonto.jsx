@@ -1,9 +1,9 @@
-﻿import '../App.css';
+﻿import '../../App.css';
 
 import React, {useEffect} from 'react';
 import {useLocation, useNavigate} from "react-router-dom";
-import {useAuth} from "../Context/AuthContext";
-import DaneKonta from "./DaneKonta";
+import {useAuth} from "../../Context/AuthContext";
+import DaneKonta from "../DaneKonta";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 export default function TwojeKonto() {
 
