@@ -452,35 +452,39 @@ export default function FormularzDruzynyNieZintegrowano({
             </tbody>
         </table>
         {/* dodawanie miejsca */}
-        <div className="flex items-center justify-center gap-5">
-            <select
-                value={idRoliDoDodania ?? ""}
-                onChange={(e) => {
-                    if(e.target.value === "") ustawIdRoliDoDodania(null);
-                    else ustawIdRoliDoDodania(parseInt(e.target.value))
-                }}
-                disabled={role.length === 0}
-                className="border-2 border-gray-300 rounded-md p-2"
-            >
-                <option value = "" key = {-1}>Brak</option>
-                {
-                    role.map((rola) =>
-                        <option value={rola.id} key={rola.id}>{rola.nazwa}</option>
-                    )
-                }
-            </select>
-            <button
-                className={ miejscaWDruzynie.length > 8
-                    ? "zablokowany-przycisk"
-                    : "p-2 bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600"}
-                onClick={() => {
-                    let miejsceDoDodania;
-                    if(idRoliDoDodania === null || idRoliDoDodania === "") miejsceDoDodania = {idRoli: null, nazwaRoli: ""};
-                    else miejsceDoDodania = {idRoli: idRoliDoDodania, nazwaRoli: role.find(r => r.id === idRoliDoDodania).nazwa};
-                    ustawMiejscaWDruzynie(prev => [...prev, miejsceDoDodania]);
-                }}
-                disabled={miejscaWDruzynie.length > 8}
-            >Dodaj</button>
+        <div className="flex flex-col items-center justify-center">
+            <span className="text-xl font-bold text-blue-900">Dodaj miejsce</span>
+            <div className="flex items-center justify-center gap-5 border-2 border-blue-500 rounded-md p-2 px-4">
+                <span className="text-xl">Rola:</span>
+                <select
+                    value={idRoliDoDodania ?? ""}
+                    onChange={(e) => {
+                        if(e.target.value === "") ustawIdRoliDoDodania(null);
+                        else ustawIdRoliDoDodania(parseInt(e.target.value))
+                    }}
+                    disabled={role.length === 0}
+                    className="border-2 border-gray-300 rounded-md p-2"
+                >
+                    <option value = "" key = {-1}>Brak</option>
+                    {
+                        role.map((rola) =>
+                            <option value={rola.id} key={rola.id}>{rola.nazwa}</option>
+                        )
+                    }
+                </select>
+                <button
+                    className={ miejscaWDruzynie.length > 8
+                        ? "zablokowany-przycisk"
+                        : "p-2 bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600"}
+                    onClick={() => {
+                        let miejsceDoDodania;
+                        if(idRoliDoDodania === null || idRoliDoDodania === "") miejsceDoDodania = {idRoli: null, nazwaRoli: ""};
+                        else miejsceDoDodania = {idRoli: idRoliDoDodania, nazwaRoli: role.find(r => r.id === idRoliDoDodania).nazwa};
+                        ustawMiejscaWDruzynie(prev => [...prev, miejsceDoDodania]);
+                    }}
+                    disabled={miejscaWDruzynie.length > 8}
+                >Dodaj</button>
+            </div>
         </div>
         <h2 className="text-red-700">Uwaga!</h2>
         <p className="text-red-700">Drużyna zostanie rozwiązana automatycznie po tygodniu Twojej nieaktywności</p>

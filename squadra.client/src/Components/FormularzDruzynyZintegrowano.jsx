@@ -810,166 +810,170 @@ export default function FormularzDruzynyZintegrowano({
             </tbody>
         </table>
         {/* dodawanie miejsca */}
-        <div className="flex items-center justify-center gap-5">
-            {/* wybieramy rolę w drużynie miejsca */}
-            <label> Wybierz rolę: <br/>
-                <select
-                    value={idRoliDoDodania ?? ""}
-                    onChange={(e) => {
-                        if(e.target.value === "") ustawIdRoliDoDodania(null);
-                        else ustawIdRoliDoDodania(parseInt(e.target.value))
-                    }}
-                    disabled={role.length === 0}
-                    className="border-2 border-gray-300 rounded-md p-2"
-                >
-                    <option value = "" key = {-1}>Brak</option>
-                    {
-                        role.map((rola) =>
-                            <option value={rola.id} key={rola.id}>{rola.nazwa}</option>
-                        )
-                    }
-                </select>
-            </label>
-            <label>
-                Wybierz wymaganie: <br/>
-                <div className="flex flex-col gap-2">
-                    <label><input
-                    className="mx-2"
-                    type = "radio"
-                    name = "typWymagania"
-                    checked= {typWymaganiaDoDodania === null}
-                    onChange={() => ustawTypWymaganiaDoDodania(null)}/>Brak
-                    </label>
-                    <label><input
-                        className="mx-2"
-                        type = "radio"
-                        name = "typWymagania"
-                        checked= {typWymaganiaDoDodania === "liczbowe"}
-                        onChange={() => ustawTypWymaganiaDoDodania("liczbowe")}/>liczbowe
-                    </label>
-                    <label><input
-                        className="mx-2"
-                        type = "radio"
-                        name = "typWymagania"
-                        checked= {typWymaganiaDoDodania === "ranga"}
-                        onChange={() => ustawTypWymaganiaDoDodania("ranga")}/>Minimalna ranga
-                    </label>
-                </div>
-            </label>
-            {/* jeżeli wybrano wymaganie liczbowe */}
-            {typWymaganiaDoDodania === "liczbowe" &&
-                <div className="flex items-center justify-center gap-5">
+        <div className="flex flex-col items-center justify-center">
+            <span className="text-xl font-bold text-blue-900">Dodaj miejsce</span>
+            <div className="flex items-center justify-center gap-5 border-2 border-blue-500 rounded-md p-2 px-4">
+                {/* wybieramy rolę w drużynie miejsca */}
+                <label> Wybierz rolę: <br/>
                     <select
-                        className="border-2 border-gray-300 rounded-md p-2"
-                        value = {idStatystykiMiejscaDoDodania ?? ""}
+                        value={idRoliDoDodania ?? ""}
                         onChange={(e) => {
-                            if(e.target.value === "") {
-                                ustawIdStatystykiMiejscaDoDodania(null);
-                            }
-                            else {
-                                ustawIdStatystykiMiejscaDoDodania(parseInt(e.target.value));
-                            }
+                            if(e.target.value === "") ustawIdRoliDoDodania(null);
+                            else ustawIdRoliDoDodania(parseInt(e.target.value))
                         }}
+                        disabled={role.length === 0}
+                        className="border-2 border-gray-300 rounded-md p-2"
                     >
+                        <option value = "" key = {-1}>Brak</option>
                         {
-                            statystykiZBazy.map((statystyka) =>
-                                <option value={statystyka.id} key={statystyka.id}>{statystyka.nazwa}</option>)
+                            role.map((rola) =>
+                                <option value={rola.id} key={rola.id}>{rola.nazwa}</option>
+                            )
                         }
                     </select>
-                    <input
-                        type="number"
-                        className="border-2 border-gray-300 rounded-md p-2 ml-2"
-                        value={wartoscStatystykiMiejscaDoDodania ?? 0}
-                        onChange={(e) => {
-                            ustawWartoscStatystykiMiejscaDoDodania(e.target.value.toString())
-                            ustawWartoscLiczbowaStatystykiMiejscaDoDodania(e.target.value)
-                        }}
-                        disabled={!idStatystykiMiejscaDoDodania || idStatystykiMiejscaDoDodania < 0}
-                    />
-                </div>
-            }
-            {typWymaganiaDoDodania === "ranga" &&
-                <div className="flex items-center justify-center gap-5">
-                    <select
-                        className="border-2 border-gray-300 rounded-md p-2"
-                        value = {idRangiMiejscaDoDodania ?? ""}
-                        onChange={(e) => {
-                            if(e.target.value === "") ustawIdRangiMiejscaDoDodania(null);
-                            else ustawIdRangiMiejscaDoDodania(parseInt(e.target.value))
-                        }}
-                    >
-                        {
-                            wszystkieRangiZBazy.map((ranga) =>
-                                <option value={ranga.id} key={ranga.id}>{ranga.nazwa}</option>)
-                        }
-                    </select>
-                    <select
-                        className="border-2 border-gray-300 rounded-md p-2"
-                        value={wartoscLiczbowaRangiMiejscaDoDodania ?? ""}
-                        onChange={(e) => {
-                            // na wszelki wypadek
-                            if(e.target.value === "") {
-                                ustawWartoscRangiMiejscaDoDodania(null);
-                                ustawWartoscLiczbowaRangiMiejscaDoDodania(null);
+                </label>
+                <label>
+                    Wybierz wymaganie: <br/>
+                    <div className="flex flex-col gap-2">
+                        <label><input
+                            className="mx-2"
+                            type = "radio"
+                            name = "typWymagania"
+                            checked= {typWymaganiaDoDodania === null}
+                            onChange={() => ustawTypWymaganiaDoDodania(null)}/>Brak
+                        </label>
+                        <label><input
+                            className="mx-2"
+                            type = "radio"
+                            name = "typWymagania"
+                            checked= {typWymaganiaDoDodania === "liczbowe"}
+                            onChange={() => ustawTypWymaganiaDoDodania("liczbowe")}/>liczbowe
+                        </label>
+                        <label><input
+                            className="mx-2"
+                            type = "radio"
+                            name = "typWymagania"
+                            checked= {typWymaganiaDoDodania === "ranga"}
+                            onChange={() => ustawTypWymaganiaDoDodania("ranga")}/>Minimalna ranga
+                        </label>
+                    </div>
+                </label>
+                {/* jeżeli wybrano wymaganie liczbowe */}
+                {typWymaganiaDoDodania === "liczbowe" &&
+                    <div className="flex items-center justify-center gap-5">
+                        <select
+                            className="border-2 border-gray-300 rounded-md p-2"
+                            value = {idStatystykiMiejscaDoDodania ?? ""}
+                            onChange={(e) => {
+                                if(e.target.value === "") {
+                                    ustawIdStatystykiMiejscaDoDodania(null);
+                                }
+                                else {
+                                    ustawIdStatystykiMiejscaDoDodania(parseInt(e.target.value));
+                                }
+                            }}
+                        >
+                            {
+                                statystykiZBazy.map((statystyka) =>
+                                    <option value={statystyka.id} key={statystyka.id}>{statystyka.nazwa}</option>)
                             }
-                            else {
-                                let wartoscLiczbowa = parseInt(e.target.value);
-                                let ranga = aktualnaListaWartosciRangMiejsca.find(x => x.wartoscLiczbowa === wartoscLiczbowa);
-                                ustawWartoscRangiMiejscaDoDodania(ranga.nazwaRangi);
-                                ustawWartoscLiczbowaRangiMiejscaDoDodania(wartoscLiczbowa);
+                        </select>
+                        <input
+                            type="number"
+                            className="border-2 border-gray-300 rounded-md p-2 ml-2"
+                            value={wartoscStatystykiMiejscaDoDodania ?? 0}
+                            onChange={(e) => {
+                                ustawWartoscStatystykiMiejscaDoDodania(e.target.value.toString())
+                                ustawWartoscLiczbowaStatystykiMiejscaDoDodania(e.target.value)
+                            }}
+                            disabled={!idStatystykiMiejscaDoDodania || idStatystykiMiejscaDoDodania < 0}
+                        />
+                    </div>
+                }
+                {typWymaganiaDoDodania === "ranga" &&
+                    <div className="flex items-center justify-center gap-5">
+                        <select
+                            className="border-2 border-gray-300 rounded-md p-2"
+                            value = {idRangiMiejscaDoDodania ?? ""}
+                            onChange={(e) => {
+                                if(e.target.value === "") ustawIdRangiMiejscaDoDodania(null);
+                                else ustawIdRangiMiejscaDoDodania(parseInt(e.target.value))
+                            }}
+                        >
+                            {
+                                wszystkieRangiZBazy.map((ranga) =>
+                                    <option value={ranga.id} key={ranga.id}>{ranga.nazwa}</option>)
                             }
-                        }}
-                        disabled={idRangiMiejscaDoDodania === null || aktualnaListaWartosciRangMiejsca.length === 0}
-                    >
-                        {aktualnaListaWartosciRangMiejsca.length === 0 && <option value="" key={-1}>Brak</option>}
-                        {aktualnaListaWartosciRangMiejsca.map((wartoscRangi) =>
-                            <option
-                                key = {wartoscRangi.wartoscLiczbowa}
-                                value = {wartoscRangi.wartoscLiczbowa}
-                            >
-                                {wartoscRangi.nazwaRangi}
-                            </option>)}
-                    </select>
-                </div>
-            }
-            <button
-                className={ miejscaWDruzynie.length > 8
-                    ? "zablokowany-przycisk"
-                    : "p-2 bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600"}
-                onClick={() => {
-                    // {int? idRoli, string? nazwaRoli,
-                    // string? nazwaStatystyki, int? idStatystyki, string? wartoscStatystyki, int? porownywalnaWartoscLiczbowa}
-                    let idRoli = idRoliDoDodania < 0 ? null : idRoliDoDodania;
-                    let nazwaRoli = !idRoli ? null : role.find(x => x.id === idRoliDoDodania)?.nazwa;
-                    let idStatystyki = null;
-                    let nazwaStatystyki = null;
-                    let wartoscStatystyki = null;
-                    let porownywalnaWartoscLiczbowa = null;
-                    if(typWymaganiaDoDodania === "liczbowe") {
-                        idStatystyki = idStatystykiMiejscaDoDodania < 0 ? null : idStatystykiMiejscaDoDodania; // -1 traktujemy jak null
-                        nazwaStatystyki = !idStatystyki ? null : statystykiZBazy.find(x => x.id === idStatystyki)?.nazwa;
-                        wartoscStatystyki = !idStatystyki ? null : wartoscStatystykiMiejscaDoDodania;
-                        porownywalnaWartoscLiczbowa = !idStatystyki ? null : wartoscLiczbowaStatystykiMiejscaDoDodania;
+                        </select>
+                        <select
+                            className="border-2 border-gray-300 rounded-md p-2"
+                            value={wartoscLiczbowaRangiMiejscaDoDodania ?? ""}
+                            onChange={(e) => {
+                                // na wszelki wypadek
+                                if(e.target.value === "") {
+                                    ustawWartoscRangiMiejscaDoDodania(null);
+                                    ustawWartoscLiczbowaRangiMiejscaDoDodania(null);
+                                }
+                                else {
+                                    let wartoscLiczbowa = parseInt(e.target.value);
+                                    let ranga = aktualnaListaWartosciRangMiejsca.find(x => x.wartoscLiczbowa === wartoscLiczbowa);
+                                    ustawWartoscRangiMiejscaDoDodania(ranga.nazwaRangi);
+                                    ustawWartoscLiczbowaRangiMiejscaDoDodania(wartoscLiczbowa);
+                                }
+                            }}
+                            disabled={idRangiMiejscaDoDodania === null || aktualnaListaWartosciRangMiejsca.length === 0}
+                        >
+                            {aktualnaListaWartosciRangMiejsca.length === 0 && <option value="" key={-1}>Brak</option>}
+                            {aktualnaListaWartosciRangMiejsca.map((wartoscRangi) =>
+                                <option
+                                    key = {wartoscRangi.wartoscLiczbowa}
+                                    value = {wartoscRangi.wartoscLiczbowa}
+                                >
+                                    {wartoscRangi.nazwaRangi}
+                                </option>)}
+                        </select>
+                    </div>
+                }
+                <button
+                    className={ miejscaWDruzynie.length > 8
+                        ? "zablokowany-przycisk"
+                        : "p-2 bg-green-900 text-white rounded-md px-3 py-1 my-4 hover:bg-green-600"}
+                    onClick={() => {
+                        // {int? idRoli, string? nazwaRoli,
+                        // string? nazwaStatystyki, int? idStatystyki, string? wartoscStatystyki, int? porownywalnaWartoscLiczbowa}
+                        let idRoli = idRoliDoDodania < 0 ? null : idRoliDoDodania;
+                        let nazwaRoli = !idRoli ? null : role.find(x => x.id === idRoliDoDodania)?.nazwa;
+                        let idStatystyki = null;
+                        let nazwaStatystyki = null;
+                        let wartoscStatystyki = null;
+                        let porownywalnaWartoscLiczbowa = null;
+                        if(typWymaganiaDoDodania === "liczbowe") {
+                            idStatystyki = idStatystykiMiejscaDoDodania < 0 ? null : idStatystykiMiejscaDoDodania; // -1 traktujemy jak null
+                            nazwaStatystyki = !idStatystyki ? null : statystykiZBazy.find(x => x.id === idStatystyki)?.nazwa;
+                            wartoscStatystyki = !idStatystyki ? null : wartoscStatystykiMiejscaDoDodania;
+                            porownywalnaWartoscLiczbowa = !idStatystyki ? null : wartoscLiczbowaStatystykiMiejscaDoDodania;
 
-                    }else if(typWymaganiaDoDodania === "ranga") {
-                         idStatystyki = idRangiMiejscaDoDodania < 0 ? null : idRangiMiejscaDoDodania; // -1 traktujemy jak null
-                         nazwaStatystyki = !idStatystyki ? null : wszystkieRangiZBazy.find(x => x.id === idStatystyki)?.nazwa;
-                         wartoscStatystyki = !idStatystyki ? null : wartoscRangiMiejscaDoDodania;
-                         porownywalnaWartoscLiczbowa = !idStatystyki ? null : wartoscLiczbowaRangiMiejscaDoDodania;
-                    }
-                    // tutaj wypisujemy to co dodajemy bo coś nie widać tego
-                    ustawMiejscaWDruzynie(prev => [...prev, {
-                        idRoli: idRoli,
-                        nazwaRoli: nazwaRoli,
-                        idStatystyki: idStatystyki,
-                        nazwaStatystyki: nazwaStatystyki,
-                        wartoscStatystyki: wartoscStatystyki,
-                        porownywalnaWartoscLiczbowa: porownywalnaWartoscLiczbowa
-                    }])
-                }}
-                disabled={czyZablokowaneDodanieMiejsca}
-            >Dodaj</button>
+                        }else if(typWymaganiaDoDodania === "ranga") {
+                            idStatystyki = idRangiMiejscaDoDodania < 0 ? null : idRangiMiejscaDoDodania; // -1 traktujemy jak null
+                            nazwaStatystyki = !idStatystyki ? null : wszystkieRangiZBazy.find(x => x.id === idStatystyki)?.nazwa;
+                            wartoscStatystyki = !idStatystyki ? null : wartoscRangiMiejscaDoDodania;
+                            porownywalnaWartoscLiczbowa = !idStatystyki ? null : wartoscLiczbowaRangiMiejscaDoDodania;
+                        }
+                        // tutaj wypisujemy to co dodajemy bo coś nie widać tego
+                        ustawMiejscaWDruzynie(prev => [...prev, {
+                            idRoli: idRoli,
+                            nazwaRoli: nazwaRoli,
+                            idStatystyki: idStatystyki,
+                            nazwaStatystyki: nazwaStatystyki,
+                            wartoscStatystyki: wartoscStatystyki,
+                            porownywalnaWartoscLiczbowa: porownywalnaWartoscLiczbowa
+                        }])
+                    }}
+                    disabled={czyZablokowaneDodanieMiejsca}
+                >Dodaj</button>
+            </div>
         </div>
+
         <h2 className="text-red-700">Uwaga!</h2>
         <p className="text-red-700">Drużyna zostanie rozwiązana automatycznie po tygodniu Twojej nieaktywności</p>
         <button
