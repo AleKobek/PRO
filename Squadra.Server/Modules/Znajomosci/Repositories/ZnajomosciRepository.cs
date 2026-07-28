@@ -43,7 +43,7 @@ public class ZnajomosciRepository(
     
     public async Task<bool> CreateZnajomosc(int idUzytkownika1, int idUzytkownika2)
     {
-        // robimy to tylko po to, aby wywaliło "Nie znaleziono w bazie exception" w razie potrzeby
+        // robimy to tylko po to, aby wyrzuciło "Nie znaleziono w bazie exception" w razie potrzeby
         var uzytkownik1 = await profileRepository.GetProfilUzytkownika(idUzytkownika1);
         var uzytkownik2 = await profileRepository.GetProfilUzytkownika(idUzytkownika2);
         
