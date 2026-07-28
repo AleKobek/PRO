@@ -1,6 +1,6 @@
-﻿import KropkaStatusuKomponent from "./KropkaStatusuKomponent";
+﻿import KropkaStatusu from "./KropkaStatusu";
 
-export default function AwatarComponent({obraz, wysokosc, status}) {
+export default function Awatar({obraz, wysokosc, status}) {
 
     const kontenerClass = "relative inline-block";
 
@@ -25,7 +25,7 @@ export default function AwatarComponent({obraz, wysokosc, status}) {
                 alt="awatar"
                 className={"awatar block h-full w-full object-cover rounded-full " + gruboscObramowania + kolorObramowania}
             />
-            <KropkaStatusuKomponent status={status} wysokoscAwatara={wysokosc}/>
+            <KropkaStatusu status={status} wysokoscAwatara={wysokosc}/>
         </span>
     );
 }

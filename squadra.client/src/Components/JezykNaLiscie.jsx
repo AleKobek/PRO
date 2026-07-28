@@ -1,6 +1,6 @@
 ﻿import {useEffect} from "react";
 
-export default function JezykNaLiscieKomponent({
+export default function JezykNaLiscie({
                                                    jezykDoKomponentu,
                                                    coPrzyKlikaniu,
                                                    idZListy,

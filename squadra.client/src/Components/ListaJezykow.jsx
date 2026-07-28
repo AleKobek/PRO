@@ -1,5 +1,5 @@
 ﻿import {useEffect, useMemo, useState} from "react";
-import JezykNaLiscieKomponent from "./JezykNaLiscieKomponent";
+import JezykNaLiscie from "./JezykNaLiscie";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
 
@@ -170,7 +170,7 @@ export default function ListaJezykow({
                         .slice(aktualnaStrona * liczbaJezykowNaStronie, (aktualnaStrona + 1) * liczbaJezykowNaStronie)
                         .sort((a, b) => b.wartosc - a.wartosc)
                         .map((pozycja, index) => (
-                            <JezykNaLiscieKomponent
+                            <JezykNaLiscie
                                 key={`${pozycja.idJezyka}-${pozycja.idStopnia}`}
                                 jezykDoKomponentu={pozycja} idZListy={index} czyEdytuj={false}
                             />
@@ -191,8 +191,8 @@ export default function ListaJezykow({
                     .map((element, index) => {
                         if (index >= aktualnaStrona * liczbaJezykowNaStronie && index < (aktualnaStrona + 1) * liczbaJezykowNaStronie) {
                             return (<>
-                                <JezykNaLiscieKomponent jezykDoKomponentu={element} key={`${element.idJezyka}-${element.idStopnia}`} idZListy={index}
-                                                        coPrzyKlikaniu={przyKliknieciuUsun} czyEdytuj={true}/>
+                                <JezykNaLiscie jezykDoKomponentu={element} key={`${element.idJezyka}-${element.idStopnia}`} idZListy={index}
+                                               coPrzyKlikaniu={przyKliknieciuUsun} czyEdytuj={true}/>
                             </>)
                         }
                     })}

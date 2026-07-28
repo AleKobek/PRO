@@ -2,7 +2,7 @@
 import {useAuth} from "../../Context/AuthContext";
 import React, {useEffect, useState} from "react";
 import {Bounce, ToastContainer} from "react-toastify";
-import TabelkaDruzynKomponent from "../TabelkaDruzynKomponent";
+import TabelkaDruzyn from "../TabelkaDruzyn";
 
 export default function WynikiWyszukiwaniaDruzyn() {
 
@@ -34,7 +34,7 @@ export default function WynikiWyszukiwaniaDruzyn() {
             <button className={"przycisk-nawigacji"} onClick={() => navigate('/wyszukajDruzyne')}>Wyszukaj inne drużyny</button>
             <h1>Wyszukane drużyny</h1>
             <h3>Szczegóły wyświetlą się w nowych kartach</h3>
-            <TabelkaDruzynKomponent
+            <TabelkaDruzyn
                 idDruzyn={idDruzyn}
                 brakDruzynWiadomosc="Brak dostępnch drużyn spełniających warunki wyszukiwania"
                 czySzczegolyWNowejKarcie={true}

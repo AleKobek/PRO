@@ -1,7 +1,7 @@
-﻿import AwatarComponent from "./AwatarComponent";
+﻿import Awatar from "./Awatar";
 import {CLIENT_URL} from "../config/api";
 
-export default function ZnajomyNaLiscieKomponent({znajomy, przyWyborzeZnajomego, idZnajomegoZOtwartymCzatem}) {
+export default function ZnajomyNaLiscie({znajomy, przyWyborzeZnajomego, idZnajomegoZOtwartymCzatem}) {
 
 
     const className = "flex flex-row items-center text-3xl gap-3 p-2 border-b-2 border-gray-400 shadow-md "
@@ -9,7 +9,7 @@ export default function ZnajomyNaLiscieKomponent({znajomy, przyWyborzeZnajomego,
     if(idZnajomegoZOtwartymCzatem === znajomy.idZnajomego) return (
         <li key={znajomy.idZnajomego}
             className={className + "bg-blue-300 font-semibold"}>
-            <AwatarComponent
+            <Awatar
                 obraz={znajomy.awatar}
                 wysokosc={100}
                 pseudonim={znajomy.pseudonim}
@@ -24,7 +24,7 @@ export default function ZnajomyNaLiscieKomponent({znajomy, przyWyborzeZnajomego,
             className={className + "text-red-500 bg-red-100 font-bold"}
             onClick={() => przyWyborzeZnajomego(znajomy.idZnajomego)}
         >
-            <AwatarComponent
+            <Awatar
                 obraz={znajomy.awatar}
                 wysokosc={100}
                 pseudonim={znajomy.pseudonim}
@@ -37,7 +37,7 @@ export default function ZnajomyNaLiscieKomponent({znajomy, przyWyborzeZnajomego,
 
 
     return (<li key={znajomy.idZnajomego} className={className} onClick={() => przyWyborzeZnajomego(znajomy.idZnajomego)}>
-        <AwatarComponent
+        <Awatar
             obraz={znajomy.awatar}
             wysokosc={100}
             pseudonim={znajomy.pseudonim}

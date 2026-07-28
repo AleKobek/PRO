@@ -2,7 +2,7 @@
 import {Bounce, toast} from "react-toastify";
 import React, {useState} from "react";
 
-export default function EdytujIntegracjeWKoncieKomponent({zewnetrzneId, ustawZewnetrzneId, zewnetrznyLogin, ustawZewnetrznyLogin}){
+export default function EdytujIntegracjeWKoncie({zewnetrzneId, ustawZewnetrzneId, zewnetrznyLogin, ustawZewnetrznyLogin}){
 
     const [login, ustawLogin] = useState("");
     const [haslo, ustawHaslo] = useState("");

@@ -3,7 +3,7 @@ import {API_BASE_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
 
 
-export default function TabelkaBibliotekiGierKomponent({idUzytkownika}) {
+export default function TabelkaBibliotekiGier({idUzytkownika}) {
 
     const [bibliotekaGier, ustawBibliotekaGier] = useState([]);
 

@@ -3,7 +3,7 @@ import {NavLink, useNavigate} from "react-router-dom";
 import {useAuth} from "../Context/AuthContext";
 import Powiadomienie from "./Powiadomienie";
 import {API_BASE_URL} from "../config/api";
-import SelectStatusowNaNaglowkuKomponent from "./SelectStatusowNaNaglowkuKomponent";
+import SelectStatusowNaNaglowku from "./SelectStatusowNaNaglowku";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 
 export default function NaglowekZalogowano({
@@ -350,7 +350,7 @@ export default function NaglowekZalogowano({
                 </div>
                 {/* select statusów */}
                 <span className="bg-none">Status:</span>
-                <SelectStatusowNaNaglowkuKomponent idAktualnegoStatusu={aktualnyStatus.id} przyZmianieStatusu={przyZmianieStatusu} listaStatusow={listaStatusow} />
+                <SelectStatusowNaNaglowku idAktualnegoStatusu={aktualnyStatus.id} przyZmianieStatusu={przyZmianieStatusu} listaStatusow={listaStatusow} />
                 {/* przycisk powiadomień */}
                 <button
                     onClick={() => ustawPokazPowiadomienia(v => !v)}

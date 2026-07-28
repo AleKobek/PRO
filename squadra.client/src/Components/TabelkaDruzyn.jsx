@@ -3,11 +3,11 @@
 import {useNavigate} from "react-router-dom";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, toast} from "react-toastify";
-import AwatarComponent from "./AwatarComponent";
+import Awatar from "./Awatar";
 
 
 
-export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, czySzczegolyWNowejKarcie = false, pierwszaStronaDruzyn, idUzytkownika = null}) {
+export default function TabelkaDruzyn({idDruzyn, brakDruzynWiadomosc, czySzczegolyWNowejKarcie = false, pierwszaStronaDruzyn, idUzytkownika = null}) {
 
     const navigate = useNavigate();
     const [druzynyNaStronie, ustawDruzynyNaStronie] = useState([])
@@ -141,7 +141,7 @@ export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, c
                                     if (!czlonek || typeof czlonek !== 'object')
                                         return (<div key={index} className="h-10 flex flex-col items-center justify-center my-3">
                                         {rola && czlonkowie.length < 7 && <div className="text-center text-xs">{rola}</div>}
-                                        <AwatarComponent status={null} obraz="puste" wysokosc={40}/>
+                                        <Awatar status={null} obraz="puste" wysokosc={40}/>
                                         {/* jak lista członków jest za długa, to nie pokazujemy pseudonimów */}
                                         {czlonkowie.length < 7 && <div className="text-center text-xs text-blue-900 mt-1.5">Puste</div>}
                                     </div>);
@@ -149,7 +149,7 @@ export default function TabelkaDruzynKomponent({idDruzyn, brakDruzynWiadomosc, c
                                     return (<div key={czlonek.idUzytkownika} className="h-10 flex flex-col items-center justify-center my-3">
                                         {rola && czlonkowie.length < 7 && <div className="text-center text-xs">{rola}</div>}
                                         {czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-4 h-4"/> : <div className="h-5 mt-1"/>}
-                                        <AwatarComponent status={czlonek.nazwaStatusu} obraz={czlonek.awatar} wysokosc={40}/>
+                                        <Awatar status={czlonek.nazwaStatusu} obraz={czlonek.awatar} wysokosc={40}/>
                                         {/* jak lista członków jest za długa, to nie pokazujemy pseudonimów */}
                                         {czlonkowie.length < 7 && <div className="text-center text-xs">{czlonek.pseudonim}</div>}
                                     </div>);

@@ -1,6 +1,6 @@
 ﻿import {useMemo} from "react";
 
-export default function KropkaStatusuKomponent({status, wysokoscAwatara}){
+export default function KropkaStatusu({status, wysokoscAwatara}){
 
     const wysokoscKropki = wysokoscAwatara/15 * 4;
 

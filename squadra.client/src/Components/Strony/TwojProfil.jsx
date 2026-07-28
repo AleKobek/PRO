@@ -5,7 +5,7 @@ import DaneProfilu from '../DaneProfilu';
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
-import TabelkaBibliotekiGierKomponent from "../TabelkaBibliotekiGierKomponent";
+import TabelkaBibliotekiGier from "../TabelkaBibliotekiGier";
 export default function TwojProfil() {
     
     const navigate = useNavigate();
@@ -45,7 +45,7 @@ export default function TwojProfil() {
             <DaneProfilu idUzytkownika={uzytkownik.id}></DaneProfilu>
             <button className={"przycisk-nawigacji"} onClick={() => navigate('/edytujProfil')}>Edytuj profil</button>
             <h2 className="mt-10">Biblioteka gier</h2>
-            <TabelkaBibliotekiGierKomponent idUzytkownika={uzytkownik.id}/>
+            <TabelkaBibliotekiGier idUzytkownika={uzytkownik.id}/>
         </div>
         <ToastContainer
             position="top-center"

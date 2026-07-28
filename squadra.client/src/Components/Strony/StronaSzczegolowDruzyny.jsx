@@ -6,8 +6,8 @@ import {useAuth} from "../../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL, CLIENT_URL} from "../../config/api";
 import {OkienkoTlumaczaceZintegrowanie} from "../OkienkoTlumaczaceZintegrowanie";
-import AwatarComponent from "../AwatarComponent";
-import CzatDruzynowyKomponent from "../CzatDruzynowyKomponent";
+import Awatar from "../Awatar";
+import CzatDruzynowy from "../CzatDruzynowy";
 
 const TOAST_CONTAINER_ID = "szczegoly-druzyny-toast";
 export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzynowe, powiadomienia, ustawPowiadomienia}) {
@@ -530,7 +530,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
                 */}
                     {listaZnajomych.map((znajomy) => (
                         <li key={znajomy.idUzytkownika} className="flex flex-row items-center text-3xl gap-3 p-2">
-                            <AwatarComponent
+                            <Awatar
                                 obraz={znajomy.awatar ?? ""}
                                 wysokosc={60}
                                 pseudonim={znajomy.pseudonim}
@@ -583,7 +583,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
                         {/* członek */}
                         {miejsce.czlonek ? <th className="flex items-center gap-2 px-4 py-2">
                             {miejsce.czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-50 h-50"/> : <div className="pl-9"/>}
-                            <AwatarComponent
+                            <Awatar
                                 obraz={miejsce.czlonek.awatar}
                                 status={miejsce.czlonek.nazwaStatusu}
                                 wysokosc={40}
@@ -638,7 +638,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
                         {/* członek */}
                         {miejsce.czlonek ? <th className="flex items-center gap-2 px-4 py-2">
                             {miejsce.czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-50 h-50"/> : <div className="pl-9"/>}
-                            <AwatarComponent
+                            <Awatar
                                 obraz={miejsce.czlonek.awatar}
                                 status={miejsce.czlonek.nazwaStatusu}
                                 wysokosc={40}
@@ -678,7 +678,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
                         {/* członek */}
                         {miejsce.czlonek ? <th className="flex items-center gap-2 px-4 py-2">
                             {miejsce.czyKapitan ? <img src="/img/crown.svg" alt="korona" className="w-50 h-50"/> : <div className="pl-9"/>}
-                            <AwatarComponent
+                            <Awatar
                                 obraz={miejsce.czlonek.awatar}
                                 status={miejsce.czlonek.nazwaStatusu}
                                 wysokosc={40}
@@ -755,7 +755,7 @@ export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzyno
                 <h2 className="text-xl mb-4 text-blue-700">{daneDruzyny.nazwa}</h2>
                 {/* czat drużynowy */}
                 {daneDruzyny.statusCzlonkostwa !== "Brak" &&
-                    <div className="w-3/4 h-[1000px] border-4 border-gray-600 mb-10 shadow-xl rounded-md"><CzatDruzynowyKomponent idDruzyny={idDruzyny}/></div>
+                    <div className="w-3/4 h-[1000px] border-4 border-gray-600 mb-10 shadow-xl rounded-md"><CzatDruzynowy idDruzyny={idDruzyny}/></div>
                 }
                 {/*  zwykłe dane jak opis, nastrój, platforma itp.  */}
                 <div className="flex flex-col gap-4 justify-center items-center text-xl border-2 border-gray-600 shadow-md rounded-md p-4 px-7 mb-6">

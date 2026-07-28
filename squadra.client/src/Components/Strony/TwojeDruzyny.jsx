@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
-import TabelkaDruzynKomponent from "../TabelkaDruzynKomponent";
+import TabelkaDruzyn from "../TabelkaDruzyn";
 import {API_BASE_URL} from "../../config/api";
 
 export default function TwojeDruzyny() {
@@ -135,7 +135,7 @@ export default function TwojeDruzyny() {
             <div className="mt-10 text-2xl">
                 {ladowanieDruzyn
                     ? <h1>Ładowanie...</h1>
-                    : <TabelkaDruzynKomponent
+                    : <TabelkaDruzyn
                         idDruzyn={idDruzyn}
                         brakDruzynWiadomosc={"Nie należysz do żadnej drużyny. Czas to zmienić! Razem raźniej!"}
                         czySzczegolyWNowejKarcie={false}

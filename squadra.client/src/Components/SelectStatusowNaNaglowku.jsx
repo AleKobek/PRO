@@ -1,6 +1,6 @@
 ﻿import {useMemo} from "react";
 
-export default function SelectStatusowNaNaglowkuKomponent({idAktualnegoStatusu, przyZmianieStatusu, listaStatusow}){
+export default function SelectStatusowNaNaglowku({idAktualnegoStatusu, przyZmianieStatusu, listaStatusow}){
 
     const classNameSelect = useMemo(() => {
         const Status = {

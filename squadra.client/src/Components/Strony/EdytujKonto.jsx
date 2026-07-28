@@ -7,7 +7,7 @@ import {useAuth} from "../../Context/AuthContext";
 import FormularzKonta from "../FormularzKonta";
 import {API_BASE_URL} from "../../config/api";
 import {Bounce, toast} from "react-toastify";
-import EdytujIntegracjeWKoncieKomponent from "../EdytujIntegracjeWKoncieKomponent";
+import EdytujIntegracjeWKoncie from "../EdytujIntegracjeWKoncie";
 import {OkienkoTlumaczaceZintegrowanie} from "../OkienkoTlumaczaceZintegrowanie";
 import ZmienHaslo from "../ZmienHaslo";
 export default function EdytujKonto() {
@@ -309,10 +309,10 @@ export default function EdytujKonto() {
                         onClick={() => ustawPokazOkienkoTlumaczenia(true)}
                     />
                 </h3>
-                <EdytujIntegracjeWKoncieKomponent zewnetrzneId={zewnetrzneId} ustawZewnetrzneId={ustawZewnetrzneId}
-                                                  zewnetrznyLogin={zewnetrznyLogin}
-                                                  ustawZewnetrznyLogin={ustawZewnetrznyLogin}
-                                                  ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia}/>
+                <EdytujIntegracjeWKoncie zewnetrzneId={zewnetrzneId} ustawZewnetrzneId={ustawZewnetrzneId}
+                                         zewnetrznyLogin={zewnetrznyLogin}
+                                         ustawZewnetrznyLogin={ustawZewnetrznyLogin}
+                                         ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia}/>
                 <br/>
                 <button
                     className="block !mx-auto bg-red-900 !text-[25px] text-white rounded-md !px-3 !py-1 !my-4 hover:bg-red-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"

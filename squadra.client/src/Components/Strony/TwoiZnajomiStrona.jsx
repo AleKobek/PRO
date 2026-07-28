@@ -3,9 +3,9 @@
 import React, {useEffect, useState} from 'react';
 import {useAuth} from "../../Context/AuthContext";
 import {API_BASE_URL} from "../../config/api";
-import ZnajomyNaLiscieKomponent from "../ZnajomyNaLiscieKomponent";
+import ZnajomyNaLiscie from "../ZnajomyNaLiscie";
 import {Bounce, toast, ToastContainer} from "react-toastify";
-import CzatZeZnajomymKomponent from "../CzatZeZnajomymKomponent";
+import CzatZeZnajomym from "../CzatZeZnajomym";
 
 const TOAST_CONTAINER_ID = "twoi-znajomi-toast";
 const WYSOKOSC_NAGLOWKA = "60px";
@@ -274,7 +274,7 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
                         </p>
                         : <ul className="h-full overflow-y-auto">
                             {znajomi.map((znajomy) => (
-                                <ZnajomyNaLiscieKomponent key={znajomy.idZnajomego} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} przyWyborzeZnajomego={przyWyborzeZnajomego}/>
+                                <ZnajomyNaLiscie key={znajomy.idZnajomego} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} przyWyborzeZnajomego={przyWyborzeZnajomego}/>
                             ))}
                         </ul>
                     }
@@ -320,7 +320,7 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
                     <div className="border-t-2 border-gray-400 flex-1 min-h-0 overflow-hidden">
                         <ul className="h-full overflow-y-auto">
                             {znajomi.map((znajomy) => (
-                                <ZnajomyNaLiscieKomponent key={znajomy.idZnajomego} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} przyWyborzeZnajomego={przyWyborzeZnajomego}/>
+                                <ZnajomyNaLiscie key={znajomy.idZnajomego} znajomy={znajomy} idZnajomegoZOtwartymCzatem = {idZnajomegoZOtwartymCzatem} przyWyborzeZnajomego={przyWyborzeZnajomego}/>
                             ))}
                         </ul>
                     </div>
@@ -328,7 +328,7 @@ export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
                 {/* czat */}
                 <div className="flex flex-col col-span-2 w-full min-h-0 overflow-hidden">
                     {userId && idZnajomegoZOtwartymCzatem && (
-                        <CzatZeZnajomymKomponent
+                        <CzatZeZnajomym
                             idZnajomegoZOtwartymCzatem={idZnajomegoZOtwartymCzatem}
                             naszeId={userId}
                             pseudonimZnajomegoZOtwartymCzatem={pseudonimZnajomegoZOtwartymCzatem}
