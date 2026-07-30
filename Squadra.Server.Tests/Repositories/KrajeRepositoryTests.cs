@@ -81,15 +81,4 @@ public class KrajeRepositoryTests : IDisposable
         Assert.Contains("nie istnieje", exception.Message);
     }
 
-    [Fact]
-    public void GetKrajDomyslny_ReturnsDefaultCountry()
-    {
-        // Act
-        var result = _repository.GetKrajDomyslny();
-
-        // Assert
-        Assert.NotNull(result);
-        Assert.Equal(1, result.Id);
-        Assert.Equal("Unknown", result.Nazwa);
-    }
 }

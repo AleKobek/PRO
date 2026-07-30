@@ -1,24 +1,29 @@
 using Moq;
 using Squadra.Server.Exceptions;
+using Squadra.Server.Modules.Drużyny.DTO;
 using Squadra.Server.Modules.Drużyny.Services;
 using Squadra.Server.Modules.Profile.Services;
+using Squadra.Server.Modules.Shared.Services;
 using Squadra.Server.Modules.Wiadomosci.DTO;
 using Squadra.Server.Modules.Wiadomosci.Repositories;
 using Squadra.Server.Modules.Wiadomosci.Services;
 using Squadra.Server.Modules.Znajomosci.Repositories;
+using Xunit.Abstractions;
 
 namespace Squadra.Server.Tests.Services;
 
 public class WiadomosciServiceTests
 {
+    private readonly ITestOutputHelper _testOutputHelper;
     private readonly Mock<IWiadomosciRepository> _mockWiadomoscRepository;
     private readonly Mock<IZnajomosciRepository> _mockZnajomiRepository;
     private readonly Mock<IDruzynyService> _mockDruzynyService;
     private readonly Mock<IProfileService> _mockProfilService;
     private readonly WiadomosciService _service;
 
-    public WiadomosciServiceTests()
+    public WiadomosciServiceTests(ITestOutputHelper testOutputHelper)
     {
+        _testOutputHelper = testOutputHelper;
         _mockWiadomoscRepository = new Mock<IWiadomosciRepository>();
         _mockZnajomiRepository = new Mock<IZnajomosciRepository>();
         _mockDruzynyService = new Mock<IDruzynyService>();
@@ -217,7 +222,7 @@ public class WiadomosciServiceTests
     #region CreateWiadomosc Tests
 
     [Fact]
-    public async Task CreateWiadomosc_WithValidData_ReturnsCreated()
+    public async Task CreateWiadomoscPrywatna_WithValidData_ReturnsCreated()
     {
         // Arrange
         var senderId = 1;
@@ -238,7 +243,7 @@ public class WiadomosciServiceTests
     }
 
     [Fact]
-    public async Task CreateWiadomosc_WhenSenderAndRecipientAreSame_ReturnsBadRequest()
+    public async Task CreateWiadomoscPrywatna_WhenSenderAndRecipientAreSame_ReturnsBadRequest()
     {
         // Arrange
         var userId = 1;
@@ -253,7 +258,7 @@ public class WiadomosciServiceTests
     }
 
     [Fact]
-    public async Task CreateWiadomosc_WithEmptyContent_ReturnsBadRequest()
+    public async Task CreateWiadomoscPrywatna_WithEmptyContent_ReturnsBadRequest()
     {
         // Arrange
         var senderId = 1;
@@ -268,7 +273,7 @@ public class WiadomosciServiceTests
     }
 
     [Fact]
-    public async Task CreateWiadomosc_WithNullContent_ReturnsBadRequest()
+    public async Task CreateWiadomoscPrywatna_WithNullContent_ReturnsBadRequest()
     {
         // Arrange
         var senderId = 1;
@@ -283,7 +288,7 @@ public class WiadomosciServiceTests
     }
 
     [Fact]
-    public async Task CreateWiadomosc_WithContentExceeding1000Characters_ReturnsBadRequest()
+    public async Task CreateWiadomoscPrywatna_WithContentExceeding1000Characters_ReturnsBadRequest()
     {
         // Arrange
         var senderId = 1;
@@ -299,7 +304,7 @@ public class WiadomosciServiceTests
     }
 
     [Fact]
-    public async Task CreateWiadomosc_WhenUsersAreNotFriends_ReturnsBadRequest()
+    public async Task CreateWiadomoscPrywatna_WhenUsersAreNotFriends_ReturnsBadRequest()
     {
         // Arrange
         var senderId = 1;
@@ -316,7 +321,7 @@ public class WiadomosciServiceTests
     }
 
     [Fact]
-    public async Task CreateWiadomosc_WhenRecipientNotFound_ReturnsNotFound()
+    public async Task CreateWiadomoscPrywatna_WhenRecipientNotFound_ReturnsNotFound()
     {
         // Arrange
         var senderId = 1;
@@ -329,6 +334,100 @@ public class WiadomosciServiceTests
         // Assert
         Assert.False(result.Succeeded);
         Assert.Equal(404, result.StatusCode);
+    }
+    
+    [Fact]
+    public async Task CreateWiadomoscDruzynowa_WithValidData_ReturnsCreated()
+    {
+        // Arrange
+        var senderId = 1;
+        var teamId = 2;
+        var dto = new WiadomoscCreateDto("Test message content", 2);
+        _mockDruzynyService.Setup(s => s.GetDruzyna(teamId))
+            .ReturnsAsync(ServiceResult<DruzynaDto>.Ok(new DruzynaDto(teamId, "Test Team", 1, senderId, true, null, 1, null, null, null, false)));
+        _mockDruzynyService.Setup(s => s.CzyUzytkownikNalezyDoDruzyny(senderId, teamId))
+            .ReturnsAsync(ServiceResult<bool>.Ok(true));
+
+        // Act
+        var result = await _service.CreateWiadomoscDruzynowa(teamId, "Test message content", senderId);
+        
+        // Assert
+        Assert.True(result.Succeeded);
+        Assert.Equal(201, result.StatusCode);
+        _mockWiadomoscRepository.Verify(r => r.CreateWiadomosc(teamId, dto, senderId), Times.Once);
+    }
+    
+    [Fact]
+    public async Task CreateWiadomoscDruzynowa_WithEmptyContent_ReturnsBadRequest()
+    {
+        // Arrange
+        var senderId = 1;
+        var teamId = 2;
+
+        // Act
+        var result = await _service.CreateWiadomoscDruzynowa(teamId,"", senderId);
+
+        // Assert
+        Assert.False(result.Succeeded);
+        Assert.Equal(400, result.StatusCode);
+        Assert.Contains("nie może być pusta", result.Errors[0].Message);
+    }
+    
+    [Fact]
+    public async Task CreateWiadomoscDruzynowa_WithContentExceeding1000Characters_ReturnsBadRequest()
+    {
+        // Arrange
+        var senderId = 1;
+        var teamId = 2;
+        var longContent = new string('a', 1001); // 1001 characters
+
+
+        // Act
+        var result = await _service.CreateWiadomoscDruzynowa(teamId,longContent, senderId);
+
+        // Assert
+        Assert.False(result.Succeeded);
+        Assert.Equal(400, result.StatusCode);
+        Assert.Contains("1000 znaków", result.Errors[0].Message);
+    }
+    
+    [Fact]
+    public async Task CreateWiadomoscDruzynowa_WhenTeamNotFound_ReturnsNotFound()
+    {
+        // Arrange
+        var senderId = 1;
+        var teamId = 2;
+        _mockDruzynyService.Setup(s => s.GetDruzyna(teamId))
+            .ReturnsAsync(ServiceResult<DruzynaDto>.NotFound(new ErrorItem("Nie znaleziono drużyny o id " + teamId)));
+        
+        // Act
+        var result = await _service.CreateWiadomoscDruzynowa(teamId,"test", senderId);
+
+        // Assert
+        Assert.False(result.Succeeded);
+        Assert.Equal(404, result.StatusCode);
+        Assert.Contains("Nie znaleziono drużyny", result.Errors[0].Message);
+    }
+    
+    [Fact]
+    public async Task CreateWiadomoscDruzynowa_WhenUserNotInTeam_ReturnsForbidden()
+    {
+        // Arrange
+        var senderId = 1;
+        var teamId = 2;
+        
+        _mockDruzynyService.Setup(s => s.GetDruzyna(teamId))
+            .ReturnsAsync(ServiceResult<DruzynaDto>.Ok(new DruzynaDto(teamId, "Test Team", 1, senderId, true, null, 1, null, null, null, false)));
+       
+        _mockDruzynyService.Setup(s => s.CzyUzytkownikNalezyDoDruzyny(senderId, teamId))
+            .ReturnsAsync(ServiceResult<bool>.Ok(false));
+        // Act
+        var result = await _service.CreateWiadomoscDruzynowa(teamId,"test", senderId);
+
+        // Assert
+        Assert.False(result.Succeeded);
+        Assert.Equal(403, result.StatusCode);
+        Assert.Contains("Brak dostępu do czatu", result.Errors[0].Message);
     }
 
     #endregion

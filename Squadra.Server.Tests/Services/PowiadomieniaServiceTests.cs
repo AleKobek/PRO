@@ -278,6 +278,9 @@ public class PowiadomieniaServiceTests
             .ReturnsAsync(userResult);
         _mockPowiadomienieRepository.Setup(r => r.CreatePowiadomienie(dto))
             .ReturnsAsync(true);
+        // ensure repository returns an empty collection for exceeding-limit check to avoid NullReferenceException in service
+        _mockPowiadomienieRepository.Setup(r => r.PodajPowiadomieniaUzytkownikaPrzekraczajaceLimit(dto.IdUzytkownika))
+            .ReturnsAsync(new List<Powiadomienie>());
 
         // Act
         var result = await _service.CreatePowiadomienie(dto);
@@ -296,6 +299,9 @@ public class PowiadomieniaServiceTests
         
         _mockPowiadomienieRepository.Setup(r => r.CreatePowiadomienie(dto))
             .ReturnsAsync(true);
+        // ensure repository returns an empty collection for exceeding-limit check to avoid null issues in service        
+        _mockPowiadomienieRepository.Setup(r => r.PodajPowiadomieniaUzytkownikaPrzekraczajaceLimit(dto.IdUzytkownika))
+            .ReturnsAsync(new List<Powiadomienie>());
 
         // Act
         var result = await _service.CreatePowiadomienie(dto);
@@ -430,6 +436,12 @@ public class PowiadomieniaServiceTests
             .ReturnsAsync(false);
         _mockZnajomiService.Setup(s => s.GetZnajomosciUzytkownika(inviterId))
             .ReturnsAsync(friendsResult);
+        // ensure admin check returns false to avoid null reference in service
+        _mockUzytkownikService.Setup(s => s.CzyUzytkownikJestAdminem(inviteeId))
+            .ReturnsAsync(ServiceResult<bool>.Ok(false));
+        // ensure exceeding-limit check returns empty list
+        _mockPowiadomienieRepository.Setup(r => r.PodajPowiadomieniaUzytkownikaPrzekraczajaceLimit(inviteeId))
+            .ReturnsAsync(new List<Powiadomienie>());
 
         // Act
         var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);
@@ -460,6 +472,12 @@ public class PowiadomieniaServiceTests
             .ReturnsAsync(inviterFriendsResult);
         _mockZnajomiService.Setup(s => s.GetZnajomosciUzytkownika(inviteeId))
             .ReturnsAsync(inviteeFriendsResult);
+        // ensure admin check returns false to avoid null reference in service
+        _mockUzytkownikService.Setup(s => s.CzyUzytkownikJestAdminem(inviteeId))
+            .ReturnsAsync(ServiceResult<bool>.Ok(false));
+        // ensure exceeding-limit check returns empty list
+        _mockPowiadomienieRepository.Setup(r => r.PodajPowiadomieniaUzytkownikaPrzekraczajaceLimit(inviteeId))
+            .ReturnsAsync(new List<Powiadomienie>());
 
         // Act
         var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);
@@ -498,6 +516,9 @@ public class PowiadomieniaServiceTests
             .ReturnsAsync(true);
         _mockPowiadomienieRepository.Setup(r => r.PodajPowiadomieniaUzytkownikaPrzekraczajaceLimit(inviteeId))
             .ReturnsAsync(new List<Powiadomienie>());
+        // ensure admin check returns false to avoid null reference in service
+        _mockUzytkownikService.Setup(s => s.CzyUzytkownikJestAdminem(inviteeId))
+            .ReturnsAsync(ServiceResult<bool>.Ok(false));
 
         // Act
         var result = await _service.WyslijZaproszenieDoZnajomychPoLoginie(inviterId, inviteeLogin);

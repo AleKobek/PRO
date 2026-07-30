@@ -188,4 +188,42 @@ public class JezykiRepositoryTests : IDisposable
         var remainingLanguages = await _context.JezykProfilu.Where(jp => jp.UzytkownikId == 1).ToListAsync();
         Assert.Empty(remainingLanguages);
     }
+
+    [Fact]
+    public async Task GetJezykiProfiluZeStopniamiRownymiLubNizszymi_WithValidUser_ReturnsExpectedStopnie()
+    {
+        // Arrange
+        var stopnieBieglosci = new List<StopienBieglosciJezykaDto>
+        {
+            new StopienBieglosciJezykaDto(1, "Beginner", 1),
+            new StopienBieglosciJezykaDto(2, "Intermediate", 2),
+            new StopienBieglosciJezykaDto(3, "Advanced", 3),
+            new StopienBieglosciJezykaDto(4, "Fluent", 4),
+            new StopienBieglosciJezykaDto(5, "Native", 5)
+        };
+        _mockStopienRepository.Setup(r => r.GetStopnieBieglosciJezyka())
+            .ReturnsAsync(stopnieBieglosci);
+
+        // Act
+        var result = await _repository.GetJezykiProfiluZeStopniamiRownymiLubNizszymi(1);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(2, result.Count);
+
+        var english = result.First(r => r.Jezyk.Nazwa == "English");
+        var polish = result.First(r => r.Jezyk.Nazwa == "Polish");
+
+        Assert.NotNull(english);
+        Assert.NotNull(polish);
+
+        // English has stopien 3 -> should return stopnie with Wartosc <= 3 (ids 1,2,3)
+        Assert.Equal(3, english.Stopnie.Count);
+        Assert.All(english.Stopnie, s => Assert.True(s.Wartosc <= 3));
+
+        // Polish has stopien 5 -> should return stopnie with Wartosc <= 5 (ids 1..5)
+        Assert.Equal(5, polish.Stopnie.Count);
+        Assert.All(polish.Stopnie, s => Assert.True(s.Wartosc <= 5));
+    }
+
 }
