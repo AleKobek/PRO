@@ -400,7 +400,11 @@ export default function WyszukajDruzyne() {
                 </div>
                 {/* tabelka ról */}
                 {aktualnaListaRol.length > 0 && <div className="flex flex-col items-center justify-center gap-5 mt-5">
-                    <h3>Akceptowane role przyporządkowane do miejsc</h3>
+                    <div className="flex flex-col items-center justify-center">
+                        <h3>Akceptowane role przyporządkowane do miejsc</h3>
+                        <span className="text-red-500">Wybierz co najmniej jedną</span>
+                    </div>
+
                     <div className="flex flex-col items-center justify-center gap-2 w-1/2">
                         {
                             aktualnaListaRol.map((rola) =>
