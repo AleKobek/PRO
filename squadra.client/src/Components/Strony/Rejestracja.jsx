@@ -65,8 +65,11 @@ export default function Rejestracja() {
             });
 
             if (!res.ok) {
-                const body = await res.json().catch(() => ({}));
-                if(res.status === 400 || res.status === 409){
+                const ct = res.headers.get("content-type") || "";
+                const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+                    ? await res.json().catch(() => null)
+                    : await res.text().catch(() => "");
+                if((res.status === 400 || res.status === 409) && body.errors){
                     let bledy = body.errors;
                     ustawBladPseudonimu(!bledy.Pseudonim ? "" : bledy.Pseudonim[0]);
                     ustawBladLoginu(!bledy.Login ? "" : bledy.Login[0]);
@@ -75,8 +78,8 @@ export default function Rejestracja() {
                     ustawBladNumeruTelefonu(!bledy.NumerTelefonu ? "" : bledy.NumerTelefonu[0]);
                     ustawBladDatyUrodzenia(!bledy.DataUrodzenia ? "" : bledy.DataUrodzenia[0]);
                 }
-                ustawBladOgolny(body?.message || "Rejestracja nie powiodła się.");
-                console.error(body?.message || "Rejestracja nie powiodła się.");
+                ustawBladOgolny(body?.message || body || "Rejestracja nie powiodła się.");
+                console.error(body?.message || body || "Rejestracja nie powiodła się.");
                 toast.error('Wystąpił błąd podczas rejestracji', {
                     position: "top-center",
                     autoClose: 5000,
@@ -91,7 +94,7 @@ export default function Rejestracja() {
                 return;
             }
 
-            // jeśli tu doszliśy, jest git
+            // jeśli tu doszliśmy, jest w porządku
             
             navigate("/login", {
                 replace: true,

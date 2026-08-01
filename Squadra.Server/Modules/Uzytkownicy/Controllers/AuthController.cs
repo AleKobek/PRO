@@ -46,11 +46,6 @@ public class AuthController(IUzytkownicyService uzytkownicyService,
                     ModelState.AddModelError(e.Field ?? string.Empty, e.Message);
                 return ValidationProblem();
             }
-            // Dla 409/404 itp. zwracamy odpowiedni kod z listą błędów
-            case 409:
-                foreach (var e in result.Errors)
-                    ModelState.AddModelError(e.Field ?? string.Empty, e.Message);
-                return Conflict();
             case 404:
                 return NotFound(new { errors = result.Errors });
             // coś jeszcze innego

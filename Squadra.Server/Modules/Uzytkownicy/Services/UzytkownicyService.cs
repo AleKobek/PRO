@@ -114,14 +114,8 @@ public class UzytkownicyService(
         }
         
         // jeżeli są jakieś błędy
-        if (bledy.Count > 0)
-        {
-            // jeżeli którykolwiek z nich to błąd "coś już istnieje"
-            var czySaKonflikty = bledy.Any(e => e.Code is "LoginIstnieje" or "EmailIstnieje");
-            return czySaKonflikty
-                ? ServiceResult<bool>.Conflict(bledy.ToArray())
-                : ServiceResult<bool>.BadRequest(bledy.ToArray());
-        }
+        if (bledy.Count > 0) return ServiceResult<bool>.BadRequest(bledy.ToArray()); // nie zwracamy conflict jeśli taki login/email istnieje, aby mógł być więcej niż jeden błąd do wyświetlenia
+        
         // skoro tu doszliśmy, wszystko jest w porządku
         return ServiceResult<bool>.Created(await uzytkownicyRepository.CreateUzytkownik(uzytkownik));
 
