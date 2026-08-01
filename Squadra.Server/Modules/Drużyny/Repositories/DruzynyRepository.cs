@@ -40,6 +40,15 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
         return miejscaWDruzynie.Select(m => m.Druzyna).Distinct().ToList();
     }
     
+    public async Task<ICollection<Druzyna>> GetZintegrowaneDruzynyUzytkownika(int idUzytkownika)
+    {
+        var miejscaWDruzynie = await context.MiejsceWDruzynie
+            .Include(m => m.Druzyna)
+            .Where(m => m.UzytkownikId == idUzytkownika && m.Druzyna.CzyZintegrowano)
+            .ToListAsync();
+
+        return miejscaWDruzynie.Select(m => m.Druzyna).Distinct().ToList();
+    }
     
     public async Task<ICollection<Druzyna>> GetDruzyny(int[] idDruzyn)
     {

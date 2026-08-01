@@ -201,7 +201,7 @@ public class DeleteDruzynaService(
     // czyści dane związane z drużynami dla danego użytkownika.
     // Usuwa drużyny, których jest kapitanem i usuwa go z drużyn, których nie jest kapitanem. Wysyła powiadomienia o rozwiązaniu drużyny do byłych członków drużyn, których był kapitanem.
     // używane przy usuwaniu konta
-    public async Task<ServiceResult<bool>> UsunWszystkieDruzynyDlaUzytkownika(int idUzytkownika)
+    public async Task<ServiceResult<bool>> UsunWszystkieDaneDruzynDlaUzytkownika(int idUzytkownika)
     {
         if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika));
         
@@ -216,6 +216,31 @@ public class DeleteDruzynaService(
             else
             {
                 var opuscDruzyneRes = await druzynyService.OpuscDruzyne(druzyna.Id, idUzytkownika, true);
+                if (!opuscDruzyneRes.Succeeded) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się opuścić drużyny o id " + druzyna.Id)]);
+            }
+        }
+        
+        return  ServiceResult<bool>.NoContent(true);
+    }
+    
+    // czyści dane związane ze zintegrowanymi drużynami dla danego użytkownika.
+    // Usuwa drużyny, których jest kapitanem i usuwa go z drużyn, których nie jest kapitanem. Wysyła powiadomienia o rozwiązaniu drużyny do byłych członków drużyn, których był kapitanem.
+    // używane przy przerywaniu integracji lub usuwaniu konta
+    public async Task<ServiceResult<bool>> UsunWszystkieZintegrowaneDaneDruzynDlaUzytkownika(int idUzytkownika, bool czyPrzyUsuwaniuKonta)
+    {
+        if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika));
+        
+        var druzynyUzytkownika = await druzynyRepository.GetZintegrowaneDruzynyUzytkownika(idUzytkownika);
+        foreach (var druzyna in druzynyUzytkownika)
+        {
+            if (druzyna.KapitanId == idUzytkownika)
+            {
+                var usunDruzyneRes = await UsunDruzyne(druzyna.Id, idUzytkownika);
+                if (!usunDruzyneRes.Succeeded) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się usunąć drużyny o id " + druzyna.Id)]);
+            }
+            else
+            {
+                var opuscDruzyneRes = await druzynyService.OpuscDruzyne(druzyna.Id, idUzytkownika, czyPrzyUsuwaniuKonta);
                 if (!opuscDruzyneRes.Succeeded) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się opuścić drużyny o id " + druzyna.Id)]);
             }
         }

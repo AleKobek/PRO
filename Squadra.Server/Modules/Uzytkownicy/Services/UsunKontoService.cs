@@ -38,7 +38,7 @@ public class UsunKontoService (
             }
             
             // wyrzucamy go ze wszystkich drużyn
-            var wyrzucanieRes = await deleteDruzynaService.UsunWszystkieDruzynyDlaUzytkownika(id);
+            var wyrzucanieRes = await deleteDruzynaService.UsunWszystkieDaneDruzynDlaUzytkownika(id);
             if(!wyrzucanieRes.Succeeded)
             {
                 await transakcja.RollbackAsync();

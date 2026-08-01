@@ -23,6 +23,7 @@ public class IntegracjeZewnetrzneService(
     IBibliotekaGierService bibliotekaGierService,
     IPlatformyService platformyService,
     IDruzynyService druzynyService,
+    IDeleteDruzynaService deleteDruzynaService,
     IUzytkownicyService uzytkownicyService) : IIntegracjeZewnetrzneService
 {
     
@@ -105,12 +106,12 @@ public class IntegracjeZewnetrzneService(
         }
         
         // wyrzucamy go z drużyn używających zintegrowanych danych i usuwamy jego zintegrowane drużyny
-        var druzynyResult = await druzynyService.PrzerwijIntegracjeUzytkownikaOdnosnieDruzyn(idUzytkownika);
-        if (!druzynyResult.Succeeded)
+        var wyrzucZDruzynResult = await deleteDruzynaService.UsunWszystkieZintegrowaneDaneDruzynDlaUzytkownika(idUzytkownika, czyPrzyUsuwaniuKonta);
+        if (!wyrzucZDruzynResult.Succeeded)
         {
             if (czyToNowaTransakcja)
                 await transakcja!.RollbackAsync();
-            return druzynyResult;
+            return wyrzucZDruzynResult;
         }
         
         // czyścimy jego id i login na zewnętrznym serwisie
