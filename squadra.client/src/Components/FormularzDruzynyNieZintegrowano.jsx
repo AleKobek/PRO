@@ -175,6 +175,21 @@ export default function FormularzDruzynyNieZintegrowano({
         if(!idGryDruzyny) return;
         if(czyZablokowane) return; // na wszeeeelki wypadek
 
+        if(miejscaWDruzynie.length === 0){
+            toast.error(`Drużyna musi mieć więcej niż jedno miejsce.`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
+
         ustawBladNazwy("");
         ustawBladOpisu("");
         ustawBladOgolny("");
@@ -274,7 +289,7 @@ export default function FormularzDruzynyNieZintegrowano({
 
     const czyZablokowane = useMemo(() =>{
         return (!uzytkownik || !idGryDruzyny
-            || miejscaWDruzynie.length === 0 || miejscaWDruzynie.length > 8
+            || miejscaWDruzynie.length > 8
         || nazwa.trim().length === 0)
     }, [idGryDruzyny, miejscaWDruzynie, nazwa, uzytkownik]);
 

@@ -279,6 +279,21 @@ export default function FormularzDruzynyZintegrowano({
         if(!idGryDruzyny) return;
         if(czyZablokowane) return; // na wszeeeelki wypadek
 
+        if(miejscaWDruzynie.length === 0){
+            toast.error(`Drużyna musi mieć więcej niż jedno miejsce.`, {
+                position: "top-center",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: false,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "light",
+                transition: Bounce,
+            });
+            return;
+        }
+
         ustawBladNazwy("");
         ustawBladOpisu("");
         ustawBladOgolny("");
@@ -387,7 +402,7 @@ export default function FormularzDruzynyZintegrowano({
 
     const czyZablokowane = useMemo(() =>{
         return (!uzytkownik || !idGryDruzyny
-            || miejscaWDruzynie.length === 0 || miejscaWDruzynie.length > 8
+            || miejscaWDruzynie.length > 8
             || nazwa.trim().length === 0)
     }, [idGryDruzyny, miejscaWDruzynie, nazwa, uzytkownik]);
 
@@ -440,7 +455,7 @@ export default function FormularzDruzynyZintegrowano({
         if(!typWymaganiaDoDodania) return false;
         if(typWymaganiaDoDodania === "liczbowe") return (!idStatystykiMiejscaDoDodania || idStatystykiMiejscaDoDodania < 0 || wartoscStatystykiMiejscaDoDodania === null || wartoscStatystykiMiejscaDoDodania.length === 0);
         if(typWymaganiaDoDodania === "ranga") return (!idRangiMiejscaDoDodania || idRangiMiejscaDoDodania < 0 || wartoscRangiMiejscaDoDodania === null);
-        return true; // jakby coś się spieprzyło z typem
+        return true; // jakby coś się zepsuło z typem
     },[idRangiMiejscaDoDodania, idStatystykiMiejscaDoDodania, miejscaWDruzynie.length, typWymaganiaDoDodania, wartoscRangiMiejscaDoDodania, wartoscStatystykiMiejscaDoDodania])
 
     // na samym początku, gdy się załaduje strona, wybieramy pierwsze rangi z listy - wymagania drużyny
