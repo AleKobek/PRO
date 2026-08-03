@@ -6,7 +6,7 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
 import FormularzAwatara from "../FormularzAwatara";
 import {API_BASE_URL} from "../../config/api";
-import {Bounce, toast} from "react-toastify";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
     export default function EdytujProfil() {
 
@@ -143,5 +143,18 @@ import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext
             <h2>Edytuj awatar</h2>
             <FormularzAwatara uzytkownik={uzytkownik} staryAwatar={awatar} ustawAwatarUrl={ustawAwatarUrl}/>
         </div>
+        <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />
     </>);
 }
