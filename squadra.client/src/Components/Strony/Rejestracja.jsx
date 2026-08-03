@@ -23,7 +23,6 @@ export default function Rejestracja() {
     const [bladDatyUrodzenia, ustawBladDatyUrodzenia] = useState("");
     const [bladNumeruTelefonu, ustawBladNumeruTelefonu] = useState("");
     const [bladHasla, ustawBladHasla] = useState("");
-    const [bladOgolny, ustawBladOgolny] = useState("");
 
     // jeszcze zanim wyślemy do backendu staramy się zrobić weryfikację także na froncie, aby trochę odciążyć
 
@@ -64,6 +63,7 @@ export default function Rejestracja() {
                 })
             });
 
+
             if (!res.ok) {
                 const ct = res.headers.get("content-type") || "";
                 const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
@@ -78,8 +78,6 @@ export default function Rejestracja() {
                     ustawBladNumeruTelefonu(!bledy.NumerTelefonu ? "" : bledy.NumerTelefonu[0]);
                     ustawBladDatyUrodzenia(!bledy.DataUrodzenia ? "" : bledy.DataUrodzenia[0]);
                 }
-                ustawBladOgolny(body?.message || body || "Rejestracja nie powiodła się.");
-                console.error(body?.message || body || "Rejestracja nie powiodła się.");
                 toast.error('Wystąpił błąd podczas rejestracji', {
                     position: "top-center",
                     autoClose: 5000,
@@ -101,7 +99,6 @@ export default function Rejestracja() {
                 state: { message: "Konto utworzono. Możesz się zalogować." }
             });
         } catch (err) {
-            ustawBladOgolny(err.message || "Rejestracja nie powiodła się.");
             toast.error('Wystąpił błąd podczas rejestracji.', {
                 position: "top-center",
                 autoClose: 5000,
@@ -172,7 +169,6 @@ export default function Rejestracja() {
                         przyWysylaniu = {przyWysylaniu}
                         bladNumeruTelefonu = {bladNumeruTelefonu}
                         bladHasla = {bladHasla}
-                        bladOgolny = {bladOgolny}
                     ></FormularzKonta><br/>
                     
                     <label>
@@ -203,7 +199,6 @@ export default function Rejestracja() {
                         disabled={czyZablokowaneWyslij}
                         onClick={przyWysylaniu}
                     >Zarejestruj się</button><br/>
-                    <span id = "error-ogolny" className="error-wiadomosc">{bladOgolny}</span><br/>
                 </form>
             </div>
             <ToastContainer
