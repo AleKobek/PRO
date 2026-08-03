@@ -126,17 +126,7 @@ export default function CzatDruzynowy({
         } catch (err) {
             if (err && err.name === "AbortError") return null;
             console.error("Błąd aktualizacji:", err);
-            toast.error("Wystąpił błąd podczas aktualizacji daty otwarcia czatu", {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error("Wystąpił błąd podczas aktualizacji daty otwarcia czatu", toastOptions);
             return null;
         }
     };
