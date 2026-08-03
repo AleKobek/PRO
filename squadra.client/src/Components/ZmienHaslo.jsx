@@ -7,8 +7,11 @@ export default function ZmienHaslo() {
     const [stareHaslo, ustawStareHaslo] = useState("");
     const [noweHaslo, ustawNoweHaslo] = useState("");
     const [powtorzHaslo, ustawPowtorzHaslo] = useState("");
+    const [bladOgolny, ustawBladOgolny] = useState("");
 
     const przyWysylaniuZmianyHasla = async() => {
+
+        ustawBladOgolny("");
 
         const hasloDoWyslania = {
             stareHaslo: stareHaslo.trim(),
@@ -51,6 +54,8 @@ export default function ZmienHaslo() {
 
         if (!res.ok) {
             if(res.status === 400){
+                console.log("Odpowiedź z serwera:", res.status, body);
+                ustawBladOgolny(body[0].message || "Nie udało się zmienić hasła.");
                 toast.error(body[0].message, {
                     position: "top-center",
                     autoClose: 5000,
@@ -118,6 +123,7 @@ export default function ZmienHaslo() {
                     className={czyZablokowaneWyslijHasla ? "zablokowany-przycisk mt-2" : "wyslij-formularz-przycisk"}
                     type="button"
                     value="Zapisz" onClick={przyWysylaniuZmianyHasla} disabled={czyZablokowaneWyslijHasla}/><br/>
+                <span id = "error-ogolny" className="error-wiadomosc">{bladOgolny}</span><br/>
             </form>
         </div>
     );
