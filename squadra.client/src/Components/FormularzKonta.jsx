@@ -16,7 +16,7 @@ export default function FormularzKonta({ // pamiętać, aby dać nawias klamrowy
     }) {
     return(<>
             <label>
-                Login <br/>
+                Login (od 4 do 64 znaków)<br/>
                 <input
                     type="text"
                     value={login}
@@ -58,6 +58,7 @@ export default function FormularzKonta({ // pamiętać, aby dać nawias klamrowy
                     value={numerTelefonu}
                     onChange={(e) => ustawNumerTelefonu(e.target.value)}
                     placeholder="000-000-000"
+                    maxLength={12}
                 />
             </label><br/>
             <span id = "error-numer-telefonu" className="error-wiadomosc">{bladNumeruTelefonu}</span><br/>

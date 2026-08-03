@@ -108,9 +108,19 @@ public class UzytkownicyService(
             bledy.Add(bladHasla);
 
         // sprawdzamy jeszcze pseudonim
-        if (string.IsNullOrWhiteSpace(uzytkownik.Pseudonim) || uzytkownik.Pseudonim.Length > 20)
+        if (uzytkownik.Pseudonim.Length > 20)
         {
-            bledy.Add(new ErrorItem("Niepoprawny pseudonim.", nameof(uzytkownik.Pseudonim), "NiepoprawnyPseudonim"));
+            bledy.Add(new ErrorItem("Maksymalna długość pseudonimu wynosi 20 znaków", nameof(uzytkownik.Pseudonim)));
+        }
+        
+        if (uzytkownik.Pseudonim.Length < 3)
+        {
+            bledy.Add(new ErrorItem("Minimalna długość pseudonimu wynosi 3 znaki", nameof(uzytkownik.Pseudonim)));
+        }
+        
+        if (string.IsNullOrWhiteSpace(uzytkownik.Pseudonim))
+        {
+            bledy.Add(new ErrorItem("Pseudonim nie może być pusty", nameof(uzytkownik.Pseudonim)));
         }
         
         // jeżeli są jakieś błędy
@@ -216,27 +226,33 @@ public class UzytkownicyService(
     {
         var bledy = new List<ErrorItem>();
         
+        if(Login.Length < 4) 
+            bledy.Add(new ErrorItem("Minimalna długość loginu wynosi 4 znaki.", nameof(Login)));
+        
+        if(Login.Length > 64) 
+            bledy.Add(new ErrorItem("Maksymalna długość loginu wynosi 64 znaki.", nameof(Login)));
+        
         if (await CzyLoginIstnieje(id, Login))
-            bledy.Add(new ErrorItem("Taki login już istnieje.", nameof(Login), "LoginIstnieje"));
+            bledy.Add(new ErrorItem("Taki login już istnieje.", nameof(Login)));
 
         if (await CzyEmailIstnieje(id, Email))
-            bledy.Add(new ErrorItem("Taki email już istnieje.", nameof(Email), "EmailIstnieje"));
+            bledy.Add(new ErrorItem("Taki email już istnieje.", nameof(Email)));
         
         var re = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$");
         if (!re.IsMatch(Email))
         {
-            bledy.Add(new ErrorItem("Niepoprawny email.", nameof(Email), "NiepoprawnyEmail"));       
+            bledy.Add(new ErrorItem("Niepoprawny email.", nameof(Email)));       
         }
         
         re = new Regex("^([0-9]{9})$|^[0-9]{3}-[0-9]{3}-[0-9]{3}|^[0-9]{3} [0-9]{3} [0-9]{3}$");
         if (!string.IsNullOrWhiteSpace(NumerTelefonu) && !re.IsMatch(NumerTelefonu))
         {
-            bledy.Add(new ErrorItem("Niepoprawny numer telefonu.", nameof(NumerTelefonu), "NiepoprawnyNumerTelefonu"));
+            bledy.Add(new ErrorItem("Niepoprawny numer telefonu.", nameof(NumerTelefonu)));
         }
 
         if (DataUrodzenia.Year < 1900 || DataUrodzenia.AddYears(18) > DateOnly.FromDateTime(DateTime.Now))
         {
-            bledy.Add(new ErrorItem("Niepoprawna data urodzenia.", nameof(DataUrodzenia), "NiepoprawnaDataUrodzenia"));
+            bledy.Add(new ErrorItem("Niepoprawna data urodzenia.", nameof(DataUrodzenia)));
         }
         return bledy;
     }
@@ -244,7 +260,7 @@ public class UzytkownicyService(
     {
         var re = new Regex("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,128})");
         if (!re.IsMatch(haslo))
-            return new ErrorItem("Niepoprawne hasło.", nameof(haslo), "NiepoprawneHaslo");
+            return new ErrorItem("Niepoprawne hasło.", nameof(haslo));
         return null;
     }
 }

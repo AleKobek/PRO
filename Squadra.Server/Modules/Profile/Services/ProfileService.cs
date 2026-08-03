@@ -91,6 +91,16 @@ public class ProfileService(
             bledy.Add(new ErrorItem("Maksymalna długość pseudonimu wynosi 20 znaków", nameof(profil.Pseudonim)));
         }
         
+        if (profil.Pseudonim.Length < 3)
+        {
+            bledy.Add(new ErrorItem("Minimalna długość pseudonimu wynosi 3 znaki", nameof(profil.Pseudonim)));
+        }
+        
+        if (string.IsNullOrWhiteSpace(profil.Pseudonim))
+        {
+            bledy.Add(new ErrorItem("Pseudonim nie może być pusty", nameof(profil.Pseudonim)));
+        }
+        
         try
         {
             return bledy.Count > 0

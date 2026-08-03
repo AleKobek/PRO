@@ -335,6 +335,7 @@ export default function WyszukajDruzyne() {
                             onChange={(e) => ustawNazwe(e.target.value)}
                             className="border-2 border-gray-300 rounded-md p-2 w-full"
                             maxLength={40}
+                            placeholder="dowolna"
                         />
                     </label>
                 </div>

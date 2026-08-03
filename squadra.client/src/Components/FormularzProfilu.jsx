@@ -236,7 +236,7 @@ export default function FormularzProfilu({
 
     
     return(<form id = "form" name= "formularz-profilu">
-        <label>Pseudonim<br/>
+        <label>Pseudonim (od 3 do 20 znaków)<br/>
         <input 
             type="text" 
             id = "pseudonim" name ="pseudonim"
