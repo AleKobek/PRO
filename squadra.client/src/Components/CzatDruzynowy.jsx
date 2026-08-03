@@ -236,13 +236,14 @@ export default function CzatDruzynowy({
                         czat.map((wiadomosc, index)=> {
 
                             const nadawca = uczestnicy.find(x => x.idUzytkownika === wiadomosc.idNadawcy);
-                            const awatar = nadawca ? nadawca.awatar : "/img/default-avatar.png";
+                            const awatar = nadawca ? nadawca.awatar : null;
                             const pseudonim = nadawca ? nadawca.pseudonim : "Nieznany";
                             return (<WiadomoscNaLiscie
                                 wiadomosc={wiadomosc}
                                 awatarNadawcy={awatar}
                                 pseudonimNadawcy={pseudonim}
                                 key={wiadomosc.idNadawcy + index}
+                                czyNieznany={!nadawca}
                             />);
                         })
                     }

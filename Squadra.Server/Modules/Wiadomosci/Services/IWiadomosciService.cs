@@ -12,4 +12,5 @@ public interface IWiadomosciService
     public Task<ServiceResult<bool>> CreateWiadomoscDruzynowa(int idDruzyny, string tresc, int idObecnegoUzytkownika);
     public Task<ServiceResult<bool>> DeleteWiadomosciPrywatneUzytkownikow(int idUzytkownika1, int idUzytkownika2);
     public Task<ServiceResult<bool>> DeleteWiadomosciDruzyny(int idDruzyny);
+    public Task<ServiceResult<bool>> WyczyscNadawceWiadomosciDruzynowych(int idUzytkownika);
 }

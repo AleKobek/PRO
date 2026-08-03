@@ -69,7 +69,8 @@ public class WiadomosciService(IWiadomosciRepository wiadomosciRepository,
         var nadawcy = new List<ProfilMinInfoDto>();
         foreach(var id in idNadawcow)
         {
-            var profilRes = await profileService.GetProfilMinInfo(id);
+            if(id == null) continue;
+            var profilRes = await profileService.GetProfilMinInfo(id ?? 1);
             if(profilRes.Succeeded && profilRes.Value != null) 
                 nadawcy.Add(profilRes.Value);
             // jeżeli nie znaleziono tego użytkownika, bo usunął konto, to nie dodajemy i na froncie będziemy wyświetlać "Nieznany użytkownik" lub coś takiego
@@ -156,6 +157,12 @@ public class WiadomosciService(IWiadomosciRepository wiadomosciRepository,
         if(idDruzyny < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id drużyny: " + idDruzyny));
         // nie musimy sprawdzać, czy drużyna istnieje, ponieważ będzie to wywoływane tylko przez usuwanie drużyny, a tam jest sprawdzane
         return ServiceResult<bool>.Ok(await wiadomosciRepository.DeleteWiadomosciDruzyny(idDruzyny));
+    }
+
+    public async Task<ServiceResult<bool>> WyczyscNadawceWiadomosciDruzynowych(int idUzytkownika)
+    {
+        if(idUzytkownika < 1) return ServiceResult<bool>.BadRequest(new ErrorItem("Nieprawidłowe id użytkownika: " + idUzytkownika));
+        return ServiceResult<bool>.Ok(await wiadomosciRepository.WyczyscNadawceWiadomosciDruzynowych(idUzytkownika));
     }
 
 }

@@ -132,6 +132,19 @@ public class WiadomosciRepository(AppDbContext context) : IWiadomosciRepository
         return true;
     }
     
+    public async Task<bool> WyczyscNadawceWiadomosciDruzynowych(int idUzytkownika)
+    {
+        var wiadomosci = await context.Wiadomosc
+            .Where(x => x.IdTypuWiadomosci == (int)TypWiadomosciEnum.Druzynowa && x.IdNadawcy == idUzytkownika)
+            .ToListAsync();
+        foreach (var wiadomosc in wiadomosci)
+        {
+            wiadomosc.IdNadawcy = null;
+        }
+        await context.SaveChangesAsync();
+        return true;
+    }
+    
     private async Task<bool> UsunWiadomosciDruzynyPrzekraczajaceLimit(int idDruzyny)
     {
         

@@ -205,6 +205,10 @@ public class DeleteDruzynaService(
     {
         if (idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika));
         
+        // usuwamy jego id ze wszystkich wiadomości drużynowych
+        var wyczyscNadawceRes = await wiadomosciService.WyczyscNadawceWiadomosciDruzynowych(idUzytkownika);
+        if (!wyczyscNadawceRes.Succeeded) return ServiceResult<bool>.Fail(500, [new ErrorItem("Nie udało się wyczyścić nadawcy wiadomości drużynowych dla użytkownika o id " + idUzytkownika)]);
+        
         var druzynyUzytkownika = await druzynyRepository.GetDruzynyUzytkownika(idUzytkownika);
         foreach (var druzyna in druzynyUzytkownika)
         {

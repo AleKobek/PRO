@@ -28,8 +28,7 @@ public class WiadomoscEFConfig : IEntityTypeConfiguration<Wiadomosc>
         
         builder
             .Property(x => x.IdNadawcy)
-            .HasColumnName("id_nadawcy")
-            .IsRequired();
+            .HasColumnName("id_nadawcy");
         
         builder
             .Property(x => x.IdOdbiorcy)

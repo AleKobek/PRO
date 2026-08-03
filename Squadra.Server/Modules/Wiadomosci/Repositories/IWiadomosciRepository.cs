@@ -11,5 +11,6 @@ public interface IWiadomosciRepository
     public Task<DateTime?> GetDataNajnowszejWiadomosciWDruzynie(int idDruzyny);
     public Task<bool> CreateWiadomosc(int idOdbiorcy, WiadomoscCreateDto wiadomosc, int idNadawcy);
     public Task<bool> DeleteWiadomosciPrywatneUzytkownikow(int idUzytkownika1, int idUzytkownika2);
+    public Task<bool> WyczyscNadawceWiadomosciDruzynowych(int idUzytkownika);
     public Task<bool> DeleteWiadomosciDruzyny(int idDruzyny);
 }
