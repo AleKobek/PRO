@@ -7,10 +7,12 @@ import {useAuth} from "../../Context/AuthContext";
 import FormularzAwatara from "../FormularzAwatara";
 import {API_BASE_URL} from "../../config/api";
 import {Bounce, toast} from "react-toastify";
-    export default function EdytujProfil({ustawAwatarUrl}) {
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
+    export default function EdytujProfil() {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
+    const {ustawAwatarUrl} = useWspoldzieloneFunkcje();
 
     const [pseudonim, ustawPseudonim] = useState("");
     const [zaimki, ustawZaimki] = useState("");

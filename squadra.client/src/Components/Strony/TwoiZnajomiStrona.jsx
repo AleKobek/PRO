@@ -6,13 +6,15 @@ import {API_BASE_URL} from "../../config/api";
 import ZnajomyNaLiscie from "../ZnajomyNaLiscie";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import CzatZeZnajomym from "../CzatZeZnajomym";
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 
 const TOAST_CONTAINER_ID = "twoi-znajomi-toast";
 const WYSOKOSC_NAGLOWKA = "60px";
 
-export default function TwoiZnajomiStrona({ustawCzySaNoweWiadomosci}) {
+export default function TwoiZnajomiStrona() {
 
     const { uzytkownik, ladowanie } = useAuth();
+    const {ustawCzySaNoweWiadomosci} = useWspoldzieloneFunkcje();
     const userId = uzytkownik?.id ?? null;
     const [znajomi, ustawZnajomych] = useState([]);
     const [idZnajomegoZOtwartymCzatem, ustawIdZnajomegoZOtwartymCzatem] = useState(null);

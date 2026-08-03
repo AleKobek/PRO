@@ -8,13 +8,15 @@ import {API_BASE_URL, CLIENT_URL} from "../../config/api";
 import {OkienkoTlumaczaceZintegrowanie} from "../OkienkoTlumaczaceZintegrowanie";
 import Awatar from "../Awatar";
 import CzatDruzynowy from "../CzatDruzynowy";
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 
 const TOAST_CONTAINER_ID = "szczegoly-druzyny-toast";
-export default function StronaSzczegolowDruzyny({ustawCzySaNoweWiadomosciDruzynowe, powiadomienia, ustawPowiadomienia}) {
+export default function StronaSzczegolowDruzyny() {
 
     const navigate = useNavigate();
     const location = useLocation();
     const { uzytkownik, ladowanie } = useAuth();
+    const {ustawCzySaNoweWiadomosciDruzynowe, powiadomienia, ustawPowiadomienia} = useWspoldzieloneFunkcje();
     const { idDruzyny } = useParams();
     const [daneDruzyny, ustawDaneDruzyny] = React.useState(null);
     const [czyZablokowanoDostep, ustawCzyZablokowanoDostep] = React.useState(false);

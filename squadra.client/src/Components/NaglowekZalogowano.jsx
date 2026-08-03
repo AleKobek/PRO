@@ -5,20 +5,17 @@ import Powiadomienie from "./Powiadomienie";
 import {API_BASE_URL} from "../config/api";
 import SelectStatusowNaNaglowku from "./SelectStatusowNaNaglowku";
 import {Bounce, toast, ToastContainer} from "react-toastify";
+import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
 
-export default function NaglowekZalogowano({
-                                           czySaNoweWiadomosciPrywatne = false,
-                                           ustawCzySaNoweWiadomosciPrywatne = () => {},
-                                           czySaNoweWiadomosciDruzynowe = false,
-                                           ustawCzySaNoweWiadomosciDruzynowe = () => {},
-                                            awatarUrl = "",
-                                            ustawAwatarUrl = () => {},
-                                            powiadomienia = [],
-                                            ustawPowiadomienia = () => {}
-}){
+export default function NaglowekZalogowano(){
 
     const navigate = useNavigate();
     const {uzytkownik, ustawUzytkownika, ladowanie} = useAuth();
+    const {
+        czySaNoweWiadomosciPrywatne, ustawCzySaNoweWiadomosciPrywatne,
+        czySaNoweWiadomosciDruzynowe, ustawCzySaNoweWiadomosciDruzynowe,
+        powiadomienia, ustawPowiadomienia,
+        awatarUrl, ustawAwatarUrl} = useWspoldzieloneFunkcje();
 
     const [aktualnyStatus, ustawAktualnyStatusZBazy] = useState("Dostępny");
     const [listaStatusow, ustawListeStatusow] = useState([]);
