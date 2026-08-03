@@ -29,13 +29,6 @@ export default function Rejestracja() {
     useEffect(() => {
         document.title = `Squadra`;
     }, []);
-
-    function sprawdzHaslo() {
-        let re = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,128})");
-        if(re.test(haslo1) === false) return ("Hasło musi mieć dużą literę, małą literę, cyfrę, znak specjalny i minimum 8 znaków")
-        if (haslo1 !== haslo2) return "Hasła nie są zgodne.";
-        return "";
-    }
     
     async function przyWysylaniu(e) {
         e.preventDefault();
@@ -43,10 +36,6 @@ export default function Rejestracja() {
         ustawBladEmaila("");
         ustawBladDatyUrodzenia("");
         ustawBladNumeruTelefonu("");
-        
-        let bladHaslaTemp = sprawdzHaslo();
-        ustawBladHasla(bladHaslaTemp);
-        if(bladHaslaTemp !== "") return;
         
         ustawCzySieWysyla(true);
         try {
