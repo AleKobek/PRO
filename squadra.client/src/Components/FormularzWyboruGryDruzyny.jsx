@@ -88,6 +88,7 @@ export default function FormularzWyboruGryDruzyny({
         <select
             onChange={(e) => ustawIdWybranejGry(e.target.value)}
             className="border-2 border-gray-300 rounded-md p-2"
+            value={idWybranejGry}
         >
             {czyZintegrowano
                 ? gryUzytkownika.map((gra) => <option value={gra.idGry} key={gra.idGry}>{gra.tytul}</option>)
@@ -100,7 +101,7 @@ export default function FormularzWyboruGryDruzyny({
             checked={czyZintegrowano}
             onChange={() => {
                 // gdy zmieniamy z niezintegrowanego na zintegrowane
-                if(!czyZintegrowano){
+                if(!czyZintegrowano && gryUzytkownika.length > 0 && !gryUzytkownika.some(gra => gra.idGry == idWybranejGry)) {
                     ustawIdWybranejGry(gryUzytkownika[0] ? gryUzytkownika[0].idGry : null);
                 }
                 ustawCzyZintegrowano(!czyZintegrowano)
