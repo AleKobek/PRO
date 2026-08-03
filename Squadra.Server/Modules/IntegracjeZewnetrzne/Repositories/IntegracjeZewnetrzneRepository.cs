@@ -95,7 +95,7 @@ public class IntegracjeZewnetrzneRepository(IConfiguration configuration) : IInt
             {
                 var statystykaId = (int)reader["id_statystyki"];
                 var wartoscStatystyki = reader["wartosc"].ToString() ?? "";
-                var porownywalnaWartoscLiczbowa = reader["porownywalna_wartosc_liczbowa"] as int?;
+                var porownywalnaWartoscLiczbowa = reader["porownywalna_wartosc_liczbowa"] as double?;
                 // dodajemy do listy statystyk użytkownika, które dodamy do bazy danych, czyli do tabeli StatystykaUzytkownika
                 statystyki.Add(new ZewnetrznaStatystykaUzytkownikaDTO(
                     idNaZewnetrzymSerwisie,
