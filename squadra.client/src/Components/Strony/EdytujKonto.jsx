@@ -299,7 +299,7 @@ export default function EdytujKonto() {
             </form>
             <br></br>
             <ZmienHaslo/>
-            {!uzytkownik.role.includes("Admin") && <div className="flex flex-col items-center justify-center">
+            {uzytkownik && !uzytkownik.role.includes("Admin") && <div className="flex flex-col items-center justify-center">
                 <h3 className="flex items-center mb-4">
                     Zewnętrzny serwis
                     <img
@@ -325,7 +325,7 @@ export default function EdytujKonto() {
                 </button>
             </div>}
         </div>
-        {pokazOkienkoTlumaczenia && OkienkoTlumaczaceZintegrowanie(ref, ustawPokazOkienkoTlumaczenia)}
+        {pokazOkienkoTlumaczenia && <OkienkoTlumaczaceZintegrowanie ref={ref} ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia} /> }
         {pokazUsunKonto && <PanelUsunKonto/>}
         <ToastContainer
             position="top-center"
