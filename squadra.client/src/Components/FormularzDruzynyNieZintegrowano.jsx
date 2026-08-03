@@ -1,7 +1,8 @@
 ﻿import React, {useEffect, useMemo, useState} from "react";
-import {Bounce, toast} from "react-toastify";
+import {toast} from "react-toastify";
 import {API_BASE_URL} from "../config/api";
 import {useNavigate} from "react-router-dom";
+import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
 
 export default function FormularzDruzynyNieZintegrowano({
                                                       uzytkownik,
@@ -90,6 +91,7 @@ export default function FormularzDruzynyNieZintegrowano({
     */
 
     const navigate = useNavigate();
+    const {toastOptions} = useWspoldzieloneFunkcje();
 
     // pobrane dane z bazy
     const [tytulGry, ustawTytulGry] = useState("");
@@ -130,17 +132,7 @@ export default function FormularzDruzynyNieZintegrowano({
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;
                 console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania danych do formularza', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Wystąpił błąd podczas pobierania danych do formularza', toastOptions);
                 return null;
             }
         };
@@ -176,17 +168,7 @@ export default function FormularzDruzynyNieZintegrowano({
         if(czyZablokowane) return; // na wszeeeelki wypadek
 
         if(miejscaWDruzynie.length === 0){
-            toast.error(`Drużyna musi mieć więcej niż jedno miejsce.`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Drużyna musi mieć więcej niż jedno miejsce.`, toastOptions);
             return;
         }
 
@@ -260,17 +242,7 @@ export default function FormularzDruzynyNieZintegrowano({
                 ustawBladOpisu(bledy.Opis ? bledy.Opis[0] : "");
                 ustawBladOgolny(bledy.Ogolne ?? body.message);
             }
-            toast.error(`${body.errors.Ogolne ?? body.message ?? body.errors[0].message ?? "Wystąpił błąd podczas tworzenia drużyny"}`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`${body.errors.Ogolne ?? body.message ?? body.errors[0].message ?? "Wystąpił błąd podczas tworzenia drużyny"}`, toastOptions);
             return;
         }
 

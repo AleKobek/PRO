@@ -2,14 +2,16 @@
 
 import {useNavigate} from "react-router-dom";
 import {API_BASE_URL} from "../config/api";
-import {Bounce, toast} from "react-toastify";
+import {toast} from "react-toastify";
 import Awatar from "./Awatar";
+import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
 
 
 
 export default function TabelkaDruzyn({idDruzyn, brakDruzynWiadomosc, czySzczegolyWNowejKarcie = false, pierwszaStronaDruzyn, idUzytkownika = null}) {
 
     const navigate = useNavigate();
+    const {toastOptions} = useWspoldzieloneFunkcje();
     const [druzynyNaStronie, ustawDruzynyNaStronie] = useState([])
 
     const [liczbaDruzynNaStronie, ustawLiczbeDruzynNaStronie] = useState(20); // domyślne ustawienie liczby drużyn na stronie to 20
@@ -54,17 +56,7 @@ export default function TabelkaDruzyn({idDruzyn, brakDruzynWiadomosc, czySzczego
             const body = await res.json().catch(() => null);
 
             if (!res.ok) {
-                toast.error(`Wystąpił błąd podczas pobierania drużyn: ${body?.message ?? res.statusText ?? "nieznany błąd"}`, {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error(`Wystąpił błąd podczas pobierania drużyn: ${body?.message ?? res.statusText ?? "nieznany błąd"}`, toastOptions);
                 return;
             }
             if(!alive || !body) return;

@@ -2,13 +2,15 @@
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
 import {OkienkoTlumaczaceZintegrowanie} from "../OkienkoTlumaczaceZintegrowanie";
-import {Bounce, toast} from "react-toastify";
+import {toast} from "react-toastify";
 import {API_BASE_URL} from "../../config/api";
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 
 export default function WyszukajDruzyne() {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
+    const {toastOptions} = useWspoldzieloneFunkcje();
 
     const [pokazOkienkoTlumaczenia, ustawPokazOkienkoTlumaczenia] = useState(false);
     const ref = React.useRef(null);
@@ -145,17 +147,7 @@ export default function WyszukajDruzyne() {
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;
                 console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania danych gier', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Wystąpił błąd podczas pobierania danych gier', toastOptions);
                 return null;
             }
         };
@@ -231,17 +223,7 @@ export default function WyszukajDruzyne() {
         const body = await res.json().catch(() => null);
 
         if (!res.ok) {
-            toast.error(`Wystąpił błąd podczas wyszukiwania drużyny: ${body?.message ?? res.statusText}`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Wystąpił błąd podczas wyszukiwania drużyny: ${body?.message ?? res.statusText}`, toastOptions);
             return;
         }
 

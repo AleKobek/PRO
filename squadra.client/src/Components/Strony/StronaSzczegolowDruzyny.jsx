@@ -16,7 +16,7 @@ export default function StronaSzczegolowDruzyny() {
     const navigate = useNavigate();
     const location = useLocation();
     const { uzytkownik, ladowanie } = useAuth();
-    const {ustawCzySaNoweWiadomosciDruzynowe, powiadomienia, ustawPowiadomienia} = useWspoldzieloneFunkcje();
+    const {ustawCzySaNoweWiadomosciDruzynowe, powiadomienia, ustawPowiadomienia, toastOptions} = useWspoldzieloneFunkcje();
     const { idDruzyny } = useParams();
     const [daneDruzyny, ustawDaneDruzyny] = React.useState(null);
     const [czyZablokowanoDostep, ustawCzyZablokowanoDostep] = React.useState(false);
@@ -31,16 +31,8 @@ export default function StronaSzczegolowDruzyny() {
     const [listaZnajomych, ustawListeZnajomych] = useState(null);
     const [czySieWysylaZaproszenie, ustawCzySieWysylaZaproszenie] = useState(false);
 
-    const toastOptions = {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
+    const toastOptionsZId = {
+        ...toastOptions,
         containerId: TOAST_CONTAINER_ID,
     };
 
@@ -48,7 +40,7 @@ export default function StronaSzczegolowDruzyny() {
         if (location.state?.pomyslnieStworzonoDruzyne && !toastShownRef.current) {
             // Małe opóźnienie aby upewnić się że ToastContainer jest renderowany
             const timer = setTimeout(() => {
-                toast.success('Pomyślnie utworzono drużynę!', toastOptions);
+                toast.success('Pomyślnie utworzono drużynę!', toastOptionsZId);
                 toastShownRef.current = true;
             }, 100);
 
@@ -138,7 +130,7 @@ export default function StronaSzczegolowDruzyny() {
         if (location.state?.pomyslnieEdytowanoDruzyne && !toastShownRef.current) {
             // Małe opóźnienie aby upewnić się że ToastContainer jest renderowany
             const timer = setTimeout(() => {
-                toast.success('Pomyślnie edytowano drużynę!', toastOptions);
+                toast.success('Pomyślnie edytowano drużynę!', toastOptionsZId);
                 toastShownRef.current = true;
             }, 100);
 
@@ -174,7 +166,7 @@ export default function StronaSzczegolowDruzyny() {
                 : await res.text().catch(() => "");
 
             if (!res.ok) {
-                toast.error(`${body.message ?? body.errors[0].message ?? "Wystąpił błąd podczas aktualizowania daty ostatniego otwarcia czatu"}`, toastOptions);
+                toast.error(`${body.message ?? body.errors[0].message ?? "Wystąpił błąd podczas aktualizowania daty ostatniego otwarcia czatu"}`, toastOptionsZId);
             }
         }
 
@@ -190,7 +182,7 @@ export default function StronaSzczegolowDruzyny() {
                         if (res.status === 403) ustawCzyZablokowanoDostep(true);
                         if (res.status === 404) ustawNieZnalezionoDruzyny(true)
                         else {
-                            toast.error('Wystąpił błąd podczas pobierania danych drużyny', toastOptions);
+                            toast.error('Wystąpił błąd podczas pobierania danych drużyny', toastOptionsZId);
                         }
                         return null;
                     }
@@ -198,7 +190,7 @@ export default function StronaSzczegolowDruzyny() {
                 } catch (err) {
                     if (err && err.name === 'AbortError') return null;
                     console.error('Błąd pobierania:', err);
-                    toast.error('Wystąpił błąd podczas pobierania danych drużyny', toastOptions);
+                    toast.error('Wystąpił błąd podczas pobierania danych drużyny', toastOptionsZId);
                     return null;
                 }
             };
@@ -223,7 +215,7 @@ export default function StronaSzczegolowDruzyny() {
 
     const przyKliknieciuEdycji = () => {
         if(daneDruzyny.statusCzlonkostwa !== "Kapitan") {
-            toast.error('Tylko kapitan może edytować drużynę!', toastOptions);
+            toast.error('Tylko kapitan może edytować drużynę!', toastOptionsZId);
             return;
         }
         const daneDoPrzekazania = {
@@ -239,7 +231,7 @@ export default function StronaSzczegolowDruzyny() {
     
     const przyKliknieciuRozwiaz = async () => {
         if(daneDruzyny.statusCzlonkostwa !== "Kapitan") {
-            toast.error('Tylko kapitan może rozwiązać drużynę!', toastOptions);
+            toast.error('Tylko kapitan może rozwiązać drużynę!', toastOptionsZId);
             return;
         }
         // tutaj wysyłamy żądanie do backendu o rozwiązanie drużyny, a potem odświeżamy listę drużyn
@@ -256,11 +248,11 @@ export default function StronaSzczegolowDruzyny() {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
 
-            toast.error(`Wystąpił błąd podczas rozwiązywania drużyny: ${body}`, toastOptions);
+            toast.error(`Wystąpił błąd podczas rozwiązywania drużyny: ${body}`, toastOptionsZId);
             return;
         }
         // jak tu dotarliśmy, wszystko jest git
-        toast.success(`Pomyślnie usunięto drużynę!`, toastOptions);
+        toast.success(`Pomyślnie usunięto drużynę!`, toastOptionsZId);
 
         navigate('/twojeDruzyny', {
             state: { pomyslnieUsunietoDruzyne: true }
@@ -271,20 +263,20 @@ export default function StronaSzczegolowDruzyny() {
         if(!uzytkownik) return;
         // sprawdzamy, czy już jest członkiem i czy miejsce jest puste .
         if(daneDruzyny.statusCzlonkostwa !== "Brak"){
-            toast.error(`Już jesteś członkiem tej drużyny`, toastOptions);
+            toast.error(`Już jesteś członkiem tej drużyny`, toastOptionsZId);
             return;
         }
         let miejsce = daneDruzyny.czlonkowie.find((miejsce) => miejsce.idMiejscaWDruzynie === idMiejsca);
         if(!miejsce){
-            toast.error(`Nie znaleziono miejsca w drużynie`, toastOptions);
+            toast.error(`Nie znaleziono miejsca w drużynie`, toastOptionsZId);
             return;
         }
         if(miejsce.czlonek){
-            toast.error(`To miejsce jest już zajęte`, toastOptions);
+            toast.error(`To miejsce jest już zajęte`, toastOptionsZId);
             return;
         }
         if(miejsce.czyOgladajacySpelniaWymagania !== true){
-            toast.error(`Nie spełniasz wymagań tego miejsca`, toastOptions);
+            toast.error(`Nie spełniasz wymagań tego miejsca`, toastOptionsZId);
             return;
         }
 
@@ -301,7 +293,7 @@ export default function StronaSzczegolowDruzyny() {
                         if (res.status === 403) ustawCzyZablokowanoDostep(true);
                         if (res.status === 404) ustawNieZnalezionoDruzyny(true)
                         else {
-                            toast.error('Wystąpił błąd podczas pobierania danych drużyny', toastOptions);
+                            toast.error('Wystąpił błąd podczas pobierania danych drużyny', toastOptionsZId);
                         }
                         return null;
                     }
@@ -309,7 +301,7 @@ export default function StronaSzczegolowDruzyny() {
                 } catch (err) {
                     if (err && err.name === 'AbortError') return null;
                     console.error('Błąd pobierania:', err);
-                    toast.error('Wystąpił błąd podczas pobierania danych drużyny', toastOptions);
+                    toast.error('Wystąpił błąd podczas pobierania danych drużyny', toastOptionsZId);
                     return null;
                 }
             };
@@ -333,13 +325,13 @@ export default function StronaSzczegolowDruzyny() {
                     ? await res.json().catch(() => null)
                     : await res.text().catch(() => "");
 
-                toast.error(`Wystąpił błąd podczas dołączania do drużyny: ${body}`, toastOptions);
+                toast.error(`Wystąpił błąd podczas dołączania do drużyny: ${body}`, toastOptionsZId);
                 return;
             }
             // jak tu doszliśmy, udało się dołączyć. pobieramy nowe dane druzyny
             pobierzStatystykiDruzyny(idDruzyny);
 
-            toast.success(`Pomyślnie dołączono do drużyny!`, toastOptions);
+            toast.success(`Pomyślnie dołączono do drużyny!`, toastOptionsZId);
             let tempPowiadomienia = powiadomienia.filter(powiadomienie => powiadomienie.idPowiazanegoObiektu === idDruzyny && powiadomienie.idTypuPowiadomienia === 8)
             ustawPowiadomienia(tempPowiadomienia);
         }
@@ -363,10 +355,10 @@ export default function StronaSzczegolowDruzyny() {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
 
-            toast.error(`Wystąpił błąd podczas opuszczania drużyny: ${body}`, toastOptions);
+            toast.error(`Wystąpił błąd podczas opuszczania drużyny: ${body}`, toastOptionsZId);
         }
         // jak tu dotarliśmy, wszystko jest git
-        toast.success(`Pomyślnie opuszczono drużynę!`, toastOptions);
+        toast.success(`Pomyślnie opuszczono drużynę!`, toastOptionsZId);
         navigate('/twojeDruzyny', {
             state: { pomyslnieOpuszczonoDruzyne: true }
         });
@@ -390,13 +382,13 @@ export default function StronaSzczegolowDruzyny() {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
             if (!res.ok) {
-                toast.error(body.message ?? (body.errors && body.errors[0].message) ?? body ?? `Wystąpił błąd podczas wysyłania zaproszenia`, toastOptions);
+                toast.error(body.message ?? (body.errors && body.errors[0].message) ?? body ?? `Wystąpił błąd podczas wysyłania zaproszenia`, toastOptionsZId);
                 return;
             }
-            toast.success("Pomyślnie wysłano zaproszenie!", toastOptions);
+            toast.success("Pomyślnie wysłano zaproszenie!", toastOptionsZId);
         } catch (err) {
             console.error('Błąd wysyłania zaproszenia:', err);
-            toast.error('Wystąpił błąd podczas wysyłania zaproszenia. Spróbuj ponownie później.', toastOptions);
+            toast.error('Wystąpił błąd podczas wysyłania zaproszenia. Spróbuj ponownie później.', toastOptionsZId);
         }finally {
             ustawCzySieWysylaZaproszenie(false);
             ustawIdMiejscaDoZaproszenia(null);
@@ -423,13 +415,13 @@ export default function StronaSzczegolowDruzyny() {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
             if (!res.ok) {
-                toast.error(body.message ?? (body.errors && body.errors[0].message) ?? body ?? `Wystąpił błąd podczas wysyłania zaproszenia`, toastOptions);
+                toast.error(body.message ?? (body.errors && body.errors[0].message) ?? body ?? `Wystąpił błąd podczas wysyłania zaproszenia`, toastOptionsZId);
                 return;
             }
-            toast.success("Pomyślnie wysłano zaproszenie!", toastOptions);
+            toast.success("Pomyślnie wysłano zaproszenie!", toastOptionsZId);
         } catch (err) {
             console.error('Błąd wysyłania zaproszenia:', err);
-            toast.error('Wystąpił błąd podczas wysyłania zaproszenia. Spróbuj ponownie później.', toastOptions);
+            toast.error('Wystąpił błąd podczas wysyłania zaproszenia. Spróbuj ponownie później.', toastOptionsZId);
         }finally {
             ustawCzySieWysylaZaproszenie(false);
             ustawIdMiejscaDoZaproszenia(null);
@@ -452,7 +444,7 @@ export default function StronaSzczegolowDruzyny() {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
 
-            toast.error(`Wystąpił błąd podczas wyrzucania z drużyny: ${body}`, toastOptions);
+            toast.error(`Wystąpił błąd podczas wyrzucania z drużyny: ${body}`, toastOptionsZId);
         }
         // jak tu dotarliśmy, wszystko jest git.
         const tempDaneDruzyny = {
@@ -476,14 +468,14 @@ export default function StronaSzczegolowDruzyny() {
                     const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
                         ? await res.json().catch(() => null)
                         : await res.text().catch(() => "");
-                    toast.error(`${body.message ?? body.errors[0].message ?? "Wystąpił błąd podczas pobierania listy znajomych"}`, toastOptions);
+                    toast.error(`${body.message ?? body.errors[0].message ?? "Wystąpił błąd podczas pobierania listy znajomych"}`, toastOptionsZId);
                     return null;
                 }
                 return await res.json();
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;
                 console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania listy znajomych', toastOptions);
+                toast.error('Wystąpił błąd podczas pobierania listy znajomych', toastOptionsZId);
                 return null;
             }
         };

@@ -5,11 +5,13 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL} from "../../config/api";
-import ZmienHaslo from "../ZmienHaslo";
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
+
 export default function PanelAdmina() {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
+    const {toastOptions} = useWspoldzieloneFunkcje();
     const [idUzytkownikaDoUsuniecia, ustawIdUzytkownikaDoUsuniecia] = useState(null);
     const [idDruzynyDoUsuniecia, ustawIdDruzynyDoUsuniecia] = useState(null);
 
@@ -76,30 +78,10 @@ export default function PanelAdmina() {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
 
-            toast.error(`Wystąpił błąd podczas usuwania użytkownika: ${body}`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Wystąpił błąd podczas usuwania użytkownika: ${body}`, toastOptions);
             return;
         }
-        toast.success(`Użytkownik został pomyślnie usunięty!`, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-        });
+        toast.success(`Użytkownik został pomyślnie usunięty!`, toastOptions);
         ustawPokazUsunUzytkownika(false);
         ustawIdUzytkownikaDoUsuniecia(null);
     }
@@ -121,31 +103,11 @@ export default function PanelAdmina() {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
 
-            toast.error(`Wystąpił błąd podczas usuwania drużyny: ${body}`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Wystąpił błąd podczas usuwania drużyny: ${body}`, toastOptions);
             return;
         }
 
-        toast.success(`Drużyna została pomyślnie usunięta!`, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-        });
+        toast.success(`Drużyna została pomyślnie usunięta!`, toastOptions);
         ustawPokazUsunDruzyne(false);
         ustawIdDruzynyDoUsuniecia(null);
     }

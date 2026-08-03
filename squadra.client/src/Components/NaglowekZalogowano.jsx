@@ -15,7 +15,8 @@ export default function NaglowekZalogowano(){
         czySaNoweWiadomosciPrywatne, ustawCzySaNoweWiadomosciPrywatne,
         czySaNoweWiadomosciDruzynowe, ustawCzySaNoweWiadomosciDruzynowe,
         powiadomienia, ustawPowiadomienia,
-        awatarUrl, ustawAwatarUrl} = useWspoldzieloneFunkcje();
+        awatarUrl, ustawAwatarUrl,
+        toastOptions} = useWspoldzieloneFunkcje();
 
     const [aktualnyStatus, ustawAktualnyStatusZBazy] = useState("Dostępny");
     const [listaStatusow, ustawListeStatusow] = useState([]);
@@ -296,17 +297,7 @@ export default function NaglowekZalogowano(){
             const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
-            toast.error(body.message ?? ( body.errors ? body.errors[0] ? body.errors[0].message : null : null) ?? `Wystąpił błąd podczas rozpatrywania powiadomienia`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(body.message ?? ( body.errors ? body.errors[0] ? body.errors[0].message : null : null) ?? `Wystąpił błąd podczas rozpatrywania powiadomienia`, toastOptions);
         }
 
         if(res.status !== 400){

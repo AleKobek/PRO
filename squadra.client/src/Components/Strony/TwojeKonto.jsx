@@ -5,11 +5,13 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
 import DaneKonta from "../DaneKonta";
 import {Bounce, toast, ToastContainer} from "react-toastify";
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 export default function TwojeKonto() {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
     const location = useLocation();
+    const {toastOptions} = useWspoldzieloneFunkcje();
 
     useEffect(() => {
         document.title = `Squadra`;
@@ -17,19 +19,9 @@ export default function TwojeKonto() {
 
     useEffect(() => {
         if (location.state?.pomyslnieEdytowanoKonto) {
-            toast.success('Pomyślnie edytowano konto!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.success('Pomyślnie edytowano konto!', toastOptions);
         }
-    },[location.state?.pomyslnieEdytowanoKonto])
+    },[location.state?.pomyslnieEdytowanoKonto, toastOptions])
 
 
     if(ladowanie) return (<>

@@ -4,12 +4,14 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
 import TabelkaDruzyn from "../TabelkaDruzyn";
 import {API_BASE_URL} from "../../config/api";
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 
 export default function TwojeDruzyny() {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
     const location = useLocation();
+    const {toastOptions} = useWspoldzieloneFunkcje();
 
     const [idDruzyn, ustawIdDruzyn] = useState([]);
     const [pierwszaStronaDruzyn, ustawDruzynyNaStronie] = useState([])
@@ -21,34 +23,14 @@ export default function TwojeDruzyny() {
 
     useEffect(() => {
         if (location.state?.pomyslnieUsunietoDruzyne) {
-            toast.success('Pomyślnie usunięto drużynę!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.success('Pomyślnie usunięto drużynę!', toastOptions);
         }
             
         if (location.state?.pomyslnieOpuszczonoDruzyne) {
-            toast.success('Pomyślnie opuszczono drużynę!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.success('Pomyślnie opuszczono drużynę!', toastOptions);
         }
 
-    },[location.state?.pomyslnieOpuszczonoDruzyne, location.state?.pomyslnieUsunietoDruzyne])
+    },[location.state?.pomyslnieOpuszczonoDruzyne, location.state?.pomyslnieUsunietoDruzyne, toastOptions])
 
 
     // pobieramy tabelkę drużyn
@@ -63,34 +45,14 @@ export default function TwojeDruzyny() {
             try {
                 const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
                 if (!res.ok) {
-                    toast.error('Wystąpił błąd podczas pobierania twoich drużyn', {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    });
+                    toast.error('Wystąpił błąd podczas pobierania twoich drużyn', toastOptions);
                     return null;
                 }
                 return await res.json();
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;
                 console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania twoich drużyn', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Wystąpił błąd podczas pobierania twoich drużyn', toastOptions);
                 return null;
             }
         };

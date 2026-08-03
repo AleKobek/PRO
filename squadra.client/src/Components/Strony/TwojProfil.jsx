@@ -6,11 +6,13 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import TabelkaBibliotekiGier from "../TabelkaBibliotekiGier";
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 export default function TwojProfil() {
     
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
     const location = useLocation();
+    const {toastOptions} = useWspoldzieloneFunkcje();
 
     useEffect(() => {
         document.title = `Squadra`;
@@ -18,19 +20,9 @@ export default function TwojProfil() {
 
     useEffect(() => {
         if (location.state?.pomyslnieEdytowanoProfil) {
-            toast.success('Pomyślnie edytowano profil!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.success('Pomyślnie edytowano profil!', toastOptions);
         }
-    },[location.state?.pomyslnieEdytowanoProfil])
+    },[location.state?.pomyslnieEdytowanoProfil, toastOptions])
 
     if(ladowanie || !uzytkownik) return (<>
             <div id = "glowna">

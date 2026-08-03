@@ -5,11 +5,13 @@ import {useLocation, useNavigate} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL} from "../../config/api";
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 export default function EdytujDruzyne() {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
     const location = useLocation();
+    const {toastOptions} = useWspoldzieloneFunkcje();
     const [stareDane, ustawStareDane] = useState({})
     const [nowaNazwa, ustawNazwe] = useState("")
     const [bladNazwy, ustawBladNazwy] = useState("")
@@ -59,17 +61,7 @@ export default function EdytujDruzyne() {
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;
                 console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania danych do formularza', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Wystąpił błąd podczas pobierania danych do formularza', toastOptions);
                 return null;
             }
         };
@@ -135,17 +127,7 @@ export default function EdytujDruzyne() {
                 ustawBladNazwy(bledy.Nazwa ? bledy.Nazwa[0] : "");
                 ustawBladOpisu(bledy.Opis ? bledy.Opis[0] : "");
             }
-            toast.error('Wystąpił błąd podczas edycji drużyny', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Wystąpił błąd podczas edycji drużyny', toastOptions);
             return;
         }
 

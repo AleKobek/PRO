@@ -1,8 +1,7 @@
-﻿// wybierasz, czy gra ma mieć dane z zewnętrznego serwisu i wybierasz grę.
-// Pobierane są zarówno gry użytkownika, jak i gry. Zależnie od wybranej opcji, select ma inną listę do renderowania
-import React, {useEffect, useState} from "react";
-import {Bounce, toast} from "react-toastify";
+﻿import React, {useEffect, useState} from "react";
+import {toast} from "react-toastify";
 import {API_BASE_URL} from "../config/api";
+import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
 
 export default function FormularzWyboruGryDruzyny({
                                                       uzytkownik, 
@@ -13,6 +12,7 @@ export default function FormularzWyboruGryDruzyny({
                                                   }) {
 
 
+    const {toastOptions} = useWspoldzieloneFunkcje();
     const [idWybranejGry, ustawIdWybranejGry] = useState(0);
     const [wszystkieGry, ustawWszystkieGry] = useState([]);
     const [gryUzytkownika, ustawGryUzytkownika] = useState([]);
@@ -35,17 +35,7 @@ export default function FormularzWyboruGryDruzyny({
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;
                 console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania danych gier', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Wystąpił błąd podczas pobierania danych gier', toastOptions);
                 return null;
             }
         };

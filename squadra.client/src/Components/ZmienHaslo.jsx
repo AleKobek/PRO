@@ -1,9 +1,11 @@
 ﻿import React, {useMemo, useState} from "react";
 import {API_BASE_URL} from "../config/api";
-import {Bounce, toast} from "react-toastify";
+import {toast} from "react-toastify";
+import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
 
 export default function ZmienHaslo() {
 
+    const {toastOptions} = useWspoldzieloneFunkcje();
     const [stareHaslo, ustawStareHaslo] = useState("");
     const [noweHaslo, ustawNoweHaslo] = useState("");
     const [powtorzHaslo, ustawPowtorzHaslo] = useState("");
@@ -19,17 +21,7 @@ export default function ZmienHaslo() {
         };
 
         if(hasloDoWyslania.stareHaslo.length === 0 || hasloDoWyslania.noweHaslo.length === 0){
-            toast.error('Wszystkie pola muszą być wypełnione!', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Wszystkie pola muszą być wypełnione!', toastOptions);
             return;
         }
 
@@ -56,32 +48,12 @@ export default function ZmienHaslo() {
             if(res.status === 400){
                 console.log("Odpowiedź z serwera:", res.status, body);
                 ustawBladOgolny(body[0].message || "Nie udało się zmienić hasła.");
-                toast.error(body[0].message, {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error(body[0].message, toastOptions);
             }
             return;
         }
 
-        toast.success('Pomyślnie edytowano hasło!', {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-        });
+        toast.success('Pomyślnie edytowano hasło!', toastOptions);
         ustawStareHaslo("");
         ustawNoweHaslo("");
         ustawPowtorzHaslo("");

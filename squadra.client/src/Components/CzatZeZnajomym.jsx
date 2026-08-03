@@ -2,6 +2,7 @@
 import React, {useEffect, useState, useRef} from "react";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, toast, ToastContainer} from "react-toastify";
+import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
 
 export default function CzatZeZnajomym({
                                                     idZnajomegoZOtwartymCzatem,
@@ -10,6 +11,7 @@ export default function CzatZeZnajomym({
                                                     pseudonimZnajomegoZOtwartymCzatem,
                                                 }){
 
+    const {toastOptions} = useWspoldzieloneFunkcje();
     const [czat, ustawCzat] = useState([]);
     const [czyTrwaLadowanieCzatu, ustawCzyTrwaLadowanieCzatu] = useState(true);
     const [naszAwatar, ustawNaszAwatar] = useState("");
@@ -39,17 +41,7 @@ export default function CzatZeZnajomym({
             // przerywamy działanie funkcji
             if (!alive) return;
             if(!data){
-                toast.error('Wystąpił błąd podczas pobierania danych profilu', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Wystąpił błąd podczas pobierania danych profilu', toastOptions);
                 return;
             }
 
@@ -144,17 +136,7 @@ export default function CzatZeZnajomym({
                     (typeof body === "string" && body) ||
                     "Wystąpił błąd podczas aktualizacji daty otwarcia czatu";
 
-                toast.error(message, {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error(message, toastOptions);
                 return null;
             }
 
@@ -162,17 +144,7 @@ export default function CzatZeZnajomym({
         } catch (err) {
             if (err && err.name === "AbortError") return null;
             console.error("Błąd aktualizacji:", err);
-            toast.error("Wystąpił błąd podczas aktualizacji daty otwarcia czatu", {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error("Wystąpił błąd podczas aktualizacji daty otwarcia czatu", toastOptions);
             return null;
         }
     };
@@ -202,17 +174,7 @@ export default function CzatZeZnajomym({
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
             if (!res.ok) {
-                toast.error(body || 'Wystąpił błąd podczas wysyłania wiadomości', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error(body || 'Wystąpił błąd podczas wysyłania wiadomości', toastOptions);
                 return;
             }
             ustawWiadomoscDoWyslania("");
@@ -220,17 +182,7 @@ export default function CzatZeZnajomym({
             podajCzat(ac);
         }catch (err) {
             console.error('Błąd wysyłania wiadomości:', err);
-            toast.error('Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie później.', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie później.', toastOptions);
         }finally {
             ustawCzySieWysylaWiadomosc(false);
         }
@@ -249,34 +201,14 @@ export default function CzatZeZnajomym({
             const res = await fetch(url, init);
             if (!res.ok) {
                 const body = await res.json();
-                toast.error(body.message || 'Wystąpił błąd podczas pobierania '+coPobieramy, {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error(body.message || 'Wystąpił błąd podczas pobierania '+coPobieramy, toastOptions);
                 return null;
             }
             return await res.json();
         } catch (err) {
             if (err && err.name === 'AbortError') return null;
             console.error('Błąd pobierania:', err);
-            toast.error('Wystąpił błąd podczas pobierania '+coPobieramy, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Wystąpił błąd podczas pobierania '+coPobieramy, toastOptions);
             return null;
         }
     };

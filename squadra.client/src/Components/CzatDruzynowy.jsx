@@ -2,12 +2,14 @@
 import React, {useEffect, useState, useRef} from "react";
 import {API_BASE_URL} from "../config/api";
 import {Bounce, toast, ToastContainer} from "react-toastify";
+import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
 
 const TOAST_CONTAINER_ID = "czat-drużynowy-toast";
 export default function CzatDruzynowy({
                                                     idDruzyny
                                                 }){
 
+    const {toastOptions} = useWspoldzieloneFunkcje();
     const [czat, ustawCzat] = useState([]);
     const [czyTrwaLadowanieCzatu, ustawCzyTrwaLadowanieCzatu] = useState(true);
     const [uczestnicy, ustawUczestnikow] = useState([]);
@@ -20,16 +22,8 @@ export default function CzatDruzynowy({
     // śledzenie poprzedniej liczby wiadomości
     const poprzedniaCzatLengthRef = useRef(0);
 
-    const toastOptions = {
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        transition: Bounce,
+    const toastOptionsZId = {
+        ...toastOptions,
         containerId: TOAST_CONTAINER_ID,
     };
     
@@ -118,7 +112,7 @@ export default function CzatDruzynowy({
                     (typeof body === "string" && body) ||
                     "Wystąpił błąd podczas aktualizacji daty otwarcia czatu";
 
-                toast.error(message, toastOptions);
+                toast.error(message, toastOptionsZId);
                 return null;
             }
 
@@ -126,7 +120,7 @@ export default function CzatDruzynowy({
         } catch (err) {
             if (err && err.name === "AbortError") return null;
             console.error("Błąd aktualizacji:", err);
-            toast.error("Wystąpił błąd podczas aktualizacji daty otwarcia czatu", toastOptions);
+            toast.error("Wystąpił błąd podczas aktualizacji daty otwarcia czatu", toastOptionsZId);
             return null;
         }
     };
@@ -156,7 +150,7 @@ export default function CzatDruzynowy({
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
             if (!res.ok) {
-                toast.error(body || 'Wystąpił błąd podczas wysyłania wiadomości', toastOptions);
+                toast.error(body || 'Wystąpił błąd podczas wysyłania wiadomości', toastOptionsZId);
                 return;
             }
             ustawWiadomoscDoWyslania("");
@@ -164,7 +158,7 @@ export default function CzatDruzynowy({
             await podajCzat(ac);
         }catch (err) {
             console.error('Błąd wysyłania wiadomości:', err);
-            toast.error('Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie później.', toastOptions);
+            toast.error('Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie później.', toastOptionsZId);
         }finally {
             ustawCzySieWysylaWiadomosc(false);
         }
@@ -183,14 +177,14 @@ export default function CzatDruzynowy({
             const res = await fetch(url, init);
             if (!res.ok) {
                 const body = await res.json();
-                toast.error(body.message || 'Wystąpił błąd podczas pobierania '+coPobieramy, toastOptions);
+                toast.error(body.message || 'Wystąpił błąd podczas pobierania '+coPobieramy, toastOptionsZId);
                 return null;
             }
             return await res.json();
         } catch (err) {
             if (err && err.name === 'AbortError') return null;
             console.error('Błąd pobierania:', err);
-            toast.error('Wystąpił błąd podczas pobierania '+coPobieramy, toastOptions);
+            toast.error('Wystąpił błąd podczas pobierania '+coPobieramy, toastOptionsZId);
             return null;
         }
     };

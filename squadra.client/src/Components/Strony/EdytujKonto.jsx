@@ -10,10 +10,12 @@ import {Bounce, toast, ToastContainer} from "react-toastify";
 import EdytujIntegracjeWKoncie from "../EdytujIntegracjeWKoncie";
 import {OkienkoTlumaczaceZintegrowanie} from "../OkienkoTlumaczaceZintegrowanie";
 import ZmienHaslo from "../ZmienHaslo";
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 export default function EdytujKonto() {
 
     const navigate = useNavigate();
     const { uzytkownik, ustawUzytkownika, ladowanie } = useAuth();
+    const {toastOptions} = useWspoldzieloneFunkcje();
 
     const [login, ustawLogin] = useState("");
     const [staryLogin, ustawStaryLogin] = useState("");
@@ -169,17 +171,7 @@ export default function EdytujKonto() {
                 ustawBladDatyUrodzenia(bledy.DataUrodzenia ? bledy.DataUrodzenia[0] : "");
                 ustawBladOgolnyKonta(body.message);
             }
-            toast.error('Wystąpił błąd podczas edycji danych konta', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Wystąpił błąd podczas edycji danych konta', toastOptions);
             return;
         }
         // jak tutaj dojdziemy, wszystko jest git
@@ -211,17 +203,7 @@ export default function EdytujKonto() {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
 
-            toast.error(`Wystąpił błąd podczas usuwania konta: ${body}`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Wystąpił błąd podczas usuwania konta: ${body}`, toastOptions);
             return;
         }
         ustawUzytkownika(null);

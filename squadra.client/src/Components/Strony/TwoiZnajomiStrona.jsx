@@ -14,6 +14,7 @@ const WYSOKOSC_NAGLOWKA = "60px";
 export default function TwoiZnajomiStrona() {
 
     const { uzytkownik, ladowanie } = useAuth();
+    const {toastOptions} = useWspoldzieloneFunkcje();
     const {ustawCzySaNoweWiadomosci} = useWspoldzieloneFunkcje();
     const userId = uzytkownik?.id ?? null;
     const [znajomi, ustawZnajomych] = useState([]);
@@ -28,6 +29,11 @@ export default function TwoiZnajomiStrona() {
     useEffect(() => {
         document.title = `Squadra`;
     }, []);
+
+    const toastOptionsZId = {
+        ...toastOptions,
+        containerId: TOAST_CONTAINER_ID,
+    };
 
     // aktualizujemy wybranemu znajomemu, czy ma nowe wiadomości
     const przyWyborzeZnajomego = (idZnajomego) => {
@@ -92,17 +98,7 @@ export default function TwoiZnajomiStrona() {
             try {
                 const res = await fetch(url, { method: 'GET', signal: signal, credentials: "include" });
                 if (!res.ok) {
-                    toast.error('Wystąpił błąd podczas pobierania danych znajomych', {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    });
+                    toast.error('Wystąpił błąd podczas pobierania danych znajomych', toastOptionsZId);
                     return null;
                 }
                 return await res.json();
@@ -207,18 +203,6 @@ export default function TwoiZnajomiStrona() {
     const przyWysylaniuZaproszenia = async () => {
         if(czySieWysylaZaproszenie) return;
         ustawCzySieWysylaZaproszenie(true);
-        const toastOptions = {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-            containerId: TOAST_CONTAINER_ID,
-        };
         try {
             const res = await fetch(`${API_BASE_URL}/Powiadomienia/zaproszenie/znajomi`, {
                 method: 'POST',
@@ -232,13 +216,13 @@ export default function TwoiZnajomiStrona() {
                 ? await res.json().catch(() => null)
                 : await res.text().catch(() => "");
             if (!res.ok) {
-                toast.error(body, toastOptions);
+                toast.error(body, toastOptionsZId);
                 return;
             }
-            toast.success("Pomyślnie wysłano zaproszenie!", toastOptions);
+            toast.success("Pomyślnie wysłano zaproszenie!", toastOptionsZId);
         } catch (err) {
             console.error('Błąd wysyłania zaproszenia:', err);
-            toast.error('Wystąpił błąd podczas wysyłania zaproszenia. Spróbuj ponownie później.', toastOptions);
+            toast.error('Wystąpił błąd podczas wysyłania zaproszenia. Spróbuj ponownie później.', toastOptionsZId);
         }finally {
             ustawCzySieWysylaZaproszenie(false);
         }

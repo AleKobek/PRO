@@ -4,11 +4,13 @@ import Naglowek from "../Naglowek";
 import {useAuth} from "../../Context/AuthContext";
 import {API_BASE_URL} from "../../config/api";
 import {Bounce, toast, ToastContainer} from "react-toastify";
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 
 export default function Logowanie() {
     const navigate = useNavigate();
     const location = useLocation();
     const {ustawUzytkownika, ladowanie } = useAuth();
+    const {toastOptions} = useWspoldzieloneFunkcje();
     const [loginLubEmail, ustawLoginLubEmail] = useState(""); // e-mail lub nazwa użytkownika
     const [haslo, ustawHaslo] = useState("");
     const [zapamietajMnie, ustawZapamietajMnie] = useState(false);
@@ -50,17 +52,7 @@ export default function Logowanie() {
                 if(res.status === 400 || res.status === 401){
                     ustawBladOgolny(body.message);
                 }
-                toast.error('Nie udało się zalogować', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Nie udało się zalogować', toastOptions);
                 return;
             }
 

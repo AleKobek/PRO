@@ -1,10 +1,10 @@
 ﻿import React, {useEffect, useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {API_BASE_URL} from "../config/api";
-import {Bounce, toast} from "react-toastify";
+import {toast} from "react-toastify";
+import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
 
 export default function FormularzAwatara({
-                                             uzytkownik,
                                              staryAwatar,
                                              ustawAwatarUrl
                                         })
@@ -14,7 +14,8 @@ export default function FormularzAwatara({
     const [awatar, ustawAwatar] = useState(null);
     const [podgladAwatara, ustawPodgladAwatara] = useState("");
     const navigate = useNavigate();
-    
+    const {toastOptions} = useWspoldzieloneFunkcje();
+
 
     // SYNC tylko gdy props się zmienia
     useEffect(() => {
@@ -55,17 +56,7 @@ export default function FormularzAwatara({
             if(res.status === 400){
                 let bledy = body.errors;
                 ustawBladAwatara(bledy.Awatar ? bledy.Awatar[0] : "");
-                toast.error('Wystąpił błąd podczas edytowania awatara', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Wystąpił błąd podczas edytowania awatara', toastOptions);
             }
             return;
         }

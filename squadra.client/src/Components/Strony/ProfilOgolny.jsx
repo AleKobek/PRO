@@ -7,11 +7,13 @@ import {useAuth} from "../../Context/AuthContext";
 import {API_BASE_URL} from "../../config/api";
 import {Bounce, toast} from "react-toastify";
 import TabelkaBibliotekiGier from "../TabelkaBibliotekiGier";
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 export default function ProfilOgolny() {
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
     const { idWlascicielaProfilu} = useParams();
+    const {toastOptions} = useWspoldzieloneFunkcje();
 
     const [czyZnajomy, ustawCzyZnajomy] = useState(false);
     const [ladowanieCzyZnajomy, ustawLadowanieCzyZnajomy] = useState(true);
@@ -42,34 +44,14 @@ export default function ProfilOgolny() {
             try {
                 const res = await fetch(url, { method: "GET", signal: ac.signal, credentials: "include" });
                 if (!res.ok) {
-                    toast.error("Wystąpił błąd podczas pobierania danych profilu", {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    });
+                    toast.error("Wystąpił błąd podczas pobierania danych profilu", toastOptions);
                     return null;
                 }
                 return await res.json();
             } catch (err) {
                 if (err?.name === "AbortError") return null;
                 console.error("Błąd pobierania:", err);
-                toast.error("Wystąpił błąd podczas pobierania danych profilu", {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error("Wystąpił błąd podczas pobierania danych profilu", toastOptions);
                 return null;
             }
         };
@@ -128,31 +110,11 @@ export default function ProfilOgolny() {
             }
 
             console.error(wiadomosc);
-            toast.error(wiadomosc, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(wiadomosc, toastOptions);
             return;
         }
 
-        toast.success('Zaproszenie zostało wysłane!', {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-        });
+        toast.success('Zaproszenie zostało wysłane!', toastOptions);
     }
 
     const przyUsuwaniuZeZnajomych = async () => {
@@ -168,17 +130,7 @@ export default function ProfilOgolny() {
             if(body.message.includes("nie istnieje")){
                 wiadomosc = "Ten użytkownik nie jest Twoim znajomym!"
             }
-            toast.error(wiadomosc, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(wiadomosc, toastOptions);
             return;
         }
         ustawPokazUsunZnajomego(false);

@@ -5,10 +5,12 @@ import FormularzKonta from "../FormularzKonta";
 import {useAuth} from "../../Context/AuthContext";
 import {API_BASE_URL} from "../../config/api";
 import {Bounce, toast, ToastContainer} from "react-toastify";
+import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 
 export default function Rejestracja() {
     const navigate = useNavigate();
     const {ladowanie} = useAuth();
+    const {toastOptions} = useWspoldzieloneFunkcje();
     const [pseudonim, ustawPseudonim] = useState("");
     const [login, ustawLogin] = useState("");
     const [email, ustawEmail] = useState("");
@@ -67,17 +69,7 @@ export default function Rejestracja() {
                     ustawBladNumeruTelefonu(!bledy.NumerTelefonu ? "" : bledy.NumerTelefonu[0]);
                     ustawBladDatyUrodzenia(!bledy.DataUrodzenia ? "" : bledy.DataUrodzenia[0]);
                 }
-                toast.error('Wystąpił błąd podczas rejestracji', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Wystąpił błąd podczas rejestracji', toastOptions);
                 return;
             }
 
@@ -88,17 +80,7 @@ export default function Rejestracja() {
                 state: { message: "Konto utworzono. Możesz się zalogować." }
             });
         } catch (err) {
-            toast.error('Wystąpił błąd podczas rejestracji.', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Wystąpił błąd podczas rejestracji.', toastOptions);
         } finally {
             ustawCzySieWysyla(false);
         }

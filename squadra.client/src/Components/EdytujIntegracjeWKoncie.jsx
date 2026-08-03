@@ -1,9 +1,11 @@
 ﻿import {API_BASE_URL} from "../config/api";
-import {Bounce, toast} from "react-toastify";
+import {toast} from "react-toastify";
 import React, {useState} from "react";
+import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
 
 export default function EdytujIntegracjeWKoncie({zewnetrzneId, ustawZewnetrzneId, zewnetrznyLogin, ustawZewnetrznyLogin}){
 
+    const {toastOptions} = useWspoldzieloneFunkcje();
     const [login, ustawLogin] = useState("");
     const [haslo, ustawHaslo] = useState("");
 
@@ -34,34 +36,14 @@ export default function EdytujIntegracjeWKoncie({zewnetrzneId, ustawZewnetrzneId
             : await res.text().catch(() => "");
 
         if (!res.ok) {
-            toast.error(`Wystąpił błąd: ${body}`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Wystąpił błąd: ${body}`, toastOptions);
             return;
         }
 
         ustawZewnetrzneId(body.id);
         ustawZewnetrznyLogin(body.login);
 
-        toast.success('Pomyślnie zintegrowano konto!', {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-        });
+        toast.success('Pomyślnie zintegrowano konto!', toastOptions);
     }
 
     const przyWysylaniuOdlaczenia = async() => {
@@ -86,17 +68,7 @@ export default function EdytujIntegracjeWKoncie({zewnetrzneId, ustawZewnetrzneId
 
 
         if (!res.ok) {
-            toast.error(`Wystąpił błąd: ${body.message}`, {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error(`Wystąpił błąd: ${body.message}`, toastOptions);
             return;
         }
 
@@ -105,17 +77,7 @@ export default function EdytujIntegracjeWKoncie({zewnetrzneId, ustawZewnetrzneId
         ustawLogin("");
         ustawHaslo("");
 
-        toast.success('Pomyślnie przerwano integrację!', {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-            transition: Bounce,
-        });
+        toast.success('Pomyślnie przerwano integrację!', toastOptions);
     }
 
     if(zewnetrzneId === null){

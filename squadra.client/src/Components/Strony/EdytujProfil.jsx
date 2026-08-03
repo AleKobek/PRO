@@ -12,6 +12,7 @@ import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext
 
     const navigate = useNavigate();
     const { uzytkownik, ladowanie } = useAuth();
+    const {toastOptions} = useWspoldzieloneFunkcje();
     const {ustawAwatarUrl} = useWspoldzieloneFunkcje();
 
     const [pseudonim, ustawPseudonim] = useState("");
@@ -41,17 +42,7 @@ import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext
             try {
                 const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include"});
                 if (!res.ok) {
-                    toast.error('Wystąpił błąd podczas pobierania danych profilu', {
-                        position: "top-center",
-                        autoClose: 5000,
-                        hideProgressBar: false,
-                        closeOnClick: false,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "light",
-                        transition: Bounce,
-                    });
+                    toast.error('Wystąpił błąd podczas pobierania danych profilu', toastOptions);
                     ustawCzyJestBlad(true);
                     return null;
                 }
@@ -61,17 +52,7 @@ import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext
                 if (err && err.name === 'AbortError') return null;
                 // Inne błędy warto zalogować
                 console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania danych profilu', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Wystąpił błąd podczas pobierania danych profilu', toastOptions);
                 ustawCzyJestBlad(true);
                 return null;
             }

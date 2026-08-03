@@ -2,7 +2,8 @@ import React, {useEffect, useMemo, useState} from "react";
 import ListaJezykow from "./ListaJezykow";
 import {useNavigate} from "react-router-dom";
 import {API_BASE_URL} from "../config/api";
-import {Bounce, toast} from "react-toastify";
+import {toast} from "react-toastify";
+import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
 
 export default function FormularzProfilu({
                                              staraListaJezykowUzytkownika,
@@ -15,6 +16,7 @@ export default function FormularzProfilu({
 {
     
     const navigate = useNavigate();
+    const {toastOptions} = useWspoldzieloneFunkcje();
 
 
     // {id, nazwa}
@@ -84,17 +86,7 @@ export default function FormularzProfilu({
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;
                 console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania danych krajów i regionów', {
-                    position: "top-center",
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: false,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "light",
-                    transition: Bounce,
-                });
+                toast.error('Wystąpił błąd podczas pobierania danych krajów i regionów', toastOptions);
                 return null;
             }
         };
@@ -171,17 +163,7 @@ export default function FormularzProfilu({
                 ustawBladOpisu(bledy.Opis ? bledy.Opis[0] : "");
                 ustawBladOgolny(body.message);
             }
-            toast.error('Wystąpił błąd podczas edycji profilu', {
-                position: "top-center",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "light",
-                transition: Bounce,
-            });
+            toast.error('Wystąpił błąd podczas edycji profilu', toastOptions);
             return;
         }
 
