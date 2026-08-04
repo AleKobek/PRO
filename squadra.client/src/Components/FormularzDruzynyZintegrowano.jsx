@@ -271,6 +271,11 @@ export default function FormularzDruzynyZintegrowano({
         if(!idGryDruzyny) return;
         if(czyZablokowane) return; // na wszeeeelki wypadek
 
+        if(nazwa.trim().length === 0){
+            toast.error(`Drużyna musi mieć nazwę.`, toastOptions);
+            return;
+        }
+
         if(miejscaWDruzynie.length === 0){
             toast.error(`Drużyna musi mieć więcej niż jedno miejsce.`, toastOptions);
             return;
@@ -374,9 +379,8 @@ export default function FormularzDruzynyZintegrowano({
 
     const czyZablokowane = useMemo(() =>{
         return (!uzytkownik || !idGryDruzyny
-            || miejscaWDruzynie.length > 8
-            || nazwa.trim().length === 0)
-    }, [idGryDruzyny, miejscaWDruzynie, nazwa, uzytkownik]);
+            || miejscaWDruzynie.length > 8)
+    }, [idGryDruzyny, miejscaWDruzynie, uzytkownik]);
 
     const aktualnaListaStopni = useMemo(() =>{
         if(idWymaganegoJezyka === null) return [];

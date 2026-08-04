@@ -167,6 +167,11 @@ export default function FormularzDruzynyNieZintegrowano({
         if(!idGryDruzyny) return;
         if(czyZablokowane) return; // na wszeeeelki wypadek
 
+        if(nazwa.trim().length === 0){
+            toast.error(`Drużyna musi mieć nazwę.`, toastOptions);
+            return;
+        }
+
         if(miejscaWDruzynie.length === 0){
             toast.error(`Drużyna musi mieć więcej niż jedno miejsce.`, toastOptions);
             return;
@@ -197,7 +202,7 @@ export default function FormularzDruzynyNieZintegrowano({
         */
 
         const dane = {
-            nazwa: nazwa,
+            nazwa: nazwa.trim(),
             idGry: idGryDruzyny,
             czyPubliczna: czyPubliczna,
             opis: opis,
@@ -261,9 +266,8 @@ export default function FormularzDruzynyNieZintegrowano({
 
     const czyZablokowane = useMemo(() =>{
         return (!uzytkownik || !idGryDruzyny
-            || miejscaWDruzynie.length > 8
-        || nazwa.trim().length === 0)
-    }, [idGryDruzyny, miejscaWDruzynie, nazwa, uzytkownik]);
+            || miejscaWDruzynie.length > 8)
+    }, [idGryDruzyny, miejscaWDruzynie, uzytkownik]);
 
 
 
