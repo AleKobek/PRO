@@ -31,6 +31,9 @@ export default function StronaSzczegolowDruzyny() {
     const [listaZnajomych, ustawListeZnajomych] = useState(null);
     const [czySieWysylaZaproszenie, ustawCzySieWysylaZaproszenie] = useState(false);
 
+    const [czyZablokowaneUsun, ustawCzyZablokowaneUsun] = useState(false);
+    const [pokazUsunDruzyne, ustawPokazUsunDruzyne] = useState(false);
+
     const toastOptionsZId = {
         ...toastOptions,
         containerId: TOAST_CONTAINER_ID,
@@ -212,6 +215,20 @@ export default function StronaSzczegolowDruzyny() {
             ac.abort(); // przerywamy fetch
         };
     }, [daneDruzyny, idDruzyny, uzytkownik]);
+
+    // timer odliczający 5 sekund po otworzeniu panelu usunięcia drużyny
+    useEffect(() => {
+        if(!pokazUsunDruzyne) return;
+        if(!czyZablokowaneUsun) return;
+
+        // jeżeli panel jest pokazany, po pięciu sekundach odblokowujemy przycisk usuwania
+        const timer = setTimeout(() => {
+            ustawCzyZablokowaneUsun(false);
+        }, 5000);
+
+        return () => clearTimeout(timer);
+
+    },[czyZablokowaneUsun, pokazUsunDruzyne])
 
     const przyKliknieciuEdycji = () => {
         if(daneDruzyny.statusCzlonkostwa !== "Kapitan") {
@@ -701,6 +718,44 @@ export default function StronaSzczegolowDruzyny() {
         </div>)
     }
 
+    const PanelUsunDruzyne = () => (
+        <div
+            ref={ref}
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] p-10 overflow-y-auto bg-red-200 border-2 border-red-900
+            rounded-md shadow-lg justify-center items-center"
+            style={{ zIndex: 2000 }}
+        >
+            <div className="flex flex-col">
+
+                <div className="flex flex-col items-center gap-2">
+                    <span className="text-4xl text-center font-bold"> Czy na pewno chcesz usunąć tę drużynę? Tej operacji nie da się odwrócić!<br/></span>
+                    <span>Za 5 sekund przycisk się odblokuje</span>
+                </div>
+                <div className="flex justify-center items-center gap-8 mt-7 text-xl font-semibold">
+                    {/* przycisk anulowania */}
+                    <button
+                        onClick={() => {
+                            ustawCzyZablokowaneUsun(true);
+                            ustawPokazUsunDruzyne(false)
+                        }}
+                        className="bg-green-900 text-white rounded-md px-6 py-3.5 hover:bg-green-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105">
+                        Anuluj
+                    </button>
+                    {/* przycisk potwierdzenia */}
+                    <button
+                        className={czyZablokowaneUsun ?
+                            "text-black bg-gray-300 rounded-md px-4 py-3 border border-black shadow-md cursor-not-allowed" :
+                            "bg-red-900 text-white rounded-md px-5 py-3.5 hover:bg-red-600 transition-transform duration-100 ease-out hover:-translate-y-0.5 hover:scale-105"}
+                        disabled={czyZablokowaneUsun}
+                        onClick={przyKliknieciuRozwiaz}
+                    >
+                        Potwierdź
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
 
     if(czyZablokowanoDostep) return (<>
             <div id = "glowna">
@@ -843,7 +898,10 @@ export default function StronaSzczegolowDruzyny() {
                                 className="mt-4 bg-amber-700 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded"
                             >Edytuj</button> {/* przycisk edycji drużyny */}
                             <button
-                                onClick={przyKliknieciuRozwiaz}
+                                onClick={() => {
+                                    ustawCzyZablokowaneUsun(true);
+                                    ustawPokazUsunDruzyne(v => !v)
+                                }}
                                 className="mt-4 bg-red-700 hover:bg-red-500 text-white font-bold py-2 px-4 rounded"
                             >Rozwiąż</button> {/* przycisk usunięcia drużyny */}
                         </div>
@@ -860,6 +918,7 @@ export default function StronaSzczegolowDruzyny() {
         </div>
         {pokazOkienkoTlumaczenia && OkienkoTlumaczaceZintegrowanie(ref, ustawPokazOkienkoTlumaczenia)}
         {pokazPanelZapraszania && <PanelZapraszania/>}
+        {pokazUsunDruzyne && <PanelUsunDruzyne/>}
         <ToastContainer
             containerId={TOAST_CONTAINER_ID}
             position="top-center"
