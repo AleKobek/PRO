@@ -432,6 +432,7 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
                             )
                         && (string.IsNullOrEmpty(req.Nazwa) || d.Nazwa.Contains(req.Nazwa.Trim()))
                         && d.MiejsceWDruzynieCollection.All(m => m.UzytkownikId != idUzytkownika)
+                        && d.CzyPubliczna
             )
             .Include(d => d.MiejsceWDruzynieCollection)
             .ToListAsync();
