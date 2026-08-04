@@ -147,7 +147,7 @@ export default function TabelkaBibliotekiGier({idUzytkownika}) {
                                 {kategoria.statystyki.map((stat) => (
                                     <tr key={stat.id}>
                                         <td className="border border-gray-500 p-2">{stat.nazwa}</td>
-                                        <td className="border border-gray-500 p-2">{stat.wartosc === null ? "-" : stat.wartosc}</td>
+                                        <td className="border border-gray-500 p-2">{stat.wartosc === null || stat.wartosc.length === 0 ? "-" : stat.wartosc}</td>
                                     </tr>
                                 ))}
                             </tbody>
