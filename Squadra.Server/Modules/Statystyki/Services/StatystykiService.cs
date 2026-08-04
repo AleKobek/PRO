@@ -8,21 +8,22 @@ namespace Squadra.Server.Modules.Statystyki.Services;
 
 public class StatystykiService(IStatystykiRepository statystykiRepository) : IStatystykiService
 {
-    public async Task<ServiceResult<StatystykaDTO>> GetStatystyka(int idStatystyki)
+    public async Task<ServiceResult<StatystykaZNazwaKategoriiDTO>> GetStatystyka(int idStatystyki)
     {
         if (idStatystyki <= 0)
         {
-            return ServiceResult<StatystykaDTO>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki: " + idStatystyki));
+            return ServiceResult<StatystykaZNazwaKategoriiDTO>.BadRequest(new ErrorItem("Nieprawidłowy identyfikator statystyki: " + idStatystyki));
         }
         
         try
         {
-            var result = await statystykiRepository.GetStatystyka(idStatystyki);
-            return ServiceResult<StatystykaDTO>.Ok(new StatystykaDTO(idStatystyki, result.Nazwa, result.KategoriaId, result.RolaId, result.CzyToCzasRozgrywki));
+            var statystyka = await statystykiRepository.GetStatystyka(idStatystyki);
+            var kategoria = await statystykiRepository.GetKategoria(statystyka.KategoriaId);
+            return ServiceResult<StatystykaZNazwaKategoriiDTO>.Ok(new StatystykaZNazwaKategoriiDTO(idStatystyki, statystyka.Nazwa, statystyka.KategoriaId, kategoria.Nazwa, statystyka.RolaId, statystyka.CzyToCzasRozgrywki));
         }
         catch (NieZnalezionoWBazieException ex)
         {
-            return ServiceResult<StatystykaDTO>.NotFound(new ErrorItem(ex.Message));
+            return ServiceResult<StatystykaZNazwaKategoriiDTO>.NotFound(new ErrorItem(ex.Message));
         }
     }
     // get godziny grania danego użytkownika dla danej gry - potrzebne do tabelki w bibliotece

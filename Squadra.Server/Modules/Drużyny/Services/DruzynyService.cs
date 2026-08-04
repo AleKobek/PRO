@@ -412,11 +412,11 @@ public class DruzynyService(
                 if(!statystykaRes.Succeeded) return ServiceResult<ICollection<MiejsceWDruzynieSzczegolyDto>>.Fail(statystykaRes.StatusCode, statystykaRes.Errors);
                 wymaganie = miejsce.RolaId != null  
                         ? StatystykiRepository.IdStatystykSprawdzanychNaOdwrot.Contains(statystykaRes.Value.Id) ? // juz odfiltrowaliśmy miejsca bez StatystykaId, więc możemy bezpiecznie użyć .Value
-                            $"{statystykaRes.Value.Nazwa}({miejsce.Rola?.Nazwa})(traktowane jako maksymalna wartość): {miejsce.WartoscStatystyki}" 
-                            : $"{statystykaRes.Value.Nazwa}({miejsce.Rola?.Nazwa}): {miejsce.WartoscStatystyki}" 
+                            $"{statystykaRes.Value.NazwaKategorii}: {statystykaRes.Value.Nazwa}({miejsce.Rola?.Nazwa})(traktowane jako maksymalna wartość): {miejsce.WartoscStatystyki}" 
+                            : $"{statystykaRes.Value.NazwaKategorii}: {statystykaRes.Value.Nazwa}({miejsce.Rola?.Nazwa}): {miejsce.WartoscStatystyki}" 
                         : StatystykiRepository.IdStatystykSprawdzanychNaOdwrot.Contains(statystykaRes.Value.Id) // juz odfiltrowaliśmy miejsca bez StatystykaId, więc możemy bezpiecznie użyć .Value
-                            ? $"{statystykaRes.Value.Nazwa}(traktowane jako maksymalna wartość): {miejsce.WartoscStatystyki}" 
-                            : $"{statystykaRes.Value.Nazwa}: {miejsce.WartoscStatystyki}";
+                            ? $"{statystykaRes.Value.NazwaKategorii}: {statystykaRes.Value.Nazwa}(traktowane jako maksymalna wartość): {miejsce.WartoscStatystyki}" 
+                            : $"{statystykaRes.Value.NazwaKategorii}: {statystykaRes.Value.Nazwa}: {miejsce.WartoscStatystyki}";
             }
             
             czlonkowieDoZwrocenia.Add(new MiejsceWDruzynieSzczegolyDto(

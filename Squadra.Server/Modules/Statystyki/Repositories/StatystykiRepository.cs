@@ -17,6 +17,13 @@ public class StatystykiRepository(AppDbContext context) : IStatystykiRepository
         if (statystyka == null) throw new NieZnalezionoWBazieException("Nie znaleziono statystyki o id " + idStatystyki);
         return statystyka;
     }
+
+    public async Task<Kategoria> GetKategoria(int idKategoria)
+    {
+        var kategoria = await context.Kategoria.FindAsync(idKategoria);
+        if(kategoria == null) throw new NieZnalezionoWBazieException("Nie znaleziono kategorii o id " + idKategoria);
+        return kategoria;
+    }
     
     // get godziny grania danego użytkownika dla danej gry - potrzebne do tabelki w bibliotece
     public async Task<string> GetGodzinyGrania(int idUzytkownika, int idGry)
