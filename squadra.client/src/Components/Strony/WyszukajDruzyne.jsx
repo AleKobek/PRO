@@ -61,6 +61,11 @@ export default function WyszukajDruzyne() {
         document.title = `Squadra`;
     }, []);
 
+    // przy zmianie gry resetujemy wybrane role
+    useEffect(() => {
+        ustawWybraneRole([]);
+    }, [idWybranejGry]);
+
     /*
      Dane przychodzą w formie:
      {
