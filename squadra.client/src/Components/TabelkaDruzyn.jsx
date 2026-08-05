@@ -52,15 +52,20 @@ export default function TabelkaDruzyn({idDruzyn, brakDruzynWiadomosc, czySzczego
             }
 
             let url = idUzytkownika ? `${API_BASE_URL}/Druzyny/tabelka/${idUzytkownika}` : `${API_BASE_URL}/Druzyny/tabelka`;
-            const res = await fetch(url, opcje);
-            const body = await res.json().catch(() => null);
+            try {
+                const res = await fetch(url, opcje);
+                const body = await res.json().catch(() => null);
 
-            if (!res.ok) {
-                toast.error(`Wystąpił błąd podczas pobierania drużyn: ${body?.message ?? res.statusText ?? "nieznany błąd"}`, toastOptions);
-                return;
+                if (!res.ok) {
+                    if (alive) toast.error(`Wystąpił błąd podczas pobierania drużyn: ${body?.message ?? res.statusText ?? "nieznany błąd"}`, toastOptions);
+                    return;
+                }
+                if(!alive || !body) return;
+                ustawDruzynyNaStronie(body);
+            } catch (err) {
+                if (err && err.name === 'AbortError') return;
+                if (alive) console.error('Błąd pobierania drużyn:', err);
             }
-            if(!alive || !body) return;
-            ustawDruzynyNaStronie(body);
         }
 
         pobierzNoweDruzyny();
@@ -69,7 +74,7 @@ export default function TabelkaDruzyn({idDruzyn, brakDruzynWiadomosc, czySzczego
             alive = false;
             ac.abort();
         };
-    },[aktualnaStrona, idDruzyn, idUzytkownika, liczbaDruzynNaStronie, liczbaStron])
+    },[aktualnaStrona, idDruzyn, idUzytkownika, liczbaDruzynNaStronie, liczbaStron, toastOptions])
 
     return (<div>
         <span className="mr-2">Maksymalna liczba drużyn na stronie:</span>

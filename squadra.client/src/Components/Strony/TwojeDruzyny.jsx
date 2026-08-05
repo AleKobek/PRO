@@ -45,14 +45,16 @@ export default function TwojeDruzyny() {
             try {
                 const res = await fetch(url, { method: 'GET', signal: ac.signal, credentials: "include" });
                 if (!res.ok) {
-                    toast.error('Wystąpił błąd podczas pobierania twoich drużyn', toastOptions);
+                    if (alive) toast.error('Wystąpił błąd podczas pobierania twoich drużyn', toastOptions);
                     return null;
                 }
                 return await res.json();
             } catch (err) {
                 if (err && err.name === 'AbortError') return null;
-                console.error('Błąd pobierania:', err);
-                toast.error('Wystąpił błąd podczas pobierania twoich drużyn', toastOptions);
+                if (alive) {
+                    console.error('Błąd pobierania:', err);
+                    toast.error('Wystąpił błąd podczas pobierania twoich drużyn', toastOptions);
+                }
                 return null;
             }
         };
@@ -63,9 +65,10 @@ export default function TwojeDruzyny() {
 
             ustawIdDruzyn(dane.idDruzyn);
             ustawDruzynyNaStronie(dane.pierwszaStronaDruzyn);
+            if (alive) ustawLadowanieDruzyn(false);
         };
 
-        podajTwojeDruzyny().then(() => {ustawLadowanieDruzyn(false)});
+        podajTwojeDruzyny();
 
         return () => {
             alive = false;
