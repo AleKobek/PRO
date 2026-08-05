@@ -384,7 +384,7 @@ public class UzytkownicyServiceTests
     }
 
     [Fact]
-    public async Task CreateUzytkownik_WithExistingLogin_ReturnsConflict()
+    public async Task CreateUzytkownik_WithExistingLogin_ReturnsBadRequest()
     {
         // Arrange
         var dto = new UzytkownikCreateDto(
@@ -405,12 +405,12 @@ public class UzytkownicyServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(409, result.StatusCode);
-        Assert.Contains(result.Errors, e => e.Code == "LoginIstnieje");
+        Assert.Equal(400, result.StatusCode);
+        Assert.Contains(result.Errors, e => e.Message == "Taki login już istnieje.");
     }
 
     [Fact]
-    public async Task CreateUzytkownik_WithExistingEmail_ReturnsConflict()
+    public async Task CreateUzytkownik_WithExistingEmail_ReturnsBadRequest()
     {
         // Arrange
         var dto = new UzytkownikCreateDto(
@@ -431,8 +431,8 @@ public class UzytkownicyServiceTests
 
         // Assert
         Assert.False(result.Succeeded);
-        Assert.Equal(409, result.StatusCode);
-        Assert.Contains(result.Errors, e => e.Code == "EmailIstnieje");
+        Assert.Equal(400, result.StatusCode);
+        Assert.Contains(result.Errors, e => e.Message == "Taki email już istnieje.");
     }
 
     [Fact]

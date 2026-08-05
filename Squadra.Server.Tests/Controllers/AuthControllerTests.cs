@@ -98,11 +98,13 @@ public class AuthControllerTests
         var actionResult = await _controller.Zarejestruj(createDto);
 
         // Assert
-        Assert.IsAssignableFrom<IActionResult>(actionResult);
+        var objectResult = Assert.IsType<ObjectResult>(actionResult);
+        var validation = Assert.IsType<ValidationProblemDetails>(objectResult.Value);
+        Assert.Contains(validation.Errors, e => e.Key == "email" && e.Value.Contains("Invalid email format"));
     }
 
     [Fact]
-    public async Task Zarejestruj_WhenUserExists_ReturnsConflict()
+    public async Task Zarejestruj_WhenUserExists_ReturnsBadRequest()
     {
         // Arrange
         var createDto = new UzytkownikCreateDto(
@@ -113,16 +115,18 @@ public class AuthControllerTests
             new DateOnly(2000, 1, 1),
             "ExistingUser"
         );
-        var result = ServiceResult<bool>.Fail(409, 
+        var result = ServiceResult<bool>.Fail(400, 
             new[] { new ErrorItem("User already exists", "login") });
         _mockUzytkownikService.Setup(s => s.CreateUzytkownik(createDto)).ReturnsAsync(result);
+        _mockUserManager.Setup(x => x.GetUserAsync(It.IsAny<ClaimsPrincipal>()))
+            .ReturnsAsync((Uzytkownik?)null);
 
-        // Act
         var actionResult = await _controller.Zarejestruj(createDto);
 
-        // Assert
-        var conflictResult = Assert.IsType<ConflictResult>(actionResult);
-        Assert.Equal(StatusCodes.Status409Conflict, conflictResult.StatusCode);
+        var objectResult = Assert.IsType<ObjectResult>(actionResult);
+
+        var validation = Assert.IsType<ValidationProblemDetails>(objectResult.Value);
+        Assert.Contains(validation.Errors, e => e.Key == "login" && e.Value.Contains("User already exists"));
     }
 
     [Fact]
