@@ -114,7 +114,7 @@ export default function TabelkaBibliotekiGier({idUzytkownika}) {
                 </div>
                 <div className="flex flex-col">
                     <h2 className="text-2xl font-bold mb-4">Statystyki dla gry</h2>
-                    <h3>{tytulWybranejGry}</h3>
+                    <h3 className="text-xl text-blue-700">{tytulWybranejGry}</h3>
                     <p>Brak statystyk dla tej gry.</p>
                 </div>
             </div>);
@@ -130,7 +130,7 @@ export default function TabelkaBibliotekiGier({idUzytkownika}) {
             </div>
             <div className="flex flex-col">
                 <h2 className="text-2xl font-bold">Statystyki dla gry:</h2>
-                <h3 className="mb-4 text-gray-700">{tytulWybranejGry}</h3>
+                <h3 className="text-xl text-blue-700">{tytulWybranejGry}</h3>
             {/*  wyświetlamy statystyki jako tabelka, dzieląc na kategorie  */}
             {
                 statystykiGry.map((kategoria) => (
