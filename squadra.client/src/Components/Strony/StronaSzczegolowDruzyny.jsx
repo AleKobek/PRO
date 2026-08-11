@@ -34,6 +34,8 @@ export default function StronaSzczegolowDruzyny() {
     const [czyZablokowaneUsun, ustawCzyZablokowaneUsun] = useState(false);
     const [pokazUsunDruzyne, ustawPokazUsunDruzyne] = useState(false);
 
+    const [pokazOkienkoPublicznosci, ustawPokazOkienkoPublicznosci] = useState(false);
+
     const toastOptionsZId = {
         ...toastOptions,
         containerId: TOAST_CONTAINER_ID,
@@ -756,6 +758,27 @@ export default function StronaSzczegolowDruzyny() {
         </div>
     );
 
+    const OkienkoPublicznosci = () => (
+        <div
+            ref={ref}
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-fit pt-2 p-10 overflow-y-auto
+                    rounded-md shadow-lg justify-center items-center bg-amber-50 border-2 border-amber-400"
+            style={{ zIndex: 2001 }}
+        >
+            <div className="flex justify-end">
+                <button onClick={() => ustawPokazOkienkoPublicznosci(false)} className="cursor-pointer text-red-600">Zamknij</button>
+            </div>
+            <div className="flex flex-col">
+                <h2 className="text-2xl font-bold mb-4">Publiczność drużyny</h2>
+                <p className="mb-4">
+                    Publiczne drużyny są widoczne dla wszystkich użytkowników platformy i można je wyszukać. Prywatne drużyny nie są dostępne przez
+                    wyszukiwanie, a ich dane mogą wyświetlić tylko jej członkowie oraz użytkownicy z zaproszeniem do nich. Bez względu na
+                    publiczność drużyny czat drużynowy jest dostępny wyłącznie dla jej członków.
+                </p>
+            </div>
+        </div>
+    );
+
 
     if(czyZablokowanoDostep) return (<>
             <div id = "glowna">
@@ -843,12 +866,20 @@ export default function StronaSzczegolowDruzyny() {
                     </label>
                     {/* czy publiczna */}
                     <label className="pole-w-szczegolach-druzyny">
-                        Publiczność
+                        <div className="flex items-center gap-2">
+                            Publiczność
+                            <img
+                                src="/img/znak-zapytania.svg"
+                                alt="znak zapytania"
+                                className="h-[1em] w-auto align-middle ml-2 cursor-pointer"
+                                onClick={() => ustawPokazOkienkoPublicznosci(true)}
+                            />
+                        </div>
                         <span>{daneDruzyny.czyPubliczna ? "Publiczna" : "Prywatna"}</span>
                     </label>
                     {/* czy zintegrowano */}
                     <label className="pole-w-szczegolach-druzyny"> <div className="flex items-center gap-1">
-                        Czy używa zintegrowanych danych:
+                        Czy używa zintegrowanych danych
                         <img
                             src="/img/znak-zapytania.svg"
                             alt="znak zapytania"
@@ -919,6 +950,7 @@ export default function StronaSzczegolowDruzyny() {
         {pokazOkienkoTlumaczenia && OkienkoTlumaczaceZintegrowanie(ref, ustawPokazOkienkoTlumaczenia)}
         {pokazPanelZapraszania && <PanelZapraszania/>}
         {pokazUsunDruzyne && <PanelUsunDruzyne/>}
+        {pokazOkienkoPublicznosci && <OkienkoPublicznosci/>}
         <ToastContainer
             containerId={TOAST_CONTAINER_ID}
             position="top-center"
