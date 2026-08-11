@@ -578,15 +578,31 @@ export default function FormularzDruzynyZintegrowano({
                     <span className="error-wiadomosc">{bladOpisu}</span>
                 </div>
             </div>
-            <div className="flex items-center justify-center gap-5">
+            <div className="flex flex-col items-center justify-center gap-5">
                 <label>
-                    Czy publiczna:
-                    <input
-                        type="checkbox"
-                        className="mx-2"
-                        checked={czyPubliczna}
-                        onChange={() => ustawCzyPubliczna(!czyPubliczna)}
-                    />
+                    Dostępność drużyny: <br/>
+                    <div className="flex justify-center bg-gray-200 border-2 border-gray-300 rounded-md p-2 mb-1">
+                        <input
+                            type="radio"
+                            name = "publicznosc"
+                            className="mx-2"
+                            checked={czyPubliczna}
+                            onChange={() => ustawCzyPubliczna(!czyPubliczna)}
+                        />
+                        <span className="text-md font-bold mr-2 text-blue-900">Publiczna</span>
+                        <span className="text-md mr-2">- można ją wyszukać i jej dane (poza czatem) są dostępne dla osób spoza niej</span>
+                    </div>
+                    <div className="flex justify-center bg-gray-200 border-2 border-gray-300 rounded-md p-2">
+                        <input
+                            type="radio"
+                            name = "publicznosc"
+                            className="mx-2"
+                            checked={!czyPubliczna}
+                            onChange={() => ustawCzyPubliczna(!czyPubliczna)}
+                        />
+                        <span className="text-md font-bold mr-2 text-blue-900">Prywatna</span>
+                        <span className="text-md mr-2">- nie można jej wyszukać i jej dane są dostępne tylko dla osób z drużyny lub z zaproszeniem</span>
+                    </div>
                 </label>
             </div>
         </form>
