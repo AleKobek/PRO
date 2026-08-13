@@ -8,7 +8,7 @@ public interface IProfileRepository
 
     public Task<ProfilGetResDto> GetProfilUzytkownika(int id);
     public Task<ProfilMinInfoDto> GetProfilMinInfo(int id);
-
+    public Task<bool> CzyProfilIstnieje(int id);
     public Task<bool> UpdateProfil(int id, ProfilUpdateDto profil);
     public Task<bool> UpdateAwatar(int id, byte[] awatar);
 

@@ -8,7 +8,7 @@ public interface IProfileService
 {
     
     public Task<ServiceResult<ProfilGetResDto>> GetProfil(int id);
-
+    public Task<ServiceResult<bool>> CzyProfilIstnieje(int id);
     public Task<ServiceResult<ProfilMinInfoDto>> GetProfilMinInfo(int id);
 
     public Task<ServiceResult<bool>> UpdateProfil(int id, ProfilUpdateDto profil);

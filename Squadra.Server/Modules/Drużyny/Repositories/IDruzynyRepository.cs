@@ -8,6 +8,7 @@ namespace Squadra.Server.Modules.Drużyny.Repositories;
 public interface IDruzynyRepository
 {
     public Task<Druzyna> GetDruzyna(int idDruzyny);
+    public Task<bool> CzyDruzynaIstnieje(int idDruzyny);
     public Task<Druzyna> GetDruzynaMiejsca(int idMiejsca);
     public Task<ICollection<Druzyna>> GetDruzynyUzytkownika(int idUzytkownika);
     public Task<ICollection<Druzyna>> GetZintegrowaneDruzynyUzytkownika(int idUzytkownika);
@@ -21,6 +22,7 @@ public interface IDruzynyRepository
     public Task<int> GetIdKapitanaDruzynyMiejsca(int idMiejsca);
     public Task<ICollection<NastrojRozgrywki>> GetNastrojeRozgrywki();
     public Task<NastrojRozgrywki> GetNastrojRozgrywki(int idNastroju);
+    public Task<bool> CzyNastrojRozgrywkiIstnieje(int idNastroju);
     public Task<DateTime?> GetDataOstatniegoOtwarciaCzatuUzytkownika(int idUzytkownika, int idDruzyny);
     public Task<bool> CzyUzytkownikSpelniaWymaganieMiejsca(int idMiejsca, int idUzytkownika);
     public Task<bool> CzyUzytkownikSpelniaWymaganeStatystykiDruzyny(int idDruzyny, int idUzytkownika);

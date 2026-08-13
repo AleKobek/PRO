@@ -19,6 +19,12 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
         if (druzyna == null) throw new NieZnalezionoWBazieException("Nie znaleziono drużyny o id " + idDruzyny);
         return druzyna;
     }
+    
+    public async Task<bool> CzyDruzynaIstnieje(int idDruzyny)
+    {
+        var druzyna = await context.Druzyna.FindAsync(idDruzyny);
+        return druzyna != null;
+    }
 
     public async Task<Druzyna> GetDruzynaMiejsca(int idMiejsca)
     {
@@ -146,6 +152,12 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
         return nastroj;
     }
     
+    public async Task<bool> CzyNastrojRozgrywkiIstnieje(int idNastroju)
+    {
+        var nastroj = await context.NastrojRozgrywki.FindAsync(idNastroju);
+        return nastroj != null;
+    }
+
     public async Task<DateTime?> GetDataOstatniegoOtwarciaCzatuUzytkownika(int idUzytkownika, int idDruzyny)
     {
         var miejsceWDruzynie = await context.MiejsceWDruzynie

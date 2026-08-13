@@ -113,16 +113,9 @@ public class PowiadomieniaService(IPowiadomieniaRepository powiadomieniaReposito
                 return ServiceResult<bool>.NotFound(wynikZnalezieniaUzytkownika.Errors[0]);
             
             // sprawdzamy, czy taka drużyna istnieje
-            try
-            {
-                var idDruzyny = powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1;
-                var druzyna = await druzynyRepository.GetDruzyna(idDruzyny); // tylko po to, aby w razie czego wyrzuciło wyjątek
-            }
-            catch (NieZnalezionoWBazieException e)
-            {
-                return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
-            }
-            
+            var idDruzyny = powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1;
+            var czyDruzynaIstnieje = await druzynyRepository.CzyDruzynaIstnieje(idDruzyny);
+            if(!czyDruzynaIstnieje) return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono drużyny o id " + idDruzyny));
         }
         
         // pierwszym i jedynym powiązanym obiektem jest drużyna
@@ -130,35 +123,26 @@ public class PowiadomieniaService(IPowiadomieniaRepository powiadomieniaReposito
             TypPowiadomieniaEnum.UsuniecieZDruzyny 
             or TypPowiadomieniaEnum.UzytkownikOpuscilDruzyneBoUsunalKonto
         ){
-            try
-            { 
-                // nie będzie sytuacji tutaj, że to będzie null, ale aby się nie czepiał kompilator
-                var idDruzyny = powiadomienie.IdPowiazanegoObiektu ?? 1;
-                var druzyna = await druzynyRepository.GetDruzyna(idDruzyny); // tylko po to, aby w razie czego wyrzuciło wyjątek
-            }
-            catch (NieZnalezionoWBazieException e)
-            {
-                return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
-            }
+            var idDruzyny = powiadomienie.IdPowiazanegoObiektu ?? 1;
+            var czyDruzynaIstnieje = await druzynyRepository.CzyDruzynaIstnieje(idDruzyny);
+            if(!czyDruzynaIstnieje) return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono drużyny o id " + idDruzyny));
         }
         
         // pierwszym powiązanym obiektem jest drużyna, drugim jest miejsce
         if ((TypPowiadomieniaEnum)powiadomienie.IdTypuPowiadomienia is TypPowiadomieniaEnum.ZaproszenieDoDruzyny)
         {
-            try
-            {    
-                // sprawdzamy, czy taka drużyna istnieje
-                var idDruzyny = powiadomienie.IdPowiazanegoObiektu ?? 1;
-                var druzyna = await druzynyRepository.GetDruzyna(idDruzyny); // tylko po to, aby w razie czego wyrzuciło wyjątek
-                
-                // sprawdzamy, czy takie miejsce istnieje
-                var idMiejsca = powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1;
-                var wynikZnalezieniaMiejsca = await profileService.GetProfil(idMiejsca); // tylko po to, aby w razie czego wyrzuciło wyjątek
-            }
-            catch (NieZnalezionoWBazieException e)
-            {
-                return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
-            }
+            // sprawdzamy, czy taka drużyna istnieje
+            var idDruzyny = powiadomienie.IdPowiazanegoObiektu ?? 1;
+            var czyDruzynaIstnieje = await druzynyRepository.CzyDruzynaIstnieje(idDruzyny);
+            if (!czyDruzynaIstnieje)
+                return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono drużyny o id " + idDruzyny));
+
+            // sprawdzamy, czy takie miejsce istnieje
+            var idMiejsca = powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1;
+            var czyProfilIstnieje = await profileService.CzyProfilIstnieje(idMiejsca);
+            if (!czyProfilIstnieje.Succeeded) return czyProfilIstnieje;
+            if (!czyProfilIstnieje.Value)
+                return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu o id " + idMiejsca));
         }
         
         // jak tu dochodzimy, wszystko jest w porządku

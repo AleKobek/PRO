@@ -41,6 +41,12 @@ public class ProfileRepository(AppDbContext appDbContext,
         return new ProfilMinInfoDto(profil.IdUzytkownika, profil.Pseudonim, profil.Awatar, status.Nazwa);
     }
 
+    public async Task<bool> CzyProfilIstnieje(int id)
+    {
+        var profil = await appDbContext.Profil.FindAsync(id);
+        return profil != null;
+    }
+
     // bez awatara!
     public async Task<bool> UpdateProfil(int id, ProfilUpdateDto profil)
     {

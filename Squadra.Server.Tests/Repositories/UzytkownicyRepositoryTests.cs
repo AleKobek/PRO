@@ -20,8 +20,6 @@ public class UzytkownicyRepositoryTests : IDisposable
     private readonly AppDbContext _context;
     private readonly UzytkownicyRepository _repository;
     private readonly Mock<IProfileRepository> _mockProfilRepository;
-    private readonly Mock<IPowiadomieniaRepository> _mockPowiadomienieRepository;
-    private readonly Mock<IZnajomosciRepository> _mockZnajomiRepository;
     private readonly UserManager<Uzytkownik> _userManager;
     private readonly RoleManager<IdentityRole<int>> _roleManager;
 
@@ -35,8 +33,6 @@ public class UzytkownicyRepositoryTests : IDisposable
 
         // Mock dependencies
         _mockProfilRepository = new Mock<IProfileRepository>();
-        _mockPowiadomienieRepository = new Mock<IPowiadomieniaRepository>();
-        _mockZnajomiRepository = new Mock<IZnajomosciRepository>();
 
         // Create real UserManager and RoleManager for InMemory testing
         _userManager = CreateUserManager();
@@ -45,8 +41,6 @@ public class UzytkownicyRepositoryTests : IDisposable
         _repository = new UzytkownicyRepository(
             _context,
             _mockProfilRepository.Object,
-            _mockPowiadomienieRepository.Object,
-            _mockZnajomiRepository.Object,
             _userManager,
             _roleManager
         );

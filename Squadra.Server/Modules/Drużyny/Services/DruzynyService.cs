@@ -930,7 +930,8 @@ public class DruzynyService(
             var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
             if(druzyna.KapitanId != idUzytkownika) return ServiceResult<bool>.Forbidden(new ErrorItem("Tylko kapitan drużyny może ją edytować"));
             
-            var nastroj = await druzynyRepository.GetNastrojRozgrywki(druzynaReq.IdNastrojuRozgrywki); // tylko po to, aby wywaliło błąd gdy nie znajdzie
+            var czyNastrojRozgrywkiIstnieje = await druzynyRepository.CzyNastrojRozgrywkiIstnieje(druzynaReq.IdNastrojuRozgrywki);
+            if(!czyNastrojRozgrywkiIstnieje) return ServiceResult<bool>.BadRequest(new ErrorItem("Nie istnieje nastrój rozgrywki o id: " + druzynaReq.IdNastrojuRozgrywki));
             
             var bledy = new List<ErrorItem>();
 
@@ -994,17 +995,9 @@ public class DruzynyService(
         }
         else if (req.IdStopnia != null) return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Nie można podać stopnia biegłości języka bez podania języka"));
 
-        try
-        {
-            if(req.IdNastrojuRozgrywki != null)
-            {
-                var nastroj = await druzynyRepository.GetNastrojRozgrywki(req.IdNastrojuRozgrywki ?? 1); // tylko po to, aby wywaliło błąd gdy nie znajdzie
-            } 
-        }
-        catch (NieZnalezionoWBazieException e)
-        {
-            return ServiceResult<TabelkaDruzynResDto>.NotFound(new ErrorItem(e.Message));
-        }
+        var czyNastrojIstnieje = await druzynyRepository.CzyNastrojRozgrywkiIstnieje(req.IdNastrojuRozgrywki ?? 1); // tylko po to, aby wywaliło błąd gdy nie znajdzie
+        if (!czyNastrojIstnieje) return ServiceResult<TabelkaDruzynResDto>.BadRequest(new ErrorItem("Nie istnieje nastroj rozgrywki o id: " + req.IdNastrojuRozgrywki));
+        
         var roleGry = await statystykiService.GetRoleGry(req.IdGry); 
         if (!roleGry.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(roleGry.StatusCode, roleGry.Errors);
         
