@@ -1,5 +1,5 @@
 ﻿import React, {useEffect, useMemo, useState} from "react";
-import {toast} from "react-toastify";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL} from "../config/api";
 import {useNavigate} from "react-router-dom";
 import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
@@ -503,5 +503,18 @@ export default function FormularzDruzynyNieZintegrowano({
         onClick={przyWysylaniu}>
             Stwórz
         </button>
+        <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />
     </div>)
 }
