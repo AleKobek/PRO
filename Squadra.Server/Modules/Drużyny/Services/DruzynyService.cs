@@ -327,7 +327,7 @@ public class DruzynyService(
 
                 foreach (var miejsceWDruzynie in czlonkowieDruzyny.Where(x => x.Czlonek == null))
                 {
-                    if (!czyUzytkownikSpelniaWymaganiaCzlonkostwa)
+                    if (!czyUzytkownikSpelniaWymaganiaCzlonkostwa.CzySpelniaWymagania)
                     {
                         // jeżeli nie spełnia wymagań członkostwa, to nie spełnia też wymagań miejsca
                         czlonkowieDruzynyZeSprawdzonymiWymaganiami.Add(miejsceWDruzynie with
@@ -597,7 +597,7 @@ public class DruzynyService(
                 if(!czyOsgiagnalMaksLiczbeDruzynRes.Succeeded || czyOsgiagnalMaksLiczbeDruzynRes.Value) continue; // jeżeli osiągnął maks liczbę drużyn, to nie dodajemy go do listy
                 
                 var czySpelniaWymaganiaRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(druzyna.Id, idZnajomego);
-                                    if (!czySpelniaWymaganiaRes.Succeeded || !czySpelniaWymaganiaRes.Value)
+                                    if (!czySpelniaWymaganiaRes.Succeeded || !czySpelniaWymaganiaRes.Value.CzySpelniaWymagania)
                                         continue; // jeżeli nie spełnia wymagań, to nie dodajemy go do listy
                 
                 // jeżeli drużyna jest zintegrowana, to musimy sprawdzić też wymagania miejsca
@@ -622,35 +622,46 @@ public class DruzynyService(
         }
     }
     
-    public async Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganiaDruzyny(int idDruzyny, int idUzytkownika)
+    public async Task<ServiceResult<CzySpelniaWymaganiaDruzynyResult>> CzyUzytkownikSpelniaWymaganiaDruzyny(int idDruzyny, int idUzytkownika)
     {
-        if(idDruzyny <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id drużyny: " + idDruzyny));
-        if(idUzytkownika <= 0) return ServiceResult<bool>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
+        if(idDruzyny <= 0) return ServiceResult<CzySpelniaWymaganiaDruzynyResult>.BadRequest(new ErrorItem("Podano nieprawidłowe id drużyny: " + idDruzyny));
+        if(idUzytkownika <= 0) return ServiceResult<CzySpelniaWymaganiaDruzynyResult>.BadRequest(new ErrorItem("Podano nieprawidłowe id użytkownika: " + idUzytkownika)); 
         try 
         { 
             var druzyna = await druzynyRepository.GetDruzyna(idDruzyny);
             
-            // sprawdzamy, czy ma daną grę na danej platformie
             if(druzyna.CzyZintegrowano){
-                if (druzyna.PlatformaId != null)
+                if (druzyna.PlatformaId == null)
                 {
+                    // sprawdzamy, czy ma daną grę
+                    var czyMaTeGreRes = await bibliotekaGierService.CzyUzytkownikMaDanaGre(
+                        idUzytkownika,
+                        druzyna.GraId
+                    );
+                    if (!czyMaTeGreRes.Succeeded) return new ServiceResult<CzySpelniaWymaganiaDruzynyResult>
+                    {
+                        Succeeded = false,
+                        StatusCode = czyMaTeGreRes.StatusCode,
+                        Errors = czyMaTeGreRes.Errors
+                    };
+                    if (!czyMaTeGreRes.Value) return ServiceResult<CzySpelniaWymaganiaDruzynyResult>.Ok(new CzySpelniaWymaganiaDruzynyResult(false, "Użytkownik nie ma danej gry"));
+                }
+                else
+                {
+                    // sprawdzamy, czy ma daną grę na danej platformie
                     var czyMaTeGreNaPlatformieRes = await bibliotekaGierService.CzyUzytkownikMaDanaGreNaDanejPlatformie(
                         idUzytkownika,
                         druzyna.GraId,
                         druzyna.PlatformaId ??
                         0 // już odfiltrowaliśmy drużyny bez PlatformaId, więc możemy bezpiecznie użyć ?? 0
                     );
-                    if (!czyMaTeGreNaPlatformieRes.Succeeded) return czyMaTeGreNaPlatformieRes;
-                    if (!czyMaTeGreNaPlatformieRes.Value) return ServiceResult<bool>.Ok(false);
-                }
-                else
-                {
-                    var czyMaTeGreRes = await bibliotekaGierService.CzyUzytkownikMaDanaGre(
-                        idUzytkownika,
-                        druzyna.GraId
-                    );
-                    if (!czyMaTeGreRes.Succeeded) return czyMaTeGreRes;
-                    if (!czyMaTeGreRes.Value) return ServiceResult<bool>.Ok(false);
+                    if (!czyMaTeGreNaPlatformieRes.Succeeded) return new ServiceResult<CzySpelniaWymaganiaDruzynyResult>
+                    {
+                        Succeeded = false,
+                        StatusCode = czyMaTeGreNaPlatformieRes.StatusCode,
+                        Errors = czyMaTeGreNaPlatformieRes.Errors
+                    };
+                    if (!czyMaTeGreNaPlatformieRes.Value) return ServiceResult<CzySpelniaWymaganiaDruzynyResult>.Ok(new CzySpelniaWymaganiaDruzynyResult(false, "Użytkownik nie ma danej gry na danej platformie"));
                 }
             }
             
@@ -660,25 +671,25 @@ public class DruzynyService(
             {
 
                 var jezykiRes = await jezykiService.GetJezykiProfiluZRownymiLubNizszymiStopniami(idUzytkownika);
-                if (!jezykiRes.Succeeded) return ServiceResult<bool>.Fail(jezykiRes.StatusCode, jezykiRes.Errors);
+                if (!jezykiRes.Succeeded) return ServiceResult<CzySpelniaWymaganiaDruzynyResult>.Fail(jezykiRes.StatusCode, jezykiRes.Errors);
 
                 var jezykISopien = jezykiRes.Value.FirstOrDefault(x => x.Jezyk.Id == druzyna.WymaganyJezykId);
-                if(jezykISopien == null) return ServiceResult<bool>.Ok(false);
-                
+                if(jezykISopien == null) return ServiceResult<CzySpelniaWymaganiaDruzynyResult>.Ok(new CzySpelniaWymaganiaDruzynyResult(false, "Użytkownik nie ma wymaganego języka"));
+
                 if (druzyna.WymaganyStopienBieglosciJezykaId != null)
                 {
                     var stopien = jezykISopien.Stopnie.FirstOrDefault(x => x.Id == druzyna.WymaganyStopienBieglosciJezykaId);
-                    if (stopien == null) return ServiceResult<bool>.Ok(false);
+                    if (stopien == null) return ServiceResult<CzySpelniaWymaganiaDruzynyResult>.Ok(new CzySpelniaWymaganiaDruzynyResult(false, "Użytkownik nie ma wymaganego stopnia biegłości w języku"));
                 }
 
             }
             
             var spelniaWymaganie = !druzyna.CzyZintegrowano || await druzynyRepository.CzyUzytkownikSpelniaWymaganeStatystykiDruzyny(idDruzyny, idUzytkownika); 
-            return ServiceResult<bool>.Ok(spelniaWymaganie);
+            return ServiceResult<CzySpelniaWymaganiaDruzynyResult>.Ok(new CzySpelniaWymaganiaDruzynyResult(spelniaWymaganie, null));
         }
         catch (NieZnalezionoWBazieException e)
         {
-            return ServiceResult<bool>.NotFound(new ErrorItem(e.Message));
+            return ServiceResult<CzySpelniaWymaganiaDruzynyResult>.NotFound(new ErrorItem(e.Message));
         }
     }
 
@@ -1040,8 +1051,9 @@ public class DruzynyService(
             
             // sprawdzamy, czy użytkownik spełnia wymagania drużyny
             var czyUzytkownikSpelniaWymaganiaDruzynyRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(miejsce.DruzynaId, idUzytkownika);
-            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Succeeded) return czyUzytkownikSpelniaWymaganiaDruzynyRes;
-            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Value) return ServiceResult<bool>.Forbidden(new ErrorItem("Nie spełniasz wymagań tego miejsca"));
+            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Succeeded) return ServiceResult<bool>.Fail(czyUzytkownikSpelniaWymaganiaDruzynyRes.StatusCode, czyUzytkownikSpelniaWymaganiaDruzynyRes.Errors);
+            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Value.CzySpelniaWymagania) 
+                return ServiceResult<bool>.Forbidden(new ErrorItem("Dodawany użytkownik nie spełnia wymagań drużyny: " + czyUzytkownikSpelniaWymaganiaDruzynyRes.Value.PowodNiespelnieniaWymagan));
     
             // sprawdzamy, czy użytkownik spełnia wymagania miejsca
             var czyUzytkownikSpelniaWymaganieMiejscaRes = await CzyUzytkownikSpelniaWymaganieMiejsca(idMiejsca, idUzytkownika);
@@ -1149,9 +1161,9 @@ public class DruzynyService(
             
             // sprawdzamy, czy zapraszany użytkownik spełnia wymagania drużyny
             var czyUzytkownikSpelniaWymaganiaDruzynyRes = await CzyUzytkownikSpelniaWymaganiaDruzyny(miejsce.DruzynaId, idZapraszanegoUzytkownika);
-            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Succeeded) return czyUzytkownikSpelniaWymaganiaDruzynyRes;
-            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Value)
-                return ServiceResult<bool>.Forbidden(new ErrorItem("Zapraszany użytkownik nie spełnia wymagań drużyny"));
+            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Succeeded) return ServiceResult<bool>.Fail(czyUzytkownikSpelniaWymaganiaDruzynyRes.StatusCode, czyUzytkownikSpelniaWymaganiaDruzynyRes.Errors);
+            if (!czyUzytkownikSpelniaWymaganiaDruzynyRes.Value.CzySpelniaWymagania)
+                return ServiceResult<bool>.Forbidden(new ErrorItem("Zapraszany użytkownik nie spełnia wymagań drużyny: " + czyUzytkownikSpelniaWymaganiaDruzynyRes.Value.PowodNiespelnieniaWymagan));
             
             // sprawdzamy, czy zapraszany użytkownik spełnia wymagania miejsca
             var czyUzytkownikSpelniaWymaganieMiejscaRes = await CzyUzytkownikSpelniaWymaganieMiejsca(idMiejsca, idZapraszanegoUzytkownika);

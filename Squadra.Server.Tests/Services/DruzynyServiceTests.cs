@@ -98,7 +98,7 @@ public class DruzynyServiceTests
         var svc = CreateService();
         var res = await svc.CzyUzytkownikSpelniaWymaganiaDruzyny(1, 2);
         Assert.True(res.Succeeded);
-        Assert.False(res.Value);
+        Assert.False(res.Value.CzySpelniaWymagania);
     }
 
     #endregion

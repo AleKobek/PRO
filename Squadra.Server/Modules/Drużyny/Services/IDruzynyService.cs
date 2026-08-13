@@ -21,7 +21,7 @@ public interface IDruzynyService
     public Task<ServiceResult<DateTime?>> GetDataOstatniegoOtwarciaCzatuUzytkownika(int idUzytkownika, int idDruzyny);
     public Task<ServiceResult<ICollection<ProfilMinInfoDto>>> GetZnajomiSpelniajacyWarunkiMiejsca(int idMiejsca, int idUzytkownika);
     public Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganieMiejsca(int idMiejsca, int idUzytkownika);
-    public Task<ServiceResult<bool>> CzyUzytkownikSpelniaWymaganiaDruzyny(int idDruzyny, int idUzytkownika);
+    public Task<ServiceResult<CzySpelniaWymaganiaDruzynyResult>> CzyUzytkownikSpelniaWymaganiaDruzyny(int idDruzyny, int idUzytkownika);
     public Task<ServiceResult<bool>> CzyUzytkownikOsiagnalMaksLiczbeDruzyn(int idGry, int idUzytkownika);
     public Task<ServiceResult<bool>> CzyUzytkownikNalezyDoDruzyny(int idUzytkownika, int idDruzyny);
     public Task<ServiceResult<int>> StworzDruzyne(CreateDruzynaReqDto druzynaReq, int idKapitana);
