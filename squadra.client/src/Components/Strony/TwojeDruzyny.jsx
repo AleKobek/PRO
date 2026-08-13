@@ -30,7 +30,7 @@ export default function TwojeDruzyny() {
             toast.success('Pomyślnie opuszczono drużynę!', toastOptions);
         }
 
-    },[location.state?.pomyslnieOpuszczonoDruzyne, location.state?.pomyslnieUsunietoDruzyne, toastOptions])
+    },[location.state?.pomyslnieOpuszczonoDruzyne, location.state?.pomyslnieUsunietoDruzyne])
 
 
     // pobieramy tabelkę drużyn

@@ -74,7 +74,7 @@ export default function TabelkaDruzyn({idDruzyn, brakDruzynWiadomosc, czySzczego
             alive = false;
             ac.abort();
         };
-    },[aktualnaStrona, idDruzyn, idUzytkownika, liczbaDruzynNaStronie, liczbaStron, toastOptions])
+    },[aktualnaStrona, idDruzyn, idUzytkownika, liczbaDruzynNaStronie, liczbaStron])
 
     return (<div>
         <span className="mr-2">Maksymalna liczba drużyn na stronie:</span>

@@ -22,7 +22,7 @@ export default function TwojProfil() {
         if (location.state?.pomyslnieEdytowanoProfil) {
             toast.success('Pomyślnie edytowano profil!', toastOptions);
         }
-    },[location.state?.pomyslnieEdytowanoProfil, toastOptions])
+    },[location.state?.pomyslnieEdytowanoProfil])
 
     if(ladowanie || !uzytkownik) return (<>
             <div id = "glowna">
