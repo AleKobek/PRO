@@ -22,7 +22,6 @@ public class IntegracjeZewnetrzneService(
     IStatystykiService statystykiService,
     IBibliotekaGierService bibliotekaGierService,
     IPlatformyService platformyService,
-    IDruzynyService druzynyService,
     IDeleteDruzynaService deleteDruzynaService,
     IUzytkownicyService uzytkownicyService) : IIntegracjeZewnetrzneService
 {
