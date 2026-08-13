@@ -2,12 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using Squadra.Server.Context;
 using Squadra.Server.Exceptions;
-using Squadra.Server.Modules.Powiadomienia.Repositories;
 using Squadra.Server.Modules.Profile.DTO.Profil;
 using Squadra.Server.Modules.Profile.Repositories;
 using Squadra.Server.Modules.Uzytkownicy.DTO.Uzytkownik;
 using Squadra.Server.Modules.Uzytkownicy.Models;
-using Squadra.Server.Modules.Znajomosci.Repositories;
 
 namespace Squadra.Server.Modules.Uzytkownicy.Repositories;
 
@@ -101,7 +99,6 @@ public class UzytkownicyRepository(
         if (await roleManager.RoleExistsAsync("Uzytkownik"))
             await userManager.AddToRoleAsync(uzytkownikDoDodania, "Uzytkownik");
 
-        var role = (await userManager.GetRolesAsync(uzytkownikDoDodania)).ToArray();
 
         // kończymy transakcję
         await transaction.CommitAsync();
