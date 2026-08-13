@@ -16,8 +16,6 @@ namespace Squadra.Server.Modules.Uzytkownicy.Repositories;
 public class UzytkownicyRepository(
     AppDbContext appDbContext,
     IProfileRepository profileRepository,
-    IPowiadomieniaRepository powiadomieniaRepository,
-    IZnajomosciRepository znajomosciRepository,
     UserManager<Uzytkownik> userManager,
     RoleManager<IdentityRole<int>> roleManager)
     : IUzytkownicyRepository
