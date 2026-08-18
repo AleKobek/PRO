@@ -139,10 +139,9 @@ public class PowiadomieniaService(IPowiadomieniaRepository powiadomieniaReposito
 
             // sprawdzamy, czy takie miejsce istnieje
             var idMiejsca = powiadomienie.IdDrugiegoPowiazanegoObiektu ?? 1;
-            var czyProfilIstnieje = await profileService.CzyProfilIstnieje(idMiejsca);
-            if (!czyProfilIstnieje.Succeeded) return czyProfilIstnieje;
-            if (!czyProfilIstnieje.Value)
-                return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono profilu o id " + idMiejsca));
+            var czyMiejsceIstnieje = await druzynyRepository.CzyMiejsceIstnieje(idMiejsca);
+            if (!czyMiejsceIstnieje)
+                return ServiceResult<bool>.NotFound(new ErrorItem("Nie znaleziono miejsca o id " + idMiejsca));
         }
         
         // jak tu dochodzimy, wszystko jest w porządku

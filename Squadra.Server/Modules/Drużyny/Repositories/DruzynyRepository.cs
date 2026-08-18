@@ -86,6 +86,12 @@ public class DruzynyRepository(AppDbContext context) : IDruzynyRepository
 
         return miejscaWDruzynie;
     }
+
+    public async Task<bool> CzyMiejsceIstnieje(int idMiejsca)
+    {
+        var miejsce = await context.MiejsceWDruzynie.FindAsync(idMiejsca);
+        return miejsce != null;
+    }
     
     public async Task<int> GetIdMiejscaKapitanaDruzyny(int idDruzyny)
     {
