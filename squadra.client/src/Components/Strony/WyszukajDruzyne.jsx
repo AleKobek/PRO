@@ -2,7 +2,7 @@
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
 import OkienkoTlumaczaceZintegrowanie from "../OkienkoTlumaczaceZintegrowanie";
-import {toast} from "react-toastify";
+import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL} from "../../config/api";
 import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 
@@ -225,10 +225,14 @@ export default function WyszukajDruzyne() {
         const res = await fetch(`${API_BASE_URL}/Druzyny/wyszukaj`, opcje);
 
 
-        const body = await res.json().catch(() => null);
+        const ct = res.headers.get("content-type") || "";
+        const body = ct.includes("application/json") || ct.includes("application/problem+json") // to jest jak są błędy
+            ? await res.json().catch(() => null)
+            : await res.text().catch(() => "");
+        console.log(body);
 
         if (!res.ok) {
-            toast.error(`Wystąpił błąd podczas wyszukiwania drużyny: ${body?.message ?? res.statusText}`, toastOptions);
+            toast.error(`Wystąpił błąd podczas wyszukiwania drużyny: ${body?.message ?? body ?? res.statusText}`, toastOptions);
             return;
         }
 
@@ -422,5 +426,18 @@ export default function WyszukajDruzyne() {
             </button>
             {pokazOkienkoTlumaczenia && <OkienkoTlumaczaceZintegrowanie ref={ref} ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia}/>}
         </div>
+        <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            transition={Bounce}
+        />
     </>);
 }
