@@ -11,7 +11,7 @@ export default function CzatZeZnajomym({
                                                     pseudonimZnajomegoZOtwartymCzatem,
                                                 }){
 
-    const {toastOptions} = useWspoldzieloneFunkcje();
+    const {toastOptions, czySaNoweWiadomosciPrywatne, ustawCzySaNoweWiadomosciPrywatne} = useWspoldzieloneFunkcje();
     const [czat, ustawCzat] = useState([]);
     const [czyTrwaLadowanieCzatu, ustawCzyTrwaLadowanieCzatu] = useState(true);
     const [naszAwatar, ustawNaszAwatar] = useState("");
@@ -59,11 +59,13 @@ export default function CzatZeZnajomym({
 
     // co 5 sekund aktualizujemy czat
     useEffect(() => {
+        let alive = true;
+        const ac = new AbortController();
         const interval = setInterval(async () => {
             if(!idZnajomegoZOtwartymCzatem) return;
             if(czyTrwaLadowanieCzatu) return; // nie chcemy się wcinać gdy już się główne pobiera
 
-            podajCzat();
+            podajCzat(alive, ac);
 
 
             await aktualizujDateOtwarciaCzatu();
@@ -72,19 +74,23 @@ export default function CzatZeZnajomym({
 
         return () => {
             clearInterval(interval)
+            alive = false;
+            ac.abort();
         };
     },[czyTrwaLadowanieCzatu, idZnajomegoZOtwartymCzatem])
 
     // pobieramy czat
     useEffect(() => {
         const ac = new AbortController();
+        let alive = true;
         if(!idZnajomegoZOtwartymCzatem) return;
         ustawCzyTrwaLadowanieCzatu(true);
 
-        podajCzat(ac);
+        podajCzat(alive, ac);
 
         ustawCzyTrwaLadowanieCzatu(false);
         return () => {
+            alive = false;
             ac.abort(); // przerywamy fetch
         };
     },[idZnajomegoZOtwartymCzatem]);
@@ -157,6 +163,7 @@ export default function CzatZeZnajomym({
         if(czySieWysylaWiadomosc) return;
 
         const ac = new AbortController();
+        let alive = true;
         ustawCzySieWysylaWiadomosc(true);
         try{
             const opcje = {
@@ -179,12 +186,25 @@ export default function CzatZeZnajomym({
             }
             ustawWiadomoscDoWyslania("");
             // odświeżamy czat po wysłaniu wiadomości
-            podajCzat(ac);
+            podajCzat(alive, ac);
         }catch (err) {
             console.error('Błąd wysyłania wiadomości:', err);
             toast.error('Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie później.', toastOptions);
         }finally {
             ustawCzySieWysylaWiadomosc(false);
+        }
+    }
+
+    const sprawdzCzySaNoweWiadomosci = async (alive, signal) => {
+        try {
+            const resZnajomi = await fetch(`${API_BASE_URL}/Wiadomosci/nowe/znajomi`, {credentials: "include", signal});
+            if(resZnajomi.ok) {
+                const czyNoweZnajomi = await resZnajomi.json();
+                if (czySaNoweWiadomosciPrywatne !== czyNoweZnajomi && alive) ustawCzySaNoweWiadomosciPrywatne(czyNoweZnajomi);
+            }
+        } catch (err) {
+            if (err && err.name === 'AbortError') return;
+            console.error(err);
         }
     }
 
@@ -213,11 +233,12 @@ export default function CzatZeZnajomym({
         }
     };
 
-    const podajCzat = async (ac) => {
+    const podajCzat = async (alive, ac) => {
         const data = await fetchJsonAbort(`${API_BASE_URL}/Wiadomosci/czat-prywatny/${idZnajomegoZOtwartymCzatem}`, ac, " czatu");
         if(!data) ustawCzat([]);
         else ustawCzat(data);
         await aktualizujDateOtwarciaCzatu()
+        await sprawdzCzySaNoweWiadomosci(alive, ac.signal);
     }
 
     if(czyTrwaLadowanieCzatu) return (
