@@ -220,7 +220,7 @@ public class DruzynyServiceTests
     [Fact]
     public async Task WyszukajDruzyny_Success_ReturnsResults()
     {
-        var req = new WyszukajDruzyneReqDto(1, null, null, null, null, "niezintegrowane", null,[]);
+        var req = new WyszukajDruzyneReqDto(1, null, 1, null, null, "niezintegrowane", null,[]);
         _mockUzytkownicy.Setup(u => u.CzyUzytkownikMaZintegrowaneKonto(1)).ReturnsAsync(ServiceResult<bool>.Ok(false));
         _mockGry.Setup(g => g.GetWspieranaGra(1)).ReturnsAsync(ServiceResult<WspieranaGraDto>.Ok(new WspieranaGraDto(1, "Leczo PatPat Simulator", "clicker")));
         _mockJezyki.Setup(j => j.GetJezykiProfilu(1)).ReturnsAsync(ServiceResult<ICollection<JezykOrazStopienDto>>.Ok(new List<JezykOrazStopienDto>()));
@@ -228,7 +228,8 @@ public class DruzynyServiceTests
         _mockRepo.Setup(r => r.GetDruzyny(It.IsAny<int[]>())).ReturnsAsync(new List<Squadra.Server.Modules.Drużyny.Models.Druzyna> { new() { Id = 5, Nazwa = "T", GraId = 1, KapitanId = 1, CzyPubliczna = true, NastrojRozgrywkiId = 1 } });
         _mockRepo.Setup(r => r.GetMiejscaWDruzynie(5)).ReturnsAsync(new List<Squadra.Server.Modules.Drużyny.Models.MiejsceWDruzynie>());
         _mockStat.Setup(s => s.GetRoleGry(1)).ReturnsAsync(ServiceResult<ICollection<RolaDto>>.Ok(new List<RolaDto>()));
-        _mockRepo.Setup(r => r.GetNastrojRozgrywki(It.IsAny<int>())).ReturnsAsync(new Modules.Drużyny.Models.NastrojRozgrywki { Id = 1, Nazwa = "N" });
+        _mockRepo.Setup(r => r.GetNastrojRozgrywki(1)).ReturnsAsync(new Modules.Drużyny.Models.NastrojRozgrywki { Id = 1, Nazwa = "N" });
+        _mockRepo.Setup(r => r.CzyNastrojRozgrywkiIstnieje(1)).ReturnsAsync(true);
         _mockRepo.Setup(r => r.GetDruzyna(It.IsAny<int>())).ReturnsAsync(new Squadra.Server.Modules.Drużyny.Models.Druzyna { Id = 5, Nazwa = "T", GraId = 1, KapitanId = 1, CzyPubliczna = true, NastrojRozgrywkiId = 1 });
         _mockUzytkownicy.Setup(u => u.GetOstatniaAktywnoscUzytkownika(It.IsAny<int>())).ReturnsAsync(ServiceResult<DateTime?>.Ok(DateTime.UtcNow));
         _mockRepo.Setup(r => r.GetDataOstatniegoOtwarciaCzatuUzytkownika(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync((DateTime?)null);
