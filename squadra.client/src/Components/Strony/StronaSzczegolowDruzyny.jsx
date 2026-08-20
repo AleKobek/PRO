@@ -509,7 +509,7 @@ export default function StronaSzczegolowDruzyny() {
 
         return (<div
             ref={ref}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-[800px] pt-2 p-10 overflow-y-auto
+            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-3/4 pt-2 p-10 overflow-y-auto
                 rounded-md shadow-lg justify-center items-center bg-amber-50 border-2 border-amber-400"
             style={{zIndex: 2001}}
         >
