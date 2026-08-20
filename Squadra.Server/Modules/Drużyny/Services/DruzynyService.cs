@@ -965,7 +965,7 @@ public class DruzynyService(
         var gra = await wspieraneGryService.GetWspieranaGra(req.IdGry);
         if (!gra.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(gra.StatusCode, gra.Errors);
         
-        if(req.IdPlatformy != null)
+        if(req.IdPlatformy != null && req.PreferencjeZintegrowania != "niezintegrowane")
         {
             var platforma = await platformyService.GetPlatforma(req.IdPlatformy ?? 0);
             if (!platforma.Succeeded) return ServiceResult<TabelkaDruzynResDto>.Fail(platforma.StatusCode, platforma.Errors);
