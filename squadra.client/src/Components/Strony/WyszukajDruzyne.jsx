@@ -1,7 +1,7 @@
 ﻿import React, {useEffect, useMemo, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
-import {OkienkoTlumaczaceZintegrowanie} from "../OkienkoTlumaczaceZintegrowanie";
+import OkienkoTlumaczaceZintegrowanie from "../OkienkoTlumaczaceZintegrowanie";
 import {toast} from "react-toastify";
 import {API_BASE_URL} from "../../config/api";
 import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
@@ -420,7 +420,7 @@ export default function WyszukajDruzyne() {
                 onClick={przyWysylaniu}>
                 Wyszukaj
             </button>
-            {pokazOkienkoTlumaczenia && OkienkoTlumaczaceZintegrowanie(ref, ustawPokazOkienkoTlumaczenia)}
+            {pokazOkienkoTlumaczenia && <OkienkoTlumaczaceZintegrowanie ref={ref} ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia}/>}
         </div>
     </>);
 }

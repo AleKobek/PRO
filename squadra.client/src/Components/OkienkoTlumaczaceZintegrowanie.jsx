@@ -1,7 +1,7 @@
 ﻿import React from "react";
 
-export const OkienkoTlumaczaceZintegrowanie = React.forwardRef(({ ustawPokazOkienkoTlumaczenia }, ref) => (
-    <div
+export default function OkienkoTlumaczaceZintegrowanie ({ ustawPokazOkienkoTlumaczenia, ref}) {
+    return(<div
         ref={ref}
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] pt-2 p-10 overflow-y-auto
                     rounded-md shadow-lg justify-center items-center bg-amber-50 border-2 border-amber-400"
@@ -20,5 +20,5 @@ export const OkienkoTlumaczaceZintegrowanie = React.forwardRef(({ ustawPokazOkie
                 Zintegrowane dane są też potrzebne do wyświetlenia biblioteki gier użytkownika na stronie jego profilu.
             </p>
         </div>
-    </div>
-));
+    </div>);
+}

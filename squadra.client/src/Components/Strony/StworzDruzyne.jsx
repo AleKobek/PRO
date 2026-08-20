@@ -2,7 +2,7 @@
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
 import FormularzZewnetrznyDruzyny from "../FormularzZewnetrznyDruzyny";
-import {OkienkoTlumaczaceZintegrowanie} from "../OkienkoTlumaczaceZintegrowanie";
+import OkienkoTlumaczaceZintegrowanie from "../OkienkoTlumaczaceZintegrowanie";
 
 export default function StworzDruzyne() {
 
@@ -29,7 +29,7 @@ export default function StworzDruzyne() {
             <button className={"przycisk-nawigacji"} onClick={() => {navigate('/twojeDruzyny')}}>Powrót do twoich drużyn</button>
             <br/><br/>
             <FormularzZewnetrznyDruzyny uzytkownik={uzytkownik} ladowanie={ladowanie} ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia}/>
-            {pokazOkienkoTlumaczenia && OkienkoTlumaczaceZintegrowanie(ref, ustawPokazOkienkoTlumaczenia)}
+            {pokazOkienkoTlumaczenia && <OkienkoTlumaczaceZintegrowanie ref={ref} ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia}/>}
         </div>
     </>);
 }

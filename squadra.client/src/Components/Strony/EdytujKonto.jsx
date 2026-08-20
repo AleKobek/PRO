@@ -8,7 +8,7 @@ import FormularzKonta from "../FormularzKonta";
 import {API_BASE_URL} from "../../config/api";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import EdytujIntegracjeWKoncie from "../EdytujIntegracjeWKoncie";
-import {OkienkoTlumaczaceZintegrowanie} from "../OkienkoTlumaczaceZintegrowanie";
+import OkienkoTlumaczaceZintegrowanie from "../OkienkoTlumaczaceZintegrowanie";
 import ZmienHaslo from "../ZmienHaslo";
 import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
 export default function EdytujKonto() {

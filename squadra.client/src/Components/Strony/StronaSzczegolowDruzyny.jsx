@@ -5,7 +5,7 @@ import {useLocation, useNavigate, useParams} from "react-router-dom";
 import {useAuth} from "../../Context/AuthContext";
 import {Bounce, toast, ToastContainer} from "react-toastify";
 import {API_BASE_URL, CLIENT_URL} from "../../config/api";
-import {OkienkoTlumaczaceZintegrowanie} from "../OkienkoTlumaczaceZintegrowanie";
+import OkienkoTlumaczaceZintegrowanie from "../OkienkoTlumaczaceZintegrowanie";
 import Awatar from "../Awatar";
 import CzatDruzynowy from "../CzatDruzynowy";
 import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext";
@@ -947,7 +947,7 @@ export default function StronaSzczegolowDruzyny() {
                 </div>
             </div>
         </div>
-        {pokazOkienkoTlumaczenia && OkienkoTlumaczaceZintegrowanie(ref, ustawPokazOkienkoTlumaczenia)}
+        {pokazOkienkoTlumaczenia && <OkienkoTlumaczaceZintegrowanie ref={ref} ustawPokazOkienkoTlumaczenia={ustawPokazOkienkoTlumaczenia}/>}
         {pokazPanelZapraszania && <PanelZapraszania/>}
         {pokazUsunDruzyne && <PanelUsunDruzyne/>}
         {pokazOkienkoPublicznosci && <OkienkoPublicznosci/>}
