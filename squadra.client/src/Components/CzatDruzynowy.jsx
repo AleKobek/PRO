@@ -9,7 +9,7 @@ export default function CzatDruzynowy({
                                                     idDruzyny
                                                 }){
 
-    const {toastOptions} = useWspoldzieloneFunkcje();
+    const {toastOptions, czySaNoweWiadomosciDruzynowe, ustawCzySaNoweWiadomosciDruzynowe} = useWspoldzieloneFunkcje();
     const [czat, ustawCzat] = useState([]);
     const [czyTrwaLadowanieCzatu, ustawCzyTrwaLadowanieCzatu] = useState(true);
     const [uczestnicy, ustawUczestnikow] = useState([]);
@@ -30,13 +30,14 @@ export default function CzatDruzynowy({
 
     // co 5 sekund aktualizujemy czat
     useEffect(() => {
+        let alive = true;
         const ac = new AbortController();
 
         const interval = setInterval(async () => {
             if(!idDruzyny) return;
             if(czyTrwaLadowanieCzatu) return; // nie chcemy się wcinać gdy już się główne pobiera
 
-            podajCzat(ac);
+            await podajCzat(alive, ac);
 
 
             await aktualizujDateOtwarciaCzatu();
@@ -46,6 +47,7 @@ export default function CzatDruzynowy({
         return () => {
             clearInterval(interval);
             ac.abort();
+            alive = false;
         };
     },[czyTrwaLadowanieCzatu, idDruzyny])
 
@@ -53,14 +55,16 @@ export default function CzatDruzynowy({
     // pobieramy czat
     useEffect(() => {
         const ac = new AbortController();
+        let alive = true;
         if(!idDruzyny) return;
         ustawCzyTrwaLadowanieCzatu(true);
 
-        podajCzat(ac);
+        podajCzat(alive, ac);
 
         ustawCzyTrwaLadowanieCzatu(false);
         return () => {
             ac.abort(); // przerywamy fetch
+            alive = false;
         };
     },[idDruzyny]);
 
@@ -77,6 +81,19 @@ export default function CzatDruzynowy({
         // aktualizujemy referencję poprzedniej liczby wiadomości
         poprzedniaCzatLengthRef.current = czat.length;
     }, [czat]);
+
+    const sprawdzCzySaNoweWiadomosci = async (alive, signal) => {
+        try {
+            const resDruzyny = await fetch(`${API_BASE_URL}/Wiadomosci/nowe/druzyny`, {credentials: "include", signal});
+            if(resDruzyny.ok) {
+                const czyNoweDruzyny = await resDruzyny.json();
+                if(czySaNoweWiadomosciDruzynowe !== czyNoweDruzyny) ustawCzySaNoweWiadomosciDruzynowe(czyNoweDruzyny);
+            }
+        } catch (err) {
+            if (err && err.name === 'AbortError') return;
+            console.error(err);
+        }
+    }
 
     const aktualizujDateOtwarciaCzatu = async () => {
         if (!idDruzyny) return null;
@@ -133,6 +150,7 @@ export default function CzatDruzynowy({
         if(czySieWysylaWiadomosc) return;
 
         const ac = new AbortController();
+        let alive = true;
         ustawCzySieWysylaWiadomosc(true);
         try{
             const opcje = {
@@ -155,7 +173,7 @@ export default function CzatDruzynowy({
             }
             ustawWiadomoscDoWyslania("");
             // odświeżamy czat po wysłaniu wiadomości
-            await podajCzat(ac);
+            await podajCzat(alive, ac);
         }catch (err) {
             console.error('Błąd wysyłania wiadomości:', err);
             toast.error('Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie później.', toastOptionsZId);
@@ -189,13 +207,14 @@ export default function CzatDruzynowy({
         }
     };
 
-    const podajCzat = async (ac) => {
+    const podajCzat = async (alive, ac) => {
         const data = await fetchJsonAbort(`${API_BASE_URL}/Wiadomosci/czat-druzynowy/${idDruzyny}`, ac, " czatu");
         if(data && data.wiadomosci && data.wiadomosci.length > 0) {
             ustawCzat(data.wiadomosci);
             ustawUczestnikow(data.uczestnicy);
         }
         await aktualizujDateOtwarciaCzatu()
+        await sprawdzCzySaNoweWiadomosci(alive, ac.signal);
     }
 
     if(czyTrwaLadowanieCzatu) return (
