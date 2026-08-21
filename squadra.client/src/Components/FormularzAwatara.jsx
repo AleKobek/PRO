@@ -1,5 +1,4 @@
 ﻿import React, {useEffect, useMemo, useState} from "react";
-import {useNavigate} from "react-router-dom";
 import {API_BASE_URL} from "../config/api";
 import {toast} from "react-toastify";
 import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
@@ -13,7 +12,6 @@ export default function FormularzAwatara({
     const [bladAwatara, ustawBladAwatara] = useState("");
     const [awatar, ustawAwatar] = useState(null);
     const [podgladAwatara, ustawPodgladAwatara] = useState("");
-    const navigate = useNavigate();
     const {toastOptions} = useWspoldzieloneFunkcje();
 
 
@@ -28,14 +26,14 @@ export default function FormularzAwatara({
 
         ustawBladAwatara("");
 
-        if (!awatar) {
+        if (!awatar || awatar === "") {
             ustawBladAwatara("Wybierz plik awatara.");
             return;
         }
 
         const formularz = new FormData();
         formularz.append("awatar", awatar);
-        
+
 
         const opcje = {
             method: "PUT",
@@ -61,19 +59,17 @@ export default function FormularzAwatara({
             return;
         }
 
-        ustawAwatarUrl(podgladAwatara);
-
         // jak tutaj dojdziemy, wszystko jest git
-        navigate("/twojProfil", {
-            state: { pomyslnieEdytowanoProfil: true }
-        });
+        ustawAwatarUrl(podgladAwatara);
+        ustawAwatar(null);
+        toast.success('Pomyślnie edytowano awatar!', toastOptions);
     }
 
     /**
      * sprawdzamy, czy jest zablokowane wyślij
      */
     const czyZablokowaneWyslij = useMemo(() => {
-            return (staryAwatar === null || awatar === null || staryAwatar === awatar);
+            return (staryAwatar === null || awatar === null || awatar === "" || awatar === staryAwatar);
     }, [awatar, staryAwatar]);
 
     
@@ -99,6 +95,7 @@ export default function FormularzAwatara({
                 }}
             /><br/><br/>
         <input className={czyZablokowaneWyslij ? "zablokowany-przycisk" :"wyslij-formularz-przycisk"} type = "button" value = "Zapisz" onClick={przyWysylaniu} disabled={czyZablokowaneWyslij}/>
+        <br/>
         <span id = "error-awatar" className="error-wiadomosc">{bladAwatara}</span><br/><br/>
     </form>)
 }

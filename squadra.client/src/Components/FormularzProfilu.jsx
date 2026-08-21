@@ -1,21 +1,25 @@
 import React, {useEffect, useMemo, useState} from "react";
 import ListaJezykow from "./ListaJezykow";
-import {useNavigate} from "react-router-dom";
 import {API_BASE_URL} from "../config/api";
 import {toast} from "react-toastify";
 import {useWspoldzieloneFunkcje} from "../Context/WspoldzieloneFunkcjeContext";
 
 export default function FormularzProfilu({
                                              staraListaJezykowUzytkownika,
+                                             ustawStaraListaJezykowUzytkownika,
                                              staryPseudonim,
+                                             ustawStaryPseudonim,
                                              stareZaimki,
+                                             ustawStareZaimki,
                                              staryOpis,
+                                             ustawStaryOpis,
                                              staryRegion,
+                                             ustawStaryRegion,
                                              staryKraj,
+                                             ustawStaryKraj,
                                          }) 
 {
-    
-    const navigate = useNavigate();
+
     const {toastOptions} = useWspoldzieloneFunkcje();
 
 
@@ -122,7 +126,8 @@ export default function FormularzProfilu({
         ustawBladOgolny("");
         ustawBladPseudonimu("");
         ustawBladZaimkow("");
-        
+        ustawBladOpisu("");
+
         
         const profilDoWyslania = {
             regionId: region.id ?? null,
@@ -168,9 +173,14 @@ export default function FormularzProfilu({
         }
 
         // jak tutaj dojdziemy, wszystko jest git
-        navigate("/twojProfil", {
-            state: { pomyslnieEdytowanoProfil: true }
-        });
+
+        toast.success('Pomyślnie edytowano profil!', toastOptions);
+        ustawStaryPseudonim(pseudonim);
+        ustawStareZaimki(zaimki);
+        ustawStaryOpis(opis);
+        ustawStaryRegion(region);
+        ustawStaryKraj(kraj);
+        ustawStaraListaJezykowUzytkownika(listaJezykowUzytkownika);
     }
 
     // ustawiamy nową listę dostępnych regionów, jeśli kraj się zmieni
@@ -186,7 +196,7 @@ export default function FormularzProfilu({
      * porównujemy czy użytkownik coś zmienił w swoich listach języków
      */
     const czyListyJezykoweTakieSame = useMemo(()=>{
-        if(listaJezykowUzytkownika.length === 0 && staraListaJezykowUzytkownika.length === 0) return false;
+        if(listaJezykowUzytkownika.length === 0 && staraListaJezykowUzytkownika.length === 0) return true;
         let posortowanaListaJezykowUzytkownika = [...listaJezykowUzytkownika].sort((a, b) => a.idJezyka - b.idJezyka);
         let posortowanaStaraListaJezykowUzytkownika = [...staraListaJezykowUzytkownika].sort((a, b) => a.idJezyka - b.idJezyka);
         if(listaJezykowUzytkownika.length !== staraListaJezykowUzytkownika.length) return false;

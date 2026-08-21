@@ -118,8 +118,14 @@ import {useWspoldzieloneFunkcje} from "../../Context/WspoldzieloneFunkcjeContext
             <h1>Edytuj profil</h1>
             <button className={"przycisk-nawigacji"} onClick={() => {navigate('/')}}>Powrót do profilu</button>
             <br/><br/>
-            <FormularzProfilu czyEdytuj = {true} staraListaJezykowUzytkownika = {staraListaJezykowUzytkownika} staryPseudonim = {pseudonim}
-                              stareZaimki = {zaimki} staryOpis = {opis} staryRegion = {region} staryKraj = {kraj} uzytkownik={uzytkownik} staryAwatar={awatar}/>
+            <FormularzProfilu czyEdytuj = {true}
+                              staraListaJezykowUzytkownika = {staraListaJezykowUzytkownika} ustawStaraListaJezykowUzytkownika={ustawStaraListeJezykowUzytkownika}
+                              staryPseudonim = {pseudonim} ustawStaryPseudonim={ustawPseudonim}
+                              stareZaimki = {zaimki} ustawStareZaimki={ustawZaimki}
+                              staryOpis = {opis} ustawStaryOpis={ustawOpis}
+                              staryRegion = {region} ustawStaryRegion={ustawRegion}
+                              staryKraj = {kraj} ustawStaryKraj={ustawKraj}
+                              uzytkownik={uzytkownik} staryAwatar={awatar}/>
             <br></br>
             <h2>Edytuj awatar</h2>
             <FormularzAwatara uzytkownik={uzytkownik} staryAwatar={awatar} ustawAwatarUrl={ustawAwatarUrl}/>
