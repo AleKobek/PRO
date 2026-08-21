@@ -59,6 +59,8 @@ export default function CzatZeZnajomym({
 
     // co 5 sekund aktualizujemy czat
     useEffect(() => {
+        if(!idZnajomegoZOtwartymCzatem) return;
+         
         let alive = true;
         const ac = new AbortController();
         const interval = setInterval(async () => {
@@ -66,10 +68,7 @@ export default function CzatZeZnajomym({
             if(czyTrwaLadowanieCzatu) return; // nie chcemy się wcinać gdy już się główne pobiera
 
             podajCzat(alive, ac);
-
-
             await aktualizujDateOtwarciaCzatu();
-
         }, 5000);
 
         return () => {
@@ -81,17 +80,22 @@ export default function CzatZeZnajomym({
 
     // pobieramy czat
     useEffect(() => {
+        if(!idZnajomegoZOtwartymCzatem) return;
+         
         const ac = new AbortController();
         let alive = true;
-        if(!idZnajomegoZOtwartymCzatem) return;
+
         ustawCzyTrwaLadowanieCzatu(true);
+        // ładujemy asynchronicznie i czekamy, aż pobierze się czat, zanim usuniemy ładowanie
+        const zaladuj = async () => {
+            await podajCzat(alive, ac);
+            if(alive) ustawCzyTrwaLadowanieCzatu(false);
+        };
+        zaladuj();
 
-        podajCzat(alive, ac);
-
-        ustawCzyTrwaLadowanieCzatu(false);
         return () => {
             alive = false;
-            ac.abort(); // przerywamy fetch
+            ac.abort();
         };
     },[idZnajomegoZOtwartymCzatem]);
 
@@ -281,7 +285,7 @@ export default function CzatZeZnajomym({
                                         ? pseudonimZnajomegoZOtwartymCzatem
                                         : naszPseudonim
                                     }
-                                    key = {wiadomosc.idNadawcy + index}
+                                    key = {wiadomosc.id ?? (wiadomosc.idNadawcy + index)}
                                 />
                             ))
                     }
