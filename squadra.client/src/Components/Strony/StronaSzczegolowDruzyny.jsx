@@ -766,7 +766,7 @@ export default function StronaSzczegolowDruzyny() {
             style={{ zIndex: 2001 }}
         >
             <div className="flex justify-end">
-                <button onClick={() => ustawPokazOkienkoPublicznosci(false)} className="cursor-pointer text-red-600">Zamknij</button>
+                <button onClick={() => ustawPokazOkienkoPublicznosci(false)} className="cursor-pointer text-white bg-red-900 rounded-lg p-2 text-lg">Zamknij</button>
             </div>
             <div className="flex flex-col">
                 <h2 className="text-2xl font-bold mb-4">Publiczność drużyny</h2>
