@@ -113,7 +113,7 @@ export default function Rejestracja() {
                 <h1>Rejestracja</h1>
                 <form id = "form" name="formularz-rejestracji">
                     <label>
-                        Pseudonim (od 3 do 20 znaków)<br/>
+                        Pseudonim (od 3 do 20 znaków) - widoczny dla innych użytkowników<br/>
                         <input
                             type="text"
                             value={pseudonim}
