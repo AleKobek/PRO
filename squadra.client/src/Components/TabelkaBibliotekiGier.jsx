@@ -110,7 +110,9 @@ export default function TabelkaBibliotekiGier({idUzytkownika}) {
                 style={{zIndex: 2000}}
             >
                 <div className="flex justify-end">
-                    <button onClick={() => ustawPokazPanelStatystyk(false)} className="cursor-pointer">Zamknij</button>
+                    <button onClick={() => ustawPokazPanelStatystyk(false)}
+                            className="cursor-pointer text-white bg-red-900 rounded-lg p-2 text-lg">Zamknij
+                    </button>
                 </div>
                 <div className="flex flex-col">
                     <h2 className="text-2xl font-bold mb-4">Statystyki dla gry</h2>
@@ -126,7 +128,7 @@ export default function TabelkaBibliotekiGier({idUzytkownika}) {
                 style={{zIndex: 2000}}
             >
             <div className="flex justify-end">
-                <button onClick={() => ustawPokazPanelStatystyk(false)} className="cursor-pointer">Zamknij</button>
+                <button onClick={() => ustawPokazPanelStatystyk(false)} className="cursor-pointer text-white bg-red-900 rounded-lg p-2 text-lg">Zamknij</button>
             </div>
             <div className="flex flex-col">
                 <h2 className="text-2xl font-bold">Statystyki dla gry:</h2>

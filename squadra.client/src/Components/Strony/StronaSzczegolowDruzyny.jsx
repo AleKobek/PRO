@@ -518,7 +518,7 @@ export default function StronaSzczegolowDruzyny() {
                     ustawListeZnajomych(null)
                     ustawPokazPanelZapraszania(false)
                 }}
-                        className="cursor-pointer text-red-600">Zamknij
+                        className="cursor-pointer text-white bg-red-900 rounded-lg p-2 text-lg">Zamknij
                 </button>
             </div>
             <div className="flex flex-col justify-center items-center">

@@ -266,7 +266,7 @@ export default function NaglowekZalogowano(){
         >
             <div className="flex justify-between items-center mb-2">
                 <strong>Powiadomienia</strong>
-                <button onClick={() => ustawPokazPowiadomienia(false)} className="cursor-pointer text-red-600">Zamknij</button>
+                <button onClick={() => ustawPokazPowiadomienia(false)} className="cursor-pointer text-white bg-amber-700 rounded-lg p-2">Zamknij</button>
             </div>
             {ladowaniePowiadomien && <div>Ładowanie...</div>}
             {!ladowaniePowiadomien && powiadomienia.length === 0 && <div>Brak powiadomień</div>}
